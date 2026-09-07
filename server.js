@@ -261,30 +261,22 @@ app.post("/api/chat",async(req,res)=>{
 
 
 
-app.get("/api/thanjavur-news",async(req,res)=>{
+app.get("/api/state-news",async(req,res)=>{
   try{
-    const web=await webSearch(
-      "Thanjavur district Tamil Nadu latest news today Thanjavur Kumbakonam Pattukkottai"
-    );
-
-    if(!web)
-      return res.status(503).json({
-        ok:false,
-        reply:"⚠️ தஞ்சாவூர் மாவட்ட செய்திகள் தற்போது கிடைக்கவில்லை."
-      });
-
-    res.json({
-      ok:true,
-      reply:web,
-      source:"Tavily Web Search"
-    });
-
+    const state=String(req.query.state||"TN").trim();
+    const district=String(req.query.district||"").trim();
+    const states={TN:"Tamil Nadu",KL:"Kerala",KA:"Karnataka",AP:"Andhra Pradesh",TS:"Telangana",MH:"Maharashtra",GJ:"Gujarat",RJ:"Rajasthan",WB:"West Bengal",UP:"Uttar Pradesh",MP:"Madhya Pradesh",OD:"Odisha",PB:"Punjab",HR:"Haryana",BR:"Bihar",JH:"Jharkhand",AS:"Assam",CG:"Chhattisgarh",UK:"Uttarakhand",HP:"Himachal Pradesh",GA:"Goa",TR:"Tripura",ML:"Meghalaya",MN:"Manipur",NL:"Nagaland",AR:"Arunachal Pradesh",SK:"Sikkim",MZ:"Mizoram"};
+    const stateName=states[state]||state;
+    const place=district?`${district}, ${stateName}`:stateName;
+    const web=await webSearch(`${place} latest news today important news`);
+    if(!web)return res.status(503).json({ok:false,reply:"⚠️ மாநில செய்திகள் தற்போது கிடைக்கவில்லை."});
+    const lines=String(web).split(/?
+/).map(x=>x.trim()).filter(Boolean).slice(0,10);
+    res.json({ok:true,state:stateName,district:district||"All Districts",reply:lines.join("
+"),source:"Tavily Web Search"});
   }catch(e){
-    console.error("Thanjavur News Error:",e.message);
-    res.status(500).json({
-      ok:false,
-      reply:"❌ News search error."
-    });
+    console.error("State News Error:",e.message);
+    res.status(500).json({ok:false,reply:"❌ State News search error."});
   }
 });
 
