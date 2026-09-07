@@ -398,6 +398,7 @@ body.dark .loan-result{
 <div class="header">🤖 SASIKUMAR AI</div>
 
 <div class="status">🟢 Server Connected • AI Active</div>
+<div id="liveDateTime" class="status">📅 Loading...</div>
 <div id="dashboard" class="dashboard">
   <div class="dash-title">✨ SASIKUMAR AI</div>
   <div class="dash-sub">Smart Assistant • Gold • News • Voice</div>
@@ -1123,5 +1124,16 @@ function calculateGoldPractical(){
 }
 </script>
 
+<script>
+function updateLiveDateTime(){
+ const now=new Date();
+ const date=now.toLocaleDateString("en-IN",{day:"2-digit",month:"2-digit",year:"numeric"});
+ const time=now.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true});
+ const el=document.getElementById("liveDateTime");
+ if(el) el.textContent="📅 "+date+"  |  🕐 "+time;
+}
+updateLiveDateTime();
+setInterval(updateLiveDateTime,1000);
+</script>
 </body>
 </html>
