@@ -405,7 +405,7 @@ body.dark .loan-result{
 
   <div class="dash-grid">
     <button onclick="liveGoldRate()">🪙<span>Gold Rate</span><small>Live Chennai</small></button>
-    <button onclick="nationalNews()">📰<span>National News</span><small>Top News</small></button>
+    <button onclick="nationalNews()">📰<span>State News</span><small>State / District</small></button>
     <button onclick="goldCalculator()">🧮<span>Gold Calculator</span><small>Quick Calculate</small></button>
 <button onclick="goldLoanDashboard()">💰<span>Gold Loan</span><small>Appraiser Dashboard</small></button>
 
@@ -423,7 +423,7 @@ body.dark .loan-result{
 <button onclick="shareChat()">📤 பகிர்</button>
 <button onclick="goldCalculator()">🪙 தங்க கணக்கு</button>
 <button onclick="liveGoldRate()">🪙 Live Gold Rate</button>
-<button onclick="nationalNews()">📰 National News</button>
+<button onclick="nationalNews()">📰 State News</button>
 <button class="luxury-toggle" onclick="toggleDark()">🌙 Dark</button><button onclick="clearChat()">🧹 அழி</button>
 <button onclick="topChat()">⬆️</button>
 <button onclick="bottomChat()">⬇️</button>
@@ -710,35 +710,111 @@ async function nationalNews(){
 
   const loading=document.createElement("div");
   loading.className="msg ai";
-  loading.innerText="📰 National Top News தேடுகிறது...";
+
+  const box=document.createElement("div");
+
+  box.innerHTML=
+    "📰 <b>State News</b><br><br>"+
+    "🌐 State: "+
+    '<select id="newsState" onchange="loadNewsDistricts()" style="padding:6px;border-radius:6px;">'+
+    '<option value="TN">Tamil Nadu</option>'+
+    '<option value="KL">Kerala</option>'+
+    '<option value="KA">Karnataka</option>'+
+    '<option value="AP">Andhra Pradesh</option>'+
+    '<option value="TS">Telangana</option>'+
+    '<option value="MH">Maharashtra</option>'+
+    '<option value="GJ">Gujarat</option>'+
+    '<option value="RJ">Rajasthan</option>'+
+    '<option value="WB">West Bengal</option>'+
+    '<option value="UP">Uttar Pradesh</option>'+
+    '</select><br><br>'+
+    "📍 District: "+
+    '<select id="newsDistrict" style="padding:6px;border-radius:6px;"></select><br><br>'+
+    '<button onclick="searchStateNews()" style="padding:8px 14px;border-radius:8px;">🔎 Search State News</button>';
+
+  loading.appendChild(box);
   chat.appendChild(loading);
   bottomChat();
 
-  try{
+  loadNewsDistricts();
 
-    const r=await fetch("/api/national-news");
-    const d=await r.json();
+  window.searchStateNews=async function(){
 
-    if(!r.ok || !d.ok)
-      throw new Error(d.reply||"News unavailable");
+    const state=document.getElementById("newsState").value;
+    const district=document.getElementById("newsDistrict").value;
 
-    loading.innerText=
-      "🤖 📰 National News\n\n"+
-      d.reply;
+    loading.innerText="📰 State News தேடுகிறது...";
 
-  }catch(e){
+    try{
 
-    console.error(e);
+      const r=await fetch(
+        "/api/state-news?state="+
+        encodeURIComponent(state)+
+        "&district="+
+        encodeURIComponent(district)
+      );
 
-    loading.innerText=
-      "❌ National News தற்போது கிடைக்கவில்லை.\n\n"+
-      "சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.";
+      const d=await r.json();
 
-  }
+      if(!r.ok || !d.ok)
+        throw new Error(d.reply||"News unavailable");
 
-  bottomChat();
+      const lines=String(d.reply)
+        .split(/\r?\n/)
+        .filter(Boolean)
+        .slice(0,10);
+
+      loading.innerText=
+        "🤖 📰 "+d.state+" News\n\n"+
+        lines.join("\n");
+
+    }catch(e){
+
+      console.error(e);
+
+      loading.innerText=
+        "❌ State News தற்போது கிடைக்கவில்லை.\n\n"+
+        "சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.";
+    }
+
+    bottomChat();
+  };
+
+  window.loadNewsDistricts=function(){
+
+    const state=document.getElementById("newsState").value;
+    const select=document.getElementById("newsDistrict");
+
+    const districts={
+
+      TN:[
+        "All Districts","Ariyalur","Chengalpattu","Chennai",
+        "Coimbatore","Cuddalore","Dharmapuri","Dindigul","Erode",
+        "Kallakurichi","Kancheepuram","Karur","Krishnagiri","Madurai",
+        "Mayiladuthurai","Nagapattinam","Namakkal","Perambalur",
+        "Pudukkottai","Ramanathapuram","Ranipet","Salem","Sivaganga",
+        "Tenkasi","Thanjavur","Theni","Thoothukudi","Tiruchirappalli",
+        "Tirunelveli","Tirupathur","Tiruppur","Tiruvallur",
+        "Tiruvannamalai","Tiruvarur","Vellore","Viluppuram","Virudhunagar"
+      ],
+
+      KL:[
+        "All Districts","Alappuzha","Ernakulam","Idukki","Kannur",
+        "Kasaragod","Kollam","Kottayam","Kozhikode","Malappuram",
+        "Palakkad","Pathanamthitta","Thiruvananthapuram","Thrissur",
+        "Wayanad"
+      ]
+
+    };
+
+    const list=districts[state]||["All Districts"];
+
+    select.innerHTML=list
+      .map(x=>'<option value="'+x+'">'+x+'</option>')
+      .join("");
+  };
+
 }
-
 async function liveGoldRate(){
 
   const loading=document.createElement("div");
