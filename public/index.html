@@ -1132,8 +1132,7 @@ function updateLiveDateTime(){
  const el=document.getElementById("liveDateTime");
  if(el) el.textContent="📅 "+date+"  |  🕐 "+time;
 }
-updateLiveDateTime();
-setInterval(updateLiveDateTime,1000);
+document.addEventListener("DOMContentLoaded",()=>{updateLiveDateTime();setInterval(updateLiveDateTime,1000);});
 </script>
 </body>
 </html>
