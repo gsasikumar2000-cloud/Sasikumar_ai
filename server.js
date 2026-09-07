@@ -270,10 +270,19 @@ app.get("/api/state-news",async(req,res)=>{
     const place=district?`${district}, ${stateName}`:stateName;
     const web=await webSearch(`${place} latest news today important news`);
     if(!web)return res.status(503).json({ok:false,reply:"⚠️ மாநில செய்திகள் தற்போது கிடைக்கவில்லை."});
-    const lines=String(web).split(/?
-/).map(x=>x.trim()).filter(Boolean).slice(0,10);
-    res.json({ok:true,state:stateName,district:district||"All Districts",reply:lines.join("
-"),source:"Tavily Web Search"});
+    const lines=String(web)
+      .split(/\r?\n/)
+      .map(x=>x.trim())
+      .filter(Boolean)
+      .slice(0,10);
+
+    res.json({
+      ok:true,
+      state:stateName,
+      district:district||"All Districts",
+      reply:lines.join("\n"),
+      source:"Tavily Web Search"
+    });
   }catch(e){
     console.error("State News Error:",e.message);
     res.status(500).json({ok:false,reply:"❌ State News search error."});
