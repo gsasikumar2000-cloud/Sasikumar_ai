@@ -405,7 +405,7 @@ body.dark .loan-result{
 
   <div class="dash-grid">
     <button onclick="liveGoldRate()">🪙<span>Gold Rate</span><small>Live Chennai</small></button>
-    <button onclick="thanjavurNews()">📰<span>தஞ்சை News</span><small>Top News</small></button>
+    <button onclick="nationalNews()">📰<span>National News</span><small>Top News</small></button>
     <button onclick="goldCalculator()">🧮<span>Gold Calculator</span><small>Quick Calculate</small></button>
 <button onclick="goldLoanDashboard()">💰<span>Gold Loan</span><small>Appraiser Dashboard</small></button>
 
@@ -423,7 +423,7 @@ body.dark .loan-result{
 <button onclick="shareChat()">📤 பகிர்</button>
 <button onclick="goldCalculator()">🪙 தங்க கணக்கு</button>
 <button onclick="liveGoldRate()">🪙 Live Gold Rate</button>
-<button onclick="thanjavurNews()">📰 தஞ்சை News</button>
+<button onclick="nationalNews()">📰 National News</button>
 <button class="luxury-toggle" onclick="toggleDark()">🌙 Dark</button><button onclick="clearChat()">🧹 அழி</button>
 <button onclick="topChat()">⬆️</button>
 <button onclick="bottomChat()">⬇️</button>
@@ -706,24 +706,24 @@ function clearChat(){
 
 
 
-async function thanjavurNews(){
+async function nationalNews(){
 
   const loading=document.createElement("div");
   loading.className="msg ai";
-  loading.innerText="📰 தஞ்சாவூர் மாவட்ட Top News தேடுகிறது...";
+  loading.innerText="📰 National Top News தேடுகிறது...";
   chat.appendChild(loading);
   bottomChat();
 
   try{
 
-    const r=await fetch("/api/thanjavur-news");
+    const r=await fetch("/api/national-news");
     const d=await r.json();
 
     if(!r.ok || !d.ok)
       throw new Error(d.reply||"News unavailable");
 
     loading.innerText=
-      "🤖 📰 தஞ்சாவூர் மாவட்ட செய்திகள்\n\n"+
+      "🤖 📰 National News\n\n"+
       d.reply;
 
   }catch(e){
@@ -731,7 +731,7 @@ async function thanjavurNews(){
     console.error(e);
 
     loading.innerText=
-      "❌ தஞ்சாவூர் மாவட்ட செய்திகள் தற்போது கிடைக்கவில்லை.\n\n"+
+      "❌ National News தற்போது கிடைக்கவில்லை.\n\n"+
       "சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.";
 
   }
