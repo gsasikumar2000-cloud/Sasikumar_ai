@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI</title>
+
+<style>
+*{box-sizing:border-box}
+
+html,body{
+ margin:0;
+ height:100%;
+ font-family:"Noto Sans Tamil","Nirmala UI",Arial,sans-serif;
+ background:#f5f5f5;
+}
+
+body{
+ display:flex;
+ flex-direction:column;
+ overflow:hidden;
+}
+
+.header{
+ background:#111;
+ color:white;
+ text-align:center;
+ padding:12px;
+ font-size:21px;
+ font-weight:bold;
+}
+
+.status{
+ text-align:center;
+ padding:5px;
+ background:#eaf7ea;
+ font-size:13px;
+}
+
+.toolbar{
+ display:flex;
+ gap:6px;
+ padding:7px;
+ overflow-x:auto;
+ background:white;
+ border-bottom:1px solid #ddd;
+}
+
+.toolbar button{
+ white-space:nowrap;
+ padding:8px 10px;
+ border:1px solid #ccc;
+ border-radius:9px;
+ background:white;
+ font-size:14px;
+}
+
+#chat{
+ flex:1;
+ overflow-y:auto;
+ padding:12px;
+ scroll-behavior:smooth;
+}
+
+.msg{
+ max-width:95%;
+ margin:8px 0;
+ padding:10px 12px;
+ border-radius:12px;
+ font-size:18px;
+ line-height:1.6;
+ white-space:pre-wrap;
+ overflow-wrap:anywhere;
+}
+
+.msg.user{
+ margin-left:auto;
+ background:#e8f0ff;
+}
+
+.msg.ai{
+ margin-right:auto;
+ background:white;
+ border:1px solid #ddd;
+}
+
+.input-area{
+ background:white;
+ border-top:1px solid #ddd;
+ padding:8px;
+}
+
+.input-row{
+ display:flex;
+ gap:7px;
+}
+
+#q{
+ flex:1;
+ min-height:58px;
+ max-height:120px;
+ resize:none;
+ padding:10px;
+ border:1px solid #aaa;
+ border-radius:12px;
+ font-family:inherit;
+ font-size:18px;
+ line-height:1.5;
+}
+
+#sendBtn{
+ min-width:70px;
+ border:0;
+ border-radius:12px;
+ background:#111;
+ color:white;
+ font-size:17px;
+ font-weight:bold;
+}
+
+@media(max-width:600px){
+ .msg,#q{font-size:17px}
+ .toolbar button{font-size:13px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">🤖 SASIKUMAR AI</div>
+
+<div class="status">🟢 Server Connected • AI Active</div>
+
+<div class="toolbar">
+<button onclick="startVoice()">🎤 குரல்</button>
+<button onclick="stopAI()">⏹ நிறுத்து</button>
+<button onclick="copyChat()">📋 நகல்</button>
+<button onclick="shareChat()">📤 பகிர்</button>
+<button onclick="goldCalculator()">🪙 தங்க கணக்கு</button>
+<button onclick="clearChat()">🧹 அழி</button>
+<button onclick="topChat()">⬆️</button>
+<button onclick="bottomChat()">⬇️</button>
+</div>
+
+<div id="chat">
+<div class="msg ai">🤖 வணக்கம்! நான் SASIKUMAR AI.
+
+எதையும் கேளுங்கள்.
+Tamil + English • Gold • General Q&A • Web Search</div>
+</div>
+
+<div class="input-area">
+<div class="input-row">
+<textarea id="q" rows="2" placeholder="உங்கள் கேள்வியை எழுதுங்கள்..."></textarea>
+<button id="sendBtn" onclick="send()">Send</button>
+</div>
+</div>
+
+<script>
+const q=document.getElementById("q");
+const chat=document.getElementById("chat");
+const sendBtn=document.getElementById("sendBtn");
+
+let recognition=null;
+
+function escapeHtml(text){
+ const d=document.createElement("div");
+ d.textContent=text;
+ return d.innerHTML;
+}
+
+async function send(){
+
+ const message=q.value.trim();
+ if(!message)return;
+
+ chat.innerHTML+=
+   '<div class="msg user">👤 '+escapeHtml(message)+'</div>';
+
+ q.value="";
+
+ const loading=document.createElement("div");
+ loading.className="msg ai";
+ loading.innerText="🤖 பதில் எழுதுகிறது...";
+ chat.appendChild(loading);
+
+ bottomChat();
+
+ sendBtn.disabled=true;
+ sendBtn.innerText="…";
+
+ try{
+
+   const r=await fetch("/api/chat",{
+     method:"POST",
+     headers:{"Content-Type":"application/json"},
+     body:JSON.stringify({message})
+   });
+
+   if(!r.ok)throw new Error("HTTP "+r.status);
+
+   const d=await r.json();
+
+   loading.innerText=d.reply
+     ?"🤖 "+d.reply
+     :"❌ பதில் கிடைக்கவில்லை.";
+
+ }catch(e){
+
+   console.error(e);
+
+   loading.innerText=
+     "❌ Server connection error.\n\n"+
+     "Server இயங்குகிறதா என்று பார்க்கவும்.";
+
+ }finally{
+
+   sendBtn.disabled=false;
+   sendBtn.innerText="Send";
+   bottomChat();
+
+ }
+}
+
+q.addEventListener("keydown",e=>{
+ if(e.key==="Enter"&&!e.shiftKey){
+   e.preventDefault();
+   send();
+ }
+});
+
+function bottomChat(){
+ chat.scrollTo({
+   top:chat.scrollHeight,
+   behavior:"smooth"
+ });
+}
+
+function topChat(){
+ chat.scrollTo({
+   top:0,
+   behavior:"smooth"
+ });
+}
+
+function startVoice(){
+
+ const SR=window.SpeechRecognition||
+          window.webkitSpeechRecognition;
+
+ if(!SR){
+   alert("🎤 இந்த browser-ல் voice recognition இல்லை.");
+   return;
+ }
+
+ if(recognition){
+   try{recognition.stop()}catch(e){}
+ }
+
+ recognition=new SR();
+ recognition.lang="ta-IN";
+ recognition.continuous=false;
+ recognition.interimResults=false;
+
+ recognition.onresult=e=>{
+   q.value=e.results[0][0].transcript;
+   q.focus();
+ };
+
+ recognition.start();
+}
+
+function stopAI(){
+
+ if("speechSynthesis" in window)
+   speechSynthesis.cancel();
+
+ if(recognition){
+   try{recognition.stop()}catch(e){}
+   recognition=null;
+ }
+}
+
+async function copyChat(){
+
+ try{
+   await navigator.clipboard.writeText(chat.innerText);
+   alert("📋 Chat நகலெடுக்கப்பட்டது ✅");
+ }catch(e){
+   alert("❌ Copy செய்ய முடியவில்லை.");
+ }
+}
+
+async function shareChat(){
+
+ const text=chat.innerText;
+
+ if(navigator.share){
+   try{
+     await navigator.share({
+       title:"SASIKUMAR AI",
+       text:text
+     });
+   }catch(e){}
+ }else{
+   await copyChat();
+ }
+}
+
+function clearChat(){
+
+ if(!confirm("🧹 உரையாடலை அழிக்க வேண்டுமா?"))
+   return;
+
+ chat.innerHTML=
+ '<div class="msg ai">🤖 வணக்கம்! நான் SASIKUMAR AI.<br><br>எதையும் கேளுங்கள்.</div>';
+}
+
+function goldCalculator(){
+
+ const r=prompt("🪙 22K / 916 rate per gram:");
+
+ if(r===null||r===""||isNaN(r))return;
+
+ const w=prompt("⚖️ Weight in gram:");
+
+ if(w===null||w===""||isNaN(w))return;
+
+ const rate=Number(r);
+ const weight=Number(w);
+
+ alert(
+  "🪙 SASIKUMAR AI – Gold Calculator\n\n"+
+  "22K Rate: ₹"+rate.toLocaleString("en-IN")+
+  " / gram\n\n"+
+  "Weight: "+weight+" gram\n\n"+
+  "💰 Total: ₹"+
+  (rate*weight).toLocaleString("en-IN")+
+  "\n\n"+
+  "8g / 1 Sovereign: ₹"+
+  (rate*8).toLocaleString("en-IN")
+ );
+}
+
+window.addEventListener("load",()=>{
+ setTimeout(bottomChat,300);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SASIKUMAR AI</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+html,body{
+  margin:0;
+  height:100%;
+  font-family:"Noto Sans Tamil","Nirmala UI",Arial,sans-serif;
+  background:#f5f5f5;
+}
+
+body{
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+/* HEADER */
+.header{
+  background:#111;
+  color:#fff;
+  text-align:center;
+  padding:12px;
+  font-size:21px;
+  font-weight:bold;
+}
+
+.status{
+  text-align:center;
+  padding:5px;
+  font-size:13px;
+  background:#e9f7e9;
+}
+
+/* TOOLBAR */
+.toolbar{
+  display:flex;
+  gap:6px;
+  padding:7px;
+  overflow-x:auto;
+  background:#fff;
+  border-bottom:1px solid #ddd;
+}
+
+.toolbar button{
+  white-space:nowrap;
+  border:1px solid #ccc;
+  background:#fff;
+  border-radius:9px;
+  padding:7px 10px;
+  font-size:14px;
+}
+
+/* CHAT */
+#chat{
+  flex:1;
+  overflow-y:auto;
+  padding:12px;
+  scroll-behavior:smooth;
+  -webkit-overflow-scrolling:touch;
+}
+
+.msg{
+  max-width:95%;
+  padding:10px 12px;
+  margin:8px 0;
+  border-radius:12px;
+  font-size:18px;
+  line-height:1.6;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+
+.msg.user{
+  margin-left:auto;
+  background:#e7f0ff;
+  text-align:left;
+}
+
+.msg.ai{
+  margin-right:auto;
+  background:#fff;
+  border:1px solid #ddd;
+}
+
+/* INPUT */
+.input-area{
+  background:#fff;
+  border-top:1px solid #ddd;
+  padding:8px;
+}
+
+.input-row{
+  display:flex;
+  gap:7px;
+}
+
+#q{
+  flex:1;
+  min-height:52px;
+  max-height:120px;
+  resize:none;
+  border:1px solid #aaa;
+  border-radius:12px;
+  padding:10px;
+  font-family:inherit;
+  font-size:18px;
+  line-height:1.5;
+  outline:none;
+}
+
+#sendBtn{
+  min-width:70px;
+  border:0;
+  border-radius:12px;
+  background:#111;
+  color:#fff;
+  font-size:17px;
+  font-weight:bold;
+}
+
+/* MOBILE */
+@media(max-width:600px){
+  .msg{
+    font-size:17px;
+  }
+
+  #q{
+    font-size:17px;
+  }
+
+  .toolbar button{
+    font-size:13px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  🤖 SASIKUMAR AI
+</div>
+
+<div class="status">
+  🟢 Server Connected • AI Active
+</div>
+
+<div class="toolbar">
+  <button onclick="startVoice()">🎤 குரல்</button>
+  <button onclick="stopAI()">⏹ நிறுத்து</button>
+  <button onclick="copyChat()">📋 நகல்</button>
+  <button onclick="shareChat()">📤 பகிர்</button>
+  <button onclick="goldCalculator()">🪙 தங்க கணக்கு</button>
+  <button onclick="clearChat()">🧹 அழி</button>
+  <button onclick="scrollTopChat()">⬆️ மேலே</button>
+  <button onclick="scrollBottomChat()">⬇️ கீழே</button>
+</div>
+
+<div id="chat">
+
+  <div class="msg ai">
+    🤖 வணக்கம்! நான் SASIKUMAR AI.
+    
+எதையும் கேளுங்கள்.
+Tamil + English • Gold • General Q&A • Web Search
+  </div>
+
+</div>
+
+<div class="input-area">
+
+  <div class="input-row">
+
+    <textarea
+      id="q"
+      rows="2"
+      placeholder="உங்கள் கேள்வியை எழுதுங்கள்..."
+      autocomplete="off"
+    ></textarea>
+
+    <button id="sendBtn" onclick="send()">
+      Send
+    </button>
+
+  </div>
+
+</div>
+
+<script>
+const q = document.getElementById("q");
+const chat = document.getElementById("chat");
+const sendBtn = document.getElementById("sendBtn");
+
+let currentRecognition = null;
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHtml(text){
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+/* =====================================================
+   SEND
+===================================================== */
+
+async function send(){
+
+  const message = q.value.trim();
+
+  if(!message) return;
+
+  chat.innerHTML += `
+    <div class="msg user">
+      👤 ${escapeHtml(message)}
+    </div>
+  `;
+
+  q.value = "";
+
+  const loading = document.createElement("div");
+
+  loading.className = "msg ai";
+  loading.innerText = "🤖 பதில் எழுதுகிறது...";
+
+  chat.appendChild(loading);
+
+  scrollBottomChat();
+
+  sendBtn.disabled = true;
+  sendBtn.innerText = "…";
+
+  try{
+
+    const response = await fetch("/api/chat",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        message:message
+      })
+    });
+
+    if(!response.ok){
+      throw new Error("HTTP " + response.status);
+    }
+
+    const data = await response.json();
+
+    if(data.reply){
+
+      loading.innerText =
+        "🤖 " + data.reply;
+
+    }else if(data.error){
+
+      loading.innerText =
+        "❌ " + data.error;
+
+    }else{
+
+      loading.innerText =
+        "❌ பதில் கிடைக்கவில்லை.";
+
+    }
+
+  }catch(error){
+
+    console.error(error);
+
+    loading.innerText =
+      "❌ Server connection error.\n\n" +
+      "Server இயங்குகிறதா என்று பார்க்கவும்.";
+
+  }finally{
+
+    sendBtn.disabled = false;
+    sendBtn.innerText = "Send";
+
+    scrollBottomChat();
+
+  }
+}
+
+/* =====================================================
+   ENTER SEND
+===================================================== */
+
+q.addEventListener("keydown",function(e){
+
+  if(e.key === "Enter" && !e.shiftKey){
+
+    e.preventDefault();
+    send();
+
+  }
+
+});
+
+/* =====================================================
+   AUTO SCROLL
+===================================================== */
+
+function scrollBottomChat(){
+
+  chat.scrollTo({
+    top:chat.scrollHeight,
+    behavior:"smooth"
+  });
+
+}
+
+function scrollTopChat(){
+
+  chat.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+}
+
+/* =====================================================
+   VOICE
+===================================================== */
+
+function startVoice(){
+
+  const SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if(!SpeechRecognition){
+
+    alert("🎤 இந்த browser-ல் voice recognition இல்லை.");
+    return;
+
+  }
+
+  if(currentRecognition){
+
+    try{
+      currentRecognition.stop();
+    }catch(e){}
+
+  }
+
+  currentRecognition = new SpeechRecognition();
+
+  currentRecognition.lang = "ta-IN";
+  currentRecognition.continuous = false;
+  currentRecognition.interimResults = false;
+
+  currentRecognition.onresult = function(event){
+
+    const text =
+      event.results[0][0].transcript;
+
+    q.value = text;
+    q.focus();
+
+  };
+
+  currentRecognition.onerror = function(event){
+
+    console.log("Voice error:",event.error);
+
+  };
+
+  currentRecognition.start();
+
+}
+
+/* =====================================================
+   STOP AI VOICE
+===================================================== */
+
+function stopAI(){
+
+  if("speechSynthesis" in window){
+
+    speechSynthesis.cancel();
+
+  }
+
+  if(currentRecognition){
+
+    try{
+      currentRecognition.stop();
+    }catch(e){}
+
+    currentRecognition = null;
+
+  }
+
+}
+
+/* =====================================================
+   COPY
+===================================================== */
+
+async function copyChat(){
+
+  const text = chat.innerText;
+
+  try{
+
+    await navigator.clipboard.writeText(text);
+
+    alert("📋 Chat நகலெடுக்கப்பட்டது ✅");
+
+  }catch(error){
+
+    alert("❌ Copy செய்ய முடியவில்லை.");
+
+  }
+
+}
+
+/* =====================================================
+   SHARE
+===================================================== */
+
+async function shareChat(){
+
+  const text = chat.innerText;
+
+  if(navigator.share){
+
+    try{
+
+      await navigator.share({
+        title:"SASIKUMAR AI",
+        text:text
+      });
+
+    }catch(error){
+
+      console.log(error);
+
+    }
+
+  }else{
+
+    await copyChat();
+
+    alert("📋 Copy செய்யப்பட்டது. இப்போது Share செய்யலாம்.");
+
+  }
+
+}
+
+/* =====================================================
+   CLEAR CHAT
+===================================================== */
+
+function clearChat(){
+
+  if(!confirm("🧹 முழு உரையாடலையும் அழிக்க வேண்டுமா?")){
+
+    return;
+
+  }
+
+  chat.innerHTML = `
+    <div class="msg ai">
+      🤖 வணக்கம்! நான் SASIKUMAR AI.
+      
+எதையும் கேளுங்கள்.
+    </div>
+  `;
+
+}
+
+/* =====================================================
+   GOLD CALCULATOR
+===================================================== */
+
+function goldCalculator(){
+
+  const rateInput =
+    prompt("🪙 22K / 916 தங்கத்தின் 1 gram விலை:");
+
+  if(
+    rateInput === null ||
+    rateInput.trim() === "" ||
+    isNaN(rateInput)
+  ){
+
+    return;
+
+  }
+
+  const weightInput =
+    prompt("⚖️ தங்க எடை (gram):");
+
+  if(
+    weightInput === null ||
+    weightInput.trim() === "" ||
+    isNaN(weightInput)
+  ){
+
+    return;
+
+  }
+
+  const rate = Number(rateInput);
+  const weight = Number(weightInput);
+
+  const total = rate * weight;
+  const sovereign = rate * 8;
+
+  alert(
+    "🪙 SASIKUMAR AI – தங்க கணக்கு\n\n" +
+    "22K / 916 Rate: ₹" +
+    rate.toLocaleString("en-IN") +
+    " / gram\n\n" +
+    "எடை: " +
+    weight +
+    " gram\n\n" +
+    "💰 மொத்தம்: ₹" +
+    total.toLocaleString("en-IN") +
+    "\n\n" +
+    "8 gram / 1 சவரன்: ₹" +
+    sovereign.toLocaleString("en-IN")
+  );
+
+}
+
+/* =====================================================
+   INITIAL SCROLL
+===================================================== */
+
+window.addEventListener("load",function(){
+
+  setTimeout(scrollBottomChat,300);
+
+});
+
+</script>
+
+</body>
+</html>

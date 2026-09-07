@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SASIKUMAR AI</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,"Noto Sans Tamil",sans-serif;
+  background:#f4f4f4;
+}
+
+.header{
+  background:#111;
+  color:#ffd700;
+  padding:18px;
+  text-align:center;
+  font-size:25px;
+  font-weight:bold;
+}
+
+.status{
+  text-align:center;
+  background:#e8ffe8;
+  color:green;
+  padding:8px;
+}
+
+#chat{
+  height:calc(100vh - 170px);
+  overflow-y:auto;
+  padding:15px;
+}
+
+.msg{
+  margin:10px 0;
+  padding:12px 15px;
+  border-radius:12px;
+  line-height:1.5;
+  word-wrap:break-word;
+}
+
+.user{
+  background:#d9ecff;
+  text-align:right;
+}
+
+.ai{
+  background:white;
+  border:1px solid #ddd;
+}
+
+.inputbox{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  display:flex;
+  padding:10px;
+  background:white;
+  border-top:1px solid #ddd;
+}
+
+#q{
+  flex:1;
+  padding:13px;
+  border:1px solid #bbb;
+  border-radius:10px;
+  font-size:16px;
+}
+
+button{
+  margin-left:8px;
+  padding:13px 18px;
+  border:0;
+  border-radius:10px;
+  background:#111;
+  color:#ffd700;
+  font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">🤖 SASIKUMAR AI</div>
+
+<div class="status">Server Connected ✅</div>
+
+<div id="chat">
+  <div class="msg ai">
+    🤖 வணக்கம்! நான் SASIKUMAR AI. கேள்வி கேளுங்கள்.
+  </div>
+</div>
+
+<div class="inputbox">
+  <input id="q" type="text" placeholder="உங்கள் கேள்வியை எழுதுங்கள்..." autocomplete="off">
+  <button onclick="send()">Send</button>
+</div>
+
+<script>
+const q = document.getElementById("q");
+const chat = document.getElementById("chat");
+
+async function send(){
+
+  const v = q.value.trim();
+
+  if(!v) return;
+
+  chat.innerHTML += `
+    <div class="msg user">👤 ${escapeHtml(v)}</div>
+  `;
+
+  q.value = "";
+
+  const loading = document.createElement("div");
+  loading.className = "msg ai";
+  loading.id = "loading";
+  loading.innerText = "🤖 பதில் எழுதுகிறது...";
+  chat.appendChild(loading);
+
+  chat.scrollTop = chat.scrollHeight;
+
+  try{
+
+    const q21 = String(v || "").toLowerCase().trim();
+
+    if ((q21.includes("21ct") || q21.includes("21k") || q21.includes("21 carat")) && (q21.includes("density") || q21.includes("அடர்த்தி"))) {
+      loading.innerText = "🤖 21K / 21CT gold-ன் approximate density சுமார் 17.5 g/cm³ அளவில் இருக்கலாம். Alloy composition மற்றும் jewellery construction காரணமாக actual density மாறலாம். Density test மட்டும் வைத்து purity-ஐ இறுதியாக உறுதி செய்யக்கூடாது.";
+      return;
+    }
+
+    const r = await fetch("/api/chat", {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        message:v
+      })
+    });
+
+    const d = await r.json();
+
+    if(d.reply){
+
+      loading.innerText = "🤖 " + d.reply;
+
+    }else if(d.error){
+
+      loading.innerText = "❌ " + d.error;
+
+    }else{
+
+      loading.innerText = "❌ பதில் கிடைக்கவில்லை.";
+
+    }
+
+  }catch(e){
+
+    loading.innerText =
+      "❌ Server connection error. Server இயங்குகிறதா என்று பார்க்கவும்.";
+
+    console.error(e);
+
+  }
+
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function escapeHtml(text){
+
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
+
+}
+
+q.addEventListener("keydown", function(e){
+
+  if(e.key === "Enter"){
+    e.preventDefault();
+    send();
+  }
+
+});
+</script>
+
+</body>
+</html>
+
+<script>
+(function () {
+  const input = document.querySelector("textarea") ||
+                document.querySelector("#message") ||
+                document.querySelector("input[type=text]");
+
+  // 🕐 Current date & time
+  function currentTime() {
+    return new Date().toLocaleString("ta-IN", {
+      dateStyle: "short",
+      timeStyle: "short"
+    });
+  }
+
+  // 📋 Copy
+  window.copyAI = async function(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      alert("📋 பதில் Copy செய்யப்பட்டது ✅");
+    } catch {
+      alert("Copy செய்ய முடியவில்லை.");
+    }
+  };
+
+  // 📤 Share
+  window.shareAI = async function(text) {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: "SASIKUMAR AI",
+          text: text
+        });
+      } else {
+        await navigator.clipboard.writeText(text);
+        alert("📋 Copy செய்யப்பட்டது. Share செய்யலாம் ✅");
+      }
+    } catch {}
+  };
+
+  // 🔊 Voice
+  window.speakAI = function(text) {
+    if (!("speechSynthesis" in window)) {
+      alert("Voice support இல்லை.");
+      return;
+    }
+
+    speechSynthesis.cancel();
+
+    const speech = new SpeechSynthesisUtterance(
+      String(text).replace(/[🌐🤖🪙🏛️🇮🇳⚠️❌]/g, "")
+    );
+
+    speech.lang = "ta-IN";
+    speech.rate = 0.95;
+    speechSynthesis.speak(speech);
+  };
+
+  // ⏹ Stop voice
+  window.stopAI = function() {
+    if ("speechSynthesis" in window) {
+      speechSynthesis.cancel();
+    }
+  };
+
+  // 🎤 Voice input
+  window.startVoice = function() {
+    const SpeechRecognition =
+      window.SpeechRecognition ||
+      window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert("இந்த browser-ல் Voice Input இல்லை.");
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = "ta-IN";
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onresult = function(event) {
+      const text = event.results[0][0].transcript;
+
+      const target =
+        document.querySelector("textarea") ||
+        document.querySelector("#message") ||
+        document.querySelector("input[type=text]");
+
+      if (target) {
+        target.value = text;
+        target.dispatchEvent(new Event("input", {
+          bubbles: true
+        }));
+        target.focus();
+      }
+    };
+
+    recognition.start();
+  };
+
+  // 🧹 Clear
+  window.clearAIChat = function() {
+    if (confirm("🧹 Chat history-ஐ அழிக்கவா?")) {
+      localStorage.removeItem("sasikumar_ai_chat");
+
+      const chat =
+        document.querySelector("#chat") ||
+        document.querySelector(".chat") ||
+        document.querySelector(".messages");
+
+      if (chat) chat.innerHTML = "";
+
+      location.reload();
+    }
+  };
+
+  // ⬆️ Scroll top
+  window.scrollChatTop = function() {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  };
+
+  // ⬇️ Scroll bottom
+  window.scrollChatBottom = function() {
+    window.scrollTo({
+      top: document.body.scrollHeight,
+      behavior: "smooth"
+    });
+  };
+
+  // 💾 Save page chat
+  window.saveAIChat = function() {
+    const chat =
+      document.querySelector("#chat") ||
+      document.querySelector(".chat") ||
+      document.querySelector(".messages");
+
+    if (chat) {
+      localStorage.setItem(
+        "sasikumar_ai_chat",
+        chat.innerHTML
+      );
+    }
+  };
+
+  // 🕐 Add toolbar
+  window.addEventListener("load", function() {
+
+    const toolbar = document.createElement("div");
+
+    toolbar.style.cssText =
+      "display:flex;gap:6px;flex-wrap:wrap;padding:8px;" +
+      "justify-content:center;background:transparent;";
+
+    toolbar.innerHTML = `
+      <button onclick="startVoice()">🎤 Voice</button>
+      <button onclick="stopAI()">⏹ Stop</button>
+      <button onclick="scrollChatTop()">⬆️</button>
+      <button onclick="scrollChatBottom()">⬇️</button>
+      <button onclick="clearAIChat()">🧹 Clear</button>
+      <span id="aiDateTime"
+        style="padding:8px;font-size:13px;">
+      </span>
+    `;
+
+    document.body.prepend(toolbar);
+
+    function updateTime() {
+      const el = document.querySelector("#aiDateTime");
+      if (el) {
+        el.textContent = "🕐 " + currentTime();
+      }
+    }
+
+    updateTime();
+    setInterval(updateTime, 1000);
+  });
+
+})();
+</script>
+
+
+<script>
+window.addEventListener("load", () => {
+  const bar = document.createElement("div");
+
+  bar.style.cssText = `
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+    justify-content:center;
+    padding:8px;
+    font-family:Arial,sans-serif;
+  `;
+
+  bar.innerHTML = `
+    <button onclick="startVoice()">🎤 குரல்</button>
+    <button onclick="stopAI()">⏹ நிறுத்து</button>
+    <button onclick="copyCurrent()">📋 நகலெடு</button>
+    <button onclick="shareCurrent()">📤 பகிர்</button>
+    <button onclick="clearAIChat()">🧹 அழி</button>
+    <button onclick="scrollChatTop()">⬆️ மேலே</button>
+    <button onclick="scrollChatBottom()">⬇️ கீழே</button>
+    <span id="aiDateTime"></span>
+  `;
+
+  document.body.prepend(bar);
+
+  function updateTime() {
+    document.getElementById("aiDateTime").textContent =
+      "🕐 " + new Date().toLocaleString("ta-IN");
+  }
+
+  updateTime();
+  setInterval(updateTime, 1000);
+});
+
+function copyCurrent() {
+  const text = document.body.innerText;
+  navigator.clipboard.writeText(text)
+    .then(() => alert("📋 நகலெடுக்கப்பட்டது ✅"));
+}
+
+async function shareCurrent() {
+  const text = document.body.innerText;
+
+  if (navigator.share) {
+    await navigator.share({
+      title: "SASIKUMAR AI",
+      text: text
+    });
+  } else {
+    await navigator.clipboard.writeText(text);
+    alert("📋 நகலெடுக்கப்பட்டது. பகிரலாம் ✅");
+  }
+}
+
+function startVoice() {
+  const SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    alert("🎤 இந்த உலாவியில் குரல் வசதி இல்லை.");
+    return;
+  }
+
+  const r = new SpeechRecognition();
+  r.lang = "ta-IN";
+  r.continuous = false;
+  r.interimResults = false;
+
+  r.onresult = e => {
+    const text = e.results[0][0].transcript;
+    const input =
+      document.querySelector("textarea") ||
+      document.querySelector("#message");
+
+    if (input) {
+      input.value = text;
+      input.dispatchEvent(new Event("input", {bubbles:true}));
+      input.focus();
+    }
+  };
+
+  r.start();
+}
+
+function stopAI() {
+  if ("speechSynthesis" in window)
+    speechSynthesis.cancel();
+}
+
+function clearAIChat() {
+  if (confirm("🧹 உரையாடலை அழிக்க வேண்டுமா?")) {
+    localStorage.removeItem("sasikumar_ai_chat");
+    location.reload();
+  }
+}
+
+function scrollChatTop() {
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function scrollChatBottom() {
+  window.scrollTo({
+    top:document.body.scrollHeight,
+    behavior:"smooth"
+  });
+}
+</script>
+
+
+<script>
+function goldCalculator() {
+  const rate22 = prompt("🪙 22K / 916 தங்கத்தின் 1 கிராம் விலையை உள்ளிடுங்கள்:");
+  if (!rate22 || isNaN(rate22)) return;
+
+  const weight = prompt("⚖️ தங்க எடையை கிராமில் உள்ளிடுங்கள்:");
+  if (!weight || isNaN(weight)) return;
+
+  const rate = Number(rate22);
+  const grams = Number(weight);
+
+  const total = rate * grams;
+  const sovereign = rate * 8;
+
+  alert(
+    "🪙 SASIKUMAR AI – தங்க கணக்கு\n\n" +
+    "22K / 916 Rate : ₹" + rate.toLocaleString("en-IN") + " / gram\n" +
+    "எடை : " + grams + " gram\n\n" +
+    "💰 மொத்த மதிப்பு : ₹" +
+    total.toLocaleString("en-IN") +
+    "\n\n" +
+    "8 gram / 1 சவரன் : ₹" +
+    sovereign.toLocaleString("en-IN")
+  );
+}
+
+window.addEventListener("load", () => {
+  const btn = document.createElement("button");
+
+  btn.textContent = "🪙 தங்க கணக்கு";
+  btn.onclick = goldCalculator;
+
+  btn.style.cssText =
+    "padding:9px 14px;margin:5px;border-radius:10px;" +
+    "border:1px solid #aaa;background:#fff;" +
+    "font-size:15px;";
+
+  document.body.prepend(btn);
+});
+</script>
+
+
+<style>
+/* ===== SASIKUMAR AI Q&A SCREEN FIX ===== */
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+#chat {
+  height: calc(100vh - 180px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  padding: 12px;
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Q&A புதிய பதில் கீழே */
+#chat > * {
+  margin-bottom: 10px;
+}
+
+/* Input / Send area screen bottom */
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+button {
+  touch-action: manipulation;
+}
+
+/* Mobile screen */
+@media (max-width: 600px) {
+  #chat {
+    height: calc(100vh - 160px);
+    padding: 10px;
+  }
+}
+</style>
+
+<script>
+/* ===== Q&A AUTO SCROLL ===== */
+(function () {
+  const qaChat = document.getElementById("chat");
+
+  if (!qaChat) return;
+
+  function scrollQA() {
+    qaChat.scrollTo({
+      top: qaChat.scrollHeight,
+      behavior: "smooth"
+    });
+  }
+
+  // புதிய Q&A வந்தவுடன் கீழே
+  const observer = new MutationObserver(function () {
+    scrollQA();
+  });
+
+  observer.observe(qaChat, {
+    childList: true,
+    subtree: true
+  });
+
+  // Page load
+  setTimeout(scrollQA, 300);
+})();
+</script>
+
+
+<style>
+/* 🇮🇳 Tamil Font Size */
+body,
+#chat,
+textarea,
+button {
+  font-family: "Noto Sans Tamil", "Nirmala UI", sans-serif;
+}
+
+/* Q&A Tamil text */
+#chat {
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+/* User question */
+#chat .user,
+#chat .question {
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+/* AI answer */
+#chat .bot,
+#chat .answer,
+#chat .reply {
+  font-size: 18px;
+  line-height: 1.75;
+}
+
+/* Question box */
+textarea {
+  font-size: 18px !important;
+  line-height: 1.6;
+}
+
+/* Send button */
+button {
+  font-size: 17px;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  #chat {
+    font-size: 18px;
+  }
+
+  textarea {
+    font-size: 18px !important;
+  }
+}
+</style>
+
+
+<style>
+/* 🇮🇳 SASIKUMAR AI — Tamil readability */
+#chat {
+  font-family: "Noto Sans Tamil", "Nirmala UI", sans-serif !important;
+  font-size: 19px !important;
+  line-height: 1.8 !important;
+  letter-spacing: 0.1px;
+}
+
+#chat p,
+#chat div,
+#chat span {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+/* User Q&A */
+#chat strong {
+  font-weight: 700;
+}
+
+/* Question box */
+textarea {
+  font-family: "Noto Sans Tamil", "Nirmala UI", sans-serif !important;
+  font-size: 19px !important;
+  line-height: 1.7 !important;
+  padding: 12px !important;
+}
+
+/* Send */
+button {
+  font-family: "Noto Sans Tamil", "Nirmala UI", sans-serif !important;
+  font-size: 18px !important;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  #chat {
+    font-size: 19px !important;
+  }
+
+  textarea {
+    font-size: 19px !important;
+  }
+}
+</style>
+

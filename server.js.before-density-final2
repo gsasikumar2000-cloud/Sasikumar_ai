@@ -1,0 +1,181 @@
+require("dotenv").config();
+
+const express = require("express");
+const path = require("path");
+
+const app = express();
+const PORT = 3000;
+
+app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
+
+let geminiClient;
+
+async function askGemini(message) {
+  if (!geminiClient) {
+    const { GoogleGenAI } = await import("@google/genai");
+    geminiClient = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  }
+
+  const response = await geminiClient.interactions.create({
+    model: "gemini-3.8-flash",
+    input: message
+  });
+
+  return response.output_text || "Gemini response கிடைக்கவில்லை.";
+}
+
+function localGoldAnswer(message) {
+  const q = String(message || "").toLowerCase().trim();
+
+  // GOLD DENSITY
+  if (
+    q.includes("density") ||
+    q.includes("அடர்த்தி") ||
+    q.includes("specific gravity")
+  ) {
+    if (
+      q.includes("22k") ||
+      q.includes("22ct") ||
+      q.includes("22 carat") ||
+      q.includes("22 காரட்")
+    ) {
+      return "22K / 916 Gold density பொதுவாக சுமார் 17.5–17.8 g/cm³.";
+    }
+
+    if (
+      q.includes("24k") ||
+      q.includes("24ct") ||
+      q.includes("24 carat") ||
+      q.includes("24 காரட்")
+    ) {
+      return "24K pure gold density சுமார் 19.3 g/cm³.";
+    }
+
+    if (
+      q.includes("21k") ||
+      q.includes("21ct") ||
+      q.includes("21 carat") ||
+      q.includes("21 காரட்")
+    ) {
+      return "21K gold density பொதுவாக சுமார் 16.8–17.3 g/cm³.";
+    }
+
+    if (
+      q.includes("18k") ||
+      q.includes("18ct") ||
+      q.includes("18 carat") ||
+      q.includes("18 காரட்")
+    ) {
+      return "18K gold density பொதுவாக சுமார் 15.2–15.9 g/cm³.";
+    }
+  }
+
+  // 22K
+  if (
+    q.includes("22k") ||
+    q.includes("22ct") ||
+    q.includes("22 carat") ||
+    q.includes("22 காரட்")
+  ) {
+    return "22K / 22CT தங்கம் பொதுவாக 91.6% தூய தங்கத்தை குறிக்கும். 916 என்பது 22K gold-ன் fineness குறியீடு.";
+  }
+
+  // 21K
+  if (
+    q.includes("21k") ||
+    q.includes("21ct") ||
+    q.includes("21 carat") ||
+    q.includes("21 காரட்")
+  ) {
+    return "21K / 21CT தங்கத்தில் தூய தங்கம் சுமார் 87.5% இருக்கும். இதன் fineness சுமார் 875.";
+  }
+
+  // 20K
+  if (
+    q.includes("20k") ||
+    q.includes("20ct") ||
+    q.includes("20 carat") ||
+    q.includes("20 காரட்")
+  ) {
+    return "20K / 20CT தங்கத்தில் தூய தங்கம் சுமார் 83.3% இருக்கும். இதன் fineness சுமார் 833.";
+  }
+
+  // 19K
+  if (
+    q.includes("19k") ||
+    q.includes("19ct") ||
+    q.includes("19 carat") ||
+    q.includes("19 காரட்")
+  ) {
+    return "19K / 19CT தங்கத்தில் தூய தங்கம் சுமார் 79.2% இருக்கும். இதன் fineness சுமார் 792.";
+  }
+
+  // 18K
+  if (
+    q.includes("18k") ||
+    q.includes("18ct") ||
+    q.includes("18 carat") ||
+    q.includes("18 காரட்")
+  ) {
+    return "18K / 18CT தங்கத்தில் தூய தங்கம் 75% இருக்கும். இதன் fineness 750.";
+  }
+
+  // 24K
+  if (
+    q.includes("24k") ||
+    q.includes("24ct") ||
+    q.includes("24 carat") ||
+    q.includes("24 காரட்")
+  ) {
+    return "24K தங்கம் மிக உயர்ந்த purity grade ஆகும். பொதுவாக 99.9% purity என்று குறிப்பிடப்படுகிறது.";
+  }
+
+  // Hallmark
+  if (q.includes("hallmark") || q.includes("916")) {
+    return "Hallmark 916 என்பது 22K gold-ன் fineness குறியீடு. 916 = 91.6% gold.";
+  }
+
+  return null;
+}
+
+app.post("/api/chat", async (req, res) => {
+  try {
+    const message = String(req.body?.message || "").trim();
+
+    if (!message) {
+      return res.status(400).json({
+        error: "Message is required"
+      });
+    }
+
+    const localAnswer = localGoldAnswer(message);
+
+    if (localAnswer) {
+      return res.json({
+        reply: localAnswer,
+      source: "gemini"
+      });
+    }
+
+    return res.json({
+      reply: await askGemini(message),
+      source: "gemini"
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      error: String(error?.message || "Server error").includes("429") ? "🤖 Gemini AI quota தற்போது முடிந்துள்ளது. சிறிது நேரம் கழித்து மீண்டும் கேளுங்கள்.\n\n🤖 Gemini AI quota is temporarily exceeded. Please try again shortly." : (error?.message || "Server error")
+    });
+  }
+});
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`SASIKUMAR AI running at http://localhost:${PORT}`);
+});

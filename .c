@@ -1,0 +1,1 @@
+GEMINI_API_KEY=Sasikumar_AI_GEMINI_KEY
