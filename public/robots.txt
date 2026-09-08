@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sasikumar-ai-culp.onrender.com/sitemap.xml
