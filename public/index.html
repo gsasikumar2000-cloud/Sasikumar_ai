@@ -414,6 +414,7 @@ body.dark .loan-result{
     <button onclick="nationalNews()">📰<span>State News</span><small>State / District</small></button>
     <button onclick="goldCalculator()">🧮<span>Gold Calculator</span><small>Quick Calculate</small></button>
 <button onclick="goldLoanDashboard()">💰<span>Gold Loan</span><small>Appraiser Dashboard</small></button>
+<button onclick="bankingServices()">🏦<span>Banking Services</span><small>Loan • Customer • Status</small></button>
 
     <button onclick="goldExpert()">🔬<span>Gold Expert</span><small>Appraiser Tools</small></button>
     <button onclick="goldPractical()">⚖️<span>Practical Test</span><small>Density Test</small></button><button onclick="goldReport()">📋<span>Appraisal Report</span><small>Print / PDF</small></button>
@@ -994,6 +995,122 @@ function calculateGoldLoan(){
    "</b>";
 }
 
+function bankingServices(){
+ const old=document.getElementById("bankingServiceMessage");
+ if(old) old.remove();
+
+ const box=document.createElement("div");
+ box.id="bankingServiceMessage";
+ box.className="msg ai";
+
+ box.innerHTML=`
+ <div class="loan-box">
+  <h3>🏦 BANKING SERVICES</h3>
+  <div class="loan-grid">
+   <label>🏦 Bank / Nidhi Type
+    <select id="bankType">
+     <option value="">Select</option>
+     <option>Bank</option>
+     <option>Small Finance Bank</option>
+     <option>Co-operative Bank</option>
+     <option>Nidhi</option>
+     <option>NBFC</option>
+    </select>
+   </label>
+
+   <label>💳 Type of Loan
+    <select id="bankLoanType">
+     <option value="">Select</option>
+     <option>Gold Loan</option>
+     <option>Personal Loan</option>
+     <option>Business Loan</option>
+     <option>Vehicle Loan</option>
+     <option>Other</option>
+    </select>
+   </label>
+
+   <label>👤 Customer Name
+    <input id="bankCustomerName" type="text" placeholder="Customer Name">
+   </label>
+
+   <label>📱 Mobile Number
+    <input id="bankMobile" type="tel" maxlength="10" placeholder="10 digit mobile">
+   </label>
+
+   <label>🌐 State
+    <select id="bankState">
+     <option>Tamil Nadu</option>
+     <option>Other State</option>
+    </select>
+   </label>
+
+   <label>📍 District
+    <input id="bankDistrict" type="text" placeholder="District">
+   </label>
+
+   <label>📍 Taluk
+    <input id="bankTaluk" type="text" placeholder="Taluk">
+   </label>
+
+   <label>✅ Responsibilities
+    <select id="bankResponsibility">
+     <option value="">Select</option>
+     <option>YES</option>
+     <option>NO</option>
+    </select>
+   </label>
+  </div>
+
+  <button class="loan-calc" type="button" onclick="submitBankingService()">
+   📤 SUBMIT / FORWARD
+  </button>
+
+  <div id="bankingResult" class="loan-result">
+   Customer details உள்ளிட்டு Submit செய்யுங்கள்.
+  </div>
+ </div>`;
+
+ chat.appendChild(box);
+ bottomChat();
+}
+
+function submitBankingService(){
+ const name=document.getElementById("bankCustomerName").value.trim();
+ const mobile=document.getElementById("bankMobile").value.trim();
+
+ if(!name){
+  alert("⚠️ Customer Name உள்ளிடுங்கள்.");
+  return;
+ }
+
+ if(!/^[0-9]{10}$/.test(mobile)){
+  alert("⚠️ சரியான 10 digit Mobile Number உள்ளிடுங்கள்.");
+  return;
+ }
+
+ const application={
+  id:"BANK-"+Date.now(),
+  bankType:document.getElementById("bankType").value,
+  loanType:document.getElementById("bankLoanType").value,
+  name:name,
+  mobile:mobile,
+  state:document.getElementById("bankState").value,
+  district:document.getElementById("bankDistrict").value,
+  taluk:document.getElementById("bankTaluk").value,
+  responsibility:document.getElementById("bankResponsibility").value,
+  submittedAt:Date.now(),
+  status:"SUBMITTED"
+ };
+
+ localStorage.setItem("bankingServiceApplication",JSON.stringify(application));
+
+ document.getElementById("bankingResult").innerHTML=
+ "✅ <b>Application Submitted</b><br><br>"+
+ "🆔 Application ID: <b>"+application.id+"</b><br>"+
+ "👤 Customer: <b>"+name+"</b><br>"+
+ "📌 Status: <b>SUBMITTED</b><br><br>"+
+ "⏱️ 72-Hour Tracking Started";
+}
 function goldKaratTool(){
  const box=document.createElement("div");
  box.className="msg ai";
