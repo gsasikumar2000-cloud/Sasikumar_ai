@@ -313,3 +313,88 @@ app.listen(PORT,()=>{
   console.log("🪙 Gold AI: ACTIVE");
   console.log("================================");
 });
+
+async function sendWhatsAppMessage(message) {
+  const token = process.env.WHATSAPP_TOKEN;
+  const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+  const to = process.env.WHATSAPP_TO_NUMBER;
+
+  if (!token || !phoneNumberId || !to) {
+    console.log("WhatsApp variables missing");
+    return false;
+  }
+
+  const url =
+    `https://graph.facebook.com/v23.0/${phoneNumberId}/messages`;
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      messaging_product: "whatsapp",
+      to: to,
+      type: "text",
+      text: {
+        body: message
+      }
+    })
+  });
+
+  const result = await response.json();
+  console.log("WhatsApp response:", result);
+
+  return response.ok;
+}
+
+
+app.post("/api/banking-test", express.json(), async (req, res) => {
+  const {
+    bankType,
+    loanType,
+    customerName,
+    mobile,
+    loanAmount
+  } = req.body;
+
+  if (!customerName || !mobile) {
+    return res.status(400).json({
+      ok: false,
+      reply: "⚠️ Customer Name மற்றும் Mobile Number தேவை."
+    });
+  }
+
+  const message =
+`🏦 NEW BANKING REQUEST
+
+👤 Customer: ${customerName}
+📱 Mobile: ${mobile}
+🏦 Bank: ${bankType || "-"}
+💳 Loan: ${loanType || "-"}
+💰 Amount: ₹${loanAmount || "-"}
+
+🤖 SASIKUMAR AI`;
+
+  const whatsappSent = await sendWhatsAppMessage(message);
+
+  console.log("🏦 Banking request:", req.body);
+
+  res.json({
+    ok: true,
+    whatsapp: whatsappSent,
+    reply:
+      "✅ Banking request received successfully!\n\n" +
+      "👤 Customer: " + customerName + "\n" +
+      "📱 Mobile: " + mobile + "\n" +
+      "🏦 Bank: " + (bankType || "-") + "\n" +
+      "💳 Loan: " + (loanType || "-") + "\n" +
+      "💰 Amount: ₹" + (loanAmount || "-") +
+      (whatsappSent
+        ? "\n\n📲 WhatsApp notification sent."
+        : "\n\n⚠️ WhatsApp API not configured yet.")
+  });
+});
+
+
