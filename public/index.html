@@ -719,9 +719,9 @@ async function nationalNews(){
   const box=document.createElement("div");
 
   box.innerHTML=
-    "📰 <b>State News</b><br><br>"+
+    "📰 <b>District News Live</b><br><br>"+
     "🌐 State: "+
-    '<select id="newsState" onchange="loadNewsDistricts()" style="padding:6px;border-radius:6px;">'+
+    '<select id="newsState" onchange="loadNewsDistricts()" style="padding:8px;border-radius:8px;">'+
     '<option value="TN">Tamil Nadu</option>'+
     '<option value="KL">Kerala</option>'+
     '<option value="KA">Karnataka</option>'+
@@ -734,24 +734,46 @@ async function nationalNews(){
     '<option value="UP">Uttar Pradesh</option>'+
     '</select><br><br>'+
     "📍 District: "+
-    '<select id="newsDistrict" style="padding:6px;border-radius:6px;"></select><br><br>'+
-    '<button onclick="searchStateNews()" style="padding:8px 14px;border-radius:8px;">🔎 Search State News</button>';
+    '<select id="newsDistrict" style="padding:8px;border-radius:8px;"></select><br><br>'+
+    '<button onclick="searchStateNews()" style="padding:9px 16px;border-radius:8px;">🔎 Search District News</button>'+
+    '<div id="newsResult" style="margin-top:15px;white-space:pre-wrap;line-height:1.6;"></div>';
 
   loading.appendChild(box);
   chat.appendChild(loading);
   bottomChat();
 
-  loadNewsDistricts();
+  window.loadNewsDistricts=function(){
+
+    const state=document.getElementById("newsState").value;
+    const select=document.getElementById("newsDistrict");
+
+    const districts={
+      TN:["All Districts","Ariyalur","Chengalpattu","Chennai","Coimbatore","Cuddalore","Dharmapuri","Dindigul","Erode","Kallakurichi","Kancheepuram","Karur","Krishnagiri","Madurai","Mayiladuthurai","Nagapattinam","Namakkal","Perambalur","Pudukkottai","Ramanathapuram","Ranipet","Salem","Sivaganga","Tenkasi","Thanjavur","Theni","Thoothukudi","Tiruchirappalli","Tirunelveli","Tirupathur","Tiruppur","Tiruvallur","Tiruvannamalai","Tiruvarur","Vellore","Viluppuram","Virudhunagar"],
+      KL:["All Districts","Alappuzha","Ernakulam","Idukki","Kannur","Kasaragod","Kollam","Kottayam","Kozhikode","Malappuram","Palakkad","Pathanamthitta","Thiruvananthapuram","Thrissur","Wayanad"],
+      KA:["All Districts","Bagalkot","Ballari","Bengaluru Rural","Bengaluru Urban","Belagavi","Bidar","Chamarajanagar","Chikkaballapur","Chikkamagaluru","Chitradurga","Dakshina Kannada","Davanagere","Dharwad","Gadag","Hassan","Haveri","Kalaburagi","Kodagu","Kolar","Koppal","Mandya","Mysuru","Raichur","Ramanagara","Shivamogga","Tumakuru","Udupi","Uttara Kannada","Vijayapura","Yadgir"],
+      AP:["All Districts","Anakapalli","Anantapur","Bapatla","Chittoor","East Godavari","Eluru","Guntur","Kakinada","Krishna","Kurnool","Nandyal","NTR","Palnadu","Prakasam","Srikakulam","Tirupati","Visakhapatnam","Vizianagaram","West Godavari","YSR Kadapa"],
+      TS:["All Districts","Adilabad","Hyderabad","Karimnagar","Khammam","Nalgonda","Nizamabad","Rangareddy","Sangareddy","Warangal"],
+      MH:["All Districts","Ahmednagar","Akola","Amravati","Aurangabad","Beed","Bhandara","Buldhana","Chandrapur","Dhule","Gadchiroli","Gondia","Jalgaon","Jalna","Kolhapur","Latur","Mumbai City","Mumbai Suburban","Nagpur","Nanded","Nashik","Palghar","Parbhani","Pune","Raigad","Ratnagiri","Sangli","Satara","Solapur","Thane","Wardha","Washim","Yavatmal"],
+      GJ:["All Districts","Ahmedabad","Amreli","Anand","Banaskantha","Bharuch","Bhavnagar","Gandhinagar","Jamnagar","Junagadh","Kheda","Kutch","Mehsana","Navsari","Patan","Rajkot","Surat","Surendranagar","Vadodara","Valsad"],
+      RJ:["All Districts","Ajmer","Alwar","Banswara","Barmer","Bharatpur","Bhilwara","Bikaner","Chittorgarh","Churu","Dausa","Dungarpur","Jaipur","Jaisalmer","Jalore","Jhalawar","Jhunjhunu","Jodhpur","Kota","Nagaur","Pali","Rajsamand","Sawai Madhopur","Sikar","Sirohi","Tonk","Udaipur"],
+      WB:["All Districts","Alipurduar","Bankura","Birbhum","Cooch Behar","Darjeeling","Hooghly","Howrah","Jalpaiguri","Jhargram","Kolkata","Maldah","Murshidabad","Nadia","North 24 Parganas","South 24 Parganas","Paschim Medinipur","Purba Medinipur"],
+      UP:["All Districts","Agra","Aligarh","Ayodhya","Azamgarh","Bareilly","Bijnor","Bulandshahr","Etawah","Farrukhabad","Fatehpur","Ghaziabad","Gorakhpur","Jhansi","Kanpur Nagar","Lucknow","Mathura","Meerut","Moradabad","Muzaffarnagar","Prayagraj","Rampur","Saharanpur","Sitapur","Varanasi"]
+    };
+
+    const list=districts[state]||["All Districts"];
+
+    select.innerHTML=list.map(x=>'<option value="'+x+'">'+x+'</option>').join("");
+  };
 
   window.searchStateNews=async function(){
 
     const state=document.getElementById("newsState").value;
     const district=document.getElementById("newsDistrict").value;
+    const result=document.getElementById("newsResult");
 
-    loading.innerText="📰 State News தேடுகிறது...";
+    result.innerText="📰 "+district+" news தேடுகிறது...";
 
     try{
-
       const r=await fetch(
         "/api/state-news?state="+
         encodeURIComponent(state)+
@@ -769,57 +791,23 @@ async function nationalNews(){
         .filter(Boolean)
         .slice(0,10);
 
-      loading.innerText=
-        "🤖 📰 "+d.state+" News\n\n"+
+      result.innerText=
+        "🤖 📰 "+d.state+" - "+d.district+" News\n\n"+
         lines.join("\n");
 
     }catch(e){
-
       console.error(e);
-
-      loading.innerText=
-        "❌ State News தற்போது கிடைக்கவில்லை.\n\n"+
+      result.innerText=
+        "❌ News தற்போது கிடைக்கவில்லை.\n\n"+
         "சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.";
     }
 
     bottomChat();
   };
 
-  window.loadNewsDistricts=function(){
-
-    const state=document.getElementById("newsState").value;
-    const select=document.getElementById("newsDistrict");
-
-    const districts={
-
-      TN:[
-        "All Districts","Ariyalur","Chengalpattu","Chennai",
-        "Coimbatore","Cuddalore","Dharmapuri","Dindigul","Erode",
-        "Kallakurichi","Kancheepuram","Karur","Krishnagiri","Madurai",
-        "Mayiladuthurai","Nagapattinam","Namakkal","Perambalur",
-        "Pudukkottai","Ramanathapuram","Ranipet","Salem","Sivaganga",
-        "Tenkasi","Thanjavur","Theni","Thoothukudi","Tiruchirappalli",
-        "Tirunelveli","Tirupathur","Tiruppur","Tiruvallur",
-        "Tiruvannamalai","Tiruvarur","Vellore","Viluppuram","Virudhunagar"
-      ],
-
-      KL:[
-        "All Districts","Alappuzha","Ernakulam","Idukki","Kannur",
-        "Kasaragod","Kollam","Kottayam","Kozhikode","Malappuram",
-        "Palakkad","Pathanamthitta","Thiruvananthapuram","Thrissur",
-        "Wayanad"
-      ]
-
-    };
-
-    const list=districts[state]||["All Districts"];
-
-    select.innerHTML=list
-      .map(x=>'<option value="'+x+'">'+x+'</option>')
-      .join("");
-  };
-
+  loadNewsDistricts();
 }
+
 async function liveGoldRate(){
 
   const loading=document.createElement("div");
