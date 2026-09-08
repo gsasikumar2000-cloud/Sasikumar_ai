@@ -301,19 +301,6 @@ app.get("/",(req,res)=>{
   res.sendFile(path.join(__dirname,"public","index.html"));
 });
 
-app.listen(PORT,()=>{
-  console.log("");
-  console.log("================================");
-  console.log("🤖 SASIKUMAR AI");
-  console.log("================================");
-  console.log("✅ Server running");
-  console.log("🌐 http://localhost:"+PORT);
-  console.log(process.env.GEMINI_API_KEY?"🤖 Gemini: READY":"⚠️ Gemini: MISSING");
-  console.log(process.env.TAVILY_API_KEY?"🌐 Tavily: READY":"⚠️ Tavily: MISSING");
-  console.log("🪙 Gold AI: ACTIVE");
-  console.log("================================");
-});
-
 async function sendWhatsAppMessage(message) {
   const token = process.env.WHATSAPP_TOKEN;
   const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
@@ -350,14 +337,9 @@ async function sendWhatsAppMessage(message) {
 }
 
 
+
 app.post("/api/banking-test", express.json(), async (req, res) => {
-  const {
-    bankType,
-    loanType,
-    customerName,
-    mobile,
-    loanAmount
-  } = req.body;
+  const { bankType, loanType, customerName, mobile, loanAmount } = req.body;
 
   if (!customerName || !mobile) {
     return res.status(400).json({
@@ -397,4 +379,8 @@ app.post("/api/banking-test", express.json(), async (req, res) => {
   });
 });
 
+app.listen(PORT,()=>{
+  console.log("🤖 SASIKUMAR AI");
+  console.log("✅ Server running on port " + PORT);
+});
 
