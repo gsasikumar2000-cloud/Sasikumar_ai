@@ -467,7 +467,6 @@ function escapeHtml(text){
 
 function goldExpert(){
   const box=document.createElement("div");
- box.id="goldLoanDashboardMessage";
   box.className="msg ai";
 
   box.innerHTML=`
@@ -719,7 +718,6 @@ async function nationalNews(){
   loading.className="msg ai";
 
   const box=document.createElement("div");
- box.id="goldLoanDashboardMessage";
 
   box.innerHTML=
     "📰 <b>District News Live</b><br><br>"+
@@ -904,11 +902,10 @@ window.addEventListener("load",()=>{
 });
 
 function goldLoanDashboard(){
-
  const oldDashboard=document.getElementById("goldLoanDashboardMessage");
  if(oldDashboard) oldDashboard.remove();
+
  const box=document.createElement("div");
- box.id="goldLoanDashboardMessage";
  box.className="msg ai";
 
  box.innerHTML=`
@@ -999,7 +996,6 @@ function calculateGoldLoan(){
 
 function goldKaratTool(){
  const box=document.createElement("div");
- box.id="goldLoanDashboardMessage";
  box.className="msg ai";
  box.innerHTML=`
  <div class="report-box">
@@ -1048,7 +1044,6 @@ function calculateGoldKarat(){
 
 function goldStoneTest(){
  const box=document.createElement("div");
- box.id="goldLoanDashboardMessage";
  box.className="msg ai";
  box.innerHTML=`
  <div class="report-box">
@@ -1077,7 +1072,6 @@ function goldStoneTest(){
 
 function goldRiskTool(){
  const box=document.createElement("div");
- box.id="goldLoanDashboardMessage";
  box.className="msg ai";
  box.innerHTML=`
  <div class="report-box">
@@ -1116,7 +1110,6 @@ function calculateGoldRisk(){
 function goldPractical(){
 
  const box=document.createElement("div");
- box.id="goldLoanDashboardMessage";
  box.className="msg ai";
 
  box.innerHTML=`
@@ -1205,7 +1198,6 @@ function calculateGoldPractical(){
 function goldReport(){
 
  const box=document.createElement("div");
- box.id="goldLoanDashboardMessage";
  box.className="msg ai";
 
  const id=Date.now();
