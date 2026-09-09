@@ -133,20 +133,73 @@ function isGoldRateIntent(message){
 }
 
 async function getLiveGoldRate(){
-  const rate24=15666;
-  const rate22=14360;
-  const rate20=13055;
-  const rate19=12404;
-  const rate18=12130;
+  try{
+    if(!process.env.TAVILY_API_KEY)
+      throw new Error("TAVILY_API_KEY missing");
 
-  return {
-    rate24, rate22, rate20, rate19, rate18,
-    rate24_8g:rate24*8,
-    rate22_8g:rate22*8,
-    rate20_8g:rate20*8,
-    rate19_8g:rate19*8,
-    rate18_8g:rate18*8
-  };
+    const tvly=tavily({
+      apiKey:process.env.TAVILY_API_KEY
+    });
+
+    const result=await tvly.search(
+      "Chennai Tamil Nadu gold rate today 24K 22K 916 18K price per gram",
+      {
+        search_depth:"basic",
+        max_results:5,
+        include_answer:true
+      }
+    );
+
+    const text=[
+      result.answer || "",
+      ...(result.results || []).map(r=>r.content || "")
+    ].join(" ");
+
+    const clean=text.replace(/,/g,"");
+
+    function findRate(patterns){
+      for(const p of patterns){
+        const m=clean.match(p);
+        if(m) return Number(m[1]);
+      }
+      return 0;
+    }
+
+    const rate24=findRate([
+      /24K[^0-9]{0,100}(?:₹|Rs\.?|INR)?\s*(\d{4,6})/i,
+      /24\s*carat[^0-9]{0,100}(?:₹|Rs\.?|INR)?\s*(\d{4,6})/i
+    ]);
+
+    const rate22=findRate([
+      /22K[^0-9]{0,100}(?:₹|Rs\.?|INR)?\s*(\d{4,6})/i,
+      /916[^0-9]{0,100}(?:₹|Rs\.?|INR)?\s*(\d{4,6})/i,
+      /22\s*carat[^0-9]{0,100}(?:₹|Rs\.?|INR)?\s*(\d{4,6})/i
+    ]);
+
+    const rate18=findRate([
+      /18K[^0-9]{0,100}(?:₹|Rs\.?|INR)?\s*(\d{4,6})/i,
+      /18\s*carat[^0-9]{0,100}(?:₹|Rs\.?|INR)?\s*(\d{4,6})/i
+    ]);
+
+    if(!rate24 || !rate22)
+      throw new Error("Live gold rate parsing failed");
+
+    const rate20=Math.round(rate22*20/22);
+    const rate19=Math.round(rate22*19/22);
+
+    return {
+      rate24,rate22,rate20,rate19,rate18,
+      rate24_8g:rate24*8,
+      rate22_8g:rate22*8,
+      rate20_8g:rate20*8,
+      rate19_8g:rate19*8,
+      rate18_8g:rate18*8
+    };
+
+  }catch(e){
+    console.error("Live Gold Rate Error:",e.message);
+    return null;
+  }
 }
 
 function formatGoldRateAnswer(g){
@@ -173,7 +226,6 @@ app.post("/api/chat",async(req,res)=>{
     });
 
   console.log("👤 Question:",message);
-
   if(isGoldRateIntent(message)){
     try{
       const live=await getLiveGoldRate();
