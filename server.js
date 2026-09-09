@@ -142,53 +142,65 @@ async function getLiveGoldRate(){
     });
 
     const result=await tvly.search(
-      "Chennai Tamil Nadu gold rate today 24K 22K 916 18K price per gram",
+      "Chennai Tamil Nadu gold price today 24K 22K 916 18K rupees per gram",
       {
-        search_depth:"basic",
-        max_results:5,
+        search_depth:"advanced",
+        max_results:8,
         include_answer:true
       }
     );
 
     const text=[
       result.answer || "",
-      ...(result.results || []).map(r=>r.content || "")
+      ...(result.results || []).map(r =>
+        (r.title || "")+" "+(r.content || "")
+      )
     ].join(" ");
 
-    const clean=text.replace(/,/g,"");
+    const clean=text.replace(/,/g," ");
 
-    function findRate(patterns){
-      for(const p of patterns){
-        const m=clean.match(p);
+    function findRate(labelPatterns){
+      for(const label of labelPatterns){
+
+        let m=clean.match(
+          new RegExp(label+"[^₹0-9]{0,120}(?:₹|Rs\\.?|INR)?\\s*(\\d{4,6})","i")
+        );
+        if(m) return Number(m[1]);
+
+        m=clean.match(
+          new RegExp("(?:₹|Rs\\.?|INR)?\\s*(\\d{4,6})[^₹0-9]{0,80}"+label,"i")
+        );
         if(m) return Number(m[1]);
       }
       return 0;
     }
 
     const rate24=findRate([
-      /24K[^0-9]{0,100}(?:₹|Rs\.?|INR)?\s*(\d{4,6})/i,
-      /24\s*carat[^0-9]{0,100}(?:₹|Rs\.?|INR)?\s*(\d{4,6})/i
+      "24K","24 K","24-carat","24 carat","24ct"
     ]);
 
     const rate22=findRate([
-      /22K[^0-9]{0,100}(?:₹|Rs\.?|INR)?\s*(\d{4,6})/i,
-      /916[^0-9]{0,100}(?:₹|Rs\.?|INR)?\s*(\d{4,6})/i,
-      /22\s*carat[^0-9]{0,100}(?:₹|Rs\.?|INR)?\s*(\d{4,6})/i
+      "22K","22 K","916","22-carat","22 carat","22ct"
     ]);
 
     const rate18=findRate([
-      /18K[^0-9]{0,100}(?:₹|Rs\.?|INR)?\s*(\d{4,6})/i,
-      /18\s*carat[^0-9]{0,100}(?:₹|Rs\.?|INR)?\s*(\d{4,6})/i
+      "18K","18 K","18-carat","18 carat","18ct"
     ]);
 
-    if(!rate24 || !rate22)
+    if(!rate24 || !rate22){
+      console.error("Tavily Gold Text:",text.slice(0,3000));
       throw new Error("Live gold rate parsing failed");
+    }
 
     const rate20=Math.round(rate22*20/22);
     const rate19=Math.round(rate22*19/22);
 
     return {
-      rate24,rate22,rate20,rate19,rate18,
+      rate24,
+      rate22,
+      rate20,
+      rate19,
+      rate18,
       rate24_8g:rate24*8,
       rate22_8g:rate22*8,
       rate20_8g:rate20*8,
