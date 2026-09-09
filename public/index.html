@@ -872,6 +872,11 @@ async function liveGoldRate(){
   bottomChat();
 }
 
+// SASIKUMAR AI - Automatic Gold Rate Refresh
+setInterval(() => {
+  liveGoldRate();
+}, 30 * 60 * 1000);
+
 function goldCalculator(){
 
  const r=prompt("🪙 22K / 916 rate per gram:");
