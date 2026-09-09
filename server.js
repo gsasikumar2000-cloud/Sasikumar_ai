@@ -355,29 +355,89 @@ app.get("/api/state-news",async(req,res)=>{
 
 app.get("/api/gold-rate",async(req,res)=>{
   try{
-    const response=await fetch("https://www.goodreturns.in/gold-rates/chennai.html");
-    const html=await response.text();
-    const getRate=(label)=>{
-      const m=html.match(new RegExp(label+"[^₹]*₹([0-9,]+)"));
-      return m?Number(m[1].replace(/,/g,"")):0;
+    if(!process.env.TAVILY_API_KEY)
+      throw new Error("TAVILY_API_KEY missing");
+
+    const client=tavily({apiKey:process.env.TAVILY_API_KEY});
+
+    const result=await client.search(
+      "Chennai gold rate today 9 September 2026 24K 22K 18K per gram",
+      {
+        searchDepth:"advanced",
+        maxResults:10
+      }
+    );
+
+    const sources=result.results||[];
+
+    function getRate(text,karat){
+      const patterns=[
+        new RegExp(karat+"K\\s*[^₹\\d]{0,80}₹\\s*([0-9,]+(?:\\.\\d+)?)","i"),
+        new RegExp(karat+"K[^0-9]{0,100}([0-9]{2},?[0-9]{3}(?:\\.[0-9]+)?)","i")
+      ];
+
+      for(const re of patterns){
+        const m=text.match(re);
+        if(m){
+          const n=Number(m[1].replace(/,/g,""));
+          if(n>=9000 && n<=25000) return n;
+        }
+      }
+
+      return 0;
+    }
+
+    let selected=null;
+
+    for(const item of sources){
+      const text=(item.title||"")+"\\n"+(item.content||"");
+
+      const r24=getRate(text,24);
+      const r22=getRate(text,22);
+      const r18=getRate(text,18);
+
+      if(r24 && r22 && r18){
+        selected={
+          r24,
+          r22,
+          r18,
+          source:item.title||item.url||"Tavily"
+        };
+        break;
+      }
+    }
+
+    if(!selected)
+      throw new Error("Could not parse 24K, 22K and 18K rates");
+
+    const rates={
+      "24K":selected.r24,
+      "22K":selected.r22,
+      "20K":Math.round(selected.r22*20/22),
+      "19K":Math.round(selected.r22*19/22),
+      "18K":selected.r18
     };
-    const r24=getRate("24K Gold");
-    const r22=getRate("22K Gold");
-    const r18=getRate("18K Gold");
-    if(!r24||!r22||!r18) throw new Error("Rate parsing failed");
-    const r={
-      "24K":r24,
-      "22K":r22,
-      "20K":Math.round(r22*20/22),
-      "19K":Math.round(r22*19/22),
-      "18K":r18
-    };
-    res.json({ok:true,date:new Date().toLocaleDateString("en-GB"),rates:r,rates8g:Object.fromEntries(Object.entries(r).map(([k,v])=>[k,v*8])),source:"Goodreturns Chennai"});
+
+    res.json({
+      ok:true,
+      date:new Date().toLocaleDateString("en-GB"),
+      rates,
+      rates8g:Object.fromEntries(
+        Object.entries(rates).map(([k,v])=>[k,v*8])
+      ),
+      source:"Tavily • "+selected.source+" • SASIKUMAR AI"
+    });
+
   }catch(e){
     console.error("Gold Rate Error:",e.message);
-    res.status(503).json({ok:false,reply:"❌ Live Chennai Gold Rate unavailable"});
+
+    res.status(503).json({
+      ok:false,
+      reply:"❌ Live Chennai Gold Rate unavailable: "+e.message
+    });
   }
 });
+
 app.get("/api/status",(req,res)=>{
   res.json({app:"SASIKUMAR AI",gemini:process.env.GEMINI_API_KEY?"READY":"MISSING",tavily:process.env.TAVILY_API_KEY?"READY":"MISSING",port:PORT});
 });
