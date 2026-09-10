@@ -1381,5 +1381,188 @@ function updateLiveDateTime(){
 }
 document.addEventListener("DOMContentLoaded",()=>{updateLiveDateTime();setInterval(updateLiveDateTime,1000);});
 </script>
+
+<!-- SASIKUMAR_AI_ALL_JOBS_START -->
+<section id="allJobs" style="margin:20px 0;padding:16px;border-radius:16px;background:#111;color:#fff;">
+  <h2>💼 ALL JOBS</h2>
+  <p>Bank • Gold Loan • Gold Appraiser • Government • Private • IT • Factory • Retail • Fresher • Work From Home</p>
+
+  <button type="button" onclick="showEmployerJobForm()">👔 Employer Registration</button>
+  <button type="button" onclick="showLiveJobSearch()">🔴 Live Job Search</button>
+
+  <div id="employerJobForm" style="display:none;margin-top:15px;">
+    <h3>👔 Employer Job Registration</h3>
+
+    <input id="jobCompanyName" placeholder="Company / Shop Name" style="width:100%;margin:5px 0;padding:10px;">
+    <input id="jobTitle" placeholder="Job Title" style="width:100%;margin:5px 0;padding:10px;">
+
+    <select id="jobType" style="width:100%;margin:5px 0;padding:10px;">
+      <option value="">Job Type</option>
+      <option>Full Time</option>
+      <option>Part Time</option>
+      <option>Contract</option>
+      <option>Work From Home</option>
+    </select>
+
+    <input id="jobQualification" placeholder="Qualification" style="width:100%;margin:5px 0;padding:10px;">
+    <input id="jobExperience" placeholder="Experience" style="width:100%;margin:5px 0;padding:10px;">
+    <input id="jobVacancies" type="number" min="1" placeholder="Vacancies" style="width:100%;margin:5px 0;padding:10px;">
+    <input id="jobSalary" placeholder="Salary" style="width:100%;margin:5px 0;padding:10px;">
+    <input id="jobLocation" placeholder="District / Taluk / Location" style="width:100%;margin:5px 0;padding:10px;">
+    <input id="jobHours" placeholder="Working Hours" style="width:100%;margin:5px 0;padding:10px;">
+    <input id="jobMobile" type="tel" placeholder="Employer Mobile" style="width:100%;margin:5px 0;padding:10px;">
+    <input id="jobWhatsapp" type="tel" placeholder="WhatsApp Number" style="width:100%;margin:5px 0;padding:10px;">
+
+    <textarea id="jobDescription" placeholder="Job Details" rows="4" style="width:100%;margin:5px 0;padding:10px;"></textarea>
+
+    <button type="button" onclick="submitEmployerJob()">📤 Submit Job</button>
+    <div id="jobSubmitResult" style="margin-top:10px;"></div>
+  </div>
+
+  <div id="liveJobSearch" style="display:none;margin-top:15px;">
+    <h3>🔴 LIVE JOB SEARCH</h3>
+
+    <input id="jobSearchText"
+      placeholder="Search job / company / location..."
+      oninput="searchLiveJobs()"
+      style="width:100%;margin:5px 0;padding:10px;">
+
+    <div id="liveJobResults" style="margin-top:12px;"></div>
+  </div>
+</section>
+
+<script>
+(function(){
+
+  const KEY = "sasikumarEmployerJobs";
+
+  function getJobs(){
+    try {
+      return JSON.parse(localStorage.getItem(KEY) || "[]");
+    } catch(e) {
+      return [];
+    }
+  }
+
+  function saveJobs(jobs){
+    localStorage.setItem(KEY, JSON.stringify(jobs));
+  }
+
+  function esc(v){
+    return String(v || "")
+      .replace(/&/g,"&amp;")
+      .replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;")
+      .replace(/"/g,"&quot;")
+      .replace(/'/g,"&#039;");
+  }
+
+  window.showEmployerJobForm = function(){
+    document.getElementById("employerJobForm").style.display = "block";
+    document.getElementById("liveJobSearch").style.display = "none";
+    document.getElementById("employerJobForm").scrollIntoView({behavior:"smooth"});
+  };
+
+  window.showLiveJobSearch = function(){
+    document.getElementById("employerJobForm").style.display = "none";
+    document.getElementById("liveJobSearch").style.display = "block";
+    searchLiveJobs();
+    document.getElementById("liveJobSearch").scrollIntoView({behavior:"smooth"});
+  };
+
+  window.submitEmployerJob = function(){
+
+    const company = document.getElementById("jobCompanyName").value.trim();
+    const title = document.getElementById("jobTitle").value.trim();
+    const type = document.getElementById("jobType").value;
+    const location = document.getElementById("jobLocation").value.trim();
+    const mobile = document.getElementById("jobMobile").value.trim();
+
+    if(!company || !title || !type || !location || !mobile){
+      alert("Company, Job Title, Job Type, Location and Mobile are required.");
+      return;
+    }
+
+    const job = {
+      id: "JOB-" + Date.now(),
+      company: company,
+      title: title,
+      type: type,
+      qualification: document.getElementById("jobQualification").value.trim(),
+      experience: document.getElementById("jobExperience").value.trim(),
+      vacancies: document.getElementById("jobVacancies").value.trim(),
+      salary: document.getElementById("jobSalary").value.trim(),
+      location: location,
+      hours: document.getElementById("jobHours").value.trim(),
+      mobile: mobile,
+      whatsapp: document.getElementById("jobWhatsapp").value.trim(),
+      description: document.getElementById("jobDescription").value.trim(),
+      status: "PENDING",
+      postedDate: new Date().toISOString()
+    };
+
+    const jobs = getJobs();
+    jobs.push(job);
+    saveJobs(jobs);
+
+    document.getElementById("jobSubmitResult").innerHTML =
+      "<div style='padding:12px;border-radius:10px;background:#222;'>" +
+      "✅ Job submitted successfully<br>" +
+      "<b>Job ID:</b> " + esc(job.id) + "<br>" +
+      "<b>Status:</b> PENDING VERIFICATION" +
+      "</div>";
+  };
+
+  window.searchLiveJobs = function(){
+
+    const q = (document.getElementById("jobSearchText").value || "").toLowerCase().trim();
+    const results = document.getElementById("liveJobResults");
+
+    const jobs = getJobs().filter(j => j.status === "LIVE");
+
+    const filtered = jobs.filter(j => {
+      if(!q) return true;
+      return String(j.title || "").toLowerCase().includes(q) ||
+             String(j.company || "").toLowerCase().includes(q) ||
+             String(j.location || "").toLowerCase().includes(q);
+    });
+
+    if(!filtered.length){
+      results.innerHTML =
+        "<div style='padding:15px;border-radius:10px;background:#222;'>" +
+        "🔎 No verified LIVE jobs found." +
+        "</div>";
+      return;
+    }
+
+    results.innerHTML = filtered.map(j =>
+      "<div style='margin:10px 0;padding:14px;border-radius:12px;background:#222;'>" +
+      "<h3>💼 " + esc(j.title) + "</h3>" +
+      "<b>Company:</b> " + esc(j.company) + "<br>" +
+      "<b>Location:</b> " + esc(j.location) + "<br>" +
+      "<b>Job Type:</b> " + esc(j.type) + "<br>" +
+      "<b>Qualification:</b> " + esc(j.qualification) + "<br>" +
+      "<b>Experience:</b> " + esc(j.experience) + "<br>" +
+      "<b>Vacancies:</b> " + esc(j.vacancies) + "<br>" +
+      "<b>Salary:</b> " + esc(j.salary) + "<br>" +
+      "<p>" + esc(j.description) + "</p>" +
+      "<button type='button' onclick="applyLiveJob('" + esc(j.id) + "')">📩 Apply Now</button>" +
+      "</div>"
+    ).join("");
+  };
+
+  window.applyLiveJob = function(id){
+    const job = getJobs().find(j => j.id === id);
+    if(!job){
+      alert("Job not found.");
+      return;
+    }
+    alert("Application started\nJob ID: " + job.id + "\nJob: " + job.title);
+  };
+
+})();
+</script>
+<!-- SASIKUMAR_AI_ALL_JOBS_END -->
+
 </body>
 </html>
