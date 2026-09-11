@@ -433,7 +433,7 @@ app.get("/api/gold-rate",async(req,res)=>{
 
     res.status(503).json({
       ok:false,
-      reply:"❌ Live Chennai Gold Rate unavailable: "+e.message
+      reply:"❌ Live Thanjavur Gold Rate unavailable: "+e.message
     });
   }
 });
