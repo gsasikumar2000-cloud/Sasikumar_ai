@@ -8,6 +8,40 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json({limit:"1mb"}));
+app.post("/api/login", (req,res) => {
+  const { username, password } = req.body || {};
+
+  if (
+    username === process.env.ADMIN_USERNAME &&
+    password === process.env.ADMIN_PASSWORD
+  ) {
+    return res.json({
+      ok: true,
+      role: "admin",
+      username,
+      message: "Admin login successful"
+    });
+  }
+
+  if (
+    username === process.env.USER_USERNAME &&
+    password === process.env.USER_PASSWORD
+  ) {
+    return res.json({
+      ok: true,
+      role: "user",
+      username,
+      message: "User login successful"
+    });
+  }
+
+  return res.status(401).json({
+    ok: false,
+    message: "Invalid username or password"
+  });
+});
+
+
 app.use(express.static(path.join(__dirname,"public")));
 
 let geminiClient = null;
@@ -522,6 +556,11 @@ app.post("/api/banking-test", express.json(), async (req, res) => {
         ? "\n\n📲 WhatsApp notification sent."
         : "\n\n⚠️ WhatsApp API not configured yet.")
   });
+});
+
+
+app.get("/privacy-policy", (req, res) => {
+  res.sendFile(require("path").join(__dirname, "public", "privacy-policy.html"));
 });
 
 app.listen(PORT,()=>{
