@@ -1833,7 +1833,44 @@ z-index:99999;padding:20px;">
   </div>
 </div>
 
-</body>
-</html>
+<!-- SASIKUMAR AI SETTINGS / POLICY -->
+<style>
+#sasikumarSettingsBtn{position:fixed;right:12px;bottom:78px;z-index:9999;border:0;border-radius:50px;padding:10px 15px;background:#111;color:#fff;font-size:14px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.25);cursor:pointer}
+#sasikumarSettingsOverlay{display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.65);padding:20px;overflow-y:auto}
+#sasikumarSettingsPanel{max-width:520px;margin:40px auto;background:#fff;color:#111;border-radius:18px;padding:20px;box-shadow:0 10px 35px rgba(0,0,0,.35)}
+#sasikumarSettingsPanel h2{margin-top:0}
+.sasikumarPolicyItem{padding:12px;margin:8px 0;border-radius:10px;background:#f3f3f3}
+#sasikumarSettingsClose{float:right;border:0;background:#eee;border-radius:50%;width:34px;height:34px;font-size:18px;cursor:pointer}
+</style>
+<button id="sasikumarSettingsBtn" type="button">⚙️ Settings</button>
+<div id="sasikumarSettingsOverlay">
+<div id="sasikumarSettingsPanel">
+<button id="sasikumarSettingsClose" type="button">×</button>
+<h2>⚙️ SASIKUMAR AI Settings</h2>
+<p>Website Policy &amp; Security Information</p>
+<div class="sasikumarPolicyItem">🔒 Privacy Policy</div>
+<div class="sasikumarPolicyItem">📜 Terms &amp; Conditions</div>
+<div class="sasikumarPolicyItem">⚠️ Disclaimer</div>
+<div class="sasikumarPolicyItem">🛡️ Data &amp; Security</div>
+<div class="sasikumarPolicyItem">📞 Contact / Grievance</div>
+<div class="sasikumarPolicyItem">🔗 Third-party Services</div>
+<div class="sasikumarPolicyItem">📱 Mobile Web + APK</div>
+<div class="sasikumarPolicyItem">🔎 Google Search / SEO</div>
+<div class="sasikumarPolicyItem">🔐 HTTPS / Website Security</div>
+<p style="margin-top:18px;font-size:13px">SASIKUMAR AI • Tamil + English • Gold • General Q&amp;A • Web Search</p>
+</div>
+</div>
+<script>
+(function(){
+const btn=document.getElementById("sasikumarSettingsBtn");
+const overlay=document.getElementById("sasikumarSettingsOverlay");
+const close=document.getElementById("sasikumarSettingsClose");
+if(!btn||!overlay||!close)return;
+btn.addEventListener("click",()=>overlay.style.display="block");
+close.addEventListener("click",()=>overlay.style.display="none");
+overlay.addEventListener("click",e=>{if(e.target===overlay)overlay.style.display="none"});
+})();
+</script>
+<!-- END SASIKUMAR AI SETTINGS / POLICY -->
 </body>
 </html>
