@@ -489,6 +489,9 @@ async function sasikumarLogin() {
     document.getElementById("sasikumarLoginScreen").style.display = "none";
   }
 })();
+function technologyMenu(){
+  addMessage("💻 TECHNOLOGY\n\n🤖 AI & ChatGPT\n📱 Mobile / Android\n💻 Computer / Software\n🌐 Internet / Websites\n🔐 Cyber Safety\n🆕 Technology News\n🛠️ Tech Troubleshooting","ai");
+}
 </script>
 <div id="adminControlPanel" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.75);padding:20px;overflow:auto;">
 <div style="max-width:500px;margin:30px auto;background:#fff;border-radius:18px;padding:20px;color:#111;">
@@ -548,7 +551,9 @@ function showAdminPanel(){
     const enabled=localStorage.getItem(key)!=="off";
     const row=document.createElement("div");
     row.style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #ddd";
-    row.innerHTML="<b>"+label+"</b><button onclick=\"toggleAdminButton(+fn+,this)\" style=\"padding:7px 12px;border:0;border-radius:8px;cursor:pointer\">"+(enabled?"ON":"OFF")+"</button>";
+    row.innerHTML = "<b>"+label+"</b><button class=\"adminToggleBtn\" style=\"padding:7px 12px;border:0;border-radius:8px;cursor:pointer\">"+(enabled?"ON":"OFF")+"</button>";
+    const toggleBtn = row.querySelector(".adminToggleBtn");
+    toggleBtn.onclick = function(){ toggleAdminButton(fn,this); };
     list.appendChild(row);
     applyAdminButton(fn,enabled);
   });
@@ -596,6 +601,7 @@ function closeAdminControl(){
     <button onclick="goldExpert()">🔬<span>Gold Expert</span><small>Appraiser Tools</small></button>
     <button onclick="goldPractical()">⚖️<span>Practical Test</span><small>Density Test</small></button><button onclick="goldReport()">📋<span>Appraisal Report</span><small>Print / PDF</small></button>
     <button onclick="startVoice()">🎤<span>Voice Input</span><small>Tamil Voice</small></button>
+    <button onclick="technologyMenu()">💻<span>Technology</span><small>AI • Android • Internet</small></button>
   </div>
 </div>
 
