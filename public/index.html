@@ -490,7 +490,29 @@ async function sasikumarLogin() {
   }
 })();
 function technologyMenu(){
-  addMessage("💻 TECHNOLOGY\n\n🤖 AI & ChatGPT\n📱 Mobile / Android\n💻 Computer / Software\n🌐 Internet / Websites\n🔐 Cyber Safety\n🆕 Technology News\n🛠️ Tech Troubleshooting","ai");
+  const chatBox=document.getElementById("chat");
+  if(!chatBox) return;
+
+  const loading=document.createElement("div");
+  loading.className="msg ai";
+
+  const box=document.createElement("div");
+  box.style.whiteSpace="pre-wrap";
+  box.textContent=[
+    "💻 TECHNOLOGY",
+    "",
+    "🤖 AI & ChatGPT",
+    "📱 Mobile / Android",
+    "💻 Computer / Software",
+    "🌐 Internet / Websites",
+    "🔐 Cyber Safety",
+    "🆕 Technology News",
+    "🛠️ Tech Troubleshooting"
+  ].join("\n");
+
+  loading.appendChild(box);
+  chatBox.appendChild(loading);
+  chatBox.scrollTop=chatBox.scrollHeight;
 }
 </script>
 <div id="adminControlPanel" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.75);padding:20px;overflow:auto;">
@@ -512,6 +534,7 @@ const adminButtonSettings = [
   ["goldPractical","⚖️ Practical Test"],
   ["goldReport","📋 Appraisal Report"],
   ["startVoice","🎤 Voice Input"],
+  ["technologyMenu","💻 Technology"],
   ["copyChat","📋 Copy"],
   ["shareChat","📤 Share"],
   ["stopAI","⏹ Stop"],
@@ -1875,6 +1898,39 @@ if(!btn||!overlay||!close)return;
 btn.addEventListener("click",()=>overlay.style.display="block");
 close.addEventListener("click",()=>overlay.style.display="none");
 overlay.addEventListener("click",e=>{if(e.target===overlay)overlay.style.display="none"});
+})();
+</script>
+<script>
+(function(){
+  const items=document.querySelectorAll(".sasikumarPolicyItem");
+
+  const info=[
+    ["🔒 Privacy Policy","SASIKUMAR AI respects user privacy. Personal information should not be shared unnecessarily."],
+    ["📜 Terms & Conditions","Use SASIKUMAR AI responsibly. Information provided by the AI should be verified before important decisions."],
+    ["⚠️ Disclaimer","AI answers are for general information. Gold appraisal, financial and other important decisions should be verified by a qualified professional."],
+    ["🛡️ Data & Security","Keep passwords, OTPs, bank details and other sensitive information private. Do not share confidential information in chat."],
+    ["📞 Contact / Grievance","For support or grievance related questions, use the contact details provided by SASIKUMAR AI."],
+    ["🔗 Third-party Services","Some features may use external services such as AI, web search or hosting providers."],
+    ["📱 Mobile Web + APK","SASIKUMAR AI is designed for mobile web use and may also be packaged as an Android application."],
+    ["🔎 Google Search / SEO","SASIKUMAR AI includes website metadata and search-engine-friendly content to help search engines discover the website."],
+    ["🔐 HTTPS / Website Security","Use the public HTTPS website for secure browser communication. Never enter sensitive credentials on an untrusted page."]
+  ];
+
+  items.forEach((item,i)=>{
+    item.style.cursor="pointer";
+    item.addEventListener("click",()=>{
+      const old=document.getElementById("sasikumarPolicyInfo");
+      if(old) old.remove();
+
+      const box=document.createElement("div");
+      box.id="sasikumarPolicyInfo";
+      box.style.cssText="margin-top:12px;padding:14px;border-radius:12px;background:#eef5ff;border:1px solid #ccdfff;line-height:1.6";
+
+      box.innerHTML="<b>"+info[i][0]+"</b><br><span>"+info[i][1]+"</span>";
+
+      item.parentNode.insertBefore(box,item.nextSibling);
+    });
+  });
 })();
 </script>
 <!-- END SASIKUMAR AI SETTINGS / POLICY -->
