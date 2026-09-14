@@ -527,7 +527,6 @@ function technologyMenu(){
 const adminButtonSettings = [
   ["liveGoldRate","🪙 Gold Rate"],
   ["nationalNews","📰 State News"],
-  ["goldCalculator","🧮 Gold Calculator"],
   ["goldLoanDashboard","💰 Gold Loan"],
   ["bankingServices","🏦 Banking Services"],
   ["goldExpert","🔬 Gold Expert"],
@@ -615,16 +614,18 @@ function closeAdminControl(){
   <div class="dash-sub">Smart Assistant • Gold • News • Voice</div>
 
   <div class="dash-grid">
-    <button onclick="liveGoldRate()">🪙<span>Gold Rate</span><small>Live Chennai</small></button>
+    <button onclick="liveGoldRate()">🪙<span>Gold Rate</span><small>Live Thanjavur</small></button>
     <button onclick="nationalNews()">📰<span>State News</span><small>State / District</small></button>
-    <button onclick="goldCalculator()">🧮<span>Gold Calculator</span><small>Quick Calculate</small></button>
-<button onclick="goldLoanDashboard()">💰<span>Gold Loan</span><small>Appraiser Dashboard</small></button>
+
 <button onclick="bankingServices()">🏦<span>Banking Services</span><small>Loan • Customer • Status</small></button>
 
     <button onclick="goldExpert()">🔬<span>Gold Expert</span><small>Appraiser Tools</small></button>
+    <button onclick="loanCalculations()">🧮<span>Loan Calculations</span><small>RD • FD • GL • HP • EMI</small></button>
     <button onclick="goldPractical()">⚖️<span>Practical Test</span><small>Density Test</small></button><button onclick="goldReport()">📋<span>Appraisal Report</span><small>Print / PDF</small></button>
     <button onclick="startVoice()">🎤<span>Voice Input</span><small>Tamil Voice</small></button>
     <button onclick="technologyMenu()">💻<span>Technology</span><small>AI • Android • Internet</small></button>
+  </div>
+  <div id="loanCalculationResult" style="margin:15px 0;padding:15px;border-radius:14px;background:#151515;"></div>
   </div>
 </div>
 
@@ -634,8 +635,6 @@ function closeAdminControl(){
 <button onclick="stopAI()">⏹ நிறுத்து</button>
 <button onclick="copyChat()">📋 நகல்</button>
 <button onclick="shareChat()">📤 பகிர்</button>
-<button onclick="goldCalculator()">🪙 தங்க கணக்கு</button>
-<button onclick="liveGoldRate()">🪙 Live Gold Rate</button>
 <button onclick="nationalNews()">📰 State News</button>
 <button class="luxury-toggle" onclick="toggleDark()">🌙 Dark</button><button onclick="clearChat()">🧹 அழி</button>
 <button onclick="topChat()">⬆️</button>
@@ -1027,7 +1026,7 @@ async function liveGoldRate(){
     chat.appendChild(loading);
   }
 
-  loading.innerText="🤖 Chennai Live Gold Rate தேடுகிறது...";
+  loading.innerText="🤖 Thanjavur Live Gold Rate தேடுகிறது...";
   bottomChat();
 
   try{
@@ -1089,36 +1088,6 @@ setInterval(() => {
   liveGoldRate();
 }, 30 * 60 * 1000);
 
-function goldCalculator(){
-
- const r=prompt("🪙 22K / 916 rate per gram:");
-
- if(r===null||r===""||isNaN(r))return;
-
- const w=prompt("⚖️ Weight in gram:");
-
- if(w===null||w===""||isNaN(w))return;
-
- const rate=Number(r);
- const weight=Number(w);
-
- alert(
-  "🪙 SASIKUMAR AI – Gold Calculator\n\n"+
-  "22K Rate: ₹"+rate.toLocaleString("en-IN")+
-  " / gram\n\n"+
-  "Weight: "+weight+" gram\n\n"+
-  "💰 Total: ₹"+
-  (rate*weight).toLocaleString("en-IN")+
-  "\n\n"+
-  "8g / 1 Sovereign: ₹"+
-  (rate*8).toLocaleString("en-IN")
- );
-}
-
-window.addEventListener("load",()=>{
- setTimeout(bottomChat,300);
-});
-
 function goldLoanDashboard(){
  const oldDashboard=document.getElementById("goldLoanDashboardMessage");
  if(oldDashboard) oldDashboard.remove();
@@ -1133,86 +1102,9 @@ function goldLoanDashboard(){
    <div class="loan-grid">
 
      <label>
-       ⚖️ Net Gold Weight (g)
-       <input id="loanWeight" type="number" step="0.001" placeholder="உதா: 8">
-     </label>
-
-     <label>
-       🪙 Karat
-       <select id="loanKarat">
-         <option value="24">24K</option>
-         <option value="23">23K</option>
-         <option value="22" selected>22K / 916</option>
-         <option value="21">21K</option>
-         <option value="20">20K</option>
-         <option value="18">18K</option>
-       </select>
-     </label>
-
-     <label>
-       💰 Market Rate / gram (₹)
-       <input id="loanRate" type="number" step="0.01" placeholder="உதா: 14000">
-     </label>
-
-     <label>
-       📊 LTV (%)
-       <input id="loanLtv" type="number" step="0.1" value="75">
-     </label>
-
-   </div>
-
-   <button class="loan-calc" onclick="calculateGoldLoan()">
-     🧮 Calculate Loan Value
-   </button>
-
-   <div id="loanResult" class="loan-result">
-     Values உள்ளிட்டு Calculate செய்யுங்கள்.
-   </div>
-
-   <div style="font-size:12px;margin-top:10px">
-     ⚠️ Indicative calculation only. Actual eligible loan amount depends
-     on lender policy, valuation rules, applicable LTV limits, stones,
-     deductions and other charges.
-   </div>
- </div>
- `;
-
- chat.appendChild(box);
- bottomChat();
-}
-
-function calculateGoldLoan(){
-
- const w=Number(document.getElementById("loanWeight").value);
- const k=Number(document.getElementById("loanKarat").value);
- const rate=Number(document.getElementById("loanRate").value);
- const ltv=Number(document.getElementById("loanLtv").value);
-
- const result=document.getElementById("loanResult");
-
- if(!w || w<=0 || !rate || rate<=0 || ltv<0){
-   result.innerText="⚠️ Weight, Rate, LTV values சரியாக உள்ளிடுங்கள்.";
-   return;
- }
-
- const purity=k/24;
- const fineGold=w*purity;
- const grossValue=w*rate;
- const indicativeLoan=grossValue*(ltv/100);
-
- result.innerHTML=
-   "🪙 Karat: <b>"+k+"K</b><br>"+
-   "📈 Purity: <b>"+(purity*100).toFixed(2)+"%</b><br>"+
-   "⚖️ Net Weight: <b>"+w.toFixed(3)+" g</b><br>"+
-   "✨ Fine Gold: <b>"+fineGold.toFixed(3)+" g</b><br>"+
-   "💰 Gold Value: <b>₹"+grossValue.toLocaleString("en-IN",{maximumFractionDigits:2})+"</b><br>"+
-   "📊 LTV: <b>"+ltv+"%</b><br>"+
-   "🏦 Indicative Loan Value: <b>₹"+
-   indicativeLoan.toLocaleString("en-IN",{maximumFractionDigits:2})+
-   "</b>";
-}
-
 function bankingServices(){
+  const chat=document.getElementById("chat");
+  if(!chat){alert("⚠️ Chat area not found");return;}
  const old=document.getElementById("bankingServiceMessage");
  if(old) old.remove();
 
@@ -1220,7 +1112,6 @@ function bankingServices(){
  box.id="bankingServiceMessage";
  box.className="msg ai";
 
- box.innerHTML=`
  <div class="loan-box">
   <h3>🏦 BANKING SERVICES</h3>
   <div class="loan-grid">
@@ -1327,6 +1218,93 @@ function submitBankingService(){
  "👤 Customer: <b>"+name+"</b><br>"+
  "📌 Status: <b>SUBMITTED</b><br><br>"+
  "⏱️ 72-Hour Tracking Started";
+}
+
+function loanCalculations(){
+  const old=document.getElementById("loanCalculationMessage");
+  if(old) old.remove();
+
+  const box=document.createElement("div");
+  box.id="loanCalculationMessage";
+  box.className="msg ai";
+
+  box.innerHTML=`
+    <div class="loan-box">
+      <h3>🧮 LOAN CALCULATIONS</h3>
+
+      <label>📌 Calculator Type
+        <select id="loanCalcType">
+          <option value="emi">EMI Loan</option>
+          <option value="gold">Gold Loan</option>
+          <option value="personal">Personal Loan</option>
+          <option value="home">Home Loan</option>
+          <option value="interest">Simple Interest</option>
+          <option value="fd">FD Estimate</option>
+          <option value="rd">RD Estimate</option>
+        </select>
+      </label>
+
+      <label>💰 Amount / Principal
+        <input id="loanAmount" type="number" min="0" placeholder="Enter amount">
+      </label>
+
+      <label>📈 Annual Interest %
+        <input id="loanRate" type="number" min="0" step="0.01" placeholder="Interest rate">
+      </label>
+
+      <label>📅 Tenure (months)
+        <input id="loanMonths" type="number" min="1" placeholder="Months">
+      </label>
+
+      <button type="button" onclick="calculateLoan()">🧮 Calculate</button>
+
+      <div id="loanCalcResult" class="loan-result" style="margin-top:12px"></div>
+
+      <div style="margin-top:10px">
+        <small>ℹ️ Illustrative calculation only. Actual lender rates, fees and terms may differ.</small>
+      </div>
+    </div>
+  `;
+
+  const chat=document.getElementById("chat");
+  if(chat){
+    chat.appendChild(box);
+    setTimeout(bottomChat,300);
+  }
+}
+
+function calculateLoan(){
+  const amount=Number(document.getElementById("loanAmount").value);
+  const rate=Number(document.getElementById("loanRate").value);
+  const months=Number(document.getElementById("loanMonths").value);
+  const result=document.getElementById("loanCalcResult");
+
+  if(!amount || amount<=0 || rate<0 || !months || months<=0){
+    result.innerHTML="⚠️ Please enter valid Amount, Interest and Tenure.";
+    return;
+  }
+
+  const monthlyRate=rate/100/12;
+  let emi;
+
+  if(monthlyRate===0){
+    emi=amount/months;
+  }else{
+    emi=amount*monthlyRate*Math.pow(1+monthlyRate,months)/
+      (Math.pow(1+monthlyRate,months)-1);
+  }
+
+  const total=emi*months;
+  const interest=total-amount;
+
+  result.innerHTML=
+    "✅ <b>Calculation Result</b><br><br>"+
+    "💰 Principal: ₹"+amount.toFixed(2)+"<br>"+
+    "📈 Interest: "+rate.toFixed(2)+"%<br>"+
+    "📅 Tenure: "+months+" months<br><br>"+
+    "💳 <b>Monthly EMI: ₹"+emi.toFixed(2)+"</b><br>"+
+    "💵 Total Interest: ₹"+interest.toFixed(2)+"<br>"+
+    "💵 Total Payment: ₹"+total.toFixed(2);
 }
 function goldKaratTool(){
  const box=document.createElement("div");
@@ -1673,6 +1651,11 @@ document.addEventListener("DOMContentLoaded",()=>{updateLiveDateTime();setInterv
     <input id="jobWhatsapp" type="tel" placeholder="WhatsApp Number" style="width:100%;margin:5px 0;padding:10px;">
 
     <textarea id="jobDescription" placeholder="Job Details" rows="4" style="width:100%;margin:5px 0;padding:10px;"></textarea>
+    <textarea id="jobRequirements" placeholder="📋 New Job Requirements" rows="4" style="width:100%;margin:5px 0;padding:10px;"></textarea>
+    <input id="jobPosterCamera" type="file" accept="image/*" capture="environment" style="width:100%;margin:5px 0;padding:10px;">
+    <input id="jobPosterImage" type="file" accept="image/*" style="width:100%;margin:5px 0;padding:10px;">
+    <img id="jobPosterPreview" style="display:none;width:100%;max-width:420px;margin:10px auto;border-radius:12px;" alt="Job Poster Preview">
+    <textarea id="jobExtraMessage" placeholder="📰 Extra message / Newspaper-style new ad" rows="3" style="width:100%;margin:5px 0;padding:10px;"></textarea>
 
     <button type="button" onclick="submitEmployerJob()">📤 Submit Job</button>
     <div id="jobSubmitResult" style="margin-top:10px;"></div>
@@ -1729,6 +1712,24 @@ document.addEventListener("DOMContentLoaded",()=>{updateLiveDateTime();setInterv
     document.getElementById("liveJobSearch").scrollIntoView({behavior:"smooth"});
   };
 
+  function previewJobPoster(file){
+    if(!file) return;
+    const preview=document.getElementById("jobPosterPreview");
+    if(!preview) return;
+    const reader=new FileReader();
+    reader.onload=function(e){
+      preview.src=e.target.result;
+      preview.style.display="block";
+    };
+    reader.readAsDataURL(file);
+  }
+
+  document.addEventListener("change",function(e){
+    if(e.target && (e.target.id==="jobPosterCamera" || e.target.id==="jobPosterImage")){
+      previewJobPoster(e.target.files && e.target.files[0]);
+    }
+  });
+
   window.submitEmployerJob = function(){
 
     const company = document.getElementById("jobCompanyName").value.trim();
@@ -1756,9 +1757,39 @@ document.addEventListener("DOMContentLoaded",()=>{updateLiveDateTime();setInterv
       mobile: mobile,
       whatsapp: document.getElementById("jobWhatsapp").value.trim(),
       description: document.getElementById("jobDescription").value.trim(),
+      requirements: document.getElementById("jobRequirements").value.trim(),
+      extraMessage: document.getElementById("jobExtraMessage").value.trim(),
+      posterImage: "",
       status: "LIVE",
       postedDate: new Date().toISOString()
     };
+
+    const posterFile = (document.getElementById("jobPosterImage")?.files || [])[0] || (document.getElementById("jobPosterCamera")?.files || [])[0];
+
+    const saveJobNow = function(){
+      const jobs = getJobs();
+      jobs.push(job);
+      saveJobs(jobs);
+
+      document.getElementById("jobSubmitResult").innerHTML =
+        "<div style=\"padding:12px;border-radius:10px;background:#222;\">" +
+        "✅ Job submitted successfully<br>" +
+        "<b>Job ID:</b> " + esc(job.id) + "<br>" +
+        "<b>Status:</b> LIVE" +
+        "</div>";
+    };
+
+    if(posterFile){
+      const reader=new FileReader();
+      reader.onload=function(e){
+        job.posterImage=e.target.result;
+        saveJobNow();
+      };
+      reader.readAsDataURL(posterFile);
+    }else{
+      saveJobNow();
+    }
+    return;
 
     const jobs = getJobs();
     jobs.push(job);
@@ -1796,6 +1827,8 @@ document.addEventListener("DOMContentLoaded",()=>{updateLiveDateTime();setInterv
 
     results.innerHTML = filtered.map(j =>
       "<div style='margin:10px 0;padding:14px;border-radius:12px;background:#222;'>" +
+      (j.posterImage ? "<img src=\"" + j.posterImage + "\" style=\"width:100%;max-width:420px;border-radius:12px;margin-bottom:10px;\" alt=\"Job Poster\">" : "") +
+      (j.posterImage ? "<img src=\"" + j.posterImage + "\" style=\"width:100%;max-width:420px;border-radius:12px;margin-bottom:10px;\" alt=\"Job Poster\">" : "") +
       "<h3>💼 " + esc(j.title) + "</h3>" +
       "<b>Company:</b> " + esc(j.company) + "<br>" +
       "<b>Location:</b> " + esc(j.location) + "<br>" +
@@ -1805,6 +1838,8 @@ document.addEventListener("DOMContentLoaded",()=>{updateLiveDateTime();setInterv
       "<b>Vacancies:</b> " + esc(j.vacancies) + "<br>" +
       "<b>Salary:</b> " + esc(j.salary) + "<br>" +
       "<p>" + esc(j.description) + "</p>" +
+      (j.requirements ? "<div style=\"margin-top:10px;padding:10px;border-radius:10px;background:#333;\"><b>📋 REQUIREMENTS</b><br>" + esc(j.requirements) + "</div>" : "") +
+      (j.extraMessage ? "<div style=\"margin-top:10px;padding:10px;border-left:4px solid #d4af37;background:#333;\"><b>📰 NEW AD</b><br>" + esc(j.extraMessage) + "</div>" : "") +
       "<button type='button' onclick='applyLiveJob(&quot;" + esc(j.id) + "&quot;)'>📩 Apply Now</button>" +
       "</div>"
     ).join("");
@@ -1934,5 +1969,331 @@ overlay.addEventListener("click",e=>{if(e.target===overlay)overlay.style.display
 })();
 </script>
 <!-- END SASIKUMAR AI SETTINGS / POLICY -->
+
+<section id="educationContent" style="margin-top:20px;padding:15px;border-radius:14px;background:#111;color:white">
+  <h2 style="margin-top:0;color:#d4af37">🎓 EDUCATION CONTENT</h2>
+  <p>Select an education category</p>
+
+  <div style="display:grid;gap:10px">
+    <button onclick="openEducation('School Education')" style="padding:6px 10px;font-size:13px">🎓 Education</button>
+    <button onclick="openEducation('College / Higher Education')">📚 College / Higher Education</button>
+    <button onclick="openEducation('Computer Education')">💻 Computer Education</button>
+    <button onclick="openEducation('AI & Technology')">🤖 AI & Technology</button>
+    <button onclick="openEducation('Language Learning')">🗣️ Language Learning — Tamil / English</button>
+    <button onclick="openEducation('Maths & Logical Reasoning')">🧮 Maths & Logical Reasoning</button>
+    <button onclick="openEducation('Science')">🔬 Science</button>
+    <button onclick="openEducation('General Knowledge')">🌍 General Knowledge</button>
+    <button onclick="openEducation('Competitive Exam Preparation')">📝 Competitive Exam Preparation</button>
+    <button onclick="openEducation('Job & Career Skills')">💼 Job & Career Skills</button>
+    <button onclick="openEducation('Banking & Financial Education')">🏦 Banking & Financial Education</button>
+    <button onclick="openEducation('Gold / Jewellery Education')">💰 Gold / Jewellery Education</button>
+  </div>
+
+  <div id="educationResult" style="margin-top:15px"></div>
+</section>
+
+<script>
+
+function openEducation(category){
+  const box = document.getElementById("educationResult");
+
+  box.innerHTML = `
+    <div style="padding:15px;border-radius:12px;background:#1d1d1d">
+      <h3 style="color:#d4af37">📖 ${category}</h3>
+
+      <input id="educationTopic"
+        placeholder="Enter topic"
+        style="width:100%;padding:10px;box-sizing:border-box">
+
+      <br><br>
+
+      <button onclick="askEducation()">🤖 ASK / LEARN</button>
+
+      <div id="educationAnswer" style="margin-top:15px"></div>
+    </div>
+  `;
+}
+
+async function askEducation(){
+  const topic = document.getElementById("educationTopic");
+  const answer = document.getElementById("educationAnswer");
+
+  if(!topic || !topic.value.trim()){
+    alert("Please enter a topic");
+    return;
+  }
+
+  answer.innerHTML = "⏳ SASIKUMAR AI is preparing your lesson...";
+
+  try {
+    const category =
+      document.querySelector("#educationResult h3")?.innerText || "Education";
+
+    const message =
+      "Education Category: " + category +
+      "\nTopic: " + topic.value.trim() +
+      "\n\nExplain this topic clearly for learning. " +
+      "Give a simple explanation, examples, important points, " +
+      "and a few practice questions with answers.";
+
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: message
+      })
+    });
+
+    const data = await response.json();
+
+    if(!response.ok){
+      throw new Error(data.error || "AI request failed");
+    }
+
+    answer.innerHTML =
+      "<b>🤖 SASIKUMAR AI</b><br><br>" +
+      (data.reply || "No answer received.");
+
+  } catch(err) {
+    console.error(err);
+    answer.innerHTML =
+      "❌ Education AI error: " + err.message;
+  }
+}
+</script>
+
 </body>
 </html>
+
+<!-- SASIKUMAR AI - ALL JOBS MODEL -->
+<section id="allJobsNew" style="margin:18px 0;padding:16px;border-radius:16px;background:#111;color:#fff;border:1px solid #c9a227">
+
+<h2 style="margin-top:0;color:#d4af37">💼 ALL JOBS</h2>
+<p>Registration → Screening → 🟢 LIVE JOB</p>
+
+<div style="display:grid;gap:10px">
+
+<button onclick="showJobMode('form')">📝 1. Application Form Mode</button>
+<button onclick="showJobMode('camera')">📷 2. Camera Scanning Mode</button>
+<button onclick="showJobMode('upload')">📤 3. Upload Scanning Mode</button>
+<button onclick="showJobMode('message')">💬 4. Message Box Mode</button>
+
+</div>
+
+<div id="jobModeResult" style="margin-top:12px"></div>
+
+<div id="jobRegistration" style="display:none;margin-top:15px">
+
+<h3>📋 JOB REGISTRATION</h3>
+
+<input id="ajName" placeholder="1. Name" style="width:100%;padding:10px;margin:4px 0">
+<input id="ajCompany" placeholder="2. Company / Shop Name" style="width:100%;padding:10px;margin:4px 0">
+<input id="ajTitle" placeholder="3. Job Title" style="width:100%;padding:10px;margin:4px 0">
+<input id="ajType" placeholder="4. Job Type" style="width:100%;padding:10px;margin:4px 0">
+<input id="ajQualification" placeholder="5. Qualification" style="width:100%;padding:10px;margin:4px 0">
+<input id="ajExperience" placeholder="6. Experience" style="width:100%;padding:10px;margin:4px 0">
+<input id="ajVacancies" placeholder="7. Vacancies" style="width:100%;padding:10px;margin:4px 0">
+<input id="ajSalary" placeholder="8. Salary" style="width:100%;padding:10px;margin:4px 0">
+<input id="ajLocation" placeholder="9. Location" style="width:100%;padding:10px;margin:4px 0">
+<input id="ajMobile" placeholder="10. Mobile / WhatsApp" style="width:100%;padding:10px;margin:4px 0">
+
+<button onclick="submitAllJobs()" style="margin-top:10px;padding:12px;width:100%">
+✅ SUBMIT FOR SCREENING
+</button>
+
+</div>
+
+<div id="liveJobResult" style="margin-top:15px"></div>
+
+</section>
+
+<script>
+
+function showJobMode(mode){
+  const result = document.getElementById("jobModeResult");
+  const form = document.getElementById("jobRegistration");
+
+  form.style.display = "none";
+  result.innerHTML = "";
+
+  if(mode === "form"){
+    form.style.display = "block";
+    result.innerHTML =
+      "<b>📝 1. Application Form Mode</b><br>" +
+      "Enter job details → SEND → 🟢 LIVE JOB";
+  }
+
+  if(mode === "camera"){
+    result.innerHTML = `
+      <b>📷 2. Camera Scanning Mode</b><br>
+      Camera Scan → SEND → 🟢 LIVE JOB<br><br>
+      <input id="cameraJobFile" type="file" accept="image/*" capture="environment"
+        style="width:100%;padding:10px">
+      <button type="button" onclick="sendCameraJob()"
+        style="margin-top:10px;padding:12px;width:100%">
+        📤 SEND → LIVE JOB
+      </button>
+    `;
+  }
+
+  if(mode === "upload"){
+    result.innerHTML = `
+      <b>📤 3. Upload Scanning Mode</b><br>
+      Upload Scan → SEND → 🟢 LIVE JOB<br><br>
+      <input id="uploadJobFile" type="file" accept="image/*,.pdf"
+        style="width:100%;padding:10px">
+      <button type="button" onclick="sendUploadJob()"
+        style="margin-top:10px;padding:12px;width:100%">
+        📤 SEND → LIVE JOB
+      </button>
+    `;
+  }
+
+  if(mode === "message"){
+    result.innerHTML = `
+      <b>💬 4. Message Box Mode</b><br>
+      Message → SEND → 🟢 LIVE JOB<br><br>
+      <textarea id="jobMessage"
+        placeholder="Type job details..."
+        style="width:100%;min-height:100px;padding:10px"></textarea><br>
+      <button type="button" onclick="cutJobMessage()">✂️ Cut</button>
+      <button type="button" onclick="copyJobMessage()">📋 Copy</button>
+      <button type="button" onclick="sendMessageJob()">📤 SEND → LIVE JOB</button>
+      <button type="button" onclick="postJobMessage()">📮 POST</button>
+      <button type="button" onclick="replyJobMessage()">↩️ REPLY</button>
+    `;
+  }
+}
+
+function showLiveJob(data){
+  const live = document.getElementById("liveJobResult");
+  if(!live) return;
+
+  const id = data.id || ("JOB-" + Date.now());
+
+  live.innerHTML = `
+    <div style="margin-top:15px;padding:15px;border-radius:12px;background:#173d20;color:white">
+      🟢 <b>LIVE JOB</b><br><br>
+      <b>Job ID:</b> ${id}<br>
+      <b>Source:</b> ${data.source || "Job"}<br>
+      <div style="margin-top:8px">${data.text || ""}</div>
+    </div>
+  `;
+
+  const jobs = JSON.parse(localStorage.getItem("sasikumarEmployerJobs") || "[]");
+
+  jobs.push({
+    id:id,
+    source:data.source || "Job",
+    text:data.text || "",
+    status:"LIVE",
+    createdAt:new Date().toISOString()
+  });
+
+  localStorage.setItem("sasikumarEmployerJobs", JSON.stringify(jobs));
+}
+
+function sendCameraJob(){
+  const f = document.getElementById("cameraJobFile");
+  if(!f || !f.files.length){
+    alert("📷 Please capture/select a job document");
+    return;
+  }
+
+  showLiveJob({
+    source:"Camera Scan",
+    text:"📷 Camera scanned job document"
+  });
+}
+
+function sendUploadJob(){
+  const f = document.getElementById("uploadJobFile");
+  if(!f || !f.files.length){
+    alert("📤 Please select a job document");
+    return;
+  }
+
+  showLiveJob({
+    source:"Upload Scan",
+    text:"📤 Uploaded job document"
+  });
+}
+
+function sendMessageJob(){
+  const x = document.getElementById("jobMessage");
+
+  if(!x || !x.value.trim()){
+    alert("Please enter job details");
+    return;
+  }
+
+  showLiveJob({
+    source:"Message Box",
+    text:x.value.trim()
+  });
+}
+
+function cutJobMessage(){
+  const x = document.getElementById("jobMessage");
+  if(!x) return;
+  x.select();
+  document.execCommand("cut");
+}
+
+function copyJobMessage(){
+  const x = document.getElementById("jobMessage");
+  if(!x || !x.value.trim()) return;
+
+  navigator.clipboard.writeText(x.value.trim())
+    .then(() => alert("✅ Copied"));
+}
+
+function postJobMessage(){
+  sendMessageJob();
+}
+
+function replyJobMessage(){
+  alert("↩️ Reply mode ready");
+}
+
+function submitAllJobs(){
+
+  const data = {
+    name:document.getElementById("ajName").value.trim(),
+    company:document.getElementById("ajCompany").value.trim(),
+    title:document.getElementById("ajTitle").value.trim(),
+    type:document.getElementById("ajType").value.trim(),
+    qualification:document.getElementById("ajQualification").value.trim(),
+    experience:document.getElementById("ajExperience").value.trim(),
+    vacancies:document.getElementById("ajVacancies").value.trim(),
+    salary:document.getElementById("ajSalary").value.trim(),
+    location:document.getElementById("ajLocation").value.trim(),
+    mobile:document.getElementById("ajMobile").value.trim(),
+    status:"LIVE",
+    source:"Application Form",
+    createdAt:new Date().toISOString()
+  };
+
+  if(!data.name || !data.company || !data.title || !data.mobile){
+    alert("Please enter Name, Company, Job Title and Mobile");
+    return;
+  }
+
+  data.id = "JOB-" + Date.now();
+
+  showLiveJob({
+    id:data.id,
+    source:"Application Form",
+    text:
+      "👤 " + data.name +
+      "<br>🏢 " + data.company +
+      "<br>💼 " + data.title +
+      "<br>📍 " + data.location +
+      "<br>💰 " + data.salary +
+      "<br>📱 " + data.mobile
+  });
+}
+</script>
+
