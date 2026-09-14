@@ -154,7 +154,7 @@ function isGoldRateIntent(message){
     q.includes("gold price") ||
     q.includes("gold today") ||
     q.includes("tamil nadu gold") ||
-    q.includes("chennai gold") ||
+    q.includes("thanjavur gold") ||
     q.includes("22k gold") ||
     q.includes("24k gold") ||
     q.includes("916 gold") ||
@@ -176,7 +176,7 @@ async function getLiveGoldRate(){
     });
 
     const result=await tvly.search(
-      "Chennai Tamil Nadu gold price today 24K 22K 916 18K rupees per gram",
+      "Thanjavur Tamil Nadu gold price today 24K 22K 916 18K rupees per gram",
       {
         search_depth:"advanced",
         max_results:8,
@@ -251,7 +251,7 @@ async function getLiveGoldRate(){
 function formatGoldRateAnswer(g){
   if(!g) return null;
 
-  return "🪙 Chennai / Tamil Nadu Live Gold Rate\n\n"+
+  return "🪙 Thanjavur / Tamil Nadu Live Gold Rate\n\n"+
     "22K / 916: ₹"+(g.rate22||0).toLocaleString("en-IN")+" / gram\n"+
     "24K: ₹"+(g.rate24||0).toLocaleString("en-IN")+" / gram\n\n"+
     "⚖️ 22K / 916 — 8 gram: ₹"+(g.rate22_8g||0).toLocaleString("en-IN")+"\n"+
@@ -395,7 +395,7 @@ app.get("/api/gold-rate",async(req,res)=>{
     const client=tavily({apiKey:process.env.TAVILY_API_KEY});
 
     const result=await client.search(
-      "Chennai gold rate today 9 September 2026 24K 22K 18K per gram",
+      "Thanjavur gold rate today 9 September 2026 24K 22K 18K per gram",
       {
         searchDepth:"advanced",
         maxResults:10
