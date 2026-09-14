@@ -2068,186 +2068,332 @@ async function askEducation(){
 </html>
 
 <!-- SASIKUMAR AI - ALL JOBS MODEL -->
-<section id="allJobsNew" style="margin:18px 0;padding:16px;border-radius:16px;background:#111;color:#fff;border:1px solid #c9a227">
+<section id="allJobsNew" style="display:none;padding:20px;">
+  <h2>💼 ALL JOBS</h2>
 
-<h2 style="margin-top:0;color:#d4af37">💼 ALL JOBS</h2>
-<p>Registration → Screening → 🟢 LIVE JOB</p>
+  <p><b>Registration → 🟡 Screening → 🟢 LIVE JOB → 🔴 Expired</b></p>
 
-<div style="display:grid;gap:10px">
+  <div style="padding:12px;border:1px solid #ccc;border-radius:10px;margin-bottom:15px;">
+    ⚠️ <b>Job Disclaimer:</b><br>
+    Job information is employer-submitted. SASIKUMAR AI does not guarantee
+    employment, salary, vacancy, selection or employer authenticity.
+    Verify details independently before applying.
+  </div>
 
-<button onclick="showJobMode('form')">📝 1. Application Form Mode</button>
-<button onclick="showJobMode('camera')">📷 2. Camera Scanning Mode</button>
-<button onclick="showJobMode('upload')">📤 3. Upload Scanning Mode</button>
-<button onclick="showJobMode('message')">💬 4. Message Box Mode</button>
+  <div style="display:grid;gap:8px;">
+    <button onclick="showJobMode('form')">📝 1. Application Form Mode</button>
+    <button onclick="showJobMode('camera')">📷 2. Camera Scanning Mode</button>
+    <button onclick="showJobMode('upload')">📤 3. Upload Scanning Mode</button>
+    <button onclick="showJobMode('message')">💬 4. Message Box Mode</button>
+  </div>
 
-</div>
+  <div id="jobModeResult" style="margin-top:15px;"></div>
 
-<div id="jobModeResult" style="margin-top:12px"></div>
+  <div id="jobRegistration" style="display:none;margin-top:15px;">
+    <h3>📝 Employer Registration</h3>
 
-<div id="jobRegistration" style="display:none;margin-top:15px">
+    <input id="jobName" placeholder="Employer / Contact Name"
+      style="width:100%;margin:5px 0;padding:10px;">
 
-<h3>📋 JOB REGISTRATION</h3>
+    <input id="jobCompany" placeholder="Company / Shop"
+      style="width:100%;margin:5px 0;padding:10px;">
 
-<input id="ajName" placeholder="1. Name" style="width:100%;padding:10px;margin:4px 0">
-<input id="ajCompany" placeholder="2. Company / Shop Name" style="width:100%;padding:10px;margin:4px 0">
-<input id="ajTitle" placeholder="3. Job Title" style="width:100%;padding:10px;margin:4px 0">
-<input id="ajType" placeholder="4. Job Type" style="width:100%;padding:10px;margin:4px 0">
-<input id="ajQualification" placeholder="5. Qualification" style="width:100%;padding:10px;margin:4px 0">
-<input id="ajExperience" placeholder="6. Experience" style="width:100%;padding:10px;margin:4px 0">
-<input id="ajVacancies" placeholder="7. Vacancies" style="width:100%;padding:10px;margin:4px 0">
-<input id="ajSalary" placeholder="8. Salary" style="width:100%;padding:10px;margin:4px 0">
-<input id="ajLocation" placeholder="9. Location" style="width:100%;padding:10px;margin:4px 0">
-<input id="ajMobile" placeholder="10. Mobile / WhatsApp" style="width:100%;padding:10px;margin:4px 0">
+    <input id="jobTitle" placeholder="Job Title"
+      style="width:100%;margin:5px 0;padding:10px;">
 
-<button onclick="submitAllJobs()" style="margin-top:10px;padding:12px;width:100%">
-✅ SUBMIT FOR SCREENING
-</button>
+    <input id="jobType" placeholder="Job Type"
+      style="width:100%;margin:5px 0;padding:10px;">
 
-</div>
+    <input id="jobQualification" placeholder="Qualification"
+      style="width:100%;margin:5px 0;padding:10px;">
 
-<div id="liveJobResult" style="margin-top:15px"></div>
+    <input id="jobExperience" placeholder="Experience"
+      style="width:100%;margin:5px 0;padding:10px;">
 
+    <input id="jobVacancies" placeholder="Vacancies"
+      style="width:100%;margin:5px 0;padding:10px;">
+
+    <input id="jobSalary" placeholder="Salary"
+      style="width:100%;margin:5px 0;padding:10px;">
+
+    <input id="jobLocation" placeholder="District / Taluk / Location"
+      style="width:100%;margin:5px 0;padding:10px;">
+
+    <input id="jobMobile" type="tel" placeholder="Employer Mobile / WhatsApp"
+      style="width:100%;margin:5px 0;padding:10px;">
+
+    <button onclick="submitAllJobs()">📨 Submit for Screening</button>
+
+    <div id="jobSubmitResult" style="margin-top:10px;"></div>
+  </div>
+
+  <div id="jobCamera" style="display:none;margin-top:15px;">
+    <h3>📷 Camera Scanning Mode</h3>
+    <input id="jobCameraFile" type="file" accept="image/*" capture="environment">
+    <button onclick="sendCameraJob()">📨 Send for Screening</button>
+    <p>Camera input is received for review; this demo does not perform OCR.</p>
+  </div>
+
+  <div id="jobUpload" style="display:none;margin-top:15px;">
+    <h3>📤 Upload Scanning Mode</h3>
+    <input id="jobUploadFile" type="file" accept="image/*,.pdf">
+    <button onclick="sendUploadJob()">📨 Send for Screening</button>
+    <p>Uploaded document is received for review; this demo does not perform OCR.</p>
+  </div>
+
+  <div id="jobMessage" style="display:none;margin-top:15px;">
+    <h3>💬 Message Box Mode</h3>
+
+    <textarea id="jobMessageText"
+      placeholder="Type job registration details..."
+      style="width:100%;min-height:140px;padding:10px;"></textarea>
+
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
+      <button onclick="cutJobMessage()">✂️ Cut</button>
+      <button onclick="copyJobMessage()">📋 Copy</button>
+      <button onclick="postJobMessage()">📨 Post</button>
+      <button onclick="replyJobMessage()">↩️ Reply</button>
+    </div>
+
+    <div id="jobMessageResult" style="margin-top:10px;"></div>
+  </div>
+
+  <div style="margin-top:20px;">
+    <h3>🔎 Live Job Search</h3>
+    <input id="jobSearchBox" oninput="renderJobs()"
+      placeholder="Search company / job / location"
+      style="width:100%;padding:10px;">
+  </div>
+
+  <div id="liveJobResult" style="margin-top:15px;"></div>
 </section>
 
 <script>
-
-function showJobMode(mode){
-  const result = document.getElementById("jobModeResult");
-  const form = document.getElementById("jobRegistration");
-
-  form.style.display = "none";
-  result.innerHTML = "";
-
-  if(mode === "form"){
-    form.style.display = "block";
-    result.innerHTML =
-      "<b>📝 1. Application Form Mode</b><br>" +
-      "Enter job details → SEND → 🟢 LIVE JOB";
-  }
-
-  if(mode === "camera"){
-    result.innerHTML = `
-      <b>📷 2. Camera Scanning Mode</b><br>
-      Camera Scan → SEND → 🟢 LIVE JOB<br><br>
-      <input id="cameraJobFile" type="file" accept="image/*" capture="environment"
-        style="width:100%;padding:10px">
-      <button type="button" onclick="sendCameraJob()"
-        style="margin-top:10px;padding:12px;width:100%">
-        📤 SEND → LIVE JOB
-      </button>
-    `;
-  }
-
-  if(mode === "upload"){
-    result.innerHTML = `
-      <b>📤 3. Upload Scanning Mode</b><br>
-      Upload Scan → SEND → 🟢 LIVE JOB<br><br>
-      <input id="uploadJobFile" type="file" accept="image/*,.pdf"
-        style="width:100%;padding:10px">
-      <button type="button" onclick="sendUploadJob()"
-        style="margin-top:10px;padding:12px;width:100%">
-        📤 SEND → LIVE JOB
-      </button>
-    `;
-  }
-
-  if(mode === "message"){
-    result.innerHTML = `
-      <b>💬 4. Message Box Mode</b><br>
-      Message → SEND → 🟢 LIVE JOB<br><br>
-      <textarea id="jobMessage"
-        placeholder="Type job details..."
-        style="width:100%;min-height:100px;padding:10px"></textarea><br>
-      <button type="button" onclick="cutJobMessage()">✂️ Cut</button>
-      <button type="button" onclick="copyJobMessage()">📋 Copy</button>
-      <button type="button" onclick="sendMessageJob()">📤 SEND → LIVE JOB</button>
-      <button type="button" onclick="postJobMessage()">📮 POST</button>
-      <button type="button" onclick="replyJobMessage()">↩️ REPLY</button>
-    `;
+function getAllJobs(){
+  try {
+    return JSON.parse(localStorage.getItem('sasikumarEmployerJobs') || '[]');
+  } catch(e) {
+    return [];
   }
 }
 
-function showLiveJob(data){
-  const live = document.getElementById("liveJobResult");
-  if(!live) return;
+function saveAllJobs(jobs){
+  localStorage.setItem('sasikumarEmployerJobs', JSON.stringify(jobs));
+}
 
-  const id = data.id || ("JOB-" + Date.now());
+function showJobMode(mode){
+  const ids = ['jobRegistration','jobCamera','jobUpload','jobMessage'];
 
-  live.innerHTML = `
-    <div style="margin-top:15px;padding:15px;border-radius:12px;background:#173d20;color:white">
-      🟢 <b>LIVE JOB</b><br><br>
-      <b>Job ID:</b> ${id}<br>
-      <b>Source:</b> ${data.source || "Job"}<br>
-      <div style="margin-top:8px">${data.text || ""}</div>
-    </div>
-  `;
-
-  const jobs = JSON.parse(localStorage.getItem("sasikumarEmployerJobs") || "[]");
-
-  jobs.push({
-    id:id,
-    source:data.source || "Job",
-    text:data.text || "",
-    status:"LIVE",
-    createdAt:new Date().toISOString()
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.style.display = 'none';
   });
 
-  localStorage.setItem("sasikumarEmployerJobs", JSON.stringify(jobs));
+  const map = {
+    form:'jobRegistration',
+    camera:'jobCamera',
+    upload:'jobUpload',
+    message:'jobMessage'
+  };
+
+  if(map[mode]){
+    document.getElementById(map[mode]).style.display = 'block';
+  }
+
+  renderJobs();
+}
+
+function createJobId(){
+  return 'JOB-' + Date.now();
+}
+
+function submitAllJobs(){
+  const data = {
+    id:createJobId(),
+    name:(document.getElementById('jobName')?.value || '').trim(),
+    company:(document.getElementById('jobCompany')?.value || '').trim(),
+    title:(document.getElementById('jobTitle')?.value || '').trim(),
+    type:(document.getElementById('jobType')?.value || '').trim(),
+    qualification:(document.getElementById('jobQualification')?.value || '').trim(),
+    experience:(document.getElementById('jobExperience')?.value || '').trim(),
+    vacancies:(document.getElementById('jobVacancies')?.value || '').trim(),
+    salary:(document.getElementById('jobSalary')?.value || '').trim(),
+    location:(document.getElementById('jobLocation')?.value || '').trim(),
+    mobile:(document.getElementById('jobMobile')?.value || '').trim(),
+    status:'PENDING',
+    createdAt:new Date().toISOString(),
+    expiryAt:new Date(Date.now() + 30*24*60*60*1000).toISOString()
+  };
+
+  if(!data.company || !data.title || !data.location){
+    document.getElementById('jobSubmitResult').innerHTML =
+      '❌ Company, Job Title and Location are required.';
+    return;
+  }
+
+  const jobs = getAllJobs();
+  jobs.push(data);
+  saveAllJobs(jobs);
+
+  document.getElementById('jobSubmitResult').innerHTML =
+    '🟡 <b>JOB UNDER SCREENING</b><br>' +
+    'Registration ID: ' + data.id;
+
+  renderJobs();
+}
+
+function approveJob(id){
+  const jobs = getAllJobs();
+
+  const updated = jobs.map(job => {
+    if(job.id === id){
+      job.status = 'LIVE';
+      job.liveAt = new Date().toISOString();
+    }
+    return job;
+  });
+
+  saveAllJobs(updated);
+  renderJobs();
+}
+
+function checkExpiredJobs(){
+  const now = Date.now();
+  const jobs = getAllJobs();
+
+  let changed = false;
+
+  jobs.forEach(job => {
+    if(job.status === 'LIVE' &&
+       job.expiryAt &&
+       new Date(job.expiryAt).getTime() <= now){
+      job.status = 'EXPIRED';
+      changed = true;
+    }
+  });
+
+  if(changed) saveAllJobs(jobs);
+}
+
+function renderJobs(){
+  checkExpiredJobs();
+
+  const box = document.getElementById('liveJobResult');
+  if(!box) return;
+
+  const search =
+    (document.getElementById('jobSearchBox')?.value || '')
+      .trim().toLowerCase();
+
+  const jobs = getAllJobs();
+
+  const filtered = jobs.filter(job => {
+    const text = [
+      job.company,
+      job.title,
+      job.location,
+      job.qualification
+    ].join(' ').toLowerCase();
+
+    return !search || text.includes(search);
+  });
+
+  if(!filtered.length){
+    box.innerHTML = '<p>📭 No jobs found.</p>';
+    return;
+  }
+
+  box.innerHTML = filtered.map(job => {
+    const expiry = job.expiryAt
+      ? new Date(job.expiryAt).toLocaleDateString('en-IN')
+      : '-';
+
+    let action = '';
+
+    if(job.status === 'PENDING'){
+      action =
+        '<button onclick="approveJob(\'' + job.id + '\')">' +
+        '✅ Approve → LIVE JOB</button>';
+    }
+
+    return '<div style="border:1px solid #ccc;border-radius:10px;padding:12px;margin:10px 0;">' +
+      '<b>' + (job.company || 'Job Registration') + '</b><br>' +
+      (job.title || '') + '<br>' +
+      (job.location || '') + '<br>' +
+      'Qualification: ' + (job.qualification || '-') + '<br>' +
+      'Experience: ' + (job.experience || '-') + '<br>' +
+      'Salary: ' + (job.salary || '-') + '<br>' +
+      'Status: <b>' + job.status + '</b><br>' +
+      'Expiry: ' + expiry + '<br>' +
+      '<small>ID: ' + job.id + '</small><br>' +
+      action +
+      '</div>';
+  }).join('');
 }
 
 function sendCameraJob(){
-  const f = document.getElementById("cameraJobFile");
-  if(!f || !f.files.length){
-    alert("📷 Please capture/select a job document");
+  const file = document.getElementById('jobCameraFile')?.files?.[0];
+
+  if(!file){
+    alert('Please capture/select an image first.');
     return;
   }
 
-  showLiveJob({
-    source:"Camera Scan",
-    text:"📷 Camera scanned job document"
-  });
+  const data = {
+    id:createJobId(),
+    source:'CAMERA',
+    fileName:file.name,
+    status:'PENDING',
+    createdAt:new Date().toISOString(),
+    expiryAt:new Date(Date.now()+30*24*60*60*1000).toISOString()
+  };
+
+  const jobs = getAllJobs();
+  jobs.push(data);
+  saveAllJobs(jobs);
+
+  alert('🟡 Camera document received for screening.');
+  renderJobs();
 }
 
 function sendUploadJob(){
-  const f = document.getElementById("uploadJobFile");
-  if(!f || !f.files.length){
-    alert("📤 Please select a job document");
+  const file = document.getElementById('jobUploadFile')?.files?.[0];
+
+  if(!file){
+    alert('Please select a document first.');
     return;
   }
 
-  showLiveJob({
-    source:"Upload Scan",
-    text:"📤 Uploaded job document"
-  });
-}
+  const data = {
+    id:createJobId(),
+    source:'UPLOAD',
+    fileName:file.name,
+    status:'PENDING',
+    createdAt:new Date().toISOString(),
+    expiryAt:new Date(Date.now()+30*24*60*60*1000).toISOString()
+  };
 
-function sendMessageJob(){
-  const x = document.getElementById("jobMessage");
+  const jobs = getAllJobs();
+  jobs.push(data);
+  saveAllJobs(jobs);
 
-  if(!x || !x.value.trim()){
-    alert("Please enter job details");
-    return;
-  }
-
-  showLiveJob({
-    source:"Message Box",
-    text:x.value.trim()
-  });
+  alert('🟡 Upload received for screening.');
+  renderJobs();
 }
 
 function cutJobMessage(){
-  const x = document.getElementById("jobMessage");
-  if(!x) return;
-  x.select();
-  document.execCommand("cut");
+  const el = document.getElementById('jobMessageText');
+  if(!el) return;
+
+  el.focus();
+  document.execCommand('cut');
 }
 
 function copyJobMessage(){
-  const x = document.getElementById("jobMessage");
-  if(!x || !x.value.trim()) return;
+  const el = document.getElementById('jobMessageText');
+  if(!el) return;
 
-  navigator.clipboard.writeText(x.value.trim())
-    .then(() => alert("✅ Copied"));
+  navigator.clipboard?.writeText(el.value);
 }
 
 function postJobMessage(){
@@ -2255,45 +2401,43 @@ function postJobMessage(){
 }
 
 function replyJobMessage(){
-  alert("↩️ Reply mode ready");
+  const result = document.getElementById('jobMessageResult');
+
+  if(result){
+    result.innerHTML =
+      '↩️ Reply mode ready. Enter your response in the message box.';
+  }
 }
 
-function submitAllJobs(){
+function sendMessageJob(){
+  const text =
+    (document.getElementById('jobMessageText')?.value || '').trim();
 
-  const data = {
-    name:document.getElementById("ajName").value.trim(),
-    company:document.getElementById("ajCompany").value.trim(),
-    title:document.getElementById("ajTitle").value.trim(),
-    type:document.getElementById("ajType").value.trim(),
-    qualification:document.getElementById("ajQualification").value.trim(),
-    experience:document.getElementById("ajExperience").value.trim(),
-    vacancies:document.getElementById("ajVacancies").value.trim(),
-    salary:document.getElementById("ajSalary").value.trim(),
-    location:document.getElementById("ajLocation").value.trim(),
-    mobile:document.getElementById("ajMobile").value.trim(),
-    status:"LIVE",
-    source:"Application Form",
-    createdAt:new Date().toISOString()
-  };
-
-  if(!data.name || !data.company || !data.title || !data.mobile){
-    alert("Please enter Name, Company, Job Title and Mobile");
+  if(!text){
+    alert('Please enter job details.');
     return;
   }
 
-  data.id = "JOB-" + Date.now();
+  const data = {
+    id:createJobId(),
+    source:'MESSAGE',
+    message:text,
+    status:'PENDING',
+    createdAt:new Date().toISOString(),
+    expiryAt:new Date(Date.now()+30*24*60*60*1000).toISOString()
+  };
 
-  showLiveJob({
-    id:data.id,
-    source:"Application Form",
-    text:
-      "👤 " + data.name +
-      "<br>🏢 " + data.company +
-      "<br>💼 " + data.title +
-      "<br>📍 " + data.location +
-      "<br>💰 " + data.salary +
-      "<br>📱 " + data.mobile
-  });
+  const jobs = getAllJobs();
+  jobs.push(data);
+  saveAllJobs(jobs);
+
+  document.getElementById('jobMessageResult').innerHTML =
+    '🟡 Message submitted for screening.<br>ID: ' + data.id;
+
+  renderJobs();
 }
+
+setInterval(checkExpiredJobs, 60000);
+renderJobs();
 </script>
 
