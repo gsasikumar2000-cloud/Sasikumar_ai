@@ -617,7 +617,7 @@ function closeAdminControl(){
     <button onclick="liveGoldRate()">🪙<span>Gold Rate</span><small>Live Thanjavur</small></button>
     <button onclick="nationalNews()">📰<span>State News</span><small>State / District</small></button>
 
-<button onclick="bankingServices()">🏦<span>Banking Services</span><small>Loan • Customer • Status</small></button>
+<button id="bankingServicesBtn" type="button" onclick="bankingServices()">🏦<span>Banking Services</span><small>Loan • Customer • Status</small></button>
 
     <button onclick="goldExpert()">🔬<span>Gold Expert</span><small>Appraiser Tools</small></button>
     <button onclick="loanCalculations()">🧮<span>Loan Calculations</span><small>RD • FD • GL • HP • EMI</small></button>
@@ -1088,23 +1088,13 @@ setInterval(() => {
   liveGoldRate();
 }, 30 * 60 * 1000);
 
-function goldLoanDashboard(){
- const oldDashboard=document.getElementById("goldLoanDashboardMessage");
- if(oldDashboard) oldDashboard.remove();
-
- const box=document.createElement("div");
- box.className="msg ai";
-
- box.innerHTML=`
- <div class="loan-box">
-   <h3>💰 Gold Loan Appraiser Dashboard</h3>
-
-   <div class="loan-grid">
-
-     <label>
 function bankingServices(){
-  const chat=document.getElementById("chat");
-  if(!chat){alert("⚠️ Chat area not found");return;}
+ const chat=document.getElementById("chat");
+ if(!chat){
+  alert("⚠️ Chat area not found");
+  return;
+ }
+
  const old=document.getElementById("bankingServiceMessage");
  if(old) old.remove();
 
@@ -1112,9 +1102,12 @@ function bankingServices(){
  box.id="bankingServiceMessage";
  box.className="msg ai";
 
+ box.innerHTML=`
  <div class="loan-box">
   <h3>🏦 BANKING SERVICES</h3>
+
   <div class="loan-grid">
+
    <label>🏦 Bank / Nidhi Type
     <select id="bankType">
      <option value="">Select</option>
@@ -1142,7 +1135,7 @@ function bankingServices(){
    </label>
 
    <label>📱 Mobile Number
-    <input id="bankMobile" type="tel" maxlength="10" placeholder="10 digit mobile">
+    <input id="bankMobile" type="tel" maxlength="10" inputmode="numeric" placeholder="10 digit mobile">
    </label>
 
    <label>🌐 State
@@ -1167,6 +1160,11 @@ function bankingServices(){
      <option>NO</option>
     </select>
    </label>
+
+   <label>💰 Loan Amount
+    <input id="bankLoanAmount" type="number" min="0" placeholder="Loan Amount">
+   </label>
+
   </div>
 
   <button class="loan-calc" type="button" onclick="submitBankingService()">
@@ -1182,9 +1180,18 @@ function bankingServices(){
  bottomChat();
 }
 
-function submitBankingService(){
+async function submitBankingService(){
+ const result=document.getElementById("bankingResult");
+
  const name=document.getElementById("bankCustomerName").value.trim();
  const mobile=document.getElementById("bankMobile").value.trim();
+ const bankType=document.getElementById("bankType").value;
+ const loanType=document.getElementById("bankLoanType").value;
+ const state=document.getElementById("bankState").value;
+ const district=document.getElementById("bankDistrict").value.trim();
+ const taluk=document.getElementById("bankTaluk").value.trim();
+ const responsibility=document.getElementById("bankResponsibility").value;
+ const loanAmount=document.getElementById("bankLoanAmount").value.trim();
 
  if(!name){
   alert("⚠️ Customer Name உள்ளிடுங்கள்.");
@@ -1196,28 +1203,81 @@ function submitBankingService(){
   return;
  }
 
+ if(!bankType){
+  alert("⚠️ Bank / Nidhi Type தேர்வு செய்யுங்கள்.");
+  return;
+ }
+
+ if(!loanType){
+  alert("⚠️ Loan Type தேர்வு செய்யுங்கள்.");
+  return;
+ }
+
+ result.innerHTML="⏳ <b>Banking request அனுப்பப்படுகிறது...</b>";
+
  const application={
   id:"BANK-"+Date.now(),
-  bankType:document.getElementById("bankType").value,
-  loanType:document.getElementById("bankLoanType").value,
-  name:name,
-  mobile:mobile,
-  state:document.getElementById("bankState").value,
-  district:document.getElementById("bankDistrict").value,
-  taluk:document.getElementById("bankTaluk").value,
-  responsibility:document.getElementById("bankResponsibility").value,
+  bankType,
+  loanType,
+  customerName:name,
+  name,
+  mobile,
+  state,
+  district,
+  taluk,
+  responsibility,
+  loanAmount,
   submittedAt:Date.now(),
   status:"SUBMITTED"
  };
 
- localStorage.setItem("bankingServiceApplication",JSON.stringify(application));
+ try{
+  const response=await fetch("/api/banking-test",{
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({
+    bankType,
+    loanType,
+    customerName:name,
+    mobile,
+    loanAmount
+   })
+  });
 
- document.getElementById("bankingResult").innerHTML=
- "✅ <b>Application Submitted</b><br><br>"+
- "🆔 Application ID: <b>"+application.id+"</b><br>"+
- "👤 Customer: <b>"+name+"</b><br>"+
- "📌 Status: <b>SUBMITTED</b><br><br>"+
- "⏱️ 72-Hour Tracking Started";
+  const data=await response.json();
+
+  if(!response.ok || !data.ok){
+   throw new Error(data.reply || "Banking API failed");
+  }
+
+  localStorage.setItem(
+   "bankingServiceApplication",
+   JSON.stringify(application)
+  );
+
+  result.innerHTML=
+   "✅ <b>Banking Application Submitted</b><br><br>"+
+   "🆔 Application ID: <b>"+application.id+"</b><br>"+
+   "👤 Customer: <b>"+name+"</b><br>"+
+   "📱 Mobile: <b>"+mobile+"</b><br>"+
+   "🏦 Bank: <b>"+bankType+"</b><br>"+
+   "💳 Loan: <b>"+loanType+"</b><br>"+
+   "💰 Amount: <b>₹"+(loanAmount || "Not specified")+"</b><br>"+
+   "📍 Location: <b>"+district+" / "+taluk+"</b><br>"+
+   "📌 Status: <b>SUBMITTED</b><br><br>"+
+   "⏱️ 72-Hour Tracking Started<br><br>"+
+   (data.whatsapp
+    ? "📲 WhatsApp notification sent."
+    : "⚠️ WhatsApp API not configured yet.");
+
+ }catch(error){
+  console.error("Banking Submit Error:",error);
+
+  result.innerHTML=
+   "❌ <b>Banking submission failed</b><br><br>"+
+   "Reason: "+error.message+"<br><br>"+
+   "Please try again.";
+ }
 }
 
 function loanCalculations(){
@@ -1605,6 +1665,22 @@ function goldReport(){
 
  box.scrollIntoView({behavior:"smooth",block:"end"});
 }
+
+
+window.addEventListener("DOMContentLoaded", function(){
+  const btn = document.getElementById("bankingServicesBtn");
+  if(btn){
+    btn.onclick = function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      console.log("🏦 Banking button clicked");
+      bankingServices();
+    };
+    console.log("✅ Banking button connected");
+  }else{
+    console.log("❌ Banking button element not found");
+  }
+});
 
 </script>
 
