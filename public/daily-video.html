@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI • Daily 5 Minute Video</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  background:#080808;
+  color:#fff;
+  font-family:Arial,sans-serif;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.player{
+  width:min(100%,900px);
+  aspect-ratio:16/9;
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(135deg,#111,#292929);
+}
+.slide{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:35px;
+  opacity:0;
+  transform:scale(.96);
+  transition:opacity 1s,transform 1s;
+}
+.slide.active{
+  opacity:1;
+  transform:scale(1);
+}
+h1{
+  font-size:clamp(28px,6vw,64px);
+  margin:10px;
+}
+h2{
+  font-size:clamp(22px,4vw,42px);
+}
+p{
+  font-size:clamp(17px,2.5vw,28px);
+  line-height:1.5;
+}
+.rate{
+  font-size:clamp(30px,6vw,62px);
+  font-weight:bold;
+}
+.badge{
+  padding:8px 16px;
+  border:1px solid #777;
+  border-radius:30px;
+  margin:8px;
+}
+.controls{
+  position:absolute;
+  bottom:15px;
+  left:0;
+  right:0;
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  z-index:20;
+}
+button{
+  border:0;
+  border-radius:20px;
+  padding:10px 18px;
+  font-size:15px;
+  cursor:pointer;
+}
+#clock{
+  position:absolute;
+  top:12px;
+  right:15px;
+  z-index:20;
+  font-size:14px;
+}
+#status{
+  position:absolute;
+  top:12px;
+  left:15px;
+  z-index:20;
+  font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="player">
+
+<div id="status">🤖 SASIKUMAR AI • DAILY</div>
+<div id="clock"></div>
+
+<section class="slide active">
+  <div class="badge">TODAY'S AI SHOW</div>
+  <h1>SASIKUMAR AI</h1>
+  <p>வணக்கம்! இன்றைய 5 நிமிட AI தகவல் நிகழ்ச்சிக்கு வரவேற்கிறோம்.</p>
+</section>
+
+<section class="slide">
+  <div class="badge">🪙 GOLD RATE</div>
+  <h2>Thanjavur Live Gold Rate</h2>
+  <div class="rate" id="gold22">Loading...</div>
+  <p id="goldInfo">Live rate checking...</p>
+</section>
+
+<section class="slide">
+  <div class="badge">📰 DAILY UPDATE</div>
+  <h2>இன்றைய முக்கிய தகவல்கள்</h2>
+  <p>Gold • Business • Banking • Jobs • Finance</p>
+  <p>தினசரி தகவல்களை SASIKUMAR AI மூலம் எளிதாக அறியலாம்.</p>
+</section>
+
+<section class="slide">
+  <div class="badge">💰 FINANCE</div>
+  <h2>Loan & Calculator</h2>
+  <p>EMI • RD • FD • Personal Loan • Home Loan</p>
+  <p>கணக்கீடுகளை தெளிவாக புரிந்து கொண்டு முடிவு எடுக்கவும்.</p>
+</section>
+
+<section class="slide">
+  <div class="badge">💼 JOBS</div>
+  <h2>All Jobs</h2>
+  <p>Employer Registration + Live Job Search</p>
+  <p>வேலை வாய்ப்புகளை சரிபார்த்து பயன்படுத்துங்கள்.</p>
+</section>
+
+<section class="slide">
+  <div class="badge">🤖 AI TIP</div>
+  <h2>இன்றைய AI Tip</h2>
+  <p id="tip">Loading today's tip...</p>
+</section>
+
+<section class="slide">
+  <div class="badge">🔔 DAILY REMINDER</div>
+  <h2>Stay Updated</h2>
+  <p>தினமும் புதிய தகவல்களுடன் SASIKUMAR AI.</p>
+  <p>தகவல்களை சரிபார்த்து பயன்படுத்துங்கள்.</p>
+</section>
+
+<section class="slide">
+  <div class="badge">🙏 THANK YOU</div>
+  <h1>SASIKUMAR AI</h1>
+  <p>See you in tomorrow's Daily AI Show!</p>
+</section>
+
+<div class="controls">
+  <button onclick="startShow()">▶ Start Voice</button>
+  <button onclick="stopShow()">⏹ Stop</button>
+</div>
+
+</div>
+
+<script>
+const slides=[...document.querySelectorAll(".slide")];
+
+let current=0;
+let running=false;
+let timer=null;
+
+const tips=[
+"தங்கத்தின் விலையை எப்போதும் சமீபத்திய தகவலுடன் சரிபார்க்கவும்.",
+"Loan எடுக்கும் முன் interest மற்றும் EMI-ஐ கணக்கிடுங்கள்.",
+"Banking தகவல்களை official source மூலம் சரிபார்க்கவும்.",
+"வேலை வாய்ப்புகளில் company மற்றும் job details சரிபார்க்கவும்.",
+"AI கொடுக்கும் தகவல்களை முக்கிய முடிவுகளுக்கு முன் verify செய்யவும்.",
+"Financial documents-ஐ பாதுகாப்பாக வைத்திருங்கள்.",
+"தினசரி finance தகவல்களை புரிந்து கொண்டு முடிவு எடுக்கவும்."
+];
+
+function showSlide(n){
+  slides.forEach((s,i)=>s.classList.toggle("active",i===n));
+  current=n;
+}
+
+function nextSlide(){
+  current=(current+1)%slides.length;
+  showSlide(current);
+}
+
+async function loadGold(){
+  try{
+    const r=await fetch("/api/gold-rate",{cache:"no-store"});
+    const d=await r.json();
+
+    const value=d["22K"] ?? d["22k"] ?? d.rate22 ?? d.gold22;
+
+    if(value!==undefined){
+      document.getElementById("gold22").textContent=
+        "₹ "+Number(value).toLocaleString("en-IN")+" / gram";
+      document.getElementById("goldInfo").textContent=
+        "Thanjavur • 22K • Live API";
+    }else{
+      document.getElementById("gold22").textContent="Rate Available";
+      document.getElementById("goldInfo").textContent="API connected";
+    }
+  }catch(e){
+    document.getElementById("gold22").textContent="Unavailable";
+    document.getElementById("goldInfo").textContent="Please try again";
+  }
+}
+
+function updateClock(){
+  const now=new Date();
+  document.getElementById("clock").textContent=
+    now.toLocaleDateString("en-IN")+" "+
+    now.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"});
+}
+
+function dailyContent(){
+  const day=Math.floor(Date.now()/86400000);
+  document.getElementById("tip").textContent=tips[day%tips.length];
+}
+
+function speak(text){
+  if(!("speechSynthesis" in window)) return;
+  speechSynthesis.cancel();
+
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang="ta-IN";
+  u.rate=.9;
+  u.pitch=1.15;
+  speechSynthesis.speak(u);
+}
+
+function startShow(){
+  if(running) return;
+  running=true;
+
+  const texts=[
+    "வணக்கம்! இன்றைய SASIKUMAR AI தினசரி நிகழ்ச்சிக்கு வரவேற்கிறோம்.",
+    "இன்றைய தஞ்சாவூர் தங்க விலையை இப்போது பார்க்கலாம்.",
+    "இன்றைய முக்கிய தகவல்கள் Gold Business Banking Jobs Finance.",
+    "EMI RD FD Personal Loan Home Loan போன்ற calculator வசதிகளை பயன்படுத்தலாம்.",
+    "All Jobs பகுதியில் வேலை வாய்ப்புகளை பார்க்கலாம்.",
+    "இன்றைய AI tip: முக்கியமான financial தகவல்களை எப்போதும் சரிபார்க்கவும்.",
+    "SASIKUMAR AI தினசரி புதிய தகவல்களுடன் உங்களை சந்திக்கிறது.",
+    "நன்றி! நாளைய Daily AI Show-ல் மீண்டும் சந்திப்போம்."
+  ];
+
+  speak(texts[current]);
+
+  timer=setInterval(()=>{
+    nextSlide();
+    speak(texts[current]);
+  },37500);
+}
+
+function stopShow(){
+  running=false;
+  clearInterval(timer);
+  speechSynthesis.cancel();
+}
+
+loadGold();
+dailyContent();
+updateClock();
+
+setInterval(updateClock,1000);
+setInterval(loadGold,60000);
+
+/*
+  8 slides × 37.5 seconds = 5 minutes.
+  The daily date changes the AI tip automatically.
+*/
+</script>
+
+</body>
+</html>
