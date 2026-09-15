@@ -1965,28 +1965,14 @@ function openEducationFolder(){
   function save(list){
     try{
       localStorage.setItem(KEY, JSON.stringify(list));
+      console.log('✅ Jobs saved. Poster images:',
+        Array.isArray(list) ? list.filter(j => j && j.posterImage).length : 0
+      );
       return true;
     }catch(e){
       console.error('Job storage save failed:', e);
-
-      // If image data makes storage too large, save jobs without poster images.
-      try{
-        const safeList = Array.isArray(list)
-          ? list.map(j => {
-              const copy = Object.assign({}, j);
-              if(copy.posterImage) copy.posterImage = '';
-              return copy;
-            })
-          : [];
-
-        localStorage.setItem(KEY, JSON.stringify(safeList));
-        alert('⚠️ Job saved, but the poster image was too large for browser storage.');
-        return true;
-      }catch(e2){
-        console.error('Job storage fallback failed:', e2);
-        alert('❌ Job could not be saved. Please try again.');
-        return false;
-      }
+      alert('⚠️ Job could not be saved because browser storage is full. Please use a smaller poster image.');
+      return false;
     }
   }
 
