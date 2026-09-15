@@ -1702,21 +1702,86 @@ function updateLiveDateTime(){
 document.addEventListener("DOMContentLoaded",()=>{updateLiveDateTime();setInterval(updateLiveDateTime,1000);});
 </script>
 
+
 <!-- SASIKUMAR_AI_ALL_JOBS_START -->
-<section id="allJobs" style="margin:20px 0;padding:16px;border-radius:16px;background:#111;color:#fff;">
+
+<!-- SASIKUMAR_AI_FOLDER_BUTTONS -->
+<style>
+.sasikumar-folder-buttons{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin:10px 0;
+}
+.sasikumar-folder-btn{
+  border:1px solid #c9a227;
+  border-radius:10px;
+  padding:7px 11px;
+  background:#fff;
+  color:#222;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+}
+.sasikumar-folder-btn:active{
+  transform:scale(.97);
+}
+</style>
+
+<div class="sasikumar-folder-buttons">
+  <button class="sasikumar-folder-btn" onclick="document.getElementById('allJobs')?.scrollIntoView({behavior:'smooth'})">
+    📁 JOB FOLDER
+  </button>
+
+  <button class="sasikumar-folder-btn" onclick="openEducationFolder()">
+    📚 EDUCATION FOLDER
+  </button>
+</div>
+
+<script>
+function openEducationFolder(){
+  alert('📚 EDUCATION FOLDER\n\nEducation content will be added here.');
+}
+</script>
+\n<section id="allJobs" style="margin:20px 0;padding:16px;border-radius:16px;background:#111;color:#fff;">
+
   <h2>💼 ALL JOBS</h2>
-  <p>Bank • Gold Loan • Gold Appraiser • Government • Private • IT • Factory • Retail • Fresher • Work From Home</p>
 
-  <button type="button" onclick="showEmployerJobForm()">👔 Employer Registration</button>
-  <button type="button" onclick="showLiveJobSearch()">🔴 Live Job Search</button>
+  <p>
+    👔 Employer Registration →
+    🟡 Screening →
+    🟢 LIVE JOB →
+    🔴 Expired
+  </p>
 
-  <div id="employerJobForm" style="display:none;margin-top:15px;">
-    <h3>👔 Employer Job Registration</h3>
+  <div style="padding:12px;border:1px solid #777;border-radius:12px;margin:12px 0;background:#181818;">
+    ⚠️ <b>Job Disclaimer</b><br>
+    Job information is employer-submitted. SASIKUMAR AI does not guarantee
+    employment, salary, vacancy, selection or employer authenticity.
+    Please verify employer details independently before applying.
+  </div>
 
-    <input id="jobCompanyName" placeholder="Company / Shop Name" style="width:100%;margin:5px 0;padding:10px;">
-    <input id="jobTitle" placeholder="Job Title" style="width:100%;margin:5px 0;padding:10px;">
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <button type="button" onclick="showEmployerJobForm()">👔 1. Register</button>
+    <button type="button" onclick="showJobCamera()">📷 2. Camera</button>
+    <button type="button" onclick="showJobUpload()">📤 3. Upload</button>
+    <button type="button" onclick="showJobMessage()">💬 4. Message</button>
+    <button type="button" onclick="showLiveJobSearch()">🔴 Live Job</button>
+  </div>
 
-    <select id="jobType" style="width:100%;margin:5px 0;padding:10px;">
+  <!-- EMPLOYER REGISTER -->
+  <div id="sjEmployerForm" style="display:none;margin-top:15px;">
+
+    <h3>👔 Employer Registration</h3>
+
+    <input id="sjCompany" placeholder="Company / Shop Name"
+      style="width:100%;margin:5px 0;padding:10px;">
+
+    <input id="sjTitle" placeholder="Job Title"
+      style="width:100%;margin:5px 0;padding:10px;">
+
+    <select id="sjType"
+      style="width:100%;margin:5px 0;padding:10px;">
       <option value="">Job Type</option>
       <option>Full Time</option>
       <option>Part Time</option>
@@ -1724,811 +1789,745 @@ document.addEventListener("DOMContentLoaded",()=>{updateLiveDateTime();setInterv
       <option>Work From Home</option>
     </select>
 
-    <input id="jobQualification" placeholder="Qualification" style="width:100%;margin:5px 0;padding:10px;">
-    <input id="jobExperience" placeholder="Experience" style="width:100%;margin:5px 0;padding:10px;">
-    <input id="jobVacancies" type="number" min="1" placeholder="Vacancies" style="width:100%;margin:5px 0;padding:10px;">
-    <input id="jobSalary" placeholder="Salary" style="width:100%;margin:5px 0;padding:10px;">
-    <input id="jobLocation" placeholder="District / Taluk / Location" style="width:100%;margin:5px 0;padding:10px;">
-    <input id="jobHours" placeholder="Working Hours" style="width:100%;margin:5px 0;padding:10px;">
-    <input id="jobMobile" type="tel" placeholder="Employer Mobile" style="width:100%;margin:5px 0;padding:10px;">
-    <input id="jobWhatsapp" type="tel" placeholder="WhatsApp Number" style="width:100%;margin:5px 0;padding:10px;">
-
-    <textarea id="jobDescription" placeholder="Job Details" rows="4" style="width:100%;margin:5px 0;padding:10px;"></textarea>
-    <textarea id="jobRequirements" placeholder="📋 New Job Requirements" rows="4" style="width:100%;margin:5px 0;padding:10px;"></textarea>
-    <input id="jobPosterCamera" type="file" accept="image/*" capture="environment" style="width:100%;margin:5px 0;padding:10px;">
-    <input id="jobPosterImage" type="file" accept="image/*" style="width:100%;margin:5px 0;padding:10px;">
-    <img id="jobPosterPreview" style="display:none;width:100%;max-width:420px;margin:10px auto;border-radius:12px;" alt="Job Poster Preview">
-    <textarea id="jobExtraMessage" placeholder="📰 Extra message / Newspaper-style new ad" rows="3" style="width:100%;margin:5px 0;padding:10px;"></textarea>
-
-    <button type="button" onclick="submitEmployerJob()">📤 Submit Job</button>
-    <div id="jobSubmitResult" style="margin-top:10px;"></div>
-  </div>
-
-  <div id="liveJobSearch" style="display:none;margin-top:15px;">
-    <h3>🔴 LIVE JOB SEARCH</h3>
-
-    <input id="jobSearchText"
-      placeholder="Search job / company / location..."
-      oninput="searchLiveJobs()"
+    <input id="sjQualification" placeholder="Qualification"
       style="width:100%;margin:5px 0;padding:10px;">
 
-    <div id="liveJobResults" style="margin-top:12px;"></div>
+    <input id="sjExperience" placeholder="Experience"
+      style="width:100%;margin:5px 0;padding:10px;">
+
+    <input id="sjVacancies" type="number" min="1" placeholder="Vacancies"
+      style="width:100%;margin:5px 0;padding:10px;">
+
+    <input id="sjSalary" placeholder="Salary"
+      style="width:100%;margin:5px 0;padding:10px;">
+
+    <input id="sjLocation" placeholder="District / Taluk / Location"
+      style="width:100%;margin:5px 0;padding:10px;">
+
+    <input id="sjHours" placeholder="Working Hours"
+      style="width:100%;margin:5px 0;padding:10px;">
+
+    <input id="sjWhatsapp" type="tel"
+      placeholder="WhatsApp Number"
+      style="width:100%;margin:5px 0;padding:10px;">
+
+    <textarea id="sjDescription"
+      placeholder="Job Details"
+      rows="4"
+      style="width:100%;margin:5px 0;padding:10px;"></textarea>
+
+    <textarea id="sjRequirements"
+      placeholder="📋 New Job Requirements"
+      rows="4"
+      style="width:100%;margin:5px 0;padding:10px;"></textarea>
+
+    <label style="display:block;margin-top:10px;">
+      📅 Job Closing Date
+    </label>
+
+    <input id="sjClosingDate" type="date"
+      style="width:100%;margin:5px 0;padding:10px;">
+
+    <label style="display:block;margin-top:10px;">
+      📷 Camera / Poster Image
+    </label>
+
+    <input id="sjCameraFile"
+      type="file"
+      accept="image/*"
+      capture="environment"
+      style="width:100%;margin:5px 0;padding:10px;">
+
+    <label style="display:block;margin-top:10px;">
+      📤 Upload Job Poster
+    </label>
+
+    <input id="sjUploadFile"
+      type="file"
+      accept="image/*"
+      style="width:100%;margin:5px 0;padding:10px;">
+
+    <img id="sjPosterPreview"
+      style="display:none;width:100%;max-width:420px;margin:10px auto;border-radius:12px;"
+      alt="Job Poster Preview">
+
+    <textarea id="sjMessage"
+      placeholder="📰 Extra message / Job advertisement"
+      rows="3"
+      style="width:100%;margin:5px 0;padding:10px;"></textarea>
+
+    <button type="button" onclick="submitSasikumarJob()">
+      📤 Submit Post
+    </button>
+
+    <div id="sjSubmitResult" style="margin-top:10px;"></div>
   </div>
+
+  <!-- CAMERA -->
+  <div id="sjCamera" style="display:none;margin-top:15px;">
+
+    <h3>📷 Camera</h3>
+
+    <input id="sjCameraStandalone"
+      type="file"
+      accept="image/*"
+      capture="environment"
+      style="width:100%;padding:10px;">
+
+    <button type="button" onclick="submitCameraJob()">
+      📤 Submit Camera Post
+    </button>
+
+    <div id="sjCameraResult" style="margin-top:10px;"></div>
+  </div>
+
+  <!-- UPLOAD -->
+  <div id="sjUpload" style="display:none;margin-top:15px;">
+
+    <h3>📤 Upload</h3>
+
+    <input id="sjUploadStandalone"
+      type="file"
+      accept="image/*,.pdf"
+      style="width:100%;padding:10px;">
+
+    <button type="button" onclick="submitUploadJob()">
+      📤 Submit Upload Post
+    </button>
+
+    <div id="sjUploadResult" style="margin-top:10px;"></div>
+  </div>
+
+  <!-- MESSAGE -->
+  <div id="sjMessageBox" style="display:none;margin-top:15px;">
+
+    <h3>💬 Message</h3>
+
+    <textarea id="sjMessageText"
+      placeholder="Type employer / job registration details..."
+      rows="7"
+      style="width:100%;padding:10px;"></textarea>
+
+    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:8px;">
+      <button type="button" onclick="copySasikumarJobMessage()">📋 Copy</button>
+      <button type="button" onclick="submitSasikumarJobMessage()">📤 Submit Post</button>
+    </div>
+
+    <div id="sjMessageResult" style="margin-top:10px;"></div>
+  </div>
+
+  <!-- LIVE JOB SEARCH -->
+  <div id="sjLiveSearch" style="display:none;margin-top:20px;">
+
+    <h3>🔴 LIVE JOB SEARCH</h3>
+
+    <input id="sjSearch"
+      placeholder="Search company / job / location..."
+      oninput="renderSasikumarJobs()"
+      style="width:100%;padding:10px;">
+
+    <div id="sjLiveResults" style="margin-top:12px;"></div>
+
+  </div>
+
 </section>
 
 <script>
 (function(){
 
-  const KEY = "sasikumarEmployerJobs";
+  const KEY = 'sasikumarEmployerJobs';
 
-  function getJobs(){
+  function jobs(){
     try {
-      return JSON.parse(localStorage.getItem(KEY) || "[]");
+      const raw = JSON.parse(localStorage.getItem(KEY) || '[]');
+
+      if(!Array.isArray(raw)) return [];
+
+      const valid = raw.filter(j =>
+        j &&
+        typeof j === 'object' &&
+        String(j.id || '').trim() &&
+        String(j.company || '').trim() &&
+        String(j.title || '').trim()
+      );
+
+      if(valid.length !== raw.length){
+        localStorage.setItem(KEY, JSON.stringify(valid));
+      }
+
+      return valid;
     } catch(e) {
+      console.error('Job storage read error:', e);
       return [];
     }
   }
 
-  function saveJobs(jobs){
-    localStorage.setItem(KEY, JSON.stringify(jobs));
+  function save(list){
+    try{
+      localStorage.setItem(KEY, JSON.stringify(list));
+      return true;
+    }catch(e){
+      console.error('Job storage save failed:', e);
+
+      // If image data makes storage too large, save jobs without poster images.
+      try{
+        const safeList = Array.isArray(list)
+          ? list.map(j => {
+              const copy = Object.assign({}, j);
+              if(copy.posterImage) copy.posterImage = '';
+              return copy;
+            })
+          : [];
+
+        localStorage.setItem(KEY, JSON.stringify(safeList));
+        alert('⚠️ Job saved, but the poster image was too large for browser storage.');
+        return true;
+      }catch(e2){
+        console.error('Job storage fallback failed:', e2);
+        alert('❌ Job could not be saved. Please try again.');
+        return false;
+      }
+    }
   }
 
-  function esc(v){
-    return String(v || "")
-      .replace(/&/g,"&amp;")
-      .replace(/</g,"&lt;")
-      .replace(/>/g,"&gt;")
-      .replace(/"/g,"&quot;")
-      .replace(/'/g,"&#039;");
+  function esc(value){
+    return String(value || '')
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;')
+      .replace(/'/g,'&#039;');
   }
 
-  window.showEmployerJobForm = function(){
-    document.getElementById("employerJobForm").style.display = "block";
-    document.getElementById("liveJobSearch").style.display = "none";
-    document.getElementById("employerJobForm").scrollIntoView({behavior:"smooth"});
+  function hideAll(){
+    [
+      'sjEmployerForm',
+      'sjCamera',
+      'sjUpload',
+      'sjMessageBox',
+      'sjLiveSearch'
+    ].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.style.display='none';
+    });
+  }
+
+  function openBox(id){
+    hideAll();
+    const el=document.getElementById(id);
+    if(el){
+      el.style.display='block';
+      el.scrollIntoView({behavior:'smooth',block:'start'});
+    }
+  }
+
+  window.showEmployerJobForm=function(){
+    openBox('sjEmployerForm');
   };
 
-  window.showLiveJobSearch = function(){
-    document.getElementById("employerJobForm").style.display = "none";
-    document.getElementById("liveJobSearch").style.display = "block";
-    searchLiveJobs();
-    document.getElementById("liveJobSearch").scrollIntoView({behavior:"smooth"});
+  window.showJobCamera=function(){
+    openBox('sjCamera');
   };
 
-  function previewJobPoster(file){
-    if(!file) return;
-    const preview=document.getElementById("jobPosterPreview");
-    if(!preview) return;
+  window.showJobUpload=function(){
+    openBox('sjUpload');
+  };
+
+  window.showJobMessage=function(){
+    openBox('sjMessageBox');
+  };
+
+  window.showLiveJobSearch=function(){
+    openBox('sjLiveSearch');
+    renderSasikumarJobs();
+  };
+
+  function makeId(){
+    return 'JOB-' + Date.now() + '-' +
+      Math.random().toString(36).slice(2,7).toUpperCase();
+  }
+
+  function readImage(file, callback){
+    if(!file){
+      callback('');
+      return;
+    }
+
+    if(!file.type.startsWith('image/')){
+      callback('');
+      return;
+    }
+
     const reader=new FileReader();
+
     reader.onload=function(e){
-      preview.src=e.target.result;
-      preview.style.display="block";
+      callback(e.target.result || '');
     };
+
+    reader.onerror=function(){
+      callback('');
+    };
+
     reader.readAsDataURL(file);
   }
 
-  document.addEventListener("change",function(e){
-    if(e.target && (e.target.id==="jobPosterCamera" || e.target.id==="jobPosterImage")){
-      previewJobPoster(e.target.files && e.target.files[0]);
+  function normalizeWhatsApp(value){
+    let n=String(value || '').replace(/\D/g,'');
+
+    if(n.length===10){
+      n='91'+n;
     }
-  });
 
-  window.submitEmployerJob = function(){
+    return n;
+  }
 
-    const company = document.getElementById("jobCompanyName").value.trim();
-    const title = document.getElementById("jobTitle").value.trim();
-    const type = document.getElementById("jobType").value;
-    const location = document.getElementById("jobLocation").value.trim();
-    const mobile = document.getElementById("jobMobile").value.trim();
+  function expireJobs(){
+    const list=jobs();
+    const today=new Date();
+    today.setHours(0,0,0,0);
 
-    if(!company || !title || !type || !location || !mobile){
-      alert("Company, Job Title, Job Type, Location and Mobile are required.");
+    let changed=false;
+
+    list.forEach(job=>{
+      if(job.status==='LIVE' && job.closingDate){
+        const close=new Date(job.closingDate+'T23:59:59');
+
+        if(close.getTime() < Date.now()){
+          job.status='EXPIRED';
+          changed=true;
+        }
+      }
+    });
+
+    if(changed) save(list);
+
+    return list;
+  }
+
+  function compressJobPoster(file, callback){
+    if(!file || !file.type.startsWith('image/')){
+      callback('');
       return;
     }
 
-    const job = {
-      id: "JOB-" + Date.now(),
-      company: company,
-      title: title,
-      type: type,
-      qualification: document.getElementById("jobQualification").value.trim(),
-      experience: document.getElementById("jobExperience").value.trim(),
-      vacancies: document.getElementById("jobVacancies").value.trim(),
-      salary: document.getElementById("jobSalary").value.trim(),
-      location: location,
-      hours: document.getElementById("jobHours").value.trim(),
-      mobile: mobile,
-      whatsapp: document.getElementById("jobWhatsapp").value.trim(),
-      description: document.getElementById("jobDescription").value.trim(),
-      requirements: document.getElementById("jobRequirements").value.trim(),
-      extraMessage: document.getElementById("jobExtraMessage").value.trim(),
-      posterImage: "",
-      status: "LIVE",
-      postedDate: new Date().toISOString()
+    const reader=new FileReader();
+
+    reader.onload=function(e){
+      const img=new Image();
+
+      img.onload=function(){
+        const maxW=1000;
+        const scale=Math.min(1,maxW/img.width);
+
+        const canvas=document.createElement('canvas');
+        canvas.width=Math.max(1,Math.round(img.width*scale));
+        canvas.height=Math.max(1,Math.round(img.height*scale));
+
+        const ctx=canvas.getContext('2d');
+        ctx.drawImage(img,0,0,canvas.width,canvas.height);
+
+        const data=canvas.toDataURL('image/jpeg',0.78);
+        callback(data);
+      };
+
+      img.onerror=function(){
+        console.error('Job poster image decode failed.');
+        callback('');
+      };
+
+      img.src=e.target.result;
     };
 
-    const posterFile = (document.getElementById("jobPosterImage")?.files || [])[0] || (document.getElementById("jobPosterCamera")?.files || [])[0];
+    reader.onerror=function(){
+      console.error('Job poster FileReader failed.');
+      callback('');
+    };
 
-    const saveJobNow = function(){
-      const jobs = getJobs();
-      jobs.push(job);
-      saveJobs(jobs);
+    reader.readAsDataURL(file);
+  }
 
-      document.getElementById("jobSubmitResult").innerHTML =
-        "<div style=\"padding:12px;border-radius:10px;background:#222;\">" +
-        "✅ Job submitted successfully<br>" +
-        "<b>Job ID:</b> " + esc(job.id) + "<br>" +
-        "<b>Status:</b> LIVE" +
-        "</div>";
+  window.submitSasikumarJob=function(){
+
+    const company=document.getElementById('sjCompany').value.trim();
+    const title=document.getElementById('sjTitle').value.trim();
+    const type=document.getElementById('sjType').value;
+    const location=document.getElementById('sjLocation').value.trim();
+    const whatsapp=document.getElementById('sjWhatsapp').value.trim();
+    const closingDate=document.getElementById('sjClosingDate').value;
+
+    if(!company || !title || !type || !location || !whatsapp){
+      alert('Company, Job Title, Job Type, Location and WhatsApp are required.');
+      return;
+    }
+
+    if(!closingDate){
+      alert('Please select Job Closing Date.');
+      return;
+    }
+
+    const closeTime=new Date(closingDate+'T23:59:59').getTime();
+
+    if(closeTime < Date.now()){
+      alert('Closing Date must be today or a future date.');
+      return;
+    }
+
+    const cameraFile=document.getElementById('sjCameraFile')?.files?.[0];
+    const uploadFile=document.getElementById('sjUploadFile')?.files?.[0];
+    const posterFile=uploadFile || cameraFile;
+
+    const job={
+      id:makeId(),
+      company,
+      title,
+      type,
+      qualification:document.getElementById('sjQualification').value.trim(),
+      experience:document.getElementById('sjExperience').value.trim(),
+      vacancies:document.getElementById('sjVacancies').value.trim(),
+      salary:document.getElementById('sjSalary').value.trim(),
+      location,
+      hours:document.getElementById('sjHours').value.trim(),
+      whatsapp:normalizeWhatsApp(whatsapp),
+      description:document.getElementById('sjDescription').value.trim(),
+      requirements:document.getElementById('sjRequirements').value.trim(),
+      message:document.getElementById('sjMessage').value.trim(),
+      closingDate,
+      posterImage:'',
+      status:'LIVE',
+      createdAt:new Date().toISOString()
+    };
+
+    const finish=function(){
+      const list=jobs();
+      list.push(job);
+      save(list);
+
+      document.getElementById('sjSubmitResult').innerHTML=
+        '<div style="padding:12px;border-radius:10px;background:#222;">' +
+        '✅ <b>Job Post Submitted</b><br>' +
+        '🟢 Status: LIVE<br>' +
+        '🆔 Job ID: '+esc(job.id)+'<br>' +
+        '📅 Closing Date: '+esc(job.closingDate) +
+        '</div>';
+
+      renderSasikumarJobs();
     };
 
     if(posterFile){
-      const reader=new FileReader();
-      reader.onload=function(e){
-        job.posterImage=e.target.result;
-        saveJobNow();
-      };
-      reader.readAsDataURL(posterFile);
+      compressJobPoster(posterFile,function(data){
+        job.posterImage=data || '';
+
+        console.log('JOB POSTER DEBUG:', {
+          hasImage: !!job.posterImage,
+          imageLength: job.posterImage.length,
+          imageType: job.posterImage.slice(0,30)
+        });
+
+        finish();
+      });
     }else{
-      saveJobNow();
+      finish();
     }
-    return;
-
-    const jobs = getJobs();
-    jobs.push(job);
-    saveJobs(jobs);
-
-    document.getElementById("jobSubmitResult").innerHTML =
-      "<div style='padding:12px;border-radius:10px;background:#222;'>" +
-      "✅ Job submitted successfully<br>" +
-      "<b>Job ID:</b> " + esc(job.id) + "<br>" +
-      "<b>Status:</b> PENDING VERIFICATION" +
-      "</div>";
   };
 
-  window.searchLiveJobs = function(){
+  window.submitCameraJob=function(){
 
-    const q = (document.getElementById("jobSearchText").value || "").toLowerCase().trim();
-    const results = document.getElementById("liveJobResults");
+    const file=document.getElementById('sjCameraStandalone')?.files?.[0];
 
-    const jobs = getJobs().filter(j => j.status === "LIVE");
+    if(!file){
+      alert('Please capture/select a camera image first.');
+      return;
+    }
 
-    const filtered = jobs.filter(j => {
-      if(!q) return true;
-      return String(j.title || "").toLowerCase().includes(q) ||
-             String(j.company || "").toLowerCase().includes(q) ||
-             String(j.location || "").toLowerCase().includes(q);
+    const preview=document.getElementById('sjPosterPreview');
+
+    readImage(file,function(data){
+
+      if(preview && data){
+        preview.src=data;
+        preview.style.display='block';
+      }
+
+      document.getElementById('sjCameraResult').innerHTML=
+        '📷 Camera image ready. You can use Employer Register → Submit Post to publish it.';
+    });
+  };
+
+  window.submitUploadJob=function(){
+
+    const file=document.getElementById('sjUploadStandalone')?.files?.[0];
+
+    if(!file){
+      alert('Please select an image or PDF first.');
+      return;
+    }
+
+    if(file.type==='application/pdf'){
+      document.getElementById('sjUploadResult').innerHTML=
+        '📄 PDF selected: '+esc(file.name)+'<br>' +
+        'Use Employer Register → Submit Post for the job details.';
+      return;
+    }
+
+    readImage(file,function(data){
+
+      const preview=document.getElementById('sjPosterPreview');
+
+      if(preview && data){
+        preview.src=data;
+        preview.style.display='block';
+      }
+
+      document.getElementById('sjUploadResult').innerHTML=
+        '✅ Image uploaded and preview ready.';
+    });
+  };
+
+  window.copySasikumarJobMessage=function(){
+
+    const el=document.getElementById('sjMessageText');
+
+    if(!el || !el.value.trim()){
+      alert('Please enter a message first.');
+      return;
+    }
+
+    if(navigator.clipboard){
+      navigator.clipboard.writeText(el.value);
+    }else{
+      el.select();
+      document.execCommand('copy');
+    }
+
+    alert('📋 Message copied.');
+  };
+
+  window.submitSasikumarJobMessage=function(){
+
+    const text=document.getElementById('sjMessageText').value.trim();
+
+    if(!text){
+      alert('Please enter job details.');
+      return;
+    }
+
+    const data={
+      id:makeId(),
+      source:'MESSAGE',
+      message:text,
+      status:'PENDING',
+      createdAt:new Date().toISOString()
+    };
+
+    const list=jobs();
+    list.push(data);
+    save(list);
+
+    document.getElementById('sjMessageResult').innerHTML=
+      '🟡 Message submitted for screening.<br>' +
+      '🆔 '+esc(data.id);
+  };
+
+  
+// Clean invalid/blank saved jobs before rendering
+window.cleanSasikumarJobs=function(){
+  try{
+    const raw=localStorage.getItem('sasikumarEmployerJobs') || '[]';
+    const list=JSON.parse(raw);
+
+    const clean=Array.isArray(list)
+      ? list.filter(j =>
+          j &&
+          typeof j === 'object' &&
+          String(j.company || '').trim() &&
+          String(j.title || '').trim() &&
+          String(j.location || '').trim()
+        )
+      : [];
+
+    localStorage.setItem('sasikumarEmployerJobs',JSON.stringify(clean));
+    return clean;
+  }catch(e){
+    console.error('Job storage cleanup failed:',e);
+    return [];
+  }
+};
+
+window.renderSasikumarJobs=function(){
+
+    const box=document.getElementById('sjLiveResults');
+
+    if(!box) return;
+
+    const search=(document.getElementById('sjSearch')?.value || '')
+      .trim().toLowerCase();
+
+    const list=expireJobs();
+
+    const live=list.filter(job=>{
+      if(job.status!=='LIVE') return false;
+
+      const text=[
+        job.company,
+        job.title,
+        job.location,
+        job.qualification,
+        job.experience
+      ].join(' ').toLowerCase();
+
+      return !search || text.includes(search);
     });
 
-    if(!filtered.length){
-      results.innerHTML =
-        "<div style='padding:15px;border-radius:10px;background:#222;'>" +
-        "🔎 No verified LIVE jobs found." +
-        "</div>";
+    if(!live.length){
+      box.innerHTML=
+        '<div style="padding:15px;border-radius:10px;background:#222;">' +
+        '🔎 No LIVE jobs found.' +
+        '</div>';
       return;
     }
 
-    results.innerHTML = filtered.map(j =>
-      "<div style='margin:10px 0;padding:14px;border-radius:12px;background:#222;'>" +
-      (j.posterImage ? "<img src=\"" + j.posterImage + "\" style=\"width:100%;max-width:420px;border-radius:12px;margin-bottom:10px;\" alt=\"Job Poster\">" : "") +
-      (j.posterImage ? "<img src=\"" + j.posterImage + "\" style=\"width:100%;max-width:420px;border-radius:12px;margin-bottom:10px;\" alt=\"Job Poster\">" : "") +
-      "<h3>💼 " + esc(j.title) + "</h3>" +
-      "<b>Company:</b> " + esc(j.company) + "<br>" +
-      "<b>Location:</b> " + esc(j.location) + "<br>" +
-      "<b>Job Type:</b> " + esc(j.type) + "<br>" +
-      "<b>Qualification:</b> " + esc(j.qualification) + "<br>" +
-      "<b>Experience:</b> " + esc(j.experience) + "<br>" +
-      "<b>Vacancies:</b> " + esc(j.vacancies) + "<br>" +
-      "<b>Salary:</b> " + esc(j.salary) + "<br>" +
-      "<p>" + esc(j.description) + "</p>" +
-      (j.requirements ? "<div style=\"margin-top:10px;padding:10px;border-radius:10px;background:#333;\"><b>📋 REQUIREMENTS</b><br>" + esc(j.requirements) + "</div>" : "") +
-      (j.extraMessage ? "<div style=\"margin-top:10px;padding:10px;border-left:4px solid #d4af37;background:#333;\"><b>📰 NEW AD</b><br>" + esc(j.extraMessage) + "</div>" : "") +
-      "<button type='button' onclick='applyLiveJob(&quot;" + esc(j.id) + "&quot;)'>📩 Apply Now</button>" +
-      "</div>"
-    ).join("");
+    box.innerHTML=live.map(job=>{
+
+      const wa=normalizeWhatsApp(job.whatsapp);
+
+      const waButton=wa
+        ? '<button type="button" onclick="connectJobWhatsApp(\'' +
+          esc(job.id) +
+          '\')">📱 Connect WhatsApp</button>'
+        : '';
+
+      return '<div style="margin:10px 0;padding:14px;border-radius:12px;background:#222;">' +
+
+        (job.posterImage
+          ? '<img src="'+job.posterImage+'" style="width:100%;max-width:420px;border-radius:12px;margin-bottom:10px;" alt="Job Poster">'
+          : '') +
+
+        '<h3>💼 '+esc(job.title)+'</h3>' +
+        '<b>Company:</b> '+esc(job.company)+'<br>' +
+        '<b>Location:</b> '+esc(job.location)+'<br>' +
+        '<b>Job Type:</b> '+esc(job.type)+'<br>' +
+        '<b>Qualification:</b> '+esc(job.qualification || '-')+'<br>' +
+        '<b>Experience:</b> '+esc(job.experience || '-')+'<br>' +
+        '<b>Vacancies:</b> '+esc(job.vacancies || '-')+'<br>' +
+        '<b>Salary:</b> '+esc(job.salary || '-')+'<br>' +
+        '<b>Closing Date:</b> '+esc(job.closingDate || '-')+'<br>' +
+        '<p>'+esc(job.description || '')+'</p>' +
+
+        (job.requirements
+          ? '<div style="margin-top:8px;padding:10px;border-radius:10px;background:#333;">' +
+            '<b>📋 REQUIREMENTS</b><br>'+esc(job.requirements)+
+            '</div>'
+          : '') +
+
+        (job.message
+          ? '<div style="margin-top:8px;padding:10px;border-radius:10px;background:#333;">' +
+            '<b>📰 MESSAGE</b><br>'+esc(job.message)+
+            '</div>'
+          : '') +
+
+        waButton +
+
+        '</div>';
+
+    }).join('');
   };
 
-  window.applyLiveJob = function(id){
-    const job = getJobs().find(j => j.id === id);
+  window.connectJobWhatsApp=function(id){
+
+    const job=jobs().find(j=>j.id===id);
+
     if(!job){
-      alert("Job not found.");
+      alert('Job not found.');
       return;
     }
-    alert("Application started\nJob ID: " + job.id + "\nJob: " + job.title);
+
+    const wa=normalizeWhatsApp(job.whatsapp);
+
+    if(!wa){
+      alert('WhatsApp number is not available.');
+      return;
+    }
+
+    window.open(
+      'https://wa.me/'+wa,
+      '_blank',
+      'noopener,noreferrer'
+    );
   };
+
+  const camera=document.getElementById('sjCameraFile');
+  const upload=document.getElementById('sjUploadFile');
+
+  function previewFile(file){
+
+    const preview=document.getElementById('sjPosterPreview');
+
+    if(!preview || !file || !file.type.startsWith('image/')) return;
+
+    readImage(file,function(data){
+
+      if(data){
+        preview.src=data;
+        preview.style.display='block';
+      }
+
+    });
+  }
+
+  if(camera){
+    camera.addEventListener('change',function(){
+      previewFile(this.files?.[0]);
+    });
+  }
+
+  if(upload){
+    upload.addEventListener('change',function(){
+      previewFile(this.files?.[0]);
+    });
+  }
+
+  setInterval(function(){
+    if(document.getElementById('sjLiveSearch')?.style.display!=='none'){
+      renderSasikumarJobs();
+    }else{
+      expireJobs();
+    }
+  },60000);
+
+  window.addEventListener('load',function(){
+    expireJobs();
+  });
 
 })();
 </script>
 <!-- SASIKUMAR_AI_ALL_JOBS_END -->
 
-<div id="disclaimerPopup" style="
-position:fixed;inset:0;background:rgba(0,0,0,.75);
-display:flex;align-items:center;justify-content:center;
-z-index:99999;padding:20px;">
-  <div style="
-  background:#fff;color:#222;max-width:600px;width:100%;
-  max-height:80vh;overflow:auto;border-radius:16px;
-  padding:22px;box-shadow:0 10px 40px rgba(0,0,0,.4);">
-    
-    <h2 style="margin-top:0;">⚠️ SASIKUMAR AI – Disclaimer</h2>
-
-    <p>1. SASIKUMAR AI வழங்கும் தகவல்கள் பொதுவான தகவல் மற்றும் உதவிக்காக மட்டுமே.</p>
-    <p>2. AI பதில்கள் 100% துல்லியமானவை என்று உத்தரவாதம் இல்லை.</p>
-    <p>3. முக்கியமான தகவல்களை அதிகாரப்பூர்வ ஆதாரங்களில் சரிபார்க்கவும்.</p>
-    <p>4. Gold Rate சந்தை நிலவரத்திற்கு ஏற்ப மாறலாம்.</p>
-    <p>5. Purity, Karat, 916 மற்றும் Calculator முடிவுகள் ஆரம்ப வழிகாட்டுதலுக்காக மட்டுமே.</p>
-    <p>6. இறுதி Gold Purity-க்கு XRF / Assay போன்ற அங்கீகரிக்கப்பட்ட பரிசோதனை அவசியம்.</p>
-    <p>7. Gold Appraisal தகவல்கள் வழிகாட்டுதலுக்காக மட்டுமே.</p>
-    <p>8. Gold Loan தகவல்கள் பொதுவான கல்வி நோக்கத்திற்காக மட்டுமே.</p>
-    <p>9. Loan approval, interest, LTV, eligibility போன்றவை சம்பந்தப்பட்ட lender-ஐ பொறுத்தது.</p>
-    <p>10. AI தகவலை மட்டும் வைத்து நிதி முடிவுகளை எடுக்க வேண்டாம்.</p>
-    <p>11. News / Web Search தகவல்களை தனியாக சரிபார்க்கவும்.</p>
-    <p>12. Jobs தகவல்களை employer-ஐ சரிபார்த்த பிறகே பயன்படுத்தவும்.</p>
-    <p>13. சந்தேகமான வேலைகளுக்கு OTP, PIN, Password அல்லது பணம் வழங்க வேண்டாம்.</p>
-    <p>14. SASIKUMAR AI அரசு / வங்கி / நிதி நிறுவனத்தின் அதிகாரப்பூர்வ சேவை அல்ல.</p>
-    <p>15. தகவல்கள் தாமதமாகவோ அல்லது முழுமையற்றதாகவோ இருக்கலாம்.</p>
-
-    <button type="button" onclick="
-      document.getElementById('disclaimerPopup').style.display='none';
-    " style="
-      width:100%;padding:13px;margin-top:12px;
-      border:0;border-radius:10px;
-      font-size:16px;font-weight:bold;cursor:pointer;">
-      OK
-    </button>
-
-  </div>
-</div>
-
-<!-- SASIKUMAR AI SETTINGS / POLICY -->
-<style>
-#sasikumarSettingsBtn{position:fixed;right:12px;bottom:78px;z-index:9999;border:0;border-radius:50px;padding:10px 15px;background:#111;color:#fff;font-size:14px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.25);cursor:pointer}
-#sasikumarSettingsOverlay{display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.65);padding:20px;overflow-y:auto}
-#sasikumarSettingsPanel{max-width:520px;margin:40px auto;background:#fff;color:#111;border-radius:18px;padding:20px;box-shadow:0 10px 35px rgba(0,0,0,.35)}
-#sasikumarSettingsPanel h2{margin-top:0}
-.sasikumarPolicyItem{padding:12px;margin:8px 0;border-radius:10px;background:#f3f3f3}
-#sasikumarSettingsClose{float:right;border:0;background:#eee;border-radius:50%;width:34px;height:34px;font-size:18px;cursor:pointer}
-/* Tamil Font Fix */
-html,body,button,input,textarea,select,.chat,.chat *{
-font-family:"Noto Sans Tamil","Nirmala UI","Latha",Arial,sans-serif !important;
-}
-.ai-note,a{
-text-decoration:none !important;
-}
-</style>
-<button id="sasikumarSettingsBtn" type="button">⚙️ Settings</button>
-<div id="sasikumarSettingsOverlay">
-<div id="sasikumarSettingsPanel">
-<button id="sasikumarSettingsClose" type="button">×</button>
-<h2>⚙️ SASIKUMAR AI Settings</h2>
-<p>Website Policy &amp; Security Information</p>
-<div class="sasikumarPolicyItem">🔒 Privacy Policy</div>
-<div class="sasikumarPolicyItem">📜 Terms &amp; Conditions</div>
-<div class="sasikumarPolicyItem">⚠️ Disclaimer</div>
-<div class="sasikumarPolicyItem">🛡️ Data &amp; Security</div>
-<div class="sasikumarPolicyItem">📞 Contact / Grievance</div>
-<div class="sasikumarPolicyItem">🔗 Third-party Services</div>
-<div class="sasikumarPolicyItem">📱 Mobile Web + APK</div>
-<div class="sasikumarPolicyItem">🔎 Google Search / SEO</div>
-<div class="sasikumarPolicyItem">🔐 HTTPS / Website Security</div>
-<p style="margin-top:18px;font-size:13px">SASIKUMAR AI • Tamil + English • Gold • General Q&amp;A • Web Search</p>
-</div>
-</div>
-<script>
-(function(){
-const btn=document.getElementById("sasikumarSettingsBtn");
-const overlay=document.getElementById("sasikumarSettingsOverlay");
-const close=document.getElementById("sasikumarSettingsClose");
-if(!btn||!overlay||!close)return;
-btn.addEventListener("click",()=>overlay.style.display="block");
-close.addEventListener("click",()=>overlay.style.display="none");
-overlay.addEventListener("click",e=>{if(e.target===overlay)overlay.style.display="none"});
-})();
-</script>
-<script>
-(function(){
-  const items=document.querySelectorAll(".sasikumarPolicyItem");
-
-  const info=[
-    ["🔒 Privacy Policy","SASIKUMAR AI respects user privacy. Personal information should not be shared unnecessarily."],
-    ["📜 Terms & Conditions","Use SASIKUMAR AI responsibly. Information provided by the AI should be verified before important decisions."],
-    ["⚠️ Disclaimer","AI answers are for general information. Gold appraisal, financial and other important decisions should be verified by a qualified professional."],
-    ["🛡️ Data & Security","Keep passwords, OTPs, bank details and other sensitive information private. Do not share confidential information in chat."],
-    ["📞 Contact / Grievance","📱 Cell: 98944 40400\n📱 WhatsApp: 95850 80842\n📧 Email: gsasikumar2000@gmail.com"],
-    ["🔗 Third-party Services","Some features may use external services such as AI, web search or hosting providers."],
-    ["📱 Mobile Web + APK","SASIKUMAR AI is designed for mobile web use and may also be packaged as an Android application."],
-    ["🔎 Google Search / SEO","SASIKUMAR AI includes website metadata and search-engine-friendly content to help search engines discover the website."],
-    ["🔐 HTTPS / Website Security","Use the public HTTPS website for secure browser communication. Never enter sensitive credentials on an untrusted page."]
-  ];
-
-  items.forEach((item,i)=>{
-    item.style.cursor="pointer";
-    item.addEventListener("click",()=>{
-      const old=document.getElementById("sasikumarPolicyInfo");
-      if(old) old.remove();
-
-      const box=document.createElement("div");
-      box.id="sasikumarPolicyInfo";
-      box.style.cssText="margin-top:12px;padding:14px;border-radius:12px;background:#eef5ff;border:1px solid #ccdfff;line-height:1.6";
-
-      box.innerHTML="<b>"+info[i][0]+"</b><br><span>"+info[i][1]+"</span>";
-
-      item.parentNode.insertBefore(box,item.nextSibling);
-    });
-  });
-})();
-</script>
-<!-- END SASIKUMAR AI SETTINGS / POLICY -->
-
-<section id="educationContent" style="margin-top:20px;padding:15px;border-radius:14px;background:#111;color:white">
-  <h2 style="margin-top:0;color:#d4af37">🎓 EDUCATION CONTENT</h2>
-  <p>Select an education category</p>
-
-  <div style="display:grid;gap:10px">
-    <button onclick="openEducation('School Education')" style="padding:6px 10px;font-size:13px">🎓 Education</button>
-    <button onclick="openEducation('College / Higher Education')">📚 College / Higher Education</button>
-    <button onclick="openEducation('Computer Education')">💻 Computer Education</button>
-    <button onclick="openEducation('AI & Technology')">🤖 AI & Technology</button>
-    <button onclick="openEducation('Language Learning')">🗣️ Language Learning — Tamil / English</button>
-    <button onclick="openEducation('Maths & Logical Reasoning')">🧮 Maths & Logical Reasoning</button>
-    <button onclick="openEducation('Science')">🔬 Science</button>
-    <button onclick="openEducation('General Knowledge')">🌍 General Knowledge</button>
-    <button onclick="openEducation('Competitive Exam Preparation')">📝 Competitive Exam Preparation</button>
-    <button onclick="openEducation('Job & Career Skills')">💼 Job & Career Skills</button>
-    <button onclick="openEducation('Banking & Financial Education')">🏦 Banking & Financial Education</button>
-    <button onclick="openEducation('Gold / Jewellery Education')">💰 Gold / Jewellery Education</button>
-  </div>
-
-  <div id="educationResult" style="margin-top:15px"></div>
-</section>
 
 <script>
-
-function openEducation(category){
-  const box = document.getElementById("educationResult");
-
-  box.innerHTML = `
-    <div style="padding:15px;border-radius:12px;background:#1d1d1d">
-      <h3 style="color:#d4af37">📖 ${category}</h3>
-
-      <input id="educationTopic"
-        placeholder="Enter topic"
-        style="width:100%;padding:10px;box-sizing:border-box">
-
-      <br><br>
-
-      <button onclick="askEducation()">🤖 ASK / LEARN</button>
-
-      <div id="educationAnswer" style="margin-top:15px"></div>
-    </div>
-  `;
-}
-
-async function askEducation(){
-  const topic = document.getElementById("educationTopic");
-  const answer = document.getElementById("educationAnswer");
-
-  if(!topic || !topic.value.trim()){
-    alert("Please enter a topic");
-    return;
+window.showJobFolder=function(){
+  const el=document.getElementById('allJobs');
+  if(el){
+    el.scrollIntoView({behavior:'smooth',block:'start'});
   }
-
-  answer.innerHTML = "⏳ SASIKUMAR AI is preparing your lesson...";
-
-  try {
-    const category =
-      document.querySelector("#educationResult h3")?.innerText || "Education";
-
-    const message =
-      "Education Category: " + category +
-      "\nTopic: " + topic.value.trim() +
-      "\n\nExplain this topic clearly for learning. " +
-      "Give a simple explanation, examples, important points, " +
-      "and a few practice questions with answers.";
-
-    const response = await fetch("/api/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        message: message
-      })
-    });
-
-    const data = await response.json();
-
-    if(!response.ok){
-      throw new Error(data.error || "AI request failed");
-    }
-
-    answer.innerHTML =
-      "<b>🤖 SASIKUMAR AI</b><br><br>" +
-      (data.reply || "No answer received.");
-
-  } catch(err) {
-    console.error(err);
-    answer.innerHTML =
-      "❌ Education AI error: " + err.message;
+  if(typeof showLiveJobSearch==='function'){
+    setTimeout(function(){
+      showLiveJobSearch();
+    },300);
   }
-}
-</script>
+};
 
-<button onclick="window.open('/daily-video.html','_blank')">🎬 Daily AI Video • 5 Min</button>
-</body>
+window.showEducationFolder=function(){
+  const el=document.getElementById('educationContent') ||
+           document.getElementById('education') ||
+           document.getElementById('educationFolder');
+
+  if(el){
+    el.style.display='';
+    el.scrollIntoView({behavior:'smooth',block:'start'});
+  }else{
+    alert('📚 EDUCATION FOLDER\n\nEducation content will be available here.');
+  }
+};
+</script>
+\n</body>
 </html>
-
-<!-- SASIKUMAR AI - ALL JOBS MODEL -->
-<section id="allJobsNew" style="display:none;padding:20px;">
-  <h2>💼 ALL JOBS</h2>
-
-  <p><b>Registration → 🟡 Screening → 🟢 LIVE JOB → 🔴 Expired</b></p>
-
-  <div style="padding:12px;border:1px solid #ccc;border-radius:10px;margin-bottom:15px;">
-    ⚠️ <b>Job Disclaimer:</b><br>
-    Job information is employer-submitted. SASIKUMAR AI does not guarantee
-    employment, salary, vacancy, selection or employer authenticity.
-    Verify details independently before applying.
-  </div>
-
-  <div style="display:grid;gap:8px;">
-    <button onclick="showJobMode('form')">📝 1. Application Form Mode</button>
-    <button onclick="showJobMode('camera')">📷 2. Camera Scanning Mode</button>
-    <button onclick="showJobMode('upload')">📤 3. Upload Scanning Mode</button>
-    <button onclick="showJobMode('message')">💬 4. Message Box Mode</button>
-  </div>
-
-  <div id="jobModeResult" style="margin-top:15px;"></div>
-
-  <div id="jobRegistration" style="display:none;margin-top:15px;">
-    <h3>📝 Employer Registration</h3>
-
-    <input id="jobName" placeholder="Employer / Contact Name"
-      style="width:100%;margin:5px 0;padding:10px;">
-
-    <input id="jobCompany" placeholder="Company / Shop"
-      style="width:100%;margin:5px 0;padding:10px;">
-
-    <input id="jobTitle" placeholder="Job Title"
-      style="width:100%;margin:5px 0;padding:10px;">
-
-    <input id="jobType" placeholder="Job Type"
-      style="width:100%;margin:5px 0;padding:10px;">
-
-    <input id="jobQualification" placeholder="Qualification"
-      style="width:100%;margin:5px 0;padding:10px;">
-
-    <input id="jobExperience" placeholder="Experience"
-      style="width:100%;margin:5px 0;padding:10px;">
-
-    <input id="jobVacancies" placeholder="Vacancies"
-      style="width:100%;margin:5px 0;padding:10px;">
-
-    <input id="jobSalary" placeholder="Salary"
-      style="width:100%;margin:5px 0;padding:10px;">
-
-    <input id="jobLocation" placeholder="District / Taluk / Location"
-      style="width:100%;margin:5px 0;padding:10px;">
-
-    <input id="jobMobile" type="tel" placeholder="Employer Mobile / WhatsApp"
-      style="width:100%;margin:5px 0;padding:10px;">
-
-    <button onclick="submitAllJobs()">📨 Submit for Screening</button>
-
-    <div id="jobSubmitResult" style="margin-top:10px;"></div>
-  </div>
-
-  <div id="jobCamera" style="display:none;margin-top:15px;">
-    <h3>📷 Camera Scanning Mode</h3>
-    <input id="jobCameraFile" type="file" accept="image/*" capture="environment">
-    <button onclick="sendCameraJob()">📨 Send for Screening</button>
-    <p>Camera input is received for review; this demo does not perform OCR.</p>
-  </div>
-
-  <div id="jobUpload" style="display:none;margin-top:15px;">
-    <h3>📤 Upload Scanning Mode</h3>
-    <input id="jobUploadFile" type="file" accept="image/*,.pdf">
-    <button onclick="sendUploadJob()">📨 Send for Screening</button>
-    <p>Uploaded document is received for review; this demo does not perform OCR.</p>
-  </div>
-
-  <div id="jobMessage" style="display:none;margin-top:15px;">
-    <h3>💬 Message Box Mode</h3>
-
-    <textarea id="jobMessageText"
-      placeholder="Type job registration details..."
-      style="width:100%;min-height:140px;padding:10px;"></textarea>
-
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
-      <button onclick="cutJobMessage()">✂️ Cut</button>
-      <button onclick="copyJobMessage()">📋 Copy</button>
-      <button onclick="postJobMessage()">📨 Post</button>
-      <button onclick="replyJobMessage()">↩️ Reply</button>
-    </div>
-
-    <div id="jobMessageResult" style="margin-top:10px;"></div>
-  </div>
-
-  <div style="margin-top:20px;">
-    <h3>🔎 Live Job Search</h3>
-    <input id="jobSearchBox" oninput="renderJobs()"
-      placeholder="Search company / job / location"
-      style="width:100%;padding:10px;">
-  </div>
-
-  <div id="liveJobResult" style="margin-top:15px;"></div>
-</section>
-
-<script>
-function getAllJobs(){
-  try {
-    return JSON.parse(localStorage.getItem('sasikumarEmployerJobs') || '[]');
-  } catch(e) {
-    return [];
-  }
-}
-
-function saveAllJobs(jobs){
-  localStorage.setItem('sasikumarEmployerJobs', JSON.stringify(jobs));
-}
-
-function showJobMode(mode){
-  const ids = ['jobRegistration','jobCamera','jobUpload','jobMessage'];
-
-  ids.forEach(id => {
-    const el = document.getElementById(id);
-    if(el) el.style.display = 'none';
-  });
-
-  const map = {
-    form:'jobRegistration',
-    camera:'jobCamera',
-    upload:'jobUpload',
-    message:'jobMessage'
-  };
-
-  if(map[mode]){
-    document.getElementById(map[mode]).style.display = 'block';
-  }
-
-  renderJobs();
-}
-
-function createJobId(){
-  return 'JOB-' + Date.now();
-}
-
-function submitAllJobs(){
-  const data = {
-    id:createJobId(),
-    name:(document.getElementById('jobName')?.value || '').trim(),
-    company:(document.getElementById('jobCompany')?.value || '').trim(),
-    title:(document.getElementById('jobTitle')?.value || '').trim(),
-    type:(document.getElementById('jobType')?.value || '').trim(),
-    qualification:(document.getElementById('jobQualification')?.value || '').trim(),
-    experience:(document.getElementById('jobExperience')?.value || '').trim(),
-    vacancies:(document.getElementById('jobVacancies')?.value || '').trim(),
-    salary:(document.getElementById('jobSalary')?.value || '').trim(),
-    location:(document.getElementById('jobLocation')?.value || '').trim(),
-    mobile:(document.getElementById('jobMobile')?.value || '').trim(),
-    status:'PENDING',
-    createdAt:new Date().toISOString(),
-    expiryAt:new Date(Date.now() + 30*24*60*60*1000).toISOString()
-  };
-
-  if(!data.company || !data.title || !data.location){
-    document.getElementById('jobSubmitResult').innerHTML =
-      '❌ Company, Job Title and Location are required.';
-    return;
-  }
-
-  const jobs = getAllJobs();
-  jobs.push(data);
-  saveAllJobs(jobs);
-
-  document.getElementById('jobSubmitResult').innerHTML =
-    '🟡 <b>JOB UNDER SCREENING</b><br>' +
-    'Registration ID: ' + data.id;
-
-  renderJobs();
-}
-
-function approveJob(id){
-  const jobs = getAllJobs();
-
-  const updated = jobs.map(job => {
-    if(job.id === id){
-      job.status = 'LIVE';
-      job.liveAt = new Date().toISOString();
-    }
-    return job;
-  });
-
-  saveAllJobs(updated);
-  renderJobs();
-}
-
-function checkExpiredJobs(){
-  const now = Date.now();
-  const jobs = getAllJobs();
-
-  let changed = false;
-
-  jobs.forEach(job => {
-    if(job.status === 'LIVE' &&
-       job.expiryAt &&
-       new Date(job.expiryAt).getTime() <= now){
-      job.status = 'EXPIRED';
-      changed = true;
-    }
-  });
-
-  if(changed) saveAllJobs(jobs);
-}
-
-function renderJobs(){
-  checkExpiredJobs();
-
-  const box = document.getElementById('liveJobResult');
-  if(!box) return;
-
-  const search =
-    (document.getElementById('jobSearchBox')?.value || '')
-      .trim().toLowerCase();
-
-  const jobs = getAllJobs();
-
-  const filtered = jobs.filter(job => {
-    const text = [
-      job.company,
-      job.title,
-      job.location,
-      job.qualification
-    ].join(' ').toLowerCase();
-
-    return !search || text.includes(search);
-  });
-
-  if(!filtered.length){
-    box.innerHTML = '<p>📭 No jobs found.</p>';
-    return;
-  }
-
-  box.innerHTML = filtered.map(job => {
-    const expiry = job.expiryAt
-      ? new Date(job.expiryAt).toLocaleDateString('en-IN')
-      : '-';
-
-    let action = '';
-
-    if(job.status === 'PENDING'){
-      action =
-        '<button onclick="approveJob(\'' + job.id + '\')">' +
-        '✅ Approve → LIVE JOB</button>';
-    }
-
-    return '<div style="border:1px solid #ccc;border-radius:10px;padding:12px;margin:10px 0;">' +
-      '<b>' + (job.company || 'Job Registration') + '</b><br>' +
-      (job.title || '') + '<br>' +
-      (job.location || '') + '<br>' +
-      'Qualification: ' + (job.qualification || '-') + '<br>' +
-      'Experience: ' + (job.experience || '-') + '<br>' +
-      'Salary: ' + (job.salary || '-') + '<br>' +
-      'Status: <b>' + job.status + '</b><br>' +
-      'Expiry: ' + expiry + '<br>' +
-      '<small>ID: ' + job.id + '</small><br>' +
-      action +
-      '</div>';
-  }).join('');
-}
-
-function sendCameraJob(){
-  const file = document.getElementById('jobCameraFile')?.files?.[0];
-
-  if(!file){
-    alert('Please capture/select an image first.');
-    return;
-  }
-
-  const data = {
-    id:createJobId(),
-    source:'CAMERA',
-    fileName:file.name,
-    status:'PENDING',
-    createdAt:new Date().toISOString(),
-    expiryAt:new Date(Date.now()+30*24*60*60*1000).toISOString()
-  };
-
-  const jobs = getAllJobs();
-  jobs.push(data);
-  saveAllJobs(jobs);
-
-  alert('🟡 Camera document received for screening.');
-  renderJobs();
-}
-
-function sendUploadJob(){
-  const file = document.getElementById('jobUploadFile')?.files?.[0];
-
-  if(!file){
-    alert('Please select a document first.');
-    return;
-  }
-
-  const data = {
-    id:createJobId(),
-    source:'UPLOAD',
-    fileName:file.name,
-    status:'PENDING',
-    createdAt:new Date().toISOString(),
-    expiryAt:new Date(Date.now()+30*24*60*60*1000).toISOString()
-  };
-
-  const jobs = getAllJobs();
-  jobs.push(data);
-  saveAllJobs(jobs);
-
-  alert('🟡 Upload received for screening.');
-  renderJobs();
-}
-
-function cutJobMessage(){
-  const el = document.getElementById('jobMessageText');
-  if(!el) return;
-
-  el.focus();
-  document.execCommand('cut');
-}
-
-function copyJobMessage(){
-  const el = document.getElementById('jobMessageText');
-  if(!el) return;
-
-  navigator.clipboard?.writeText(el.value);
-}
-
-function postJobMessage(){
-  sendMessageJob();
-}
-
-function replyJobMessage(){
-  const result = document.getElementById('jobMessageResult');
-
-  if(result){
-    result.innerHTML =
-      '↩️ Reply mode ready. Enter your response in the message box.';
-  }
-}
-
-function sendMessageJob(){
-  const text =
-    (document.getElementById('jobMessageText')?.value || '').trim();
-
-  if(!text){
-    alert('Please enter job details.');
-    return;
-  }
-
-  const data = {
-    id:createJobId(),
-    source:'MESSAGE',
-    message:text,
-    status:'PENDING',
-    createdAt:new Date().toISOString(),
-    expiryAt:new Date(Date.now()+30*24*60*60*1000).toISOString()
-  };
-
-  const jobs = getAllJobs();
-  jobs.push(data);
-  saveAllJobs(jobs);
-
-  document.getElementById('jobMessageResult').innerHTML =
-    '🟡 Message submitted for screening.<br>ID: ' + data.id;
-
-  renderJobs();
-}
-
-setInterval(checkExpiredJobs, 60000);
-renderJobs();
-</script>
-
