@@ -328,7 +328,7 @@ function formatGoldRateAnswer(g){
 }
 
 function needsWeb(message){
-  return /news|latest|today|current|breaking|search|price|rate|weather|cricket|sports|Tamil Nadu|India|Tamil|செய்தி|இன்று|தற்போது|சமீபத்திய|நேரலை|தகவல்|தேடு|தேடல்|விலை|வானிலை|கிரிக்கெட்/i.test(message);
+  return /news|latest|today|current|breaking|search|price|rate|weather|cricket|sports|Tamil Nadu|India|செய்தி|இன்று|தற்போது|சமீபத்திய|நேரலை|தகவல்|தேடு|தேடல்|விலை|வானிலை|கிரிக்கெட்/i.test(message);
 }
 
 app.post("/api/chat",async(req,res)=>{
