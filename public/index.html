@@ -357,7 +357,10 @@ font-family:"Noto Sans Tamil","Nirmala UI","Latha",Arial,sans-serif !important;
 text-decoration:none !important;
 }
 </style>
-<script>window.makeClickableLinks=function(text){return String(text).replace(/(https?:\/\/[^\s<]+)/g,"<a class=\"ai-link\" href=\"$1\" target=\"_blank\" rel=\"noopener noreferrer\">$1</a>");};</script>\n</head>
+<script>
+function openDailyPoster(){window.open("/daily-gold-poster.svg","_blank");}window.makeClickableLinks=function(text){return String(text).replace(/(https?:\/\/[^\s<]+)/g,"<a class=\"ai-link\" href=\"$1\" target=\"_blank\" rel=\"noopener noreferrer\">$1</a>");};</script>
+</head>
+
 
 <body>\n
 <!-- SASIKUMAR_LOGIN_SCREEN -->
@@ -446,6 +449,7 @@ text-decoration:none !important;
 </div>
 
 <script>
+
 async function sasikumarLogin() {
   const username = document.getElementById("loginUsername").value.trim();
   const password = document.getElementById("loginPassword").value;
@@ -531,6 +535,7 @@ function technologyMenu(){
 </div></div>
 <!-- SASIKUMAR_LOGIN_SCREEN_END -->
 <script>
+
 const adminButtonSettings = [
   ["liveGoldRate","🪙 Gold Rate"],
   ["nationalNews","📰 State News"],
@@ -622,6 +627,7 @@ function closeAdminControl(){
 
   <div class="dash-grid">
     <button onclick="liveGoldRate()">🪙<span>Gold Rate</span><small>Live Thanjavur</small></button>
+    <button onclick="openDailyPoster()">🖼️<span>Daily Poster</span><small>Gold • News • Share</small></button>
     <button onclick="nationalNews()">📰<span>State News</span><small>State / District</small></button>
 
 <button id="bankingServicesBtn" type="button" onclick="bankingServices()">🏦<span>Banking Services</span><small>Loan • Customer • Status</small></button>
@@ -663,6 +669,7 @@ Tamil + English • Gold • General Q&A • Web Search</div>
 </div>
 
 <script>
+
 const q=document.getElementById("q");
 const chat=document.getElementById("chat");
 const sendBtn=document.getElementById("sendBtn");
@@ -1692,6 +1699,7 @@ window.addEventListener("DOMContentLoaded", function(){
 </script>
 
 <script>
+
 function updateLiveDateTime(){
  const now=new Date();
  const date=now.toLocaleDateString("en-IN",{day:"2-digit",month:"2-digit",year:"numeric"});
@@ -1739,6 +1747,7 @@ document.addEventListener("DOMContentLoaded",()=>{updateLiveDateTime();setInterv
 </div>
 
 <script>
+
 function openEducationFolder(){
   alert('📚 EDUCATION FOLDER\n\nEducation content will be added here.');
 }
@@ -1933,6 +1942,7 @@ function openEducationFolder(){
 </section>
 
 <script>
+
 (function(){
 
   const KEY = 'sasikumarEmployerJobs';
@@ -2490,6 +2500,7 @@ window.renderSasikumarJobs=function(){
 
 
 <script>
+
 window.showJobFolder=function(){
   const el=document.getElementById('allJobs');
   if(el){
