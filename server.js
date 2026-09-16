@@ -463,19 +463,22 @@ app.get("/api/gold-rate",async(req,res)=>{
     const client=tavily({apiKey:process.env.TAVILY_API_KEY});
 
     const result=await client.search(
-      "Thanjavur gold rate today 9 September 2026 24K 22K 18K per gram",
+      "site:goodreturns.in/gold-rates/thanjavur.html Thanjavur 16 September 2026 24K 22K 18K gold rate",
       {
         searchDepth:"advanced",
-        maxResults:10
+        maxResults:5
       }
     );
 
-    const sources=result.results||[];
+    const text=(result.results||[])
+      .map(x=>(x.title||"")+" "+(x.content||""))
+      .join("\n");
 
-    function getRate(text,karat){
+    function findRate(karat){
       const patterns=[
-        new RegExp(karat+"K\\s*[^₹\\d]{0,80}₹\\s*([0-9,]+(?:\\.\\d+)?)","i"),
-        new RegExp(karat+"K[^0-9]{0,100}([0-9]{2},?[0-9]{3}(?:\\.[0-9]+)?)","i")
+        new RegExp(karat+"K[^0-9]{0,100}([0-9]{2},?[0-9]{3})","i"),
+        new RegExp(karat+"\\s*karat[^0-9]{0,100}([0-9]{2},?[0-9]{3})","i"),
+        new RegExp("₹\\s*([0-9]{2},?[0-9]{3})[^0-9]{0,80}"+karat+"K","i")
       ];
 
       for(const re of patterns){
@@ -489,35 +492,21 @@ app.get("/api/gold-rate",async(req,res)=>{
       return 0;
     }
 
-    let selected=null;
+    const r24=findRate(24);
+    const r22=findRate(22);
+    const r18=findRate(18);
 
-    for(const item of sources){
-      const text=(item.title||"")+"\\n"+(item.content||"");
+    console.log("Parsed Goodreturns:",{r24,r22,r18});
 
-      const r24=getRate(text,24);
-      const r22=getRate(text,22);
-      const r18=getRate(text,18);
-
-      if(r24 && r22 && r18){
-        selected={
-          r24,
-          r22,
-          r18,
-          source:item.title||item.url||"Tavily"
-        };
-        break;
-      }
-    }
-
-    if(!selected)
-      throw new Error("Could not parse 24K, 22K and 18K rates");
+    if(!r24 || !r22 || !r18)
+      throw new Error("Could not parse current Thanjavur rates from Goodreturns");
 
     const rates={
-      "24K":selected.r24,
-      "22K":selected.r22,
-      "20K":Math.round(selected.r22*20/22),
-      "19K":Math.round(selected.r22*19/22),
-      "18K":selected.r18
+      "24K":r24,
+      "22K":r22,
+      "20K":Math.round(r22*20/22),
+      "19K":Math.round(r22*19/22),
+      "18K":r18
     };
 
     res.json({
@@ -527,12 +516,11 @@ app.get("/api/gold-rate",async(req,res)=>{
       rates8g:Object.fromEntries(
         Object.entries(rates).map(([k,v])=>[k,v*8])
       ),
-      source:"Tavily • "+selected.source+" • SASIKUMAR AI"
+      source:"Goodreturns • Thanjavur • SASIKUMAR AI"
     });
 
   }catch(e){
     console.error("Gold Rate Error:",e.message);
-
     res.status(503).json({
       ok:false,
       reply:"❌ Live Thanjavur Gold Rate unavailable: "+e.message
