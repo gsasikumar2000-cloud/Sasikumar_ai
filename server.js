@@ -629,7 +629,7 @@ app.listen(PORT,()=>{
 app.get("/webhook",(req,res)=>{
   const mode=req.query["hub.mode"];
   const token=req.query["hub.verify_token"];
-  const challenge=req.query["hub.challenge"];
+  const challenge=req.query["hub.challenge"]; console.log("WEBHOOK:", {mode, receivedTokenLength:String(token||"").length, expectedTokenLength:String(process.env.WHATSAPP_VERIFY_TOKEN||"").length, same:token===process.env.WHATSAPP_VERIFY_TOKEN});
 
   if(mode==="subscribe" && token===process.env.WHATSAPP_VERIFY_TOKEN){
     return res.status(200).send(challenge);
