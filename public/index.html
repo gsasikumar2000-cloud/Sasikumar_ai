@@ -358,7 +358,7 @@ text-decoration:none !important;
 }
 </style>
 <script>
-function openDailyPoster(){window.open("/daily-gold-poster.svg","_blank");}window.makeClickableLinks=function(text){return String(text).replace(/(https?:\/\/[^\s<]+)/g,"<a class=\"ai-link\" href=\"$1\" target=\"_blank\" rel=\"noopener noreferrer\">$1</a>");};</script>
+function openDailyPoster(){const url=location.origin+"/daily-gold-poster.svg";if(navigator.share){navigator.share({title:"SASIKUMAR AI - Daily Gold Poster",text:"இன்றைய SASIKUMAR AI Daily Gold Rate Poster",url}).catch(()=>{});}else{window.open(url,"_blank");}}window.makeClickableLinks=function(text){return String(text).replace(/(https?:\/\/[^\s<]+)/g,"<a class=\"ai-link\" href=\"$1\" target=\"_blank\" rel=\"noopener noreferrer\">$1</a>");};</script>
 </head>
 
 
