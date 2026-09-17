@@ -571,7 +571,7 @@ app.get("/",(req,res)=>{
 });
 
 async function sendWhatsAppMessage(message) {
-  const token = process.env.WHATSAPP_TOKEN;
+  const token = process.env.WHATSAPP_ACCESS_TOKEN;
   const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
   const to = process.env.WHATSAPP_TO_NUMBER;
 
@@ -690,7 +690,7 @@ app.post("/webhook", async (req,res)=>{
 
     if (!from) return;
 
-    const token = process.env.WHATSAPP_TOKEN;
+    const token = process.env.WHATSAPP_ACCESS_TOKEN;
     const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
 
     if (!token || !phoneNumberId) {
