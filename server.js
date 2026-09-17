@@ -698,42 +698,29 @@ app.post("/webhook", async (req,res)=>{
       return;
     }
 
-    const incoming = text.toLowerCase();
+      // WhatsApp → SASIKUMAR AI Intelligent Core
+      const aiResponse = await fetch("http://127.0.0.1:" + (process.env.PORT || 3000) + "/api/intelligent-ai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text, source: "whatsapp" })
+      });
 
-    let reply;
-
-    if (
-      incoming === "hi" ||
-      incoming === "hello" ||
-      incoming === "hey" ||
-      incoming === "வணக்கம்"
-    ) {
-      reply =
-`🤖 வணக்கம்! SASIKUMAR AI-க்கு வரவேற்கிறோம்.
+      const aiData = await aiResponse.json();
+      const reply = aiData.reply || `🤖 SASIKUMAR AI
 
 💰 Gold Rate
-🧮 Loan Calculator
-🏦 Banking Services
+🧮 Loan / EMI
+🏦 Banking
 💎 Gold Expert
-📋 Appraisal Report
+📋 Appraisal
+🎓 Education
+💼 Jobs
+📰 News
+🤖 General AI
 
-உங்களுக்கு தேவையான சேவையை சொல்லுங்கள்.
+உங்கள் கேள்வியை அனுப்புங்கள்.
 
 — SASIKUMAR AI`;
-    } else {
-      reply =
-`🤖 SASIKUMAR AI
-
-உங்கள் செய்தி பெறப்பட்டது: "${text}"
-
-தயவுசெய்து கீழே ஒன்றை type செய்யுங்கள்:
-
-1️⃣ Gold Rate
-2️⃣ Loan Calculator
-3️⃣ Banking Services
-4️⃣ Gold Expert
-5️⃣ Appraisal Report`;
-    }
 
     const url =
       `https://graph.facebook.com/v23.0/${phoneNumberId}/messages`;
@@ -762,6 +749,15 @@ app.post("/webhook", async (req,res)=>{
     console.error("❌ WhatsApp auto-reply error:", error);
   }
 });
+
+
+// SASIKUMAR AI Intelligent Core
+const intelligentAI = require("./intelligent-ai");
+app.use(intelligentAI);
+
+// SASIKUMAR AI Voice AI
+const voiceAI = require("./voice-ai");
+app.use(voiceAI);
 
 app.listen(PORT,()=>{
   console.log("🤖 SASIKUMAR AI");
