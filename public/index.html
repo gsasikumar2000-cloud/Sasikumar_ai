@@ -544,6 +544,7 @@ const adminButtonSettings = [
   ["goldExpert","🔬 Gold Expert"],
   ["goldPractical","⚖️ Practical Test"],
   ["goldReport","📋 Appraisal Report"],
+  ["education","📚 Education"],
   ["startVoice","🎤 Voice Input"],
   ["technologyMenu","💻 Technology"],
   ["copyChat","📋 Copy"],
@@ -633,6 +634,7 @@ function closeAdminControl(){
 <button id="bankingServicesBtn" type="button" onclick="bankingServices()">🏦<span>Banking Services</span><small>Loan • Customer • Status</small></button>
 
     <button onclick="goldExpert()">🔬<span>Gold Expert</span><small>Appraiser Tools</small></button>
+    <button onclick="education()">📚<span>Education</span><small>Learn Gold & Appraisal</small></button>
     <button onclick="loanCalculations()">🧮<span>Loan Calculations</span><small>RD • FD • GL • HP • EMI</small></button>
     <button onclick="goldPractical()">⚖️<span>Practical Test</span><small>Density Test</small></button><button onclick="goldReport()">📋<span>Appraisal Report</span><small>Print / PDF</small></button>
     <button onclick="startVoice()">🎤<span>Voice Input</span><small>Tamil Voice</small></button>
@@ -683,6 +685,57 @@ function escapeHtml(text){
   const d=document.createElement("div");
   d.textContent=text;
   return d.innerHTML;
+}
+
+
+function education(){
+  const box = document.getElementById("loanCalculationResult");
+  if(!box) return;
+
+  box.innerHTML = `
+    <div style="padding:18px;border-radius:16px;background:#111;color:#fff;">
+      <h2>📚 SASIKUMAR AI – Education</h2>
+      <p><b>Gold Appraisal Learning • தங்க மதிப்பீட்டு கல்வி</b></p>
+
+      <hr>
+
+      <h3>🪙 1. Gold Purity & Karat</h3>
+      <p>24K = highest commonly traded purity reference.</p>
+      <p>22K, 20K, 19K, 18K போன்றவை alloy கலவையுடன் இருக்கும்.</p>
+
+      <h3>⚖️ 2. Weight & Valuation</h3>
+      <p>Gold value depends on weight, purity/karat and the applicable gold rate.</p>
+
+      <h3>🔬 3. Testing Basics</h3>
+      <p>Density, touchstone and other screening methods can provide indications.</p>
+      <p><b>Final purity confirmation:</b> appropriate professional testing such as XRF/assay may be required.</p>
+
+      <h3>📋 4. Appraisal Basics</h3>
+      <p>Record customer details, article description, weight, observed characteristics and test results carefully.</p>
+
+      <h3>🏦 5. Gold Loan Basics</h3>
+      <p>Loan eligibility, LTV, interest and other terms depend on the lender's current rules and assessment.</p>
+
+      
+      <div style="margin:15px 0;">
+        <button onclick="window.open('/education/equations.html','_blank')">
+          🧮 Old Equations
+        </button>
+      </div>
+
+      <h3>⚠️ Educational Disclaimer</h3>
+      <p style="font-size:13px;">
+        This section is for general educational purposes only.
+        It is not a substitute for laboratory assay, certified valuation,
+        or a lender's official assessment. Rates and financial terms may change.
+      </p>
+
+      <button onclick="document.getElementById('loanCalculationResult').innerHTML=''">
+        ✖ Close Education
+      </button>
+    </div>
+  `;
+  box.scrollIntoView({behavior:"smooth", block:"start"});
 }
 
 function goldExpert(){
