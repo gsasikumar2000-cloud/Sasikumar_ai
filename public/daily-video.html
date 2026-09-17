@@ -25,6 +25,7 @@ body{
   background:linear-gradient(135deg,#111,#292929);
 }
 .slide{
+  zoom:var(--slide-zoom,1);
   position:absolute;
   inset:0;
   display:flex;
@@ -95,10 +96,24 @@ button{
 }
 </style>
 <style>
-.slide{opacity:0;transform:translateY(30px) scale(.96);transition:opacity .8s ease,transform .8s ease;display:none!important;}
+.slide{opacity:0;transform:translateY(30px) scale(.96);transition:opacity .8s ease,transform .8s ease;display:none!important;zoom:var(--slide-zoom,1);}
 .slide.active{display:flex!important;opacity:1;transform:translateY(0) scale(1);animation:slideIn .8s ease both;}
 @keyframes slideIn{from{opacity:0;transform:translateY(30px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
 </style>
+<style>
+</style>
+<style>
+.slide h1{font-size:clamp(36px,6vw,64px)!important;line-height:1.1!important;}
+.slide h2{font-size:clamp(30px,5vw,50px)!important;line-height:1.15!important;}
+.slide p{font-size:clamp(20px,3.2vw,30px)!important;line-height:1.45!important;max-width:900px!important;}
+.rate{font-size:clamp(38px,7vw,70px)!important;font-weight:800!important;}
+.badge{font-size:18px!important;padding:10px 18px!important;}
+</style>
+<style>
+.pillar-grid{width:min(100%,950px);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:18px auto}.pillar{padding:16px;border:1px solid rgba(255,255,255,.22);border-radius:16px;background:rgba(0,0,0,.16);font-size:30px;text-align:center}.pillar strong{display:block;font-size:20px;margin:7px 0}.pillar span{display:block;font-size:15px;line-height:1.35}.pillar-tagline{font-weight:700;margin-top:16px}@media(max-width:600px){.pillar-grid{grid-template-columns:1fr;gap:9px}.pillar{padding:12px;font-size:26px}.pillar strong{font-size:18px}.pillar span{font-size:14px}}
+</style>
+
+<style>.menu-wrap{position:fixed;right:15px;bottom:18px;z-index:9999}.menu-btn{font-size:18px!important;padding:13px 20px!important;border-radius:14px;border:0;touch-action:manipulation}.control-menu{display:none;position:absolute;right:0;bottom:58px;width:180px;padding:10px;border-radius:16px;background:rgba(15,15,15,.97);box-shadow:0 8px 30px rgba(0,0,0,.45)}.control-menu.show{display:flex;flex-direction:column;gap:9px}.control-menu button{font-size:18px!important;padding:13px!important;border-radius:11px;border:0;touch-action:manipulation}</style>
 </head>
 
 <body>
@@ -161,14 +176,35 @@ button{
   <p>See you in tomorrow's Daily AI Show!</p>
 </section>
 
-<div class="controls">
-  <button onclick="startShow()">▶ Start Voice</button>
-  <button onclick="stopShow()">⏹ Stop</button>
+<section class="slide">
+  <div class="badge">⭐ SASIKUMAR AI • 5 PILLARS</div>
+  <h2>Our Core Services</h2>
+  <div class="pillar-grid">
+    <div class="pillar">🎓<strong>Education</strong><span>Gold • Banking • Finance • AI Learning</span></div>
+    <div class="pillar">💻<strong>Technology</strong><span>AI • Voice • Gold Rate • Calculators • Web + APK</span></div>
+    <div class="pillar">🪙<strong>Gold Appraiser Expert</strong><span>Purity • Karat • Weight • Valuation • Appraisal</span></div>
+    <div class="pillar">🤝<strong>Human Support</strong><span>AI + Human Assistance • Expert Guidance</span></div>
+    <div class="pillar">💼<strong>Business</strong><span>Appraisal • Gold Loan Support • Jobs • Digital Services</span></div>
+  </div>
+  <p class="pillar-tagline">Knowledge • Technology • Gold Expertise • Human Support • Business Growth</p>
+</section>
+
+<div class="menu-wrap">
+<button class="menu-btn" onclick="toggleMenu(event)">☰ Menu</button>
+<div id="controlMenu" class="control-menu">
+<button onclick="startShow();closeMenu()">▶ Start</button>
+<button onclick="stopShow();closeMenu()">⏹ Stop</button>
+<button onclick="shareShow();closeMenu()">📤 Share</button>
+</div>
 </div>
 
 </div>
 
 <script>
+let zoomLevel=1;
+function setZoom(delta){zoomLevel=Math.min(1.25,Math.max(0.85,+(zoomLevel+delta).toFixed(2)));document.documentElement.style.setProperty("--slide-zoom",zoomLevel);}
+async function shareShow(){const data={title:"SASIKUMAR AI • Daily AI Show",text:"SASIKUMAR AI – Daily 5 Minute AI Show",url:location.href};try{if(navigator.share){await navigator.share(data);}else if(navigator.clipboard){await navigator.clipboard.writeText(location.href);alert("🔗 Link copied");}else{prompt("Copy this link:",location.href);}}catch(e){}}
+
 const slides=[...document.querySelectorAll(".slide")];
 
 let current=0;
@@ -282,15 +318,7 @@ setInterval(loadGold,60000);
 */
 </script>
 
-<script>
-(function(){
-const slides=[...document.querySelectorAll(".slide")];
-if(!slides.length)return;
-let i=0;
-function showSlide(n){slides.forEach((s,k)=>s.classList.toggle("active",k===n));}
-showSlide(0);
-setInterval(()=>{i=(i+1)%slides.length;showSlide(i)},37500);
-})();
-</script>
+<script>function toggleMenu(e){if(e)e.stopPropagation();document.getElementById("controlMenu").classList.toggle("show")}function closeMenu(){document.getElementById("controlMenu").classList.remove("show")}document.addEventListener("touchstart",function(e){if(!e.target.closest(".menu-wrap"))closeMenu()},{passive:true})</script>
 </body>
 </html>
+

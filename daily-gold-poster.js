@@ -164,6 +164,7 @@ async function getRates(){
 
 function poster(r){
   const d = getDesign();
+  const pt = getPosterType();
 
   const rows = [
     ['24K','99.9%',r.r24],
@@ -217,7 +218,7 @@ function poster(r){
         text-anchor="middle"
         font-family="Arial,sans-serif"
         font-size="30" font-weight="700"
-        fill="#ffffff">${d.subtitle}</text>
+        fill="#ffffff">${pt.name}</text>
 
   <text x="500" y="215"
         text-anchor="middle"
