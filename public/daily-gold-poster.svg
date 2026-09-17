@@ -24,7 +24,7 @@
         text-anchor="middle"
         font-family="Arial,sans-serif"
         font-size="23"
-        fill="#dddddd">THANJAVUR • 16/09/2026</text>
+        fill="#dddddd">THANJAVUR • 17/09/2026</text>
 
   
       <rect x="55" y="312" width="890" height="66"
@@ -40,7 +40,7 @@
         text-anchor="end"
         font-family="Arial,sans-serif"
         font-size="29" font-weight="700"
-        fill="#ffffff">₹0/g</text>
+        fill="#ffffff">₹15,409/g</text>
     
       <rect x="55" y="394" width="890" height="66"
         rx="16" fill="#2c1b3d"/>
@@ -55,7 +55,7 @@
         text-anchor="end"
         font-family="Arial,sans-serif"
         font-size="29" font-weight="700"
-        fill="#ffffff">₹0/g</text>
+        fill="#ffffff">₹14,125/g</text>
     
       <rect x="55" y="476" width="890" height="66"
         rx="16" fill="#2c1b3d"/>
@@ -70,7 +70,7 @@
         text-anchor="end"
         font-family="Arial,sans-serif"
         font-size="29" font-weight="700"
-        fill="#ffffff">₹0/g</text>
+        fill="#ffffff">₹12,841/g</text>
     
       <rect x="55" y="558" width="890" height="66"
         rx="16" fill="#2c1b3d"/>
@@ -85,7 +85,7 @@
         text-anchor="end"
         font-family="Arial,sans-serif"
         font-size="29" font-weight="700"
-        fill="#ffffff">₹0/g</text>
+        fill="#ffffff">₹12,199/g</text>
     
       <rect x="55" y="640" width="890" height="66"
         rx="16" fill="#2c1b3d"/>
@@ -100,7 +100,7 @@
         text-anchor="end"
         font-family="Arial,sans-serif"
         font-size="29" font-weight="700"
-        fill="#ffffff">₹0/g</text>
+        fill="#ffffff">₹11,895/g</text>
     
 
   <rect x="55" y="800" width="890" height="190"
@@ -120,7 +120,7 @@
         text-anchor="end"
         font-family="Arial,sans-serif"
         font-size="32" font-weight="800"
-        fill="#ffffff">₹0</text>
+        fill="#ffffff">₹1,13,000</text>
 
   <text x="85" y="955"
         font-family="Arial,sans-serif"
@@ -131,7 +131,7 @@
         text-anchor="end"
         font-family="Arial,sans-serif"
         font-size="32" font-weight="800"
-        fill="#ffffff">₹0</text>
+        fill="#ffffff">₹1,23,272</text>
 
   <rect x="55" y="1040" width="890" height="150"
         rx="22" fill="#f6d365"/>

@@ -462,30 +462,62 @@ app.get("/api/gold-rate",async(req,res)=>{
 
     const client=tavily({apiKey:process.env.TAVILY_API_KEY});
 
+    const todayIST = new Intl.DateTimeFormat("en-IN",{
+      timeZone:"Asia/Kolkata",
+      day:"numeric",
+      month:"long",
+      year:"numeric"
+    }).format(new Date());
+
     const result=await client.search(
-      "site:goodreturns.in/gold-rates/thanjavur.html Thanjavur 16 September 2026 24K 22K 18K gold rate",
+      `site:goodreturns.in/gold-rates/thanjavur.html Thanjavur ${todayIST} 24K 22K 18K gold rate`,
       {
         searchDepth:"advanced",
         maxResults:5
       }
     );
 
-    const text=(result.results||[])
-      .map(x=>(x.title||"")+" "+(x.content||""))
-      .join("\n");
+    const text=[
+      result.answer || "",
+      ...(result.results || []).map(x =>
+        (x.title || "")+" "+(x.content || "")
+      )
+    ].join("\n");
+
+    console.log("===== TAVILY GOODRETURNS DEBUG =====");
+    console.log("ANSWER:", result.answer || "(no answer)");
+    console.log("RESULT COUNT:", (result.results || []).length);
+    console.log("TEXT PREVIEW:", text.slice(0, 5000));
+    console.log("===== END DEBUG =====");
 
     function findRate(karat){
-      const patterns=[
-        new RegExp(karat+"K[^0-9]{0,100}([0-9]{2},?[0-9]{3})","i"),
-        new RegExp(karat+"\\s*karat[^0-9]{0,100}([0-9]{2},?[0-9]{3})","i"),
-        new RegExp("₹\\s*([0-9]{2},?[0-9]{3})[^0-9]{0,80}"+karat+"K","i")
+      const k = String(karat);
+
+      const patterns = [
+        new RegExp(
+          "₹\\s*([0-9,]+)\\s*per gram\\s+for\\s*"+k+"\\s*karat\\s*gold",
+          "i"
+        ),
+        new RegExp(
+          "for\\s*"+k+"\\s*karat\\s*gold[^₹0-9]{0,100}₹\\s*([0-9,]+)",
+          "i"
+        ),
+        new RegExp(
+          "\\b"+k+"\\s*karat\\b[^₹0-9]{0,100}₹\\s*([0-9,]+)",
+          "i"
+        )
       ];
 
       for(const re of patterns){
-        const m=text.match(re);
+        const m = text.match(re);
+
         if(m){
-          const n=Number(m[1].replace(/,/g,""));
-          if(n>=9000 && n<=25000) return n;
+          const n = Number(String(m[1]).replace(/,/g,""));
+
+          if(n >= 9000 && n <= 25000){
+            console.log(`Exact ${k}K rate found: ₹${n.toLocaleString("en-IN")}`);
+            return n;
+          }
         }
       }
 
@@ -506,7 +538,9 @@ app.get("/api/gold-rate",async(req,res)=>{
       "22K":r22,
       "20K":Math.round(r22*20/22),
       "19K":Math.round(r22*19/22),
-      "18K":r18
+      "18K":r18 && r18 !== r24
+        ? r18
+        : Math.round(r22*18/22)
     };
 
     res.json({
@@ -619,10 +653,7 @@ app.get("/privacy-policy", (req, res) => {
   res.sendFile(require("path").join(__dirname, "public", "privacy-policy.html"));
 });
 
-app.listen(PORT,()=>{
-  console.log("🤖 SASIKUMAR AI");
-  console.log("✅ Server running on port " + PORT);
-});
+
 
 
 // ===== WhatsApp Cloud API Webhook =====
@@ -638,8 +669,101 @@ app.get("/webhook",(req,res)=>{
   return res.sendStatus(403);
 });
 
-app.post("/webhook",(req,res)=>{
+app.post("/webhook", async (req,res)=>{
   console.log("📲 WhatsApp Webhook:",JSON.stringify(req.body,null,2));
-  return res.sendStatus(200);
+
+  res.sendStatus(200);
+
+  try {
+    const value = req.body?.entry?.[0]?.changes?.[0]?.value;
+    const msg = value?.messages?.[0];
+
+    if (!msg) {
+      console.log("ℹ️ No incoming WhatsApp message");
+      return;
+    }
+
+    const from = msg.from;
+    const text = msg.text?.body?.trim() || "";
+
+    console.log("📩 Incoming WhatsApp:", { from, text });
+
+    if (!from) return;
+
+    const token = process.env.WHATSAPP_TOKEN;
+    const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+
+    if (!token || !phoneNumberId) {
+      console.log("⚠️ WhatsApp token or phone number ID missing");
+      return;
+    }
+
+    const incoming = text.toLowerCase();
+
+    let reply;
+
+    if (
+      incoming === "hi" ||
+      incoming === "hello" ||
+      incoming === "hey" ||
+      incoming === "வணக்கம்"
+    ) {
+      reply =
+`🤖 வணக்கம்! SASIKUMAR AI-க்கு வரவேற்கிறோம்.
+
+💰 Gold Rate
+🧮 Loan Calculator
+🏦 Banking Services
+💎 Gold Expert
+📋 Appraisal Report
+
+உங்களுக்கு தேவையான சேவையை சொல்லுங்கள்.
+
+— SASIKUMAR AI`;
+    } else {
+      reply =
+`🤖 SASIKUMAR AI
+
+உங்கள் செய்தி பெறப்பட்டது: "${text}"
+
+தயவுசெய்து கீழே ஒன்றை type செய்யுங்கள்:
+
+1️⃣ Gold Rate
+2️⃣ Loan Calculator
+3️⃣ Banking Services
+4️⃣ Gold Expert
+5️⃣ Appraisal Report`;
+    }
+
+    const url =
+      `https://graph.facebook.com/v23.0/${phoneNumberId}/messages`;
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        messaging_product: "whatsapp",
+        to: from,
+        type: "text",
+        text: {
+          body: reply
+        }
+      })
+    });
+
+    const result = await response.json();
+
+    console.log("📤 Auto-reply response:", result);
+
+  } catch (error) {
+    console.error("❌ WhatsApp auto-reply error:", error);
+  }
 });
 
+app.listen(PORT,()=>{
+  console.log("🤖 SASIKUMAR AI");
+  console.log("✅ Server running on port " + PORT);
+});

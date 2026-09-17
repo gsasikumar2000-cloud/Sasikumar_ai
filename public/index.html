@@ -358,7 +358,70 @@ text-decoration:none !important;
 }
 </style>
 <script>
-function openDailyPoster(){const url=location.origin+"/daily-gold-poster.svg";if(navigator.share){navigator.share({title:"SASIKUMAR AI - Daily Gold Poster",text:"இன்றைய SASIKUMAR AI Daily Gold Rate Poster",url}).catch(()=>{});}else{window.open(url,"_blank");}}window.makeClickableLinks=function(text){return String(text).replace(/(https?:\/\/[^\s<]+)/g,"<a class=\"ai-link\" href=\"$1\" target=\"_blank\" rel=\"noopener noreferrer\">$1</a>");};</script>
+function openDailyPoster(){
+  const url="https://sasikumar-ai-9wdq.onrender.com/daily-gold-poster.svg";
+  const text="இன்றைய SASIKUMAR AI Daily Gold Rate Poster";
+
+  const old=document.getElementById("dailyPosterSharePanel");
+  if(old) old.remove();
+
+  const panel=document.createElement("div");
+  panel.id="dailyPosterSharePanel";
+  panel.style.cssText=
+    "position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);"+
+    "width:min(90%,360px);background:#fff;padding:22px;border-radius:18px;"+
+    "box-shadow:0 10px 40px rgba(0,0,0,.35);z-index:99999;text-align:center;";
+
+  panel.innerHTML=
+    '<h3 style="margin:0 0 16px">🖼️ Daily Poster</h3>'+
+    '<button id="dpShare" style="width:100%;padding:13px;margin:5px 0">📤 Share</button>'+
+    '<button id="dpWhatsApp" style="width:100%;padding:13px;margin:5px 0">🟢 WhatsApp</button>'+
+    '<button id="dpCopy" style="width:100%;padding:13px;margin:5px 0">🔗 Copy Link</button>'+
+    '<button id="dpOpen" style="width:100%;padding:13px;margin:5px 0">👁️ Open Poster</button>'+
+    '<button id="dpClose" style="width:100%;padding:10px;margin-top:10px">✕ Close</button>';
+
+  document.body.appendChild(panel);
+
+  document.getElementById("dpShare").onclick=async()=>{
+    if(navigator.share){
+      try{
+        await navigator.share({
+          title:"SASIKUMAR AI - Daily Gold Poster",
+          text,
+          url
+        });
+      }catch(e){}
+    }else{
+      alert("📤 Share is not supported here. Use WhatsApp or Copy Link.");
+    }
+  };
+
+  document.getElementById("dpWhatsApp").onclick=()=>{
+    window.open(
+      "https://wa.me/?text="+encodeURIComponent(text+"\\n"+url),
+      "_blank"
+    );
+  };
+
+  document.getElementById("dpCopy").onclick=async()=>{
+    try{
+      await navigator.clipboard.writeText(url);
+      alert("✅ Poster link copied!");
+    }catch(e){
+      prompt("Copy this poster link:",url);
+    }
+  };
+
+  document.getElementById("dpOpen").onclick=()=>{
+    window.open(url,"_blank");
+  };
+
+  document.getElementById("dpClose").onclick=()=>{
+    panel.remove();
+  };
+}
+
+window.makeClickableLinks=function(text){return String(text).replace(/(https?:\/\/[^\s<]+)/g,"<a class=\"ai-link\" href=\"$1\" target=\"_blank\" rel=\"noopener noreferrer\">$1</a>");};</script>
 </head>
 
 

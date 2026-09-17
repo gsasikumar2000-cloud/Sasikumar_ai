@@ -54,7 +54,74 @@ function today(){
 
 function getDesign(){
   const d = new Date();
-  return designs[d.getDate() % designs.length];
+  return designs[(d.getDate() - 1) % designs.length];
+}
+
+const posterTypes = [
+  {
+    name: 'TODAY GOLD RATE',
+    tamil: 'இன்றைய தங்க விலை',
+    tag: 'GOLD RATE UPDATE'
+  },
+  {
+    name: 'GOLD NEWS',
+    tamil: 'தங்கம் தொடர்பான தகவல்',
+    tag: 'DAILY GOLD NEWS'
+  },
+  {
+    name: 'GOLD EDUCATION',
+    tamil: 'தங்கம் பற்றிய கல்வி',
+    tag: 'LEARN ABOUT GOLD'
+  },
+  {
+    name: 'APPRAISER TIP',
+    tamil: 'Gold Appraiser Tip',
+    tag: 'APPRAISER AWARENESS'
+  },
+  {
+    name: 'GOLD LOAN AWARENESS',
+    tamil: 'Gold Loan Awareness',
+    tag: 'GENERAL INFORMATION'
+  },
+  {
+    name: 'DAILY GOLD TIP',
+    tamil: 'தினசரி தங்க குறிப்பு',
+    tag: 'GOLD AWARENESS'
+  },
+  {
+    name: '8G / SAVARAN RATE',
+    tamil: '8 கிராம் / சவரன் விலை',
+    tag: '8 GRAM GOLD RATE'
+  },
+  {
+    name: 'SASIKUMAR AI',
+    tamil: 'Gold Appraiser • Gold Valuer',
+    tag: 'SASIKUMAR AI'
+  }
+];
+
+function getPosterType(){
+  const now = new Date();
+  const year = Number(new Intl.DateTimeFormat('en-IN',{
+    timeZone:'Asia/Kolkata',
+    year:'numeric'
+  }).format(now));
+
+  const month = Number(new Intl.DateTimeFormat('en-IN',{
+    timeZone:'Asia/Kolkata',
+    month:'numeric'
+  }).format(now));
+
+  const day = Number(new Intl.DateTimeFormat('en-IN',{
+    timeZone:'Asia/Kolkata',
+    day:'numeric'
+  }).format(now));
+
+  const start = new Date(Date.UTC(year, 0, 1));
+  const current = new Date(Date.UTC(year, month - 1, day));
+  const dayOfYear = Math.floor((current - start) / 86400000) + 1;
+
+  return posterTypes[(dayOfYear - 1) % posterTypes.length];
 }
 
 function safeNumber(v){
@@ -99,11 +166,11 @@ function poster(r){
   const d = getDesign();
 
   const rows = [
-    ['24K','99.9%',r.k24],
-    ['22K / 916','91.6%',r.k22],
-    ['20K','83.3%',r.k20],
-    ['19K','79.2%',r.k19],
-    ['18K','75.0%',r.k18]
+    ['24K','99.9%',r.r24],
+    ['22K / 916','91.6%',r.r22],
+    ['20K','83.3%',r.r20],
+    ['19K','79.2%',r.r19],
+    ['18K','75.0%',r.r18]
   ];
 
   const rowSvg = rows.map((x,i)=>{
@@ -127,8 +194,8 @@ function poster(r){
     `;
   }).join('');
 
-  const eight22 = r.k22 * 8;
-  const eight24 = r.k24 * 8;
+  const eight22 = r.r22 * 8;
+  const eight24 = r.r24 * 8;
 
   return `
 <svg xmlns="http://www.w3.org/2000/svg"
