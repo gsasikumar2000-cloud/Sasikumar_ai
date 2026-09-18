@@ -688,6 +688,64 @@ app.post("/webhook", async (req,res)=>{
 
     console.log("📩 Incoming WhatsApp:", { from, text });
 
+    // WhatsApp quick menu → Intelligent AI Core
+    const menu = {
+      "1": "Give me today's live Thanjavur gold rate for 24K and 22K.",
+      "2": "Help me calculate Gold Loan / EMI. Ask for the required details.",
+      "3": "Help me with banking services and loan-related information.",
+      "4": "Act as a Gold Expert. Answer my gold purity, hallmark, density and testing questions.",
+      "5": "Help me prepare a Gold Appraisal Report.",
+      "6": "Teach me gold-related education and useful equations in simple Tamil and English.",
+      "7": "Show me current jobs and business opportunities information.",
+      "8": "Give me current business and technology news.",
+      "9": "You are SASIKUMAR AI General AI. Answer my question clearly."
+    };
+
+    const menuText = `🤖 SASIKUMAR AI
+
+1️⃣ Gold Rate
+2️⃣ Gold Loan / EMI
+3️⃣ Banking
+4️⃣ Gold Expert
+5️⃣ Appraisal
+6️⃣ Education
+7️⃣ Jobs
+8️⃣ Business / Tech News
+9️⃣ General AI
+
+ஒரு option number அனுப்புங்கள்.
+உதாரணம்: 1
+
+அல்லது உங்கள் கேள்வியை நேரடியாக அனுப்பலாம்.`;
+
+    const aiText = menu[text] || text;
+
+    if (!text || text.toLowerCase() === "menu" || text === "0" || text === "help") {
+      const token = process.env.WHATSAPP_ACCESS_TOKEN;
+      const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+
+      if (!token || !phoneNumberId || !from) return;
+
+      const url = `https://graph.facebook.com/v23.0/${phoneNumberId}/messages`;
+
+      await fetch(url, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          messaging_product: "whatsapp",
+          to: from,
+          type: "text",
+          text: { body: menuText }
+        })
+      });
+
+      console.log("📋 WhatsApp menu sent");
+      return;
+    }
+
     if (!from) return;
 
     const token = process.env.WHATSAPP_ACCESS_TOKEN;
@@ -702,7 +760,7 @@ app.post("/webhook", async (req,res)=>{
       const aiResponse = await fetch("http://127.0.0.1:" + (process.env.PORT || 3000) + "/api/intelligent-ai", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text, source: "whatsapp" })
+        body: JSON.stringify({ message: aiText, source: "whatsapp" })
       });
 
       const aiData = await aiResponse.json();
