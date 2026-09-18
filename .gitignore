@@ -7,3 +7,9 @@ node_modules/
 *.bak
 *.new
 server.js.backup*
+
+# Local backups and test files
+*.backup-*
+ai-test.log
+main
+same
