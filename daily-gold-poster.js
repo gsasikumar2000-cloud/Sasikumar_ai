@@ -7,36 +7,23 @@ const BASE = `http://127.0.0.1:${PORT}`;
 const OUT = path.join(__dirname, 'public', 'daily-gold-poster.svg');
 
 const designs = [
-  {
-    bg:'#111111', card:'#1d1d1d', accent:'#f5c542',
-    title:'SASIKUMAR AI',
-    subtitle:'LIVE THANJAVUR GOLD RATE'
-  },
-  {
-    bg:'#071a16', card:'#10352d', accent:'#ffd54a',
-    title:'SASIKUMAR AI',
-    subtitle:'THANJAVUR GOLD TODAY'
-  },
-  {
-    bg:'#10142b', card:'#202858', accent:'#ffd166',
-    title:'SASIKUMAR AI',
-    subtitle:'DAILY GOLD UPDATE'
-  },
-  {
-    bg:'#24120b', card:'#402116', accent:'#ffcf5a',
-    title:'SASIKUMAR AI',
-    subtitle:'THANJAVUR LIVE RATE'
-  },
-  {
-    bg:'#171024', card:'#2c1b3d', accent:'#f6d365',
-    title:'SASIKUMAR AI',
-    subtitle:'GOLD RATE • THANJAVUR'
-  },
-  {
-    bg:'#06151f', card:'#0e2b3a', accent:'#ffd84d',
-    title:'SASIKUMAR AI',
-    subtitle:'TODAY GOLD POSTER'
-  }
+  {bg:'#111111',card:'#1d1d1d',accent:'#f5c542',title:'SASIKUMAR AI'},
+  {bg:'#071a16',card:'#10352d',accent:'#ffd54a',title:'SASIKUMAR AI'},
+  {bg:'#10142b',card:'#202858',accent:'#ffd166',title:'SASIKUMAR AI'},
+  {bg:'#24120b',card:'#402116',accent:'#ffcf5a',title:'SASIKUMAR AI'},
+  {bg:'#171024',card:'#2c1b3d',accent:'#f6d365',title:'SASIKUMAR AI'},
+  {bg:'#06151f',card:'#0e2b3a',accent:'#ffd84d',title:'SASIKUMAR AI'}
+];
+
+const posterTypes = [
+  ['GOLD & SILVER PRICE','தங்கம் மற்றும் வெள்ளி விலை','DAILY PRICE UPDATE'],
+  ['PRECIOUS METALS UPDATE','தங்கம் • வெள்ளி தினசரி தகவல்','LIVE PRICE UPDATE'],
+  ['GOLD & SILVER NEWS','தங்கம் மற்றும் வெள்ளி தகவல்','DAILY MARKET UPDATE'],
+  ['PRICE AWARENESS','தங்கம் • வெள்ளி விலை விழிப்புணர்வு','PRICE AWARENESS'],
+  ['APPRAISER UPDATE','Gold Appraiser • Gold Valuer','APPRAISER INFORMATION'],
+  ['DAILY METAL TIP','தினசரி தங்கம் • வெள்ளி குறிப்பு','METAL AWARENESS'],
+  ['8G GOLD + 1KG SILVER','8 கிராம் தங்கம் • 1 கிலோ வெள்ளி','REFERENCE PRICE'],
+  ['SASIKUMAR AI','Gold Appraiser • Gold Valuer','SASIKUMAR AI']
 ];
 
 function money(n){
@@ -52,342 +39,322 @@ function today(){
   }).format(new Date());
 }
 
-function getDesign(){
-  const d = new Date();
-  return designs[(d.getDate() - 1) % designs.length];
-}
-
-const posterTypes = [
-  {
-    name: 'TODAY GOLD RATE',
-    tamil: 'இன்றைய தங்க விலை',
-    tag: 'GOLD RATE UPDATE'
-  },
-  {
-    name: 'GOLD NEWS',
-    tamil: 'தங்கம் தொடர்பான தகவல்',
-    tag: 'DAILY GOLD NEWS'
-  },
-  {
-    name: 'GOLD EDUCATION',
-    tamil: 'தங்கம் பற்றிய கல்வி',
-    tag: 'LEARN ABOUT GOLD'
-  },
-  {
-    name: 'APPRAISER TIP',
-    tamil: 'Gold Appraiser Tip',
-    tag: 'APPRAISER AWARENESS'
-  },
-  {
-    name: 'GOLD LOAN AWARENESS',
-    tamil: 'Gold Loan Awareness',
-    tag: 'GENERAL INFORMATION'
-  },
-  {
-    name: 'DAILY GOLD TIP',
-    tamil: 'தினசரி தங்க குறிப்பு',
-    tag: 'GOLD AWARENESS'
-  },
-  {
-    name: '8G / SAVARAN RATE',
-    tamil: '8 கிராம் / சவரன் விலை',
-    tag: '8 GRAM GOLD RATE'
-  },
-  {
-    name: 'SASIKUMAR AI',
-    tamil: 'Gold Appraiser • Gold Valuer',
-    tag: 'SASIKUMAR AI'
-  }
-];
-
-function getPosterType(){
-  const now = new Date();
-  const year = Number(new Intl.DateTimeFormat('en-IN',{
-    timeZone:'Asia/Kolkata',
-    year:'numeric'
-  }).format(now));
-
-  const month = Number(new Intl.DateTimeFormat('en-IN',{
-    timeZone:'Asia/Kolkata',
-    month:'numeric'
-  }).format(now));
-
-  const day = Number(new Intl.DateTimeFormat('en-IN',{
-    timeZone:'Asia/Kolkata',
-    day:'numeric'
-  }).format(now));
-
-  const start = new Date(Date.UTC(year, 0, 1));
-  const current = new Date(Date.UTC(year, month - 1, day));
-  const dayOfYear = Math.floor((current - start) / 86400000) + 1;
-
-  return posterTypes[(dayOfYear - 1) % posterTypes.length];
-}
-
 function safeNumber(v){
-  const n = Number(String(v ?? '').replace(/[^0-9.]/g,''));
+  const n=Number(String(v ?? '').replace(/[^0-9.-]/g,''));
   return Number.isFinite(n) ? n : 0;
 }
 
+function getDesign(){
+  const d=new Date();
+  return designs[(d.getDate()-1)%designs.length];
+}
+
+function getPosterType(){
+  const now=new Date();
+  const parts=new Intl.DateTimeFormat('en-IN',{
+    timeZone:'Asia/Kolkata',
+    year:'numeric',
+    month:'numeric',
+    day:'numeric'
+  }).formatToParts(now);
+
+  const year=Number(parts.find(x=>x.type==='year').value);
+  const month=Number(parts.find(x=>x.type==='month').value);
+  const day=Number(parts.find(x=>x.type==='day').value);
+
+  const start=new Date(Date.UTC(year,0,1));
+  const current=new Date(Date.UTC(year,month-1,day));
+  const dayOfYear=Math.floor((current-start)/86400000)+1;
+
+  return posterTypes[(dayOfYear-1)%posterTypes.length];
+}
+
 async function getRates(){
-  const url = BASE + '/api/gold-rate';
+  const [goldRes,silverRes]=await Promise.all([
+    fetch(BASE+'/api/gold-rate'),
+    fetch(BASE+'/api/silver-rate')
+  ]);
 
-  const res = await fetch(url);
-  if(!res.ok){
-    throw new Error('/api/gold-rate HTTP ' + res.status);
-  }
+  if(!goldRes.ok)
+    throw new Error('/api/gold-rate HTTP '+goldRes.status);
 
-  const data = await res.json();
+  if(!silverRes.ok)
+    throw new Error('/api/silver-rate HTTP '+silverRes.status);
 
-  console.log('Gold API response:', JSON.stringify(data));
+  const gold=await goldRes.json();
+  const silver=await silverRes.json();
 
-  const rates = data.rates || data.data?.rates || data.gold?.rates || {};
+  console.log('Gold API:',JSON.stringify(gold));
+  console.log('Silver API:',JSON.stringify(silver));
 
-  const r24 = safeNumber(rates['24K'] ?? rates['24k'] ?? data['24K']);
-  const r22 = safeNumber(rates['22K'] ?? rates['22k'] ?? data['22K']);
-  const r20 = safeNumber(rates['20K'] ?? rates['20k'] ?? data['20K']);
-  const r19 = safeNumber(rates['19K'] ?? rates['19k'] ?? data['19K']);
-  const r18 = safeNumber(rates['18K'] ?? rates['18k'] ?? data['18K']);
+  const gr=gold.rates || {};
+  const r24=safeNumber(gr['24K']);
+  const r22=safeNumber(gr['22K']);
+  const r20=safeNumber(gr['20K']);
+  const r19=safeNumber(gr['19K']);
+  const r18=safeNumber(gr['18K']);
 
-  if(!r24 || !r22){
-    throw new Error('24K/22K rate not found in /api/gold-rate response');
-  }
+  if(!r24 || !r22)
+    throw new Error('Gold 24K/22K rate unavailable');
+
+  const sr=silver.silver || {};
+
+  const silverGram=safeNumber(sr.gram);
+  const silver10g=safeNumber(sr.tenGram);
+  const silverKg=safeNumber(sr.kg);
+
+  if(!silverGram || !silverKg)
+    throw new Error('Silver rate unavailable');
 
   return {
-    r24,
-    r22,
-    r20: r20 || Math.round(r24 * 20 / 24),
-    r19: r19 || Math.round(r24 * 19 / 24),
-    r18: r18 || Math.round(r24 * 18 / 24)
+    gold:{
+      r24,
+      r22,
+      r20:r20 || Math.round(r24*20/24),
+      r19:r19 || Math.round(r24*19/24),
+      r18:r18 || Math.round(r24*18/24),
+      previousClose:safeNumber(gold.previousClose),
+      change:safeNumber(gold.change),
+      changePercent:safeNumber(gold.changePercent)
+    },
+    silver:{
+      gram:silverGram,
+      tenGram:silver10g || silverGram*10,
+      kg:silverKg,
+      previousClose:safeNumber(silver.previousClose),
+      change:safeNumber(silver.change),
+      changePercent:safeNumber(silver.changePercent)
+    }
   };
 }
 
-function poster(r){
-  const d = getDesign();
-  const pt = getPosterType();
+function changeText(change,pct){
+  if(change>0)
+    return `▲ UP ${money(Math.abs(change))} (${Math.abs(pct).toFixed(2)}%)`;
 
-  const rows = [
-    ['24K','99.9%',r.r24],
-    ['22K / 916','91.6%',r.r22],
-    ['20K','83.3%',r.r20],
-    ['19K','79.2%',r.r19],
-    ['18K','75.0%',r.r18]
+  if(change<0)
+    return `▼ DOWN ${money(Math.abs(change))} (${Math.abs(pct).toFixed(2)}%)`;
+
+  return '— NO CHANGE';
+}
+
+function poster(data){
+  const d=getDesign();
+  const pt=getPosterType();
+
+  const g=data.gold;
+  const s=data.silver;
+
+  const goldRows=[
+    ['24K','99.9%',g.r24],
+    ['22K / 916','91.6%',g.r22],
+    ['20K','83.3%',g.r20],
+    ['19K','79.2%',g.r19],
+    ['18K','75.0%',g.r18]
   ];
 
-  const rowSvg = rows.map((x,i)=>{
-    const y = 360 + i * 82;
-
+  const goldSvg=goldRows.map((x,i)=>{
+    const y=350+i*66;
     return `
-      <rect x="55" y="${y-48}" width="890" height="66"
-        rx="16" fill="${d.card}"/>
-      <text x="85" y="${y-7}"
-        font-family="Arial,sans-serif"
-        font-size="27" font-weight="700"
-        fill="${d.accent}">${x[0]}</text>
-      <text x="350" y="${y-7}"
-        font-family="Arial,sans-serif"
-        font-size="20" fill="#dddddd">${x[1]}</text>
-      <text x="900" y="${y-7}"
-        text-anchor="end"
-        font-family="Arial,sans-serif"
-        font-size="29" font-weight="700"
-        fill="#ffffff">${money(x[2])}/g</text>
-    `;
+      <rect x="55" y="${y-39}" width="890" height="53" rx="13" fill="${d.card}"/>
+      <text x="80" y="${y-5}" font-family="Arial,sans-serif"
+        font-size="23" font-weight="700" fill="${d.accent}">${x[0]}</text>
+      <text x="330" y="${y-5}" font-family="Arial,sans-serif"
+        font-size="17" fill="#dddddd">${x[1]}</text>
+      <text x="900" y="${y-5}" text-anchor="end"
+        font-family="Arial,sans-serif" font-size="25"
+        font-weight="700" fill="#ffffff">${money(x[2])}/g</text>`;
   }).join('');
-
-  const eight22 = r.r22 * 8;
-  const eight24 = r.r24 * 8;
 
   return `
 <svg xmlns="http://www.w3.org/2000/svg"
-     width="1000" height="1400" viewBox="0 0 1000 1400">
+ width="1000" height="1400" viewBox="0 0 1000 1400">
 
-  <rect width="1000" height="1400" fill="${d.bg}"/>
+<rect width="1000" height="1400" fill="${d.bg}"/>
 
-  <rect x="35" y="35" width="930" height="1330"
-        rx="35" fill="none"
-        stroke="${d.accent}" stroke-width="4"/>
+<rect x="35" y="35" width="930" height="1330" rx="35"
+ fill="none" stroke="${d.accent}" stroke-width="4"/>
 
-  <text x="500" y="115"
-        text-anchor="middle"
-        font-family="Arial,sans-serif"
-        font-size="48" font-weight="900"
-        fill="${d.accent}">${d.title}</text>
+<text x="500" y="105" text-anchor="middle"
+ font-family="Arial,sans-serif" font-size="46" font-weight="900"
+ fill="${d.accent}">${d.title}</text>
 
-  <text x="500" y="165"
-        text-anchor="middle"
-        font-family="Arial,sans-serif"
-        font-size="30" font-weight="700"
-        fill="#ffffff">${pt.name}</text>
+<text x="500" y="150" text-anchor="middle"
+ font-family="Arial,sans-serif" font-size="29" font-weight="800"
+ fill="#ffffff">${pt[0]}</text>
 
-  <text x="500" y="215"
-        text-anchor="middle"
-        font-family="Arial,sans-serif"
-        font-size="23"
-        fill="#dddddd">THANJAVUR • ${today()}</text>
+<text x="500" y="190" text-anchor="middle"
+ font-family="Arial,sans-serif" font-size="19"
+ fill="#dddddd">${pt[1]}</text>
 
-  ${rowSvg}
+<text x="500" y="225" text-anchor="middle"
+ font-family="Arial,sans-serif" font-size="20"
+ fill="#bbbbbb">THANJAVUR • ${today()}</text>
 
-  <rect x="55" y="800" width="890" height="190"
-        rx="22" fill="${d.card}"/>
+<text x="75" y="270"
+ font-family="Arial,sans-serif" font-size="24" font-weight="900"
+ fill="${d.accent}">GOLD PRICE</text>
 
-  <text x="85" y="850"
-        font-family="Arial,sans-serif"
-        font-size="25" font-weight="700"
-        fill="${d.accent}">⚖ 8 GRAM / 1 SAVARAN</text>
+${goldSvg}
 
-  <text x="85" y="910"
-        font-family="Arial,sans-serif"
-        font-size="25"
-        fill="#ffffff">22K / 916</text>
+<rect x="55" y="690" width="890" height="175" rx="22" fill="${d.card}"/>
 
-  <text x="900" y="910"
-        text-anchor="end"
-        font-family="Arial,sans-serif"
-        font-size="32" font-weight="800"
-        fill="#ffffff">${money(eight22)}</text>
+<text x="80" y="735"
+ font-family="Arial,sans-serif" font-size="22" font-weight="900"
+ fill="${d.accent}">GOLD RATE CHANGE</text>
 
-  <text x="85" y="955"
-        font-family="Arial,sans-serif"
-        font-size="25"
-        fill="#ffffff">24K</text>
+<text x="80" y="780"
+ font-family="Arial,sans-serif" font-size="21"
+ fill="#ffffff">Previous Close: ${money(g.previousClose)}</text>
 
-  <text x="900" y="955"
-        text-anchor="end"
-        font-family="Arial,sans-serif"
-        font-size="32" font-weight="800"
-        fill="#ffffff">${money(eight24)}</text>
+<text x="80" y="825"
+ font-family="Arial,sans-serif" font-size="23" font-weight="800"
+ fill="#ffffff">${changeText(g.change,g.changePercent)}</text>
 
-  <rect x="55" y="1040" width="890" height="150"
-        rx="22" fill="${d.accent}"/>
+<rect x="55" y="895" width="890" height="245" rx="24"
+ fill="${d.card}"/>
 
-  <text x="500" y="1095"
-        text-anchor="middle"
-        font-family="Arial,sans-serif"
-        font-size="27" font-weight="900"
-        fill="#111111">WHATSAPP</text>
+<text x="80" y="940"
+ font-family="Arial,sans-serif" font-size="30" font-weight="900"
+ fill="${d.accent}">SILVER PRICE</text>
 
-  <text x="500" y="1145"
-        text-anchor="middle"
-        font-family="Arial,sans-serif"
-        font-size="38" font-weight="900"
-        fill="#111111">95850 80842</text>
+<text x="80" y="990"
+ font-family="Arial,sans-serif" font-size="22"
+ fill="#ffffff">1 gram</text>
 
-  <text x="500" y="1260"
-        text-anchor="middle"
-        font-family="Arial,sans-serif"
-        font-size="21"
-        fill="#cccccc">Indicative rates • Verify with local jeweller</text>
+<text x="900" y="990" text-anchor="end"
+ font-family="Arial,sans-serif" font-size="28" font-weight="800"
+ fill="#ffffff">${money(s.gram)}</text>
 
-  <text x="500" y="1305"
-        text-anchor="middle"
-        font-family="Arial,sans-serif"
-        font-size="19"
-        fill="#aaaaaa">SASIKUMAR AI • LIVE THANJAVUR RATE</text>
+<text x="80" y="1035"
+ font-family="Arial,sans-serif" font-size="22"
+ fill="#ffffff">10 gram</text>
+
+<text x="900" y="1035" text-anchor="end"
+ font-family="Arial,sans-serif" font-size="28" font-weight="800"
+ fill="#ffffff">${money(s.tenGram)}</text>
+
+<text x="80" y="1080"
+ font-family="Arial,sans-serif" font-size="22"
+ fill="#ffffff">1 kilogram</text>
+
+<text x="900" y="1080" text-anchor="end"
+ font-family="Arial,sans-serif" font-size="30" font-weight="900"
+ fill="#ffffff">${money(s.kg)}</text>
+
+<text x="80" y="1120"
+ font-family="Arial,sans-serif" font-size="21" font-weight="800"
+ fill="#ffffff">${changeText(s.change,s.changePercent)}</text>
+
+<rect x="55" y="1170" width="890" height="95" rx="20"
+ fill="${d.accent}"/>
+
+<text x="500" y="1210" text-anchor="middle"
+ font-family="Arial,sans-serif" font-size="20" font-weight="900"
+ fill="#111111">GOLD 8G: ${money(g.r22*8)} • SILVER 1KG: ${money(s.kg)}</text>
+
+<text x="500" y="1245" text-anchor="middle"
+ font-family="Arial,sans-serif" font-size="25" font-weight="900"
+ fill="#111111">WHATSAPP 95850 80842</text>
+
+<text x="500" y="1300" text-anchor="middle"
+ font-family="Arial,sans-serif" font-size="18"
+ fill="#bbbbbb">International/reference rates • Local retail rate may differ</text>
+
+<text x="500" y="1330" text-anchor="middle"
+ font-family="Arial,sans-serif" font-size="17"
+ fill="#999999">SASIKUMAR AI • GOLD + SILVER DAILY UPDATE</text>
 
 </svg>`;
 }
 
-
-function normalizeRates(x){
-  if(!x) return x;
-
-  if(x.r24 && x.r22){
-    return x;
-  }
-
-  return {
-    r24: safeNumber(x['24K'] ?? x['24k'] ?? x.r24 ?? x.rate24),
-    r22: safeNumber(x['22K'] ?? x['22k'] ?? x.r22 ?? x.rate22),
-    r20: safeNumber(x['20K'] ?? x['20k'] ?? x.r20 ?? x.rate20),
-    r19: safeNumber(x['19K'] ?? x['19k'] ?? x.r19 ?? x.rate19),
-    r18: safeNumber(x['18K'] ?? x['18k'] ?? x.r18 ?? x.rate18)
-  };
-}
-
-
-async function sendDiscordGoldUpdate(rates){
+async function sendDiscordUpdate(data){
   try{
-    const webhook = process.env.DISCORD_WEBHOOK_URL;
+    const webhook=process.env.DISCORD_WEBHOOK_URL;
 
     if(!webhook){
       console.log('⚠️ DISCORD_WEBHOOK_URL not configured — Discord skipped');
       return;
     }
 
-    const message = {
-      username: 'SASIKUMAR AI',
+    const g=data.gold;
+    const s=data.silver;
+
+    const message={
+      username:'SASIKUMAR AI',
       content:
-`🪙 **SASIKUMAR AI — DAILY GOLD UPDATE**
+`💰 **SASIKUMAR AI — GOLD + SILVER DAILY UPDATE**
 
 📅 ${today()}
 
-💎 24K: ${money(rates.r24)}/g
-🪙 22K: ${money(rates.r22)}/g
-🔸 20K: ${money(rates.r20)}/g
-🔸 19K: ${money(rates.r19)}/g
-🔸 18K: ${money(rates.r18)}/g
+💎 GOLD
+24K: ${money(g.r24)}/g
+22K: ${money(g.r22)}/g
+20K: ${money(g.r20)}/g
+19K: ${money(g.r19)}/g
+18K: ${money(g.r18)}/g
+⚖️ 22K / 916 — 8g: ${money(g.r22*8)}
+📈 ${changeText(g.change,g.changePercent)}
 
-⚖️ 22K / 916 — 8g: ${money(rates.r22 * 8)}
-💎 24K — 8g: ${money(rates.r24 * 8)}
+🥈 SILVER
+1g: ${money(s.gram)}
+10g: ${money(s.tenGram)}
+1kg: ${money(s.kg)}
+📊 ${changeText(s.change,s.changePercent)}
 
 📍 Thanjavur
-ℹ️ GoldAPI international/reference rate. Local jewellery retail rate may differ.
+ℹ️ GoldAPI international/reference rates. Local jewellery retail rate may differ.
 
 🌐 SASIKUMAR AI
 https://sasikumar-ai-9wdq.onrender.com/daily-gold-poster.svg`
     };
 
-    const response = await fetch(webhook,{
+    const response=await fetch(webhook,{
       method:'POST',
-      headers:{
-        'Content-Type':'application/json'
-      },
+      headers:{'Content-Type':'application/json'},
       body:JSON.stringify(message)
     });
 
     if(!response.ok){
-      const errorText = await response.text();
+      const errorText=await response.text();
       throw new Error(`Discord HTTP ${response.status}: ${errorText}`);
     }
 
-    console.log('✅ Discord Gold Update sent successfully');
+    console.log('✅ Discord Gold + Silver Update sent successfully');
 
   }catch(e){
-    console.error('❌ Discord send failed:', e.message);
+    console.error('❌ Discord send failed:',e.message);
   }
 }
 
 async function generate(){
   try{
-    const rates = await getRates();
-    const svg = poster(rates);
+    const data=await getRates();
+    const svg=poster(data);
 
-    fs.writeFileSync(OUT, svg, 'utf8');
+    fs.writeFileSync(OUT,svg,'utf8');
 
-    console.log(
-      `✅ Daily Gold Poster generated: ${new Date().toISOString()}`
-    );
+    console.log(`✅ Gold + Silver Daily Poster generated: ${new Date().toISOString()}`);
     console.log(`📁 ${OUT}`);
-    console.log(`💎 24K: ${money(rates.r24)}`);
-    console.log(`🪙 22K: ${money(rates.r22)}`);
+    console.log(`💎 Gold 24K: ${money(data.gold.r24)}`);
+    console.log(`🪙 Gold 22K: ${money(data.gold.r22)}`);
+    console.log(`🥈 Silver 1g: ${money(data.silver.gram)}`);
+    console.log(`🥈 Silver 1kg: ${money(data.silver.kg)}`);
 
-    await sendDiscordGoldUpdate(rates);
+    await sendDiscordUpdate(data);
+
   }catch(e){
-    console.error('❌ Daily Gold Poster failed:', e.message);
+    console.error('❌ Gold + Silver Daily Poster failed:',e.message);
   }
 }
 
-/*
-  Daily at 10:00 AM IST.
-*/
 cron.schedule(
   '0 10 * * *',
   generate,
-  { timezone:'Asia/Kolkata' }
+  {timezone:'Asia/Kolkata'}
 );
 
-console.log('🟢 SASIKUMAR AI Daily Gold Poster automation started');
+console.log('🟢 SASIKUMAR AI Gold + Silver Poster automation started');
 console.log('⏰ Schedule: Every day at 10:00 AM IST');
 
 generate();
