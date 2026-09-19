@@ -13,3 +13,6 @@ server.js.backup*
 ai-test.log
 main
 same
+
+# Generated daily gold poster
+public/daily-gold-poster.svg
