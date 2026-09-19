@@ -1827,7 +1827,7 @@ document.addEventListener("DOMContentLoaded",()=>{updateLiveDateTime();setInterv
 </style>
 
 <div class="sasikumar-folder-buttons">
-  <button class="sasikumar-folder-btn" onclick="document.getElementById('allJobs')?.scrollIntoView({behavior:'smooth'})">
+  <button class="sasikumar-folder-btn" onclick="window.location.href='/jobs/index.html'">
     📁 JOB FOLDER
   </button>
 
@@ -1890,7 +1890,7 @@ function openEducationFolder(){
   box.scrollIntoView({behavior:"smooth"});
 }
 </script>
-\n<section id="allJobs" style="margin:20px 0;padding:16px;border-radius:16px;background:#111;color:#fff;">
+<section id="allJobs" style="margin:20px 0;padding:16px;border-radius:16px;background:#111;color:#fff;">
 
   <h2>💼 ALL JOBS</h2>
 
@@ -2064,7 +2064,7 @@ function openEducationFolder(){
   </div>
 
   <!-- LIVE JOB SEARCH -->
-  <div id="sjLiveSearch" style="display:none;margin-top:20px;">
+  <div id="sjLiveSearch" style="display:block;margin-top:20px;">
 
     <h3>🔴 LIVE JOB SEARCH</h3>
 
@@ -2489,84 +2489,162 @@ window.cleanSasikumarJobs=function(){
 
 window.renderSasikumarJobs=function(){
 
-    const box=document.getElementById('sjLiveResults');
+  const box=document.getElementById('sjLiveResults');
+  if(!box) return;
 
-    if(!box) return;
+  const search=(document.getElementById('sjSearch')?.value || '')
+    .trim().toLowerCase();
 
-    const search=(document.getElementById('sjSearch')?.value || '')
-      .trim().toLowerCase();
+  const list=expireJobs();
 
-    const list=expireJobs();
+  const matches=(job)=>{
+    const text=[
+      job.company,
+      job.title,
+      job.location,
+      job.qualification,
+      job.experience,
+      job.type,
+      job.description,
+      job.requirements
+    ].join(' ').toLowerCase();
 
-    const live=list.filter(job=>{
-      if(job.status!=='LIVE') return false;
+    return !search || text.includes(search);
+  };
 
-      const text=[
-        job.company,
-        job.title,
-        job.location,
-        job.qualification,
-        job.experience
-      ].join(' ').toLowerCase();
+  const live=list.filter(j => j.status==='LIVE' && matches(j));
 
-      return !search || text.includes(search);
-    });
+  const screening=list.filter(j =>
+    j.status==='PENDING' &&
+    matches(j)
+  );
 
-    if(!live.length){
-      box.innerHTML=
-        '<div style="padding:15px;border-radius:10px;background:#222;">' +
-        '🔎 No LIVE jobs found.' +
-        '</div>';
-      return;
-    }
+  const expired=list.filter(j =>
+    j.status==='EXPIRED' &&
+    matches(j)
+  );
 
-    box.innerHTML=live.map(job=>{
+  const countAll=list.length;
+
+  let html=
+    '<div style="margin-bottom:12px;padding:12px;border-radius:12px;background:#181818;">' +
+    '<b>📊 JOB STATUS</b><br>' +
+    '🟢 LIVE: '+list.filter(j=>j.status==='LIVE').length+
+    ' &nbsp; 🟡 SCREENING: '+list.filter(j=>j.status==='PENDING').length+
+    ' &nbsp; 🔴 EXPIRED: '+list.filter(j=>j.status==='EXPIRED').length+
+    ' &nbsp; 📋 TOTAL: '+countAll+
+    '</div>';
+
+  if(live.length){
+
+    html +=
+      '<h3 style="margin:14px 0 8px;">🟢 LIVE JOB CONTENT</h3>';
+
+    html += live.map(job=>{
 
       const wa=normalizeWhatsApp(job.whatsapp);
 
       const waButton=wa
-        ? '<button type="button" onclick="connectJobWhatsApp(\'' +
-          esc(job.id) +
-          '\')">📱 Connect WhatsApp</button>'
+        ? '<button type="button" onclick="connectJobWhatsApp(\''+
+          esc(job.id)+
+          '\')" style="margin-top:10px;">📱 Connect WhatsApp</button>'
         : '';
 
-      return '<div style="margin:10px 0;padding:14px;border-radius:12px;background:#222;">' +
+      return '<article style="margin:12px 0;padding:16px;border-radius:14px;background:#222;border:1px solid #444;">' +
 
         (job.posterImage
-          ? '<img src="'+job.posterImage+'" style="width:100%;max-width:420px;border-radius:12px;margin-bottom:10px;" alt="Job Poster">'
+          ? '<img src="'+job.posterImage+
+            '" style="width:100%;max-width:500px;border-radius:12px;margin-bottom:12px;" alt="Job Poster">'
           : '') +
 
-        '<h3>💼 '+esc(job.title)+'</h3>' +
-        '<b>Company:</b> '+esc(job.company)+'<br>' +
-        '<b>Location:</b> '+esc(job.location)+'<br>' +
-        '<b>Job Type:</b> '+esc(job.type)+'<br>' +
-        '<b>Qualification:</b> '+esc(job.qualification || '-')+'<br>' +
-        '<b>Experience:</b> '+esc(job.experience || '-')+'<br>' +
-        '<b>Vacancies:</b> '+esc(job.vacancies || '-')+'<br>' +
-        '<b>Salary:</b> '+esc(job.salary || '-')+'<br>' +
-        '<b>Closing Date:</b> '+esc(job.closingDate || '-')+'<br>' +
-        '<p>'+esc(job.description || '')+'</p>' +
+        '<div style="font-size:12px;margin-bottom:6px;">' +
+        '🟢 <b>LIVE JOB</b>' +
+        '</div>' +
+
+        '<h3 style="margin:6px 0 12px;">💼 '+esc(job.title)+'</h3>' +
+
+        '<b>🏢 Company:</b> '+esc(job.company)+'<br>' +
+        '<b>📍 Location:</b> '+esc(job.location)+'<br>' +
+        '<b>💼 Job Type:</b> '+esc(job.type || '-')+'<br>' +
+        '<b>🎓 Qualification:</b> '+esc(job.qualification || '-')+'<br>' +
+        '<b>🧑‍💼 Experience:</b> '+esc(job.experience || '-')+'<br>' +
+        '<b>👥 Vacancies:</b> '+esc(job.vacancies || '-')+'<br>' +
+        '<b>💰 Salary:</b> '+esc(job.salary || '-')+'<br>' +
+        '<b>🕐 Working Hours:</b> '+esc(job.hours || '-')+'<br>' +
+        '<b>📅 Closing Date:</b> '+esc(job.closingDate || '-')+'<br>' +
+
+        (job.description
+          ? '<div style="margin-top:10px;padding:10px;border-radius:10px;background:#303030;">' +
+            '<b>📝 JOB DETAILS</b><br>'+esc(job.description)+
+            '</div>'
+          : '') +
 
         (job.requirements
-          ? '<div style="margin-top:8px;padding:10px;border-radius:10px;background:#333;">' +
+          ? '<div style="margin-top:10px;padding:10px;border-radius:10px;background:#303030;">' +
             '<b>📋 REQUIREMENTS</b><br>'+esc(job.requirements)+
             '</div>'
           : '') +
 
         (job.message
-          ? '<div style="margin-top:8px;padding:10px;border-radius:10px;background:#333;">' +
+          ? '<div style="margin-top:10px;padding:10px;border-radius:10px;background:#303030;">' +
             '<b>📰 MESSAGE</b><br>'+esc(job.message)+
             '</div>'
           : '') +
 
+        '<div style="margin-top:10px;font-size:12px;opacity:.8;">' +
+        '🆔 Job ID: '+esc(job.id)+
+        '</div>' +
+
         waButton +
 
-        '</div>';
+        '</article>';
 
     }).join('');
-  };
 
-  window.connectJobWhatsApp=function(id){
+  }else{
+
+    html +=
+      '<div style="padding:15px;border-radius:10px;background:#222;">' +
+      '🔎 No LIVE jobs found.' +
+      '</div>';
+
+  }
+
+  if(screening.length){
+
+    html +=
+      '<h3 style="margin:18px 0 8px;">🟡 SCREENING</h3>';
+
+    html += screening.map(job=>
+      '<div style="margin:10px 0;padding:14px;border-radius:12px;background:#332b10;">' +
+      '🟡 <b>Employer Post Under Screening</b><br>' +
+      '🆔 '+esc(job.id)+'<br>' +
+      '📝 '+esc(job.message || 'Job information submitted for screening.') +
+      '</div>'
+    ).join('');
+
+  }
+
+  if(expired.length){
+
+    html +=
+      '<h3 style="margin:18px 0 8px;">🔴 EXPIRED JOBS</h3>';
+
+    html += expired.map(job=>
+      '<div style="margin:10px 0;padding:14px;border-radius:12px;background:#2b1818;">' +
+      '🔴 <b>'+esc(job.title)+'</b><br>' +
+      '🏢 '+esc(job.company)+'<br>' +
+      '📍 '+esc(job.location)+'<br>' +
+      '📅 Closed: '+esc(job.closingDate || '-') +
+      '</div>'
+    ).join('');
+
+  }
+
+  box.innerHTML=html;
+};
+
+window.connectJobWhatsApp=function(id){
 
     const job=jobs().find(j=>j.id===id);
 
