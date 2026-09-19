@@ -817,10 +817,10 @@ app.use(intelligentAI);
 const voiceAI = require("./voice-ai");
 app.use(voiceAI);
 
-// SASIKUMAR AI Daily Gold Poster
-require("./daily-gold-poster");
-
 app.listen(PORT,()=>{
   console.log("🤖 SASIKUMAR AI");
   console.log("✅ Server running on port " + PORT);
+
+  // SASIKUMAR AI Daily Gold Poster
+  require("./daily-gold-poster");
 });
