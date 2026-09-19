@@ -305,6 +305,59 @@ function normalizeRates(x){
   };
 }
 
+
+async function sendDiscordGoldUpdate(rates){
+  try{
+    const webhook = process.env.DISCORD_WEBHOOK_URL;
+
+    if(!webhook){
+      console.log('⚠️ DISCORD_WEBHOOK_URL not configured — Discord skipped');
+      return;
+    }
+
+    const message = {
+      username: 'SASIKUMAR AI',
+      content:
+`🪙 **SASIKUMAR AI — DAILY GOLD UPDATE**
+
+📅 ${today()}
+
+💎 24K: ${money(rates.r24)}/g
+🪙 22K: ${money(rates.r22)}/g
+🔸 20K: ${money(rates.r20)}/g
+🔸 19K: ${money(rates.r19)}/g
+🔸 18K: ${money(rates.r18)}/g
+
+⚖️ 22K / 916 — 8g: ${money(rates.r22 * 8)}
+💎 24K — 8g: ${money(rates.r24 * 8)}
+
+📍 Thanjavur
+ℹ️ GoldAPI international/reference rate. Local jewellery retail rate may differ.
+
+🌐 SASIKUMAR AI
+https://sasikumar-ai-9wdq.onrender.com/daily-gold-poster.svg`
+    };
+
+    const response = await fetch(webhook,{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify(message)
+    });
+
+    if(!response.ok){
+      const errorText = await response.text();
+      throw new Error(`Discord HTTP ${response.status}: ${errorText}`);
+    }
+
+    console.log('✅ Discord Gold Update sent successfully');
+
+  }catch(e){
+    console.error('❌ Discord send failed:', e.message);
+  }
+}
+
 async function generate(){
   try{
     const rates = await getRates();
@@ -318,6 +371,8 @@ async function generate(){
     console.log(`📁 ${OUT}`);
     console.log(`💎 24K: ${money(rates.r24)}`);
     console.log(`🪙 22K: ${money(rates.r22)}`);
+
+    await sendDiscordGoldUpdate(rates);
   }catch(e){
     console.error('❌ Daily Gold Poster failed:', e.message);
   }
