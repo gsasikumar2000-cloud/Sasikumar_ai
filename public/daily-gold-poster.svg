@@ -2,37 +2,37 @@
 <svg xmlns="http://www.w3.org/2000/svg"
      width="1000" height="1400" viewBox="0 0 1000 1400">
 
-  <rect width="1000" height="1400" fill="#171024"/>
+  <rect width="1000" height="1400" fill="#111111"/>
 
   <rect x="35" y="35" width="930" height="1330"
         rx="35" fill="none"
-        stroke="#f6d365" stroke-width="4"/>
+        stroke="#f5c542" stroke-width="4"/>
 
   <text x="500" y="115"
         text-anchor="middle"
         font-family="Arial,sans-serif"
         font-size="48" font-weight="900"
-        fill="#f6d365">SASIKUMAR AI</text>
+        fill="#f5c542">SASIKUMAR AI</text>
 
   <text x="500" y="165"
         text-anchor="middle"
         font-family="Arial,sans-serif"
         font-size="30" font-weight="700"
-        fill="#ffffff">APPRAISER TIP</text>
+        fill="#ffffff">DAILY GOLD TIP</text>
 
   <text x="500" y="215"
         text-anchor="middle"
         font-family="Arial,sans-serif"
         font-size="23"
-        fill="#dddddd">THANJAVUR • 17/09/2026</text>
+        fill="#dddddd">THANJAVUR • 19/09/2026</text>
 
   
       <rect x="55" y="312" width="890" height="66"
-        rx="16" fill="#2c1b3d"/>
+        rx="16" fill="#1d1d1d"/>
       <text x="85" y="353"
         font-family="Arial,sans-serif"
         font-size="27" font-weight="700"
-        fill="#f6d365">24K</text>
+        fill="#f5c542">24K</text>
       <text x="350" y="353"
         font-family="Arial,sans-serif"
         font-size="20" fill="#dddddd">99.9%</text>
@@ -43,11 +43,11 @@
         fill="#ffffff">₹15,409/g</text>
     
       <rect x="55" y="394" width="890" height="66"
-        rx="16" fill="#2c1b3d"/>
+        rx="16" fill="#1d1d1d"/>
       <text x="85" y="435"
         font-family="Arial,sans-serif"
         font-size="27" font-weight="700"
-        fill="#f6d365">22K / 916</text>
+        fill="#f5c542">22K / 916</text>
       <text x="350" y="435"
         font-family="Arial,sans-serif"
         font-size="20" fill="#dddddd">91.6%</text>
@@ -58,11 +58,11 @@
         fill="#ffffff">₹14,125/g</text>
     
       <rect x="55" y="476" width="890" height="66"
-        rx="16" fill="#2c1b3d"/>
+        rx="16" fill="#1d1d1d"/>
       <text x="85" y="517"
         font-family="Arial,sans-serif"
         font-size="27" font-weight="700"
-        fill="#f6d365">20K</text>
+        fill="#f5c542">20K</text>
       <text x="350" y="517"
         font-family="Arial,sans-serif"
         font-size="20" fill="#dddddd">83.3%</text>
@@ -73,11 +73,11 @@
         fill="#ffffff">₹12,841/g</text>
     
       <rect x="55" y="558" width="890" height="66"
-        rx="16" fill="#2c1b3d"/>
+        rx="16" fill="#1d1d1d"/>
       <text x="85" y="599"
         font-family="Arial,sans-serif"
         font-size="27" font-weight="700"
-        fill="#f6d365">19K</text>
+        fill="#f5c542">19K</text>
       <text x="350" y="599"
         font-family="Arial,sans-serif"
         font-size="20" fill="#dddddd">79.2%</text>
@@ -88,11 +88,11 @@
         fill="#ffffff">₹12,199/g</text>
     
       <rect x="55" y="640" width="890" height="66"
-        rx="16" fill="#2c1b3d"/>
+        rx="16" fill="#1d1d1d"/>
       <text x="85" y="681"
         font-family="Arial,sans-serif"
         font-size="27" font-weight="700"
-        fill="#f6d365">18K</text>
+        fill="#f5c542">18K</text>
       <text x="350" y="681"
         font-family="Arial,sans-serif"
         font-size="20" fill="#dddddd">75.0%</text>
@@ -104,12 +104,12 @@
     
 
   <rect x="55" y="800" width="890" height="190"
-        rx="22" fill="#2c1b3d"/>
+        rx="22" fill="#1d1d1d"/>
 
   <text x="85" y="850"
         font-family="Arial,sans-serif"
         font-size="25" font-weight="700"
-        fill="#f6d365">⚖ 8 GRAM / 1 SAVARAN</text>
+        fill="#f5c542">⚖ 8 GRAM / 1 SAVARAN</text>
 
   <text x="85" y="910"
         font-family="Arial,sans-serif"
@@ -134,7 +134,7 @@
         fill="#ffffff">₹1,23,272</text>
 
   <rect x="55" y="1040" width="890" height="150"
-        rx="22" fill="#f6d365"/>
+        rx="22" fill="#f5c542"/>
 
   <text x="500" y="1095"
         text-anchor="middle"
