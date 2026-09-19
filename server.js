@@ -457,107 +457,66 @@ app.get("/api/state-news",async(req,res)=>{
 
 app.get("/api/gold-rate",async(req,res)=>{
   try{
-    if(!process.env.TAVILY_API_KEY)
-      throw new Error("TAVILY_API_KEY missing");
+    if(!process.env.GOLD_API_KEY)
+      throw new Error("GOLD_API_KEY missing");
 
-    const client=tavily({apiKey:process.env.TAVILY_API_KEY});
-
-    const todayIST = new Intl.DateTimeFormat("en-IN",{
-      timeZone:"Asia/Kolkata",
-      day:"numeric",
-      month:"long",
-      year:"numeric"
-    }).format(new Date());
-
-    const result=await client.search(
-      `site:goodreturns.in/gold-rates/thanjavur.html Thanjavur ${todayIST} 24K 22K 18K gold rate`,
-      {
-        searchDepth:"advanced",
-        maxResults:5
+    const r = await fetch("https://www.goldapi.io/api/XAU/INR",{
+      headers:{
+        "x-access-token":process.env.GOLD_API_KEY,
+        "Content-Type":"application/json"
       }
-    );
+    });
 
-    const text=[
-      result.answer || "",
-      ...(result.results || []).map(x =>
-        (x.title || "")+" "+(x.content || "")
-      )
-    ].join("\n");
+    const data = await r.json();
 
-    console.log("===== TAVILY GOODRETURNS DEBUG =====");
-    console.log("ANSWER:", result.answer || "(no answer)");
-    console.log("RESULT COUNT:", (result.results || []).length);
-    console.log("TEXT PREVIEW:", text.slice(0, 5000));
-    console.log("===== END DEBUG =====");
+    if(!r.ok)
+      throw new Error(data.error || data.message || `GoldAPI HTTP ${r.status}`);
 
-    function findRate(karat){
-      const k = String(karat);
+    const r24 = Math.round(Number(data.price_gram_24k));
+    const r22 = Math.round(Number(data.price_gram_22k));
+    const r20 = Math.round(Number(data.price_gram_20k));
+    const r18 = Math.round(Number(data.price_gram_18k));
 
-      const patterns = [
-        new RegExp(
-          "₹\\s*([0-9,]+)\\s*per gram\\s+for\\s*"+k+"\\s*karat\\s*gold",
-          "i"
-        ),
-        new RegExp(
-          "for\\s*"+k+"\\s*karat\\s*gold[^₹0-9]{0,100}₹\\s*([0-9,]+)",
-          "i"
-        ),
-        new RegExp(
-          "\\b"+k+"\\s*karat\\b[^₹0-9]{0,100}₹\\s*([0-9,]+)",
-          "i"
-        )
-      ];
+    if(!r24 || !r22 || !r20 || !r18)
+      throw new Error("GoldAPI returned incomplete gold rates");
 
-      for(const re of patterns){
-        const m = text.match(re);
+    const r19 = Math.round(r22 * 19 / 22);
 
-        if(m){
-          const n = Number(String(m[1]).replace(/,/g,""));
-
-          if(n >= 9000 && n <= 25000){
-            console.log(`Exact ${k}K rate found: ₹${n.toLocaleString("en-IN")}`);
-            return n;
-          }
-        }
-      }
-
-      return 0;
-    }
-
-    const r24=findRate(24);
-    const r22=findRate(22);
-    const r18=findRate(18);
-
-    console.log("Parsed Goodreturns:",{r24,r22,r18});
-
-    if(!r24 || !r22 || !r18)
-      throw new Error("Could not parse current Thanjavur rates from Goodreturns");
-
-    const rates={
-      "24K":r24,
-      "22K":r22,
-      "20K":Math.round(r22*20/22),
-      "19K":Math.round(r22*19/22),
-      "18K":r18 && r18 !== r24
-        ? r18
-        : Math.round(r22*18/22)
+    const rates = {
+      "24K": r24,
+      "22K": r22,
+      "20K": r20,
+      "19K": r19,
+      "18K": r18
     };
+
+    console.log("===== GOLDAPI DEBUG =====");
+    console.log("24K:", r24);
+    console.log("22K:", r22);
+    console.log("20K:", r20);
+    console.log("19K:", r19);
+    console.log("18K:", r18);
+    console.log("=========================");
 
     res.json({
       ok:true,
-      date:new Date().toLocaleDateString("en-GB"),
+      date:new Intl.DateTimeFormat("en-GB",{
+        timeZone:"Asia/Kolkata"
+      }).format(new Date()),
       rates,
       rates8g:Object.fromEntries(
         Object.entries(rates).map(([k,v])=>[k,v*8])
       ),
-      source:"Goodreturns • Thanjavur • SASIKUMAR AI"
+      source:"GoldAPI • XAU/INR • SASIKUMAR AI",
+      note:"International/reference gold price. Thanjavur jewellery retail rate may differ."
     });
 
   }catch(e){
     console.error("Gold Rate Error:",e.message);
+
     res.status(503).json({
       ok:false,
-      reply:"❌ Live Thanjavur Gold Rate unavailable: "+e.message
+      reply:"❌ Live Gold Rate unavailable: "+e.message
     });
   }
 });
