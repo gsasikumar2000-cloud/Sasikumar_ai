@@ -697,7 +697,6 @@ function closeAdminControl(){
 <button id="bankingServicesBtn" type="button" onclick="bankingServices()">🏦<span>Banking Services</span><small>Loan • Customer • Status</small></button>
 
     <button onclick="goldExpert()">🔬<span>Gold Expert</span><small>Appraiser Tools</small></button>
-    <button onclick="education()">📚<span>Education</span><small>Learn Gold & Appraisal</small></button>
     <button onclick="loanCalculations()">🧮<span>Loan Calculations</span><small>RD • FD • GL • HP • EMI</small></button>
     <button onclick="goldPractical()">⚖️<span>Practical Test</span><small>Density Test</small></button><button onclick="goldReport()">📋<span>Appraisal Report</span><small>Print / PDF</small></button>
     <button onclick="startVoice()">🎤<span>Voice Input</span><small>Tamil Voice</small></button>
@@ -751,53 +750,198 @@ function escapeHtml(text){
 }
 
 
-function education(){
   const box = document.getElementById("loanCalculationResult");
   if(!box) return;
 
   box.innerHTML = `
-    <div style="padding:18px;border-radius:16px;background:#111;color:#fff;">
-      <h2>📚 SASIKUMAR AI – Education</h2>
-      <p><b>Gold Appraisal Learning • தங்க மதிப்பீட்டு கல்வி</b></p>
+    <div style="padding:18px;border-radius:18px;background:#111;color:#fff;line-height:1.6;">
+
+      <h2>📚 SASIKUMAR AI – EDUCATION</h2>
+      <p><b>Tamil + English • School • Competitive Exams • Gold Appraiser</b></p>
 
       <hr>
 
-      <h3>🪙 1. Gold Purity & Karat</h3>
-      <p>24K = highest commonly traded purity reference.</p>
-      <p>22K, 20K, 19K, 18K போன்றவை alloy கலவையுடன் இருக்கும்.</p>
+      <h3>🏫 1. SCHOOL EDUCATION – வகுப்பு 1 முதல் 12</h3>
 
-      <h3>⚖️ 2. Weight & Valuation</h3>
-      <p>Gold value depends on weight, purity/karat and the applicable gold rate.</p>
+      <div style="padding:12px;border:1px solid #555;border-radius:12px;margin:10px 0;">
+        <b>📘 Classes 1–5</b><br>
+        தமிழ் • English • Mathematics • Science • Social Science
+      </div>
 
-      <h3>🔬 3. Testing Basics</h3>
-      <p>Density, touchstone and other screening methods can provide indications.</p>
-      <p><b>Final purity confirmation:</b> appropriate professional testing such as XRF/assay may be required.</p>
+      <div style="padding:12px;border:1px solid #555;border-radius:12px;margin:10px 0;">
+        <b>📗 Classes 6–8</b><br>
+        தமிழ் • English • Maths • Science • Social Science
+      </div>
 
-      <h3>📋 4. Appraisal Basics</h3>
-      <p>Record customer details, article description, weight, observed characteristics and test results carefully.</p>
+      <div style="padding:12px;border:1px solid #555;border-radius:12px;margin:10px 0;">
+        <b>📕 Classes 9–10</b><br>
+        Mathematics • Science • Social Science • Tamil • English
+      </div>
 
-      <h3>🏦 5. Gold Loan Basics</h3>
-      <p>Loan eligibility, LTV, interest and other terms depend on the lender's current rules and assessment.</p>
+      <div style="padding:12px;border:1px solid #555;border-radius:12px;margin:10px 0;">
+        <b>📙 Classes 11–12</b><br>
+        Mathematics • Physics • Chemistry • Biology • Computer Science
+      </div>
 
-      
+      <h3>📝 2. GOVERNMENT EXAMS</h3>
+      <p>
+        General Knowledge • General Science • History • Geography •
+        Indian Polity • Economy • Current Affairs • Aptitude • Reasoning
+      </p>
+
+      <p>
+        🧠 Practice Questions<br>
+        📋 Mock Tests<br>
+        🔄 Revision Mode<br>
+        ✅ Answer Checking
+      </p>
+
+      <h3>🏛️ 3. TNPSC</h3>
+      <div style="padding:12px;border:1px solid #555;border-radius:12px;">
+        <b>TNPSC Preparation</b><br><br>
+        • Group 1<br>
+        • Group 2 / 2A<br>
+        • Group 4<br>
+        • General Studies<br>
+        • General Tamil<br>
+        • Aptitude & Mental Ability<br>
+        • Current Affairs<br>
+        • Previous-Year Question Practice<br>
+        • Mock Tests
+      </div>
+
+      <h3>🏦 4. BANK EXAMS</h3>
+      <div style="padding:12px;border:1px solid #555;border-radius:12px;">
+        <b>Bank Exam Preparation</b><br><br>
+        • IBPS<br>
+        • SBI<br>
+        • RRB<br>
+        • Quantitative Aptitude<br>
+        • Reasoning<br>
+        • English<br>
+        • Banking Awareness<br>
+        • General Awareness<br>
+        • Computer Awareness<br>
+        • Current Affairs<br>
+        • Mock Tests
+      </div>
+
+      <h3>🚆 5. RAILWAY EXAMS</h3>
+      <div style="padding:12px;border:1px solid #555;border-radius:12px;">
+        <b>Railway Exam Preparation</b><br><br>
+        • RRB NTPC<br>
+        • RRB Group D<br>
+        • RRB ALP<br>
+        • Mathematics<br>
+        • Reasoning<br>
+        • General Science<br>
+        • General Awareness<br>
+        • Current Affairs<br>
+        • Mock Tests
+      </div>
+
+      <h3>🪙 6. GOLD APPRAISER – PRACTICAL EDUCATION</h3>
+
+      <div style="padding:12px;border:1px solid #777;border-radius:12px;margin:10px 0;">
+        <b>🔸 Gold Basics</b><br>
+        • Gold purity & fineness<br>
+        • 24K / 22K / 20K / 19K / 18K<br>
+        • 999 / 916 / 750<br>
+        • Gold weight & unit conversion<br>
+        • Gold rate calculation
+      </div>
+
+      <div style="padding:12px;border:1px solid #777;border-radius:12px;margin:10px 0;">
+        <b>🔬 Gold Testing – Theory</b><br>
+        • Density test principles<br>
+        • Touchstone screening principles<br>
+        • Acid-test theory and safety<br>
+        • XRF testing principles<br>
+        • Hallmark identification<br>
+        • Jewellery inspection basics
+      </div>
+
+      <div style="padding:12px;border:1px solid #777;border-radius:12px;margin:10px 0;">
+        <b>🧮 Appraisal Calculations</b><br>
+        • Gross weight<br>
+        • Stone / non-gold weight<br>
+        • Net gold weight<br>
+        • Purity adjustment<br>
+        • Fine-gold calculation<br>
+        • Rate × weight calculation<br>
+        • Wastage / making-charge concepts<br>
+        • Appraisal value calculation
+      </div>
+
+      <div style="padding:12px;border:1px solid #777;border-radius:12px;margin:10px 0;">
+        <b>📋 Professional Appraisal</b><br>
+        • Item identification<br>
+        • Weight recording<br>
+        • Purity recording<br>
+        • Test-result recording<br>
+        • Valuation calculation<br>
+        • Appraisal report preparation<br>
+        • Customer communication<br>
+        • Basic verification checklist
+      </div>
+
+      <h3>🧮 7. OLD EQUATIONS</h3>
+
+      <p>
+        Mathematics • Algebra • Geometry • Trigonometry • Statistics •
+        Physics • Chemistry • Interest • EMI • Time & Work •
+        Time, Speed & Distance • Profit & Loss • Mensuration
+      </p>
+
       <div style="margin:15px 0;">
-        <button onclick="window.open('/education/equations.html','_blank')">
-          🧮 Old Equations
+        <button type="button"
+          onclick="window.open('/education/equations.html','_blank')">
+          🧮 OPEN OLD EQUATIONS
         </button>
       </div>
 
+      <h3>🤖 8. AI STUDY ASSISTANT</h3>
+
+      <div style="padding:14px;border-radius:14px;background:#181818;border:1px solid #666;">
+        <b>Ask SASIKUMAR AI:</b>
+
+        <p>
+          💬 Tamil / English Questions<br>
+          📖 Step-by-step Explanation<br>
+          🧠 Practice Questions<br>
+          📝 Mock Tests<br>
+          ✅ Answer Checking<br>
+          🔄 Revision Mode<br>
+          🪙 Gold Appraiser Practice
+        </p>
+
+        <p>
+          <b>Example:</b><br>
+          "Explain 916 gold in Tamil"<br>
+          "Calculate gold appraisal value"<br>
+          "TNPSC aptitude question கொடு"<br>
+          "Explain EMI step by step"
+        </p>
+      </div>
+
       <h3>⚠️ Educational Disclaimer</h3>
-      <p style="font-size:13px;">
-        This section is for general educational purposes only.
-        It is not a substitute for laboratory assay, certified valuation,
-        or a lender's official assessment. Rates and financial terms may change.
+
+      <p style="font-size:13px;color:#ddd;">
+        This Education section is for general educational and training
+        purposes only. Gold testing, certified valuation, laboratory assay,
+        financial products and examination requirements may require
+        professional or official verification. Always follow applicable
+        safety procedures and current official rules.
       </p>
 
-      <button onclick="document.getElementById('loanCalculationResult').innerHTML=''">
+      <button type="button"
+        onclick="document.getElementById('loanCalculationResult').innerHTML=''">
         ✖ Close Education
       </button>
+
     </div>
   `;
+
   box.scrollIntoView({behavior:"smooth", block:"start"});
 }
 
