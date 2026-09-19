@@ -421,7 +421,12 @@ function openDailyPoster(){
   };
 }
 
-window.makeClickableLinks=function(text){return String(text).replace(/(https?:\/\/[^\s<]+)/g,"<a class=\"ai-link\" href=\"$1\" target=\"_blank\" rel=\"noopener noreferrer\">$1</a>");};</script>
+window.makeClickableLinks=function(text){return String(text).replace(/(https?:\/\/[^\s<]+)/g,"<a class=\"ai-link\" href=\"$1\" target=\"_blank\" rel=\"noopener noreferrer\">$1</a>");};\n<script>
+function openEquations() {
+  window.location.href = "/education/equations.html";
+}
+</script>
+</script>
 </head>
 
 
@@ -601,7 +606,6 @@ function technologyMenu(){
 
 const adminButtonSettings = [
   ["liveGoldRate","🪙 Gold Rate"],
-  ["nationalNews","📰 State News"],
   ["goldLoanDashboard","💰 Gold Loan"],
   ["bankingServices","🏦 Banking Services"],
   ["goldExpert","🔬 Gold Expert"],
@@ -690,9 +694,9 @@ function closeAdminControl(){
   <div class="dash-sub">Smart Assistant • Gold • News • Voice</div>
 
   <div class="dash-grid">
+    <button onclick="openEquations()">📐<span>Equations</span><small>Math • Gold • Finance</small></button>
     <button onclick="liveGoldRate()">💰<span>Gold Price</span><small>Rate Change • Thanjavur</small></button>
     <button onclick="openDailyPoster()">🖼️<span>Daily Poster</span><small>Gold • News • Share</small></button>
-    <button onclick="nationalNews()">📰<span>State News</span><small>State / District</small></button>
 
 <button id="bankingServicesBtn" type="button" onclick="bankingServices()">🏦<span>Banking Services</span><small>Loan • Customer • Status</small></button>
 
@@ -708,14 +712,35 @@ function closeAdminControl(){
 
 
 <div class="toolbar">
-<button onclick="startVoice()">🎤 குரல்</button><button id="autoVoiceBtn" onclick="toggleAutoVoice()">🎙️ Auto Voice</button><button id="voiceBtn" onclick="toggleVoice()">🔊 AI Voice</button>
-<button onclick="stopAI()">⏹ நிறுத்து</button>
-<button onclick="copyChat()">📋 நகல்</button>
-<button onclick="shareChat()">📤 பகிர்</button>
-<button onclick="nationalNews()">📰 State News</button>
-<button class="luxury-toggle" onclick="toggleDark()">🌙 Dark</button><button onclick="clearChat()">🧹 அழி</button>
-<button onclick="topChat()">⬆️</button>
-<button onclick="bottomChat()">⬇️</button>
+<button onclick="startVoice()">🎤 Voice</button>
+<button id="autoVoiceBtn" onclick="toggleAutoVoice()">🎙️ Auto Voice</button>
+<button id="voiceBtn" onclick="toggleVoice()">🔊 AI Voice</button>
+<button onclick="stopAI()">⏹ Stop</button>
+
+<button onclick="noteCamera()">📷 Camera</button>
+<button onclick="noteUpload()">📁 Upload</button>
+<button onclick="location.reload()">🔄 Refresh</button>
+
+<button onclick="document.execCommand('cut')">✂️ Cut</button>
+<button onclick="copyChat()">📋 Copy</button>
+<button onclick="document.execCommand('paste')">📌 Paste</button>
+<button onclick="selectAllNotes()">☑️ Select All</button>
+
+<button onclick="undoNotes()">↩️ Undo</button>
+<button onclick="redoNotes()">↪️ Redo</button>
+<button onclick="findNotes()">🔍 Find</button>
+<button onclick="editNotes()">📝 Edit</button>
+
+<button onclick="saveNotes()">💾 Save</button>
+<button onclick="printNotes()">🖨️ Print</button>
+<button onclick="pdfNotes()">📄 PDF</button>
+<button onclick="shareChat()">📤 Share</button>
+<button onclick="popNotes()">🪟 Pop-up</button>
+
+<button class="luxury-toggle" onclick="toggleDark()">🌙 Dark</button>
+<button onclick="clearChat()">🧹 Clear</button>
+<button onclick="topChat()">⬆️ Up</button>
+<button onclick="bottomChat()">⬇️ Down</button>
 </div>
 
 <div id="chat">
@@ -2785,6 +2810,96 @@ window.showEducationFolder=function(){
     alert('📚 EDUCATION FOLDER\n\nEducation content will be available here.');
   }
 };
+
+// ===== English Notes Toolbar Functions =====
+function noteCamera(){
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "image/*";
+  input.capture = "environment";
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if(file) alert("Camera image selected: " + file.name);
+  };
+  input.click();
+}
+
+function noteUpload(){
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "image/*,.pdf,.txt,.doc,.docx";
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if(file) alert("File selected: " + file.name);
+  };
+  input.click();
+}
+
+function selectAllNotes(){
+  const el = document.activeElement;
+  if(el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA")){
+    el.select();
+  } else {
+    window.getSelection().selectAllChildren(document.body);
+  }
+}
+
+function undoNotes(){
+  document.execCommand("undo");
+}
+
+function redoNotes(){
+  document.execCommand("redo");
+}
+
+function findNotes(){
+  const q = prompt("Find:");
+  if(q) window.find(q);
+}
+
+function editNotes(){
+  document.body.contentEditable =
+    document.body.contentEditable === "true" ? "false" : "true";
+  alert(document.body.contentEditable === "true"
+    ? "Edit mode ON"
+    : "Edit mode OFF");
+}
+
+function saveNotes(){
+  const text = document.body.innerText;
+  const blob = new Blob([text], {type:"text/plain;charset=utf-8"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "SASIKUMAR-AI-Notes.txt";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function printNotes(){
+  window.print();
+}
+
+function pdfNotes(){
+  window.print();
+}
+
+function popNotes(){
+  const w = window.open("", "SASIKUMAR_AI_NOTES",
+    "width=900,height=700,resizable=yes,scrollbars=yes");
+  if(!w) {
+    alert("Pop-up blocked. Please allow pop-ups for this website.");
+    return;
+  }
+  w.document.write(
+    "<!doctype html><html><head><title>SASIKUMAR AI Notes</title>" +
+    "<style>body{font-family:Arial,sans-serif;padding:30px;line-height:1.6}" +
+    "</style></head><body>" +
+    document.body.innerHTML +
+    "</body></html>"
+  );
+  w.document.close();
+}
+
 </script>
 \n</body>
 </html>
