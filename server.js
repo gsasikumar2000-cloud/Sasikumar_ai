@@ -776,6 +776,103 @@ app.use(intelligentAI);
 const voiceAI = require("./voice-ai");
 app.use(voiceAI);
 
+
+// ================= SILVER RATE API =================
+app.get("/api/silver-rate", async (req, res) => {
+  try {
+    const apiKey = process.env.GOLD_API_KEY;
+    if (!apiKey) {
+      return res.status(500).json({
+        ok: false,
+        error: "GOLD_API_KEY missing"
+      });
+    }
+
+    const response = await fetch("https://www.goldapi.io/api/XAG/INR", {
+      headers: {
+        "x-access-token": apiKey,
+        "Content-Type": "application/json"
+      }
+    });
+
+    const data = await response.json();
+
+    console.log("===== SILVER GOLDAPI DEBUG =====");
+    console.log("price:", data.price);
+    console.log("price_gram_999:", data.price_gram_999);
+    console.log("price_kg_999:", data.price_kg_999);
+    console.log("prev_close_price:", data.prev_close_price);
+    console.log("ch:", data.ch);
+    console.log("chp:", data.chp);
+    console.log("available fields:", Object.keys(data));
+    console.log("================================");
+
+    if (!response.ok) {
+      return res.status(response.status).json({
+        ok: false,
+        error: data
+      });
+    }
+
+    // GoldAPI XAG/INR price is ₹ per troy ounce.
+    // Convert troy ounce → gram for the Silver API/poster.
+    const ozToGram = 31.1034768;
+
+    const currentOz = Number(data.price) || 0;
+    const priceGram =
+      currentOz > 0 ? currentOz / ozToGram : 0;
+    const priceKg =
+      priceGram > 0 ? priceGram * 1000 : 0;
+
+    const previousCloseOz = Number(data.prev_close_price) || 0;
+    const previousCloseGram =
+      previousCloseOz > 0 ? previousCloseOz / ozToGram : 0;
+
+    const changeGram =
+      previousCloseGram > 0
+        ? priceGram - previousCloseGram
+        : 0;
+
+    const changePercent =
+      previousCloseGram > 0
+        ? (changeGram / previousCloseGram) * 100
+        : Number(data.chp) || 0;
+
+    res.json({
+      ok: true,
+      date: data.timestamp
+        ? new Date(data.timestamp * 1000).toISOString().slice(0, 10)
+        : new Date().toISOString().slice(0, 10),
+
+      silver: {
+        gram: Math.round(priceGram),
+        tenGram: Math.round(priceGram * 10),
+        kg: Math.round(priceKg)
+      },
+
+      previousClose: Math.round(previousCloseGram),
+      change: Math.round(changeGram),
+      changePercent: Number(changePercent.toFixed(2)),
+      changeDirection:
+        changeGram > 0 ? "UP" :
+        changeGram < 0 ? "DOWN" : "UNCHANGED",
+
+      source: "GoldAPI • XAG/INR • SASIKUMAR AI",
+      note: "International/reference silver price. Thanjavur jewellery retail rate may differ."
+    });
+
+  } catch (error) {
+    console.error("Silver API Error:", error.message);
+
+    res.status(500).json({
+      ok: false,
+      error: error.message
+    });
+  }
+});
+
+// ================= END SILVER RATE API =================
+
 app.listen(PORT,()=>{
   console.log("🤖 SASIKUMAR AI");
   console.log("✅ Server running on port " + PORT);
