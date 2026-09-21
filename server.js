@@ -938,53 +938,58 @@ app.get("/api/silver-rate", async (req, res) => {
 app.post("/twilio/webhook", async (req, res) => {
   console.log("📲 Twilio WhatsApp Webhook:", req.body);
 
-  res.type("text/xml").send("<Response></Response>");
+  // Respond to Twilio immediately
+  res.type("text/xml").send("<Response><Message>🤖 SASIKUMAR AI: Message received successfully!</Message></Response>");
 
-  try {
-    const from = req.body?.From || "";
-    const text = (req.body?.Body || "").trim();
+  const from = req.body?.From || "";
+  const text = (req.body?.Body || "").trim();
 
-    if (!text) {
-      console.log("ℹ️ No Twilio message text");
-      return;
-    }
-
-    console.log("📩 Twilio Incoming:", { from, text });
-
-    const aiResponse = await fetch(
-      "http://127.0.0.1:" + (process.env.PORT || 3000) + "/api/intelligent-ai",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: text,
-          source: "twilio-whatsapp"
-        })
-      }
-    );
-
-    const aiData = await aiResponse.json();
-    const reply =
-      aiData.reply ||
-      "🤖 SASIKUMAR AI: உங்கள் கேள்வியை மீண்டும் அனுப்புங்கள்.";
-
-    const twilio = require("twilio");
-
-    const client = twilio(
-      process.env.TWILIO_ACCOUNT_SID,
-      process.env.TWILIO_AUTH_TOKEN
-    );
-
-    await client.messages.create({
-      from: process.env.TWILIO_WHATSAPP_FROM,
-      to: from,
-      body: reply
-    });
-
-    console.log("📤 Twilio AI reply sent");
-  } catch (error) {
-    console.error("❌ Twilio WhatsApp error:", error);
+  if (!text) {
+    console.log("ℹ️ No Twilio message text");
+    return;
   }
+
+  console.log("📩 Twilio Incoming:", { from, text });
+
+  // Process AI + WhatsApp reply in background
+  (async () => {
+    try {
+      const aiResponse = await fetch(
+        "http://127.0.0.1:" + (process.env.PORT || 3000) + "/api/intelligent-ai",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: text,
+            source: "twilio-whatsapp"
+          })
+        }
+      );
+
+      const aiData = await aiResponse.json();
+
+      const reply =
+        aiData.reply ||
+        "🤖 SASIKUMAR AI: உங்கள் கேள்வியை மீண்டும் அனுப்புங்கள்.";
+
+      const twilio = require("twilio");
+
+      const client = twilio(
+        process.env.TWILIO_ACCOUNT_SID,
+        process.env.TWILIO_AUTH_TOKEN
+      );
+
+      await client.messages.create({
+        from: process.env.TWILIO_WHATSAPP_FROM,
+        to: from,
+        body: reply
+      });
+
+      console.log("📤 Twilio AI reply sent");
+    } catch (error) {
+      console.error("❌ Twilio background AI error:", error);
+    }
+  })();
 });
 
 app.listen(PORT,()=>{
