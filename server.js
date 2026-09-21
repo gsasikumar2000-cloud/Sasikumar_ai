@@ -8,6 +8,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json({limit:"10mb"}));
+app.use(express.urlencoded({ extended: false }));
 app.post("/api/login", (req,res) => {
   const { username, password } = req.body || {};
 
@@ -516,28 +517,65 @@ app.get("/api/state-news",async(req,res)=>{
 
 app.get("/api/gold-rate",async(req,res)=>{
   try{
-    if(!process.env.GOLD_API_KEY)
-      throw new Error("GOLD_API_KEY missing");
+    let r24, r22, r20, r18;
+    let source = "GoldAPI • XAU/INR • SASIKUMAR AI";
+    let fallbackUsed = false;
 
-    const r = await fetch("https://www.goldapi.io/api/XAU/INR",{
-      headers:{
-        "x-access-token":process.env.GOLD_API_KEY,
-        "Content-Type":"application/json"
-      }
-    });
+    // 1) Primary: GoldAPI
+    try{
+      if(!process.env.GOLD_API_KEY)
+        throw new Error("GOLD_API_KEY missing");
 
-    const data = await r.json();
+      const r = await fetch("https://www.goldapi.io/api/XAU/INR",{
+        headers:{
+          "x-access-token":process.env.GOLD_API_KEY,
+          "Content-Type":"application/json"
+        }
+      });
 
-    if(!r.ok)
-      throw new Error(data.error || data.message || `GoldAPI HTTP ${r.status}`);
+      const data = await r.json();
 
-    const r24 = Math.round(Number(data.price_gram_24k));
-    const r22 = Math.round(Number(data.price_gram_22k));
-    const r20 = Math.round(Number(data.price_gram_20k));
-    const r18 = Math.round(Number(data.price_gram_18k));
+      if(!r.ok)
+        throw new Error(data.error || data.message || `GoldAPI HTTP ${r.status}`);
 
-    if(!r24 || !r22 || !r20 || !r18)
-      throw new Error("GoldAPI returned incomplete gold rates");
+      r24 = Math.round(Number(data.price_gram_24k));
+      r22 = Math.round(Number(data.price_gram_22k));
+      r20 = Math.round(Number(data.price_gram_20k));
+      r18 = Math.round(Number(data.price_gram_18k));
+
+      if(!r24 || !r22 || !r20 || !r18)
+        throw new Error("GoldAPI returned incomplete gold rates");
+
+    }catch(goldApiError){
+      console.warn("⚠️ GoldAPI unavailable:",goldApiError.message);
+      console.log("🔄 Trying goldprice.dev fallback...");
+
+      // 2) Fallback: goldprice.dev
+      const fallback = await fetch(
+        "https://api.goldprice.dev/v1/prices?symbol=XAU-INR-SPOT"
+      );
+
+      const fd = await fallback.json();
+
+      if(!fallback.ok || !fd.symbols || !fd.symbols[0])
+        throw new Error("goldprice.dev fallback unavailable");
+
+      const ouncePrice = Number(fd.symbols[0].price);
+
+      if(!Number.isFinite(ouncePrice) || ouncePrice <= 0)
+        throw new Error("Invalid goldprice.dev XAU-INR price");
+
+      // 1 troy ounce = 31.1034768 grams
+      r24 = Math.round(ouncePrice / 31.1034768);
+
+      // Purity-based reference calculations
+      r22 = Math.round(r24 * 22 / 24);
+      r20 = Math.round(r24 * 20 / 24);
+      r18 = Math.round(r24 * 18 / 24);
+
+      fallbackUsed = true;
+      source = "goldprice.dev • XAU/INR • SASIKUMAR AI";
+    }
 
     const r19 = Math.round(r22 * 19 / 22);
 
@@ -549,13 +587,15 @@ app.get("/api/gold-rate",async(req,res)=>{
       "18K": r18
     };
 
-    console.log("===== GOLDAPI DEBUG =====");
-    console.log("24K:", r24);
-    console.log("22K:", r22);
-    console.log("20K:", r20);
-    console.log("19K:", r19);
-    console.log("18K:", r18);
-    console.log("=========================");
+    console.log("===== GOLD RATE DEBUG =====");
+    console.log("24K:",r24);
+    console.log("22K:",r22);
+    console.log("20K:",r20);
+    console.log("19K:",r19);
+    console.log("18K:",r18);
+    console.log("Source:",source);
+    console.log("Fallback:",fallbackUsed);
+    console.log("===========================");
 
     res.json({
       ok:true,
@@ -566,8 +606,11 @@ app.get("/api/gold-rate",async(req,res)=>{
       rates8g:Object.fromEntries(
         Object.entries(rates).map(([k,v])=>[k,v*8])
       ),
-      source:"GoldAPI • XAU/INR • SASIKUMAR AI",
-      note:"International/reference gold price. Thanjavur jewellery retail rate may differ."
+      source,
+      fallbackUsed,
+      note:fallbackUsed
+        ? "Reference gold price fallback. Thanjavur jewellery retail rate may differ."
+        : "International/reference gold price. Thanjavur jewellery retail rate may differ."
     });
 
   }catch(e){
@@ -839,98 +882,110 @@ app.use(voiceAI);
 // ================= SILVER RATE API =================
 app.get("/api/silver-rate", async (req, res) => {
   try {
-    const apiKey = process.env.GOLD_API_KEY;
-    if (!apiKey) {
-      return res.status(500).json({
-        ok: false,
-        error: "GOLD_API_KEY missing"
-      });
-    }
-
-    const response = await fetch("https://www.goldapi.io/api/XAG/INR", {
-      headers: {
-        "x-access-token": apiKey,
-        "Content-Type": "application/json"
-      }
-    });
+    const response = await fetch(
+      "https://api.oropocket.com/public/prices"
+    );
 
     const data = await response.json();
 
-    console.log("===== SILVER GOLDAPI DEBUG =====");
-    console.log("price:", data.price);
-    console.log("price_gram_999:", data.price_gram_999);
-    console.log("price_kg_999:", data.price_kg_999);
-    console.log("prev_close_price:", data.prev_close_price);
-    console.log("ch:", data.ch);
-    console.log("chp:", data.chp);
-    console.log("available fields:", Object.keys(data));
-    console.log("================================");
+    console.log("===== SILVER OROPOCKET DEBUG =====");
+    console.log("HTTP:", response.status);
+    console.log("DATA:", data);
+    console.log("===================================");
 
-    if (!response.ok) {
-      return res.status(response.status).json({
-        ok: false,
-        error: data
-      });
+    if (!response.ok || !data.data || !data.data.silver) {
+      throw new Error("OroPocket silver price unavailable");
     }
 
-    // GoldAPI XAG/INR price is ₹ per troy ounce.
-    // Convert troy ounce → gram for the Silver API/poster.
-    const ozToGram = 31.1034768;
+    const silver = data.data.silver;
 
-    const currentOz = Number(data.price) || 0;
-    const priceGram =
-      currentOz > 0 ? currentOz / ozToGram : 0;
-    const priceKg =
-      priceGram > 0 ? priceGram * 1000 : 0;
+    const priceGram = Number(silver.sell);
 
-    const previousCloseOz = Number(data.prev_close_price) || 0;
-    const previousCloseGram =
-      previousCloseOz > 0 ? previousCloseOz / ozToGram : 0;
+    if (!Number.isFinite(priceGram) || priceGram <= 0) {
+      throw new Error("Invalid OroPocket silver price");
+    }
 
-    const changeGram =
-      previousCloseGram > 0
-        ? priceGram - previousCloseGram
-        : 0;
-
-    const changePercent =
-      previousCloseGram > 0
-        ? (changeGram / previousCloseGram) * 100
-        : Number(data.chp) || 0;
+    const price8g = priceGram * 8;
+    const priceKg = priceGram * 1000;
 
     res.json({
       ok: true,
-      date: data.timestamp
-        ? new Date(data.timestamp * 1000).toISOString().slice(0, 10)
-        : new Date().toISOString().slice(0, 10),
-
-      silver: {
-        gram: Math.round(priceGram),
-        tenGram: Math.round(priceGram * 10),
-        kg: Math.round(priceKg)
-      },
-
-      previousClose: Math.round(previousCloseGram),
-      change: Math.round(changeGram),
-      changePercent: Number(changePercent.toFixed(2)),
-      changeDirection:
-        changeGram > 0 ? "UP" :
-        changeGram < 0 ? "DOWN" : "UNCHANGED",
-
-      source: "GoldAPI • XAG/INR • SASIKUMAR AI",
-      note: "International/reference silver price. Thanjavur jewellery retail rate may differ."
+      date: new Intl.DateTimeFormat("en-GB", {
+        timeZone: "Asia/Kolkata"
+      }).format(new Date()),
+      price_gram_999: Math.round(priceGram * 100) / 100,
+      price_8g_999: Math.round(price8g * 100) / 100,
+      price_kg_999: Math.round(priceKg * 100) / 100,
+      prev_close_gram: 0,
+      change_gram: 0,
+      change_pct: 0,
+      source: "OroPocket • Silver • INR/gram • SASIKUMAR AI",
+      fallbackUsed: true,
+      note: "Reference silver sell price. Local Thanjavur retail rate may differ."
     });
 
-  } catch (error) {
-    console.error("Silver API Error:", error.message);
+  } catch (e) {
+    console.error("Silver Rate Error:", e.message);
 
-    res.status(500).json({
+    res.status(503).json({
       ok: false,
-      error: error.message
+      reply: "❌ Silver reference rate unavailable: " + e.message
     });
   }
 });
 
-// ================= END SILVER RATE API =================
+// Twilio WhatsApp Webhook → SASIKUMAR AI
+app.post("/twilio/webhook", async (req, res) => {
+  console.log("📲 Twilio WhatsApp Webhook:", req.body);
+
+  res.type("text/xml").send("<Response></Response>");
+
+  try {
+    const from = req.body?.From || "";
+    const text = (req.body?.Body || "").trim();
+
+    if (!text) {
+      console.log("ℹ️ No Twilio message text");
+      return;
+    }
+
+    console.log("📩 Twilio Incoming:", { from, text });
+
+    const aiResponse = await fetch(
+      "http://127.0.0.1:" + (process.env.PORT || 3000) + "/api/intelligent-ai",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: text,
+          source: "twilio-whatsapp"
+        })
+      }
+    );
+
+    const aiData = await aiResponse.json();
+    const reply =
+      aiData.reply ||
+      "🤖 SASIKUMAR AI: உங்கள் கேள்வியை மீண்டும் அனுப்புங்கள்.";
+
+    const twilio = require("twilio");
+
+    const client = twilio(
+      process.env.TWILIO_ACCOUNT_SID,
+      process.env.TWILIO_AUTH_TOKEN
+    );
+
+    await client.messages.create({
+      from: process.env.TWILIO_WHATSAPP_FROM,
+      to: from,
+      body: reply
+    });
+
+    console.log("📤 Twilio AI reply sent");
+  } catch (error) {
+    console.error("❌ Twilio WhatsApp error:", error);
+  }
+});
 
 app.listen(PORT,()=>{
   console.log("🤖 SASIKUMAR AI");

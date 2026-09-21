@@ -754,6 +754,7 @@ Tamil + English • Gold • General Q&A • Web Search</div>
 <div class="input-row">
 <textarea id="q" rows="2" placeholder="உங்கள் கேள்வியை எழுதுங்கள்..."></textarea>
 <button id="sendBtn" onclick="send()">Send</button>
+<input id="replyFileInput" type="file" accept="image/*,.pdf,.txt,.doc,.docx" style="display:none">
 </div>
 </div>
 
@@ -818,56 +819,88 @@ function goldExpert(){
 }
 
 async function send(){
- const message=q.value.trim();
- if(!message)return;
- chat.innerHTML+=
-   '<div class="msg user">👤 '+escapeHtml(message)+'</div>';
+  const message=q.value.trim();
 
- q.value="";
+  if(!message && !replyAttachment)return;
 
- const loading=document.createElement("div");
- loading.className="msg ai";
- loading.innerText="🤖 பதில் எழுதுகிறது...";
- chat.appendChild(loading);
+  let attachment=null;
 
- bottomChat();
+  if(replyAttachment){
+    if(replyAttachment.size > 10 * 1024 * 1024){
+      alert("📎 File size 10 MB-க்கு மேல் இருக்கக்கூடாது.");
+      return;
+    }
 
- sendBtn.disabled=true;
- sendBtn.innerText="…";
+    attachment=await new Promise((resolve,reject)=>{
+      const reader=new FileReader();
 
- try{
+      reader.onload=()=>{
+        const result=String(reader.result||"");
+        const comma=result.indexOf(",");
 
-   const r=await fetch("/api/chat",{
-     method:"POST",
-     headers:{"Content-Type":"application/json"},
-     body:JSON.stringify({message})
-   });
+        resolve({
+          data:comma>=0 ? result.slice(comma+1) : result,
+          type:replyAttachment.type || "application/octet-stream",
+          name:replyAttachment.name
+        });
+      };
 
-   if(!r.ok)throw new Error("HTTP "+r.status);
+      reader.onerror=()=>reject(new Error("File read failed"));
+      reader.readAsDataURL(replyAttachment);
+    });
+  }
 
-   const d=await r.json();
+  const userText=message
+    ? "👤 "+escapeHtml(message)
+    : "👤 📎 "+escapeHtml(replyAttachment.name);
 
-   loading.innerText=d.reply
-     ?"🤖 "+d.reply
-     :"❌ பதில் கிடைக்கவில்லை.";
+  chat.innerHTML+='<div class="msg user">'+userText+'</div>';
 
- }catch(e){
+  q.value="";
 
-   console.error(e);
+  const loading=document.createElement("div");
+  loading.className="msg ai";
+  loading.innerText="🤖 பதில் எழுதுகிறது...";
+  chat.appendChild(loading);
 
-   loading.innerText=
-     "❌ Server connection error.\n\n"+
-     "Server இயங்குகிறதா என்று பார்க்கவும்.";
+  bottomChat();
 
- }finally{
+  sendBtn.disabled=true;
+  sendBtn.innerText="…";
 
-   sendBtn.disabled=false;
-   sendBtn.innerText="Send";
-   bottomChat();
+  try{
+    const r=await fetch("/api/chat",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        message,
+        attachment
+      })
+    });
 
- }
+    if(!r.ok)throw new Error("HTTP "+r.status);
+
+    const d=await r.json();
+
+    loading.innerText=d.reply
+      ?"🤖 "+d.reply
+      :"❌ பதில் கிடைக்கவில்லை.";
+
+    if(replyAttachment){
+      removeReplyAttachment();
+    }
+
+  }catch(e){
+    console.error(e);
+    loading.innerText=
+      "❌ Server connection error.\\n\\n"+
+      "Server இயங்குகிறதா என்று பார்க்கவும்.";
+  }finally{
+    sendBtn.disabled=false;
+    sendBtn.innerText="Send";
+    bottomChat();
+  }
 }
-
 q.addEventListener("keydown",e=>{
  if(e.key==="Enter"&&!e.shiftKey){
    e.preventDefault();
@@ -1796,6 +1829,7 @@ function updateLiveDateTime(){
  const time=now.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true});
  const el=document.getElementById("liveDateTime");
  if(el) el.textContent="📅 "+date+"  |  🕐 "+time;
+}
 }
 document.addEventListener("DOMContentLoaded",()=>{updateLiveDateTime();setInterval(updateLiveDateTime,1000);});
 </script>
@@ -2774,29 +2808,62 @@ window.showEducationFolder=function(){
   }
 };
 
-// ===== English Notes Toolbar Functions =====
-function noteCamera(){
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = "image/*";
-  input.capture = "environment";
-  input.onchange = e => {
-    const file = e.target.files[0];
-    if(file) alert("Camera image selected: " + file.name);
-  };
+let replyAttachment = null;
+
+function openReplyFilePicker(camera){
+  const input=document.getElementById("replyFileInput");
+  if(!input)return;
+  input.value="";
+  if(camera){
+    input.accept="image/*";
+    input.setAttribute("capture","environment");
+  }else{
+    input.accept="image/*,.pdf,.txt,.doc,.docx";
+    input.removeAttribute("capture");
+  }
   input.click();
 }
 
-function noteUpload(){
-  const input = document.createElement("input");
-  input.type = "file";
-  input.accept = "image/*,.pdf,.txt,.doc,.docx";
-  input.onchange = e => {
-    const file = e.target.files[0];
-    if(file) alert("File selected: " + file.name);
-  };
-  input.click();
+function noteCamera(){openReplyFilePicker(true);}
+function noteUpload(){openReplyFilePicker(false);}
+
+function showReplyAttachment(file){
+  replyAttachment=file;
+  let box=document.getElementById("replyAttachmentPreview");
+  if(!box){
+    box=document.createElement("div");
+    box.id="replyAttachmentPreview";
+    box.style="margin:6px 0;padding:8px;border:1px solid #ccc;border-radius:10px;background:#f7f7f7;";
+    document.querySelector(".input-area").insertBefore(box,document.querySelector(".input-row"));
+  }
+  box.style.display="block";
+  if(file.type && file.type.startsWith("image/")){
+    const url=URL.createObjectURL(file);
+    box.innerHTML="<div style=\"display:flex;align-items:center;gap:10px\">"+
+      "<img src=\""+url+"\" style=\"width:70px;height:70px;object-fit:cover;border-radius:8px\">"+
+      "<b>📎 "+escapeHtml(file.name)+"</b>"+
+      "<button type=\"button\" onclick=\"removeReplyAttachment()\">✕</button></div>";
+  }else{
+    box.innerHTML="📎 <b>"+escapeHtml(file.name)+"</b> <button type=\"button\" onclick=\"removeReplyAttachment()\">✕</button>";
+  }
 }
+
+function removeReplyAttachment(){
+  replyAttachment=null;
+  const input=document.getElementById("replyFileInput");
+  if(input)input.value="";
+  const box=document.getElementById("replyAttachmentPreview");
+  if(box){box.innerHTML="";box.style.display="none";}
+}
+document.addEventListener("DOMContentLoaded",function(){
+  const input=document.getElementById("replyFileInput");
+  if(input){
+    input.addEventListener("change",function(e){
+      const file=e.target.files && e.target.files[0];
+      if(file)showReplyAttachment(file);
+    });
+  }
+});
 
 function selectAllNotes(){
   const el = document.activeElement;
