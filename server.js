@@ -888,6 +888,8 @@ app.post("/webhook", async (req,res)=>{
   try {
     const value = req.body?.entry?.[0]?.changes?.[0]?.value;
     const msg = value?.messages?.[0];
+    const status = value?.statuses?.[0];
+    if (status) { console.log("📊 WhatsApp Delivery Status:", JSON.stringify(status,null,2)); return; }
 
     if (!msg) {
       console.log("ℹ️ No incoming WhatsApp message");
