@@ -1403,9 +1403,7 @@ async function submitBankingService(){
    "📍 Location: <b>"+district+" / "+taluk+"</b><br>"+
    "📌 Status: <b>SUBMITTED</b><br><br>"+
    "⏱️ 72-Hour Tracking Started<br><br>"+
-   (data.whatsapp
-    ? "📲 WhatsApp notification sent."
-    : "⚠️ WhatsApp API not configured yet.");
+   "📲 WhatsApp service available.";
 
  }catch(error){
   console.error("Banking Submit Error:",error);
