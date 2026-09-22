@@ -976,7 +976,11 @@ app.post("/webhook", async (req,res)=>{
         body: JSON.stringify({ message: aiText, source: "whatsapp" })
       });
 
+      console.log("🤖 Twilio AI HTTP:", aiResponse.status);
+      console.log("🤖 Twilio AI HTTP:", aiResponse.status);
       const aiData = await aiResponse.json();
+      console.log("🤖 Twilio AI Data:", JSON.stringify(aiData));
+      console.log("🤖 Twilio AI Data:", JSON.stringify(aiData));
       const reply = aiData.reply || `🤖 SASIKUMAR AI
 
 💰 Gold Rate
@@ -1137,7 +1141,9 @@ app.post("/twilio/webhook", async (req, res) => {
         }
       );
 
+      console.log("🤖 Twilio AI HTTP:", aiResponse.status);
       const aiData = await aiResponse.json();
+      console.log("🤖 Twilio AI Data:", JSON.stringify(aiData));
 
       const reply =
         aiData.reply ||
@@ -1150,6 +1156,7 @@ app.post("/twilio/webhook", async (req, res) => {
         process.env.TWILIO_AUTH_TOKEN
       );
 
+      console.log("📤 Sending Twilio reply to:", from);
       await client.messages.create({
         from: process.env.TWILIO_WHATSAPP_FROM,
         to: from,
