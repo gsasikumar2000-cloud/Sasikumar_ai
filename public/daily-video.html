@@ -260,19 +260,52 @@ function updateClock(){
     now.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"});
 }
 
+const dailyTypes=[
+  {title:"💰 GOLD & SILVER DAILY", voice:"இன்றைய தங்கம் மற்றும் வெள்ளி விலை தகவல்களை பார்ப்போம்."},
+  {title:"📰 CREATIVE NEWS DAILY", voice:"இன்றைய முக்கிய செய்தி மற்றும் பொதுத் தகவல்களை பார்க்கலாம்."},
+  {title:"💼 BUSINESS DAILY", voice:"இன்றைய வணிகம் மற்றும் தொழில் தகவல்களை தெரிந்து கொள்வோம்."},
+  {title:"🤖 AI & TECHNOLOGY DAILY", voice:"இன்றைய செயற்கை நுண்ணறிவு மற்றும் தொழில்நுட்ப தகவல்களை பார்ப்போம்."},
+  {title:"🎓 EDUCATION DAILY", voice:"இன்றைய கல்வி மற்றும் கற்றல் தகவல்களை பார்க்கலாம்."},
+  {title:"💎 GOLD APPRAISER TIPS", voice:"தங்க மதிப்பீடு மற்றும் purity பற்றிய பயனுள்ள தகவல்களை பார்ப்போம்."},
+  {title:"🏦 BANKING & FINANCE", voice:"வங்கி மற்றும் நிதி தொடர்பான முக்கிய தகவல்களை தெரிந்து கொள்வோம்."},
+  {title:"🌟 SASIKUMAR AI MIX", voice:"இன்றைய SASIKUMAR AI சிறப்பு நிகழ்ச்சிக்கு வரவேற்கிறோம்."}
+];
+
+let todayType=null;
+
 function dailyContent(){
   const day=Math.floor(Date.now()/86400000);
-  document.getElementById("tip").textContent=tips[day%tips.length];
+  const index=day%dailyTypes.length;
+  todayType=dailyTypes[index];
+
+  const tip=document.getElementById("tip");
+  if(tip) tip.textContent=tips[day%tips.length];
+
+  document.title="SASIKUMAR AI • "+todayType.title;
 }
 
 function speak(text){
   if(!("speechSynthesis" in window)) return;
+
   speechSynthesis.cancel();
 
   const u=new SpeechSynthesisUtterance(text);
-  u.lang="ta-IN";
+
+  const voices=speechSynthesis.getVoices();
+  const tamilVoice=voices.find(v =>
+    v.lang && v.lang.toLowerCase().startsWith("ta")
+  );
+
+  if(tamilVoice){
+    u.voice=tamilVoice;
+    u.lang=tamilVoice.lang;
+  }else{
+    u.lang="ta-IN";
+  }
+
   u.rate=.9;
   u.pitch=1.15;
+
   speechSynthesis.speak(u);
 }
 
@@ -280,14 +313,18 @@ function startShow(){
   if(running) return;
   running=true;
 
+  const typeVoice = todayType
+    ? todayType.voice
+    : "வணக்கம்! இன்றைய SASIKUMAR AI தினசரி நிகழ்ச்சிக்கு வரவேற்கிறோம்.";
+
   const texts=[
     "வணக்கம்! இன்றைய SASIKUMAR AI தினசரி நிகழ்ச்சிக்கு வரவேற்கிறோம்.",
+    typeVoice,
     "இன்றைய தஞ்சாவூர் தங்க விலையை இப்போது பார்க்கலாம்.",
-    "இன்றைய முக்கிய தகவல்கள் Gold Business Banking Jobs Finance.",
-    "EMI RD FD Personal Loan Home Loan போன்ற calculator வசதிகளை பயன்படுத்தலாம்.",
-    "All Jobs பகுதியில் வேலை வாய்ப்புகளை பார்க்கலாம்.",
-    "இன்றைய AI tip: முக்கியமான financial தகவல்களை எப்போதும் சரிபார்க்கவும்.",
-    "SASIKUMAR AI தினசரி புதிய தகவல்களுடன் உங்களை சந்திக்கிறது.",
+    "இன்றைய முக்கிய தகவல்களை SASIKUMAR AI மூலம் தெரிந்து கொள்வோம்.",
+    "EMI RD FD மற்றும் பிற calculator வசதிகளை பயன்படுத்தலாம்.",
+    "இன்றைய AI tip: முக்கியமான தகவல்களை எப்போதும் சரிபார்க்கவும்.",
+    "SASIKUMAR AI தினமும் புதிய தகவல்களுடன் உங்களை சந்திக்கிறது.",
     "நன்றி! நாளைய Daily AI Show-ல் மீண்டும் சந்திப்போம்."
   ];
 
