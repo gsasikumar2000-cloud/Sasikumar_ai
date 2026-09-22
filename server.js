@@ -46,6 +46,48 @@ app.post("/api/login", (req,res) => {
 app.use(express.static(path.join(__dirname,"public")));
 
 let geminiClient = null;
+let groqClient = null;
+
+async function askGroq(message, forcedLanguage=""){
+  if(!process.env.GROQ_API_KEY)
+    throw new Error("GROQ_API_KEY missing");
+
+  if(!groqClient){
+    const OpenAI = require("openai");
+    groqClient = new OpenAI({
+      apiKey: process.env.GROQ_API_KEY,
+      baseURL: "https://api.groq.com/openai/v1"
+    });
+  }
+
+  const language = forcedLanguage || detectLanguage(message);
+  let languageRule = "";
+
+  if(language === "Tamil"){
+    languageRule = "Respond ONLY in Tamil using Tamil script. ";
+  }else if(language === "English"){
+    languageRule = "Respond ONLY in English. ";
+  }else{
+    languageRule = "Respond naturally in Tamil-English mixed language. ";
+  }
+
+  const response = await groqClient.chat.completions.create({
+    model: "openai/gpt-oss-20b",
+    messages: [
+      {
+        role: "system",
+        content: "You are SASIKUMAR AI. " + languageRule + "Answer directly and clearly. Do not invent current information."
+      },
+      {
+        role: "user",
+        content: message
+      }
+    ],
+    max_completion_tokens: 1000
+  });
+
+  return response.choices?.[0]?.message?.content || "பதில் கிடைக்கவில்லை.";
+}
 
 function detectLanguage(text){
   const hasTamil=/[\u0B80-\u0BFF]/.test(text);
@@ -126,6 +168,20 @@ async function askGemini(message, forcedLanguage="", attachment=null){
 
   return response.output_text || "பதில் கிடைக்கவில்லை.";
 }
+async function askAI(message, forcedLanguage="", attachment=null){
+  try {
+    return await askGemini(message, forcedLanguage, attachment);
+  } catch (error) {
+    console.log("⚠️ Gemini failed → Groq fallback:", error.message || error);
+    try {
+      return await askGroq(message, forcedLanguage);
+    } catch (groqError) {
+      console.log("❌ Groq fallback failed:", groqError.message || groqError);
+      throw groqError;
+    }
+  }
+}
+
 async function webSearch(query){
   try{
     if(!process.env.TAVILY_API_KEY){
@@ -170,7 +226,7 @@ async function webSearch(query){
         "User Question:\n" + query + "\n\n" +
         "Web Search Information:\n" + sourceText;
 
-      const answer=await askGemini(languagePrompt, detectLanguage(query));
+      const answer=await askAI(languagePrompt, detectLanguage(query));
 
       return "🌐 Web Search\n\n"+answer;
     }catch(e){
@@ -413,7 +469,7 @@ app.post("/api/chat",async(req,res)=>{
 
   try{
 
-    const answer=await askGemini(message,"",attachment);
+    const answer=await askAI(message,"",attachment);
 
     return res.json({
       reply:answer,
@@ -515,69 +571,135 @@ app.get("/api/state-news",async(req,res)=>{
   }
 });
 
-app.get("/api/gold-rate",async(req,res)=>{
-  try{
-    let r24, r22, r20, r18;
-    let source = "GoldAPI • XAU/INR • SASIKUMAR AI";
+// ================= GOLD RATE API =================
+let goldRateCache = null;
+let goldRateCacheTime = 0;
+
+const GOLD_CACHE_MS = 5 * 60 * 1000;
+
+app.get("/api/gold-rate", async (req, res) => {
+  try {
+    const state = req.query.state || "Tamil Nadu";
+    const district = req.query.district || "Thanjavur";
+
+    // Return cached rate for 5 minutes
+    if (
+      goldRateCache &&
+      Date.now() - goldRateCacheTime < GOLD_CACHE_MS
+    ) {
+      return res.json({
+        ...goldRateCache,
+        state,
+        district,
+        cached: true
+      });
+    }
+
+    let r24, r22, r20, r19, r18;
+    let buy = null;
+    let sell = null;
+    let gst = null;
+    let change24h = null;
+    let source = "";
     let fallbackUsed = false;
 
-    // 1) Primary: GoldAPI
-    try{
-      if(!process.env.GOLD_API_KEY)
-        throw new Error("GOLD_API_KEY missing");
+    // 1) PRIMARY: OroPocket public Gold API
+    try {
+      const response = await fetch(
+        "https://api.oropocket.com/public/prices"
+      );
 
-      const r = await fetch("https://www.goldapi.io/api/XAU/INR",{
-        headers:{
-          "x-access-token":process.env.GOLD_API_KEY,
-          "Content-Type":"application/json"
-        }
-      });
+      const data = await response.json();
 
-      const data = await r.json();
+      if (
+        !response.ok ||
+        !data.data ||
+        !data.data.gold
+      ) {
+        throw new Error("OroPocket Gold price unavailable");
+      }
 
-      if(!r.ok)
-        throw new Error(data.error || data.message || `GoldAPI HTTP ${r.status}`);
+      const gold = data.data.gold;
 
-      r24 = Math.round(Number(data.price_gram_24k));
-      r22 = Math.round(Number(data.price_gram_22k));
-      r20 = Math.round(Number(data.price_gram_20k));
-      r18 = Math.round(Number(data.price_gram_18k));
+      buy = Number(gold.buy);
+      sell = Number(gold.sell);
+      gst = Number(gold.gst);
 
-      if(!r24 || !r22 || !r20 || !r18)
-        throw new Error("GoldAPI returned incomplete gold rates");
+      if (!Number.isFinite(sell) || sell <= 0) {
+        throw new Error("Invalid OroPocket Gold sell price");
+      }
 
-    }catch(goldApiError){
-      console.warn("⚠️ GoldAPI unavailable:",goldApiError.message);
+      // OroPocket price is INR per gram.
+      // Use sell as the reference gold price.
+      r24 = Math.round(sell);
+      r22 = Math.round(r24 * 22 / 24);
+      r20 = Math.round(r24 * 20 / 24);
+      r19 = Math.round(r24 * 19 / 24);
+      r18 = Math.round(r24 * 18 / 24);
+
+      if (
+        gold.change24h &&
+        Number.isFinite(Number(gold.change24h.sell))
+      ) {
+        change24h = Number(gold.change24h.sell);
+      }
+
+      source = "OroPocket • Gold • INR/gram • SASIKUMAR AI";
+
+      console.log("✅ OroPocket Gold:", sell);
+      console.log("📈 24h change:", change24h);
+
+    } catch (oropocketError) {
+      console.warn(
+        "⚠️ OroPocket Gold unavailable:",
+        oropocketError.message
+      );
+
+      // 2) FALLBACK: goldprice.dev
       console.log("🔄 Trying goldprice.dev fallback...");
 
-      // 2) Fallback: goldprice.dev
       const fallback = await fetch(
         "https://api.goldprice.dev/v1/prices?symbol=XAU-INR-SPOT"
       );
 
       const fd = await fallback.json();
 
-      if(!fallback.ok || !fd.symbols || !fd.symbols[0])
-        throw new Error("goldprice.dev fallback unavailable");
+      if (
+        !fallback.ok ||
+        !fd.symbols ||
+        !fd.symbols[0]
+      ) {
+        throw new Error(
+          "OroPocket and goldprice.dev unavailable"
+        );
+      }
 
       const ouncePrice = Number(fd.symbols[0].price);
 
-      if(!Number.isFinite(ouncePrice) || ouncePrice <= 0)
-        throw new Error("Invalid goldprice.dev XAU-INR price");
+      if (
+        !Number.isFinite(ouncePrice) ||
+        ouncePrice <= 0
+      ) {
+        throw new Error(
+          "Invalid goldprice.dev XAU-INR price"
+        );
+      }
 
       // 1 troy ounce = 31.1034768 grams
-      r24 = Math.round(ouncePrice / 31.1034768);
+      r24 = Math.round(
+        ouncePrice / 31.1034768
+      );
 
-      // Purity-based reference calculations
       r22 = Math.round(r24 * 22 / 24);
       r20 = Math.round(r24 * 20 / 24);
+      r19 = Math.round(r24 * 19 / 24);
       r18 = Math.round(r24 * 18 / 24);
 
-      fallbackUsed = true;
-      source = "goldprice.dev • XAU/INR • SASIKUMAR AI";
-    }
+      source =
+        "goldprice.dev • XAU/INR • SASIKUMAR AI";
 
-    const r19 = Math.round(r22 * 19 / 22);
+      fallbackUsed = true;
+    }
 
     const rates = {
       "24K": r24,
@@ -587,38 +709,66 @@ app.get("/api/gold-rate",async(req,res)=>{
       "18K": r18
     };
 
-    console.log("===== GOLD RATE DEBUG =====");
-    console.log("24K:",r24);
-    console.log("22K:",r22);
-    console.log("20K:",r20);
-    console.log("19K:",r19);
-    console.log("18K:",r18);
-    console.log("Source:",source);
-    console.log("Fallback:",fallbackUsed);
-    console.log("===========================");
+    const responseData = {
+      ok: true,
 
-    res.json({
-      ok:true,
-      date:new Intl.DateTimeFormat("en-GB",{
-        timeZone:"Asia/Kolkata"
+      state,
+      district,
+
+      date: new Intl.DateTimeFormat("en-GB", {
+        timeZone: "Asia/Kolkata"
       }).format(new Date()),
+
       rates,
-      rates8g:Object.fromEntries(
-        Object.entries(rates).map(([k,v])=>[k,v*8])
+
+      rates8g: Object.fromEntries(
+        Object.entries(rates).map(
+          ([k, v]) => [k, v * 8]
+        )
       ),
+
+      buy,
+      sell,
+      gst,
+      change24h,
+
       source,
       fallbackUsed,
-      note:fallbackUsed
-        ? "Reference gold price fallback. Thanjavur jewellery retail rate may differ."
-        : "International/reference gold price. Thanjavur jewellery retail rate may differ."
-    });
+      cached: false,
 
-  }catch(e){
-    console.error("Gold Rate Error:",e.message);
+      note:
+        "Reference gold price. Thanjavur jewellery retail rate may differ.",
+
+      updatedAt: new Date().toISOString()
+    };
+
+    // Save in-memory cache
+    goldRateCache = responseData;
+    goldRateCacheTime = Date.now();
+
+    console.log("===== GOLD RATE DEBUG =====");
+    console.log("24K:", r24);
+    console.log("22K:", r22);
+    console.log("20K:", r20);
+    console.log("19K:", r19);
+    console.log("18K:", r18);
+    console.log("Source:", source);
+    console.log("Fallback:", fallbackUsed);
+    console.log("===========================");
+
+    res.json(responseData);
+
+  } catch (e) {
+    console.error(
+      "Gold Rate Error:",
+      e.message
+    );
 
     res.status(503).json({
-      ok:false,
-      reply:"❌ Live Gold Rate unavailable: "+e.message
+      ok: false,
+      reply:
+        "❌ Live Gold Rate unavailable: " +
+        e.message
     });
   }
 });
@@ -882,6 +1032,9 @@ app.use(voiceAI);
 // ================= SILVER RATE API =================
 app.get("/api/silver-rate", async (req, res) => {
   try {
+    const state = req.query.state || "Tamil Nadu";
+    const district = req.query.district || "Thanjavur";
+
     const response = await fetch(
       "https://api.oropocket.com/public/prices"
     );
@@ -898,29 +1051,43 @@ app.get("/api/silver-rate", async (req, res) => {
     }
 
     const silver = data.data.silver;
-
     const priceGram = Number(silver.sell);
 
     if (!Number.isFinite(priceGram) || priceGram <= 0) {
       throw new Error("Invalid OroPocket silver price");
     }
 
+    const price10g = priceGram * 10;
     const price8g = priceGram * 8;
     const priceKg = priceGram * 1000;
 
     res.json({
       ok: true,
+      state,
+      district,
+
       date: new Intl.DateTimeFormat("en-GB", {
         timeZone: "Asia/Kolkata"
       }).format(new Date()),
+
+      silver: {
+        gram: Math.round(priceGram * 100) / 100,
+        tenGram: Math.round(price10g * 100) / 100,
+        eightGram: Math.round(price8g * 100) / 100,
+        kg: Math.round(priceKg * 100) / 100
+      },
+
       price_gram_999: Math.round(priceGram * 100) / 100,
+      price_10g_999: Math.round(price10g * 100) / 100,
       price_8g_999: Math.round(price8g * 100) / 100,
       price_kg_999: Math.round(priceKg * 100) / 100,
-      prev_close_gram: 0,
-      change_gram: 0,
-      change_pct: 0,
+
+      previousClose: 0,
+      change: 0,
+      changePercent: 0,
+
       source: "OroPocket • Silver • INR/gram • SASIKUMAR AI",
-      fallbackUsed: true,
+      fallbackUsed: false,
       note: "Reference silver sell price. Local Thanjavur retail rate may differ."
     });
 
@@ -929,7 +1096,9 @@ app.get("/api/silver-rate", async (req, res) => {
 
     res.status(503).json({
       ok: false,
-      reply: "❌ Silver reference rate unavailable: " + e.message
+      state: req.query.state || "Tamil Nadu",
+      district: req.query.district || "Thanjavur",
+      reply: "❌ Live Silver Rate unavailable: " + e.message
     });
   }
 });
@@ -939,7 +1108,7 @@ app.post("/twilio/webhook", async (req, res) => {
   console.log("📲 Twilio WhatsApp Webhook:", req.body);
 
   // Respond to Twilio immediately
-  res.type("text/xml").send("<Response><Message>🤖 SASIKUMAR AI: Message received successfully!</Message></Response>");
+  res.type("text/xml").send("<Response></Response>");
 
   const from = req.body?.From || "";
   const text = (req.body?.Body || "").trim();

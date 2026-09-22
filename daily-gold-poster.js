@@ -99,9 +99,17 @@ async function getRates(){
 
   const sr=silver.silver || {};
 
-  const silverGram=safeNumber(sr.gram);
-  const silver10g=safeNumber(sr.tenGram);
-  const silverKg=safeNumber(sr.kg);
+  const silverGram=safeNumber(
+    sr.gram ?? silver.price_gram_999
+  );
+
+  const silver10g=safeNumber(
+    sr.tenGram ?? (silver.price_gram_999 * 10)
+  );
+
+  const silverKg=safeNumber(
+    sr.kg ?? silver.price_kg_999
+  );
 
   if(!silverGram || !silverKg)
     throw new Error('Silver rate unavailable');
@@ -189,7 +197,7 @@ function poster(data){
 
 <text x="500" y="225" text-anchor="middle"
  font-family="Arial,sans-serif" font-size="20"
- fill="#bbbbbb">THANJAVUR • ${today()}</text>
+ fill="#bbbbbb">TAMIL NADU • THANJAVUR • LIVE RATE • ${today()}</text>
 
 <text x="75" y="270"
  font-family="Arial,sans-serif" font-size="24" font-weight="900"

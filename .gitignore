@@ -16,3 +16,12 @@ same
 
 # Generated daily gold poster
 public/daily-gold-poster.svg
+
+# Local backup copies
+*.before-*
+*.twilio-*
+*.error-backup
+
+.envx
+server.js.twiml-working
+node_modules/.package-lock.json
