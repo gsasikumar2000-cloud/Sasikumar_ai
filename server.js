@@ -1113,61 +1113,57 @@ app.get("/api/silver-rate", async (req, res) => {
 app.post("/twilio/webhook", async (req, res) => {
   console.log("📲 Twilio WhatsApp Webhook:", req.body);
 
-  // Respond to Twilio immediately
-  res.type("text/xml").send("<Response></Response>");
-
   const from = req.body?.From || "";
   const text = (req.body?.Body || "").trim();
 
   if (!text) {
     console.log("ℹ️ No Twilio message text");
-    return;
+    return res.type("text/xml").send("<Response></Response>");
   }
 
   console.log("📩 Twilio Incoming:", { from, text });
 
-  // Process AI + WhatsApp reply in background
-  (async () => {
-    try {
-      const aiResponse = await fetch(
-        "http://127.0.0.1:" + (process.env.PORT || 3000) + "/api/intelligent-ai",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            message: text,
-            source: "twilio-whatsapp"
-          })
-        }
-      );
+  try {
+    const aiResponse = await fetch(
+      "http://127.0.0.1:" + (process.env.PORT || 3000) + "/api/intelligent-ai",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message: text,
+          source: "twilio-whatsapp"
+        })
+      }
+    );
 
-      console.log("🤖 Twilio AI HTTP:", aiResponse.status);
-      const aiData = await aiResponse.json();
-      console.log("🤖 Twilio AI Data:", JSON.stringify(aiData));
+    console.log("🤖 Twilio AI HTTP:", aiResponse.status);
 
-      const reply =
-        aiData.reply ||
-        "🤖 SASIKUMAR AI: உங்கள் கேள்வியை மீண்டும் அனுப்புங்கள்.";
+    const aiData = await aiResponse.json();
+    console.log("🤖 Twilio AI Data:", JSON.stringify(aiData));
 
-      const twilio = require("twilio");
+    const reply =
+      aiData.reply ||
+      "🤖 SASIKUMAR AI: உங்கள் கேள்வியை மீண்டும் அனுப்புங்கள்.";
 
-      const client = twilio(
-        process.env.TWILIO_ACCOUNT_SID,
-        process.env.TWILIO_AUTH_TOKEN
-      );
+    const safeReply = String(reply)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&apos;");
 
-      console.log("📤 Sending Twilio reply to:", from);
-      await client.messages.create({
-        from: process.env.TWILIO_WHATSAPP_FROM,
-        to: from,
-        body: reply
-      });
+    res.type("text/xml").send(
+      "<Response><Message>" + safeReply + "</Message></Response>"
+    );
 
-      console.log("📤 Twilio AI reply sent");
-    } catch (error) {
-      console.error("❌ Twilio background AI error:", error);
-    }
-  })();
+    console.log("📤 TwiML WhatsApp reply sent to:", from);
+  } catch (error) {
+    console.error("❌ Twilio AI error:", error);
+
+    res.type("text/xml").send(
+      "<Response><Message>SASIKUMAR AI: Please try again.</Message></Response>"
+    );
+  }
 });
 
 app.listen(PORT,()=>{
