@@ -1030,7 +1030,10 @@ function printExamContent() {
     "<body style='font-family:Arial;line-height:1.8;padding:25px;'>" +
     "<pre style='white-space:pre-wrap;'>" +
     text.replace(/&/g,"&amp;").replace(/</g,"&lt;") +
-    "</pre></body></html>"
+    "</pre>
+
+
+</body></html>"
   );
 
   win.document.close();
@@ -1061,5 +1064,57 @@ function saveExamContent() {
 }
 </script>
 
+<!-- SASIKUMAR AI Page Up / Down Tools -->
+<div id="pageUpDownTools" style="
+  position:fixed;
+  right:14px;
+  bottom:20px;
+  z-index:9999;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+">
+  <button onclick="window.scrollTo({top:0,behavior:'smooth'})"
+    title="Go to Top"
+    style="
+      width:48px;
+      height:48px;
+      border-radius:50%;
+      border:1px solid #ccc;
+      font-size:22px;
+      cursor:pointer;
+      box-shadow:0 3px 10px rgba(0,0,0,.18);
+    ">⬆️</button>
+
+  <button onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})"
+    title="Go to Bottom"
+    style="
+      width:48px;
+      height:48px;
+      border-radius:50%;
+      border:1px solid #ccc;
+      font-size:22px;
+      cursor:pointer;
+      box-shadow:0 3px 10px rgba(0,0,0,.18);
+    ">⬇️</button>
+</div>
+
+<script>
+function updateUpDownTools() {
+  const tools = document.getElementById("pageUpDownTools");
+  if (!tools) return;
+
+  const nearTop = window.scrollY < 150;
+  const nearBottom =
+    window.innerHeight + window.scrollY >=
+    document.documentElement.scrollHeight - 150;
+
+  tools.style.opacity = (nearTop && nearBottom) ? "0.65" : "1";
+}
+
+window.addEventListener("scroll", updateUpDownTools);
+window.addEventListener("resize", updateUpDownTools);
+updateUpDownTools();
+</script>
 </body>
 </html>
