@@ -825,5 +825,241 @@ function saveResultText() {
 }
 </script>
 
+
+<!-- SASIKUMAR AI Government Exam Papers -->
+<section id="governmentExamPapers" style="
+  margin:24px 0;
+  padding:18px;
+  border:1px solid #ddd;
+  border-radius:16px;
+  background:#fff;
+">
+  <h2>📚 Government Public Exam Papers</h2>
+  <p>10th & 12th • Previous Question Papers • Answer Key</p>
+
+  <label>📅 Year</label>
+  <select id="examYear" style="width:100%;padding:12px;margin:6px 0 12px;">
+    <option value="">Select Year</option>
+  </select>
+
+  <label>🎓 Class</label>
+  <select id="examClass" style="width:100%;padding:12px;margin:6px 0 12px;">
+    <option value="">Select Class</option>
+    <option value="10th">10th</option>
+    <option value="12th">12th</option>
+  </select>
+
+  <label>📖 Subject</label>
+  <select id="examSubject" style="width:100%;padding:12px;margin:6px 0 12px;">
+    <option value="">Select Subject</option>
+    <option>Tamil</option>
+    <option>English</option>
+    <option>Mathematics</option>
+    <option>Science</option>
+    <option>Social Science</option>
+    <option>Physics</option>
+    <option>Chemistry</option>
+    <option>Biology</option>
+    <option>Computer Science</option>
+    <option>Commerce</option>
+    <option>Accountancy</option>
+    <option>Economics</option>
+  </select>
+
+  <label>🌐 Medium</label>
+  <select id="examMedium" style="width:100%;padding:12px;margin:6px 0 16px;">
+    <option value="">Select Medium</option>
+    <option value="Tamil">Tamil Medium</option>
+    <option value="English">English Medium</option>
+  </select>
+
+  <button onclick="openExamPaper()">📄 Open Question Paper</button>
+  <button onclick="openAnswerKey()">✅ Answer Key</button>
+
+  <div id="examPaperContent" style="
+    margin-top:18px;
+    padding:16px;
+    min-height:220px;
+    border:1px solid #ddd;
+    border-radius:12px;
+    line-height:1.8;
+    white-space:pre-wrap;
+  ">
+Select Year → Class → Subject → Medium
+then open the Question Paper or Answer Key.
+  </div>
+
+  <div style="margin-top:16px;">
+    <button onclick="selectExamContent()">☑️ Select</button>
+    <button onclick="copyExamContent()">📋 Copy</button>
+    <button onclick="sendExamContent()">📤 Send</button>
+    <button onclick="shareExamContent()">🔗 Share</button>
+    <button onclick="printExamContent()">🖨️ Print</button>
+    <button onclick="saveExamContent()">💾 Save</button>
+  </div>
+</section>
+
+<script>
+(function () {
+  const year = document.getElementById("examYear");
+
+  for (let y = new Date().getFullYear(); y >= 2000; y--) {
+    const option = document.createElement("option");
+    option.value = y;
+    option.textContent = y;
+    year.appendChild(option);
+  }
+})();
+
+function examInfo() {
+  const year = document.getElementById("examYear").value;
+  const cls = document.getElementById("examClass").value;
+  const subject = document.getElementById("examSubject").value;
+  const medium = document.getElementById("examMedium").value;
+
+  if (!year || !cls || !subject || !medium) {
+    alert("⚠️ Please select Year, Class, Subject and Medium");
+    return null;
+  }
+
+  return { year, cls, subject, medium };
+}
+
+function openExamPaper() {
+  const x = examInfo();
+  if (!x) return;
+
+  document.getElementById("examPaperContent").textContent =
+`📄 GOVERNMENT PUBLIC EXAM QUESTION PAPER
+
+Year: ${x.year}
+Class: ${x.cls}
+Subject: ${x.subject}
+Medium: ${x.medium}
+
+Question Paper
+────────────────────────
+The selected official question paper will be displayed here.
+
+Important:
+• Use the official paper where available.
+• Paper availability may vary by year, subject and medium.`;
+}
+
+function openAnswerKey() {
+  const x = examInfo();
+  if (!x) return;
+
+  document.getElementById("examPaperContent").textContent =
+`✅ ANSWER KEY
+
+Year: ${x.year}
+Class: ${x.cls}
+Subject: ${x.subject}
+Medium: ${x.medium}
+
+Answer Key
+────────────────────────
+The selected answer key will be displayed here.
+
+⭐ Important Marks
+• Question-wise answers
+• Mark allocation
+• Important questions`;
+}
+
+function getExamText() {
+  return document.getElementById("examPaperContent").textContent;
+}
+
+function selectExamContent() {
+  const box = document.getElementById("examPaperContent");
+  const range = document.createRange();
+  range.selectNodeContents(box);
+
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+  selection.addRange(range);
+}
+
+async function copyExamContent() {
+  const text = getExamText();
+
+  try {
+    await navigator.clipboard.writeText(text);
+    alert("✅ Copied");
+  } catch (e) {
+    selectExamContent();
+    document.execCommand("copy");
+    alert("✅ Copied");
+  }
+}
+
+async function sendExamContent() {
+  const text = getExamText();
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: "SASIKUMAR AI Exam Paper", text });
+    } catch (e) {}
+  } else {
+    copyExamContent();
+  }
+}
+
+async function shareExamContent() {
+  const text = getExamText();
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: "SASIKUMAR AI Government Exam Paper",
+        text: text
+      });
+    } catch (e) {}
+  } else {
+    copyExamContent();
+  }
+}
+
+function printExamContent() {
+  const text = getExamText();
+
+  const win = window.open("", "_blank");
+  win.document.write(
+    "<html><head><title>SASIKUMAR AI Exam Paper</title></head>" +
+    "<body style='font-family:Arial;line-height:1.8;padding:25px;'>" +
+    "<pre style='white-space:pre-wrap;'>" +
+    text.replace(/&/g,"&amp;").replace(/</g,"&lt;") +
+    "</pre></body></html>"
+  );
+
+  win.document.close();
+  win.print();
+}
+
+function saveExamContent() {
+  const text = getExamText();
+
+  if (!text.trim()) {
+    alert("⚠️ Nothing to save");
+    return;
+  }
+
+  const blob = new Blob([text], {
+    type: "text/plain;charset=utf-8"
+  });
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+
+  a.href = url;
+  a.download = "SASIKUMAR-AI-Exam-Paper.txt";
+  a.click();
+
+  URL.revokeObjectURL(url);
+  alert("💾 Saved");
+}
+</script>
+
 </body>
 </html>
