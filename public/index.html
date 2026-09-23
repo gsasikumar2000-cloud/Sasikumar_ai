@@ -360,7 +360,7 @@ text-decoration:none !important;
 <script>
 function openDailyPoster(){
   const url="https://sasikumar-ai-9wdq.onrender.com/daily-gold-poster.svg";
-  const text="இன்றைய SASIKUMAR AI Daily Gold Rate Poster";
+  const text="இன்றைய SASIKUMAR AI Daily Gold & Silver Poster";
 
   const old=document.getElementById("dailyPosterSharePanel");
   if(old) old.remove();
@@ -368,37 +368,73 @@ function openDailyPoster(){
   const panel=document.createElement("div");
   panel.id="dailyPosterSharePanel";
   panel.style.cssText=
-    "position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);"+
-    "width:min(90%,360px);background:#fff;padding:22px;border-radius:18px;"+
-    "box-shadow:0 10px 40px rgba(0,0,0,.35);z-index:99999;text-align:center;";
+    "position:fixed;inset:0;background:rgba(0,0,0,.72);"+
+    "z-index:99999;display:flex;align-items:center;justify-content:center;"+
+    "padding:12px;box-sizing:border-box;";
 
   panel.innerHTML=
-    '<h3 style="margin:0 0 16px">🖼️ Daily Poster</h3>'+
-    '<button id="dpShare" style="width:100%;padding:13px;margin:5px 0">📤 Share</button>'+
-    '<button id="dpWhatsApp" style="width:100%;padding:13px;margin:5px 0">🟢 WhatsApp</button>'+
-    '<button id="dpCopy" style="width:100%;padding:13px;margin:5px 0">🔗 Copy Link</button>'+
-    '<button id="dpOpen" style="width:100%;padding:13px;margin:5px 0">👁️ Open Poster</button>'+
-    '<button id="dpClose" style="width:100%;padding:10px;margin-top:10px">✕ Close</button>';
+    '<div style="width:min(94vw,420px);max-height:94vh;overflow:auto;'+
+    'background:#fff;border-radius:20px;padding:14px;box-sizing:border-box;'+
+    'box-shadow:0 10px 50px rgba(0,0,0,.45);text-align:center">'+
+    '<h3 style="margin:4px 0 12px">🖼️ Daily Gold & Silver Poster</h3>'+
+    '<div style="background:#f5f5f5;border-radius:14px;padding:8px">'+
+    '<img id="dpPosterImage" src="'+url+'" alt="SASIKUMAR AI Daily Gold and Silver Poster" '+
+    'style="width:100%;height:auto;display:block;border-radius:10px">'+
+    '</div>'+
+    '<button id="dpCopyImage" style="width:100%;padding:13px;margin:6px 0;border:0;border-radius:10px">📋 Copy Image</button>'+
+    '<button id="dpSave" style="width:100%;padding:13px;margin:6px 0;border:0;border-radius:10px">💾 Save Poster</button>'+
+    '<button id="dpShare" style="width:100%;padding:13px;margin:6px 0;border:0;border-radius:10px">📤 Share</button>'+
+    '<button id="dpWhatsApp" style="width:100%;padding:13px;margin:6px 0;border:0;border-radius:10px">🟢 WhatsApp</button>'+
+    '<button id="dpCopy" style="width:100%;padding:13px;margin:6px 0;border:0;border-radius:10px">🔗 Copy Link</button>'+
+    '<button id="dpOpen" style="width:100%;padding:13px;margin:6px 0;border:0;border-radius:10px">👁️ Open Full Poster</button>'+
+    '<button id="dpClose" style="width:100%;padding:11px;margin-top:8px;border:0;border-radius:10px">✕ Close</button>'+
+    '</div>';
 
   document.body.appendChild(panel);
+
+  document.getElementById("dpSave").onclick=()=>{
+    const a=document.createElement("a");
+    a.href=url;
+    a.download="SASIKUMAR-AI-Daily-Gold-Silver-Poster.svg";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  };
+
+  document.getElementById("dpCopyImage").onclick=async()=>{
+    try{
+      const response=await fetch(url);
+      const blob=await response.blob();
+      if(navigator.clipboard && window.ClipboardItem){
+        await navigator.clipboard.write([
+          new ClipboardItem({[blob.type]:blob})
+        ]);
+        alert("✅ Poster image copied!");
+      }else{
+        alert("📋 Image copy is not supported. Use Save or Share.");
+      }
+    }catch(e){
+      alert("📋 Image copy failed. Use Save or Share.");
+    }
+  };
 
   document.getElementById("dpShare").onclick=async()=>{
     if(navigator.share){
       try{
         await navigator.share({
-          title:"SASIKUMAR AI - Daily Gold Poster",
+          title:"SASIKUMAR AI - Daily Gold & Silver Poster",
           text,
           url
         });
       }catch(e){}
     }else{
-      alert("📤 Share is not supported here. Use WhatsApp or Copy Link.");
+      alert("📤 Share is not supported. Use WhatsApp or Copy Link.");
     }
   };
 
   document.getElementById("dpWhatsApp").onclick=()=>{
     window.open(
-      "https://wa.me/?text="+encodeURIComponent(text+"\\n"+url),
+      "https://wa.me/?text="+encodeURIComponent(text+"\n"+url),
       "_blank"
     );
   };
@@ -420,7 +456,6 @@ function openDailyPoster(){
     panel.remove();
   };
 }
-
 window.makeClickableLinks=function(text){return String(text).replace(/(https?:\/\/[^\s<]+)/g,"<a class=\"ai-link\" href=\"$1\" target=\"_blank\" rel=\"noopener noreferrer\">$1</a>");};</script>
 <script>
 function openEquations() {
