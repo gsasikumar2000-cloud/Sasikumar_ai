@@ -711,5 +711,119 @@ function calcEMI(){
 }
 </script>
 
+
+<!-- Result Page Edit Tools -->
+<div id="resultEditTools" style="
+  margin:20px 0;
+  padding:15px;
+  border:1px solid #ddd;
+  border-radius:12px;
+  background:#f8fafc;
+">
+  <div style="font-weight:700;margin-bottom:10px;">
+    📝 Result Tools
+  </div>
+
+  <button onclick="selectResultText()">☑️ Select</button>
+  <button onclick="copyResultText()">📋 Copy</button>
+  <button onclick="cutResultText()">✂️ Cut</button>
+  <button onclick="pasteResultText()">📌 Paste</button>
+  <button onclick="saveResultText()">💾 Save</button>
+
+  <textarea id="resultEditBox"
+    placeholder="Select / copy / cut / paste result text here..."
+    style="
+      width:100%;
+      min-height:160px;
+      margin-top:12px;
+      padding:10px;
+      box-sizing:border-box;
+      border-radius:10px;
+      border:1px solid #ccc;
+      font-size:16px;
+      line-height:1.6;
+    "></textarea>
+</div>
+
+<script>
+function getResultContent() {
+  const box = document.getElementById("resultEditBox");
+  if (!box) return "";
+  return box.value;
+}
+
+function selectResultText() {
+  const box = document.getElementById("resultEditBox");
+  box.focus();
+  box.select();
+}
+
+async function copyResultText() {
+  const box = document.getElementById("resultEditBox");
+  box.focus();
+  box.select();
+
+  try {
+    await navigator.clipboard.writeText(box.value);
+    alert("✅ Result copied");
+  } catch (e) {
+    document.execCommand("copy");
+    alert("✅ Result copied");
+  }
+}
+
+async function cutResultText() {
+  const box = document.getElementById("resultEditBox");
+  box.focus();
+  box.select();
+
+  try {
+    await navigator.clipboard.writeText(box.value);
+    box.value = "";
+    alert("✂️ Result cut");
+  } catch (e) {
+    document.execCommand("cut");
+    alert("✂️ Result cut");
+  }
+}
+
+async function pasteResultText() {
+  const box = document.getElementById("resultEditBox");
+  box.focus();
+
+  try {
+    const text = await navigator.clipboard.readText();
+    box.value += text;
+    alert("📌 Pasted");
+  } catch (e) {
+    alert("📌 Please allow clipboard access");
+  }
+}
+
+function saveResultText() {
+  const text = getResultContent();
+
+  if (!text.trim()) {
+    alert("⚠️ Result is empty");
+    return;
+  }
+
+  const blob = new Blob([text], {
+    type: "text/plain;charset=utf-8"
+  });
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+
+  a.href = url;
+  a.download = "SASIKUMAR-AI-Result.txt";
+  a.click();
+
+  URL.revokeObjectURL(url);
+
+  alert("💾 Result saved");
+}
+</script>
+
 </body>
 </html>
