@@ -74,6 +74,27 @@ input{
   border-bottom:1px solid #ddd;
   text-align:center;
 }
+
+.math-learning-card{
+  border:2px solid #eadca8;
+}
+.math-learning-card select{
+  background:#fff;
+  color:#222;
+}
+.math-details{
+  margin-top:16px;
+  padding:16px;
+  border-radius:12px;
+  background:#fffdf4;
+  border:1px solid #eadca8;
+  line-height:1.7;
+  overflow-wrap:anywhere;
+}
+.math-ai-content{
+  font-size:16px;
+  line-height:1.8;
+}
 </style>
 </head>
 
@@ -89,6 +110,312 @@ input{
 <div class="subtitle">
 🧮 Maths • 🪙 Gold • 💰 Finance • 📊 Business Maths
 </div>
+
+
+<!-- CLASS 1-12 MATHEMATICS LEARNING FLOW -->
+<div class="card maths-learning-card">
+<h2>📚 School Mathematics — Class 1 to 12</h2>
+
+<p class="note">
+Class → Mathematics Topic → Open Selected → Tamil + English maximum useful details
+</p>
+
+<div class="grid">
+
+<div>
+<label><b>1️⃣ Student Level</b></label>
+<select id="studentLevel" style="width:100%;padding:11px;border:1px solid #ccc;border-radius:8px;margin:5px 0 12px;">
+<option value="">Select Student Level</option>
+<option value="primary">Primary — Class 1–5</option>
+<option value="middle">Middle School — Class 6–8</option>
+<option value="secondary">Secondary — Class 9–10</option>
+<option value="higher">Higher Secondary — Class 11–12</option>
+</select>
+</div>
+
+<div>
+<label><b>2️⃣ Subject</b></label>
+<select id="mathSubject" style="width:100%;padding:11px;border:1px solid #ccc;border-radius:8px;margin:5px 0 12px;">
+<option value="">Select Subject</option>
+<option value="Mathematics">Mathematics</option>
+<option value="Physics">Physics</option>
+<option value="Chemistry">Chemistry</option>
+<option value="Computer Science">Computer Science</option>
+</select>
+</div>
+
+<div>
+<label><b>3️⃣ Class</b></label>
+<select id="mathClass" style="width:100%;padding:11px;border:1px solid #ccc;border-radius:8px;margin:5px 0 12px;">
+<option value="">Select Level & Subject first</option>
+</select>
+</div>
+
+<div>
+<label><b>4️⃣ Chapter / Topic</b></label>
+<select id="mathTopic" style="width:100%;padding:11px;border:1px solid #ccc;border-radius:8px;margin:5px 0 12px;">
+<option value="">Select Class first</option>
+</select>
+</div>
+
+</div>
+
+<button id="mathOpenBtn" disabled onclick="openMathTopic()">
+📖 Open Selected
+</button>
+
+<div id="mathSelectedInfo" class="note" style="margin-top:10px;">
+Student Level → Subject → Class → Chapter / Topic
+</div>
+
+<div id="mathDetails" class="math-details" style="display:none;"></div>
+
+<button id="mathGoogleBtn" style="display:none;" onclick="searchMathTopic()">
+🔎 Google Search – More Details
+</button>
+
+</div>
+
+<script>
+(function(){
+
+const levelEl = document.getElementById("studentLevel");
+const subjectEl = document.getElementById("mathSubject");
+const classEl = document.getElementById("mathClass");
+const topicEl = document.getElementById("mathTopic");
+const openBtn = document.getElementById("mathOpenBtn");
+const infoEl = document.getElementById("mathSelectedInfo");
+const detailsEl = document.getElementById("mathDetails");
+const googleBtn = document.getElementById("mathGoogleBtn");
+
+const levels = {
+  primary: [1,2,3,4,5],
+  middle: [6,7,8],
+  secondary: [9,10],
+  higher: [11,12]
+};
+
+const topics = {
+"Mathematics": {
+1:["Numbers","Counting","Addition","Subtraction","Shapes","Measurement","Time","Money"],
+2:["Numbers","Addition","Subtraction","Multiplication","Division","Fractions","Shapes","Measurement","Time","Money"],
+3:["Numbers","Addition","Subtraction","Multiplication","Division","Fractions","Decimals","Measurement","Time","Money","Geometry"],
+4:["Large Numbers","Addition","Subtraction","Multiplication","Division","Fractions","Decimals","Factors","Multiples","Geometry","Measurement","Data Handling"],
+5:["Numbers","Factors and Multiples","Fractions","Decimals","Percentage","Geometry","Area and Perimeter","Measurement","Data Handling"],
+6:["Knowing Our Numbers","Whole Numbers","Integers","Fractions","Decimals","Ratio","Percentage","Algebra","Basic Geometry","Mensuration","Data Handling"],
+7:["Integers","Fractions and Decimals","Data Handling","Simple Equations","Lines and Angles","Triangles","Comparing Quantities","Perimeter and Area","Algebraic Expressions","Exponents","Symmetry","Probability"],
+8:["Rational Numbers","Linear Equations","Understanding Quadrilaterals","Practical Geometry","Data Handling","Squares and Square Roots","Cubes and Cube Roots","Comparing Quantities","Algebraic Expressions","Mensuration","Exponents and Powers","Direct and Inverse Proportion","Factorisation","Graphs","Probability"],
+9:["Number Systems","Polynomials","Coordinate Geometry","Linear Equations in Two Variables","Euclid Geometry","Lines and Angles","Triangles","Quadrilaterals","Circles","Heron's Formula","Surface Areas and Volumes","Statistics","Probability"],
+10:["Real Numbers","Polynomials","Pair of Linear Equations","Quadratic Equations","Arithmetic Progressions","Triangles","Coordinate Geometry","Introduction to Trigonometry","Applications of Trigonometry","Circles","Areas Related to Circles","Surface Areas and Volumes","Statistics","Probability"],
+11:["Sets","Relations and Functions","Trigonometric Functions","Complex Numbers","Linear Inequalities","Permutations and Combinations","Binomial Theorem","Sequences and Series","Straight Lines","Conic Sections","Limits and Derivatives","Statistics","Probability"],
+12:["Relations and Functions","Inverse Trigonometric Functions","Matrices","Determinants","Continuity and Differentiability","Applications of Derivatives","Integrals","Applications of Integrals","Differential Equations","Vector Algebra","Three Dimensional Geometry","Linear Programming","Probability"]
+},
+
+"Physics": {
+1:["Measurement","Motion","Push and Pull","Light","Sound"],
+2:["Measurement","Motion","Light","Sound","Magnets"],
+3:["Measurement","Motion","Energy","Light","Sound"],
+4:["Force","Motion","Energy","Heat","Light","Sound"],
+5:["Force and Motion","Energy","Light","Sound","Simple Machines"],
+6:["Motion","Force","Energy","Light","Electricity"],
+7:["Heat","Motion","Force","Pressure","Light","Sound"],
+8:["Force","Pressure","Friction","Sound","Light","Electricity"],
+9:["Motion","Force and Laws of Motion","Gravitation","Work and Energy","Sound"],
+10:["Light","Human Eye","Electricity","Magnetic Effects of Electric Current","Sources of Energy"],
+11:["Units and Measurements","Motion","Laws of Motion","Work Energy and Power","Gravitation","Thermodynamics","Oscillations","Waves"],
+12:["Electric Charges and Fields","Electrostatic Potential","Current Electricity","Moving Charges and Magnetism","Electromagnetic Induction","Alternating Current","Ray Optics","Wave Optics","Atoms","Nuclei","Semiconductor Electronics"]
+},
+
+"Chemistry": {
+1:["Materials","Water","Air","Changes"],
+2:["Materials","Water","Air","Changes"],
+3:["Materials Around Us","Water","Air","Changes"],
+4:["Matter","Materials","Water","Air","Changes"],
+5:["Matter","Materials","Water","Air","Separation"],
+6:["Components of Food","Materials","Separation of Substances","Changes Around Us"],
+7:["Matter","Physical and Chemical Changes","Acids and Bases","Heat"],
+8:["Crop Production","Materials","Combustion","Coal and Petroleum","Chemical Effects"],
+9:["Matter in Our Surroundings","Is Matter Around Us Pure","Atoms and Molecules","Structure of Atom"],
+10:["Chemical Reactions","Acids Bases and Salts","Metals and Non-metals","Carbon Compounds","Periodic Classification"],
+11:["Some Basic Concepts of Chemistry","Structure of Atom","Chemical Bonding","Thermodynamics","Equilibrium","Redox Reactions","Organic Chemistry"],
+12:["Solutions","Electrochemistry","Chemical Kinetics","Surface Chemistry","Coordination Compounds","Haloalkanes","Alcohols Phenols Ethers","Amines","Biomolecules"]
+},
+
+"Computer Science": {
+1:["Computer Basics","Parts of Computer","Keyboard","Mouse"],
+2:["Computer Basics","Files","Typing","Drawing"],
+3:["Hardware","Software","Internet Basics","Programming Basics"],
+4:["Computer Networks","Internet","Algorithms","Programming"],
+5:["Algorithms","Scratch","Internet Safety","Data"],
+6:["Computer Basics","Algorithms","Programming","Internet"],
+7:["Python Basics","Variables","Conditions","Loops","Functions"],
+8:["Python","Lists","Functions","Algorithms","Cyber Safety"],
+9:["Programming","Python","Data Structures","Computer Networks","Cyber Security"],
+10:["Python","SQL","Data Structures","Networks","Cyber Security"],
+11:["Computer Systems","Python","Data Structures","Database Concepts","Computer Networks"],
+12:["Python","Data Structures","Database Management","Computer Networks","Computer Security"]
+}
+};
+
+function resetAll(){
+  classEl.innerHTML = '<option value="">Select Level & Subject first</option>';
+  topicEl.innerHTML = '<option value="">Select Class first</option>';
+  openBtn.disabled = true;
+  detailsEl.style.display = "none";
+  googleBtn.style.display = "none";
+}
+
+levelEl.addEventListener("change", function(){
+  resetAll();
+
+  if(!this.value || !subjectEl.value){
+    infoEl.textContent = "Student Level → Subject → Class → Chapter / Topic";
+    return;
+  }
+
+  loadClasses();
+});
+
+subjectEl.addEventListener("change", function(){
+  resetAll();
+
+  if(!this.value || !levelEl.value){
+    infoEl.textContent = "Student Level → Subject → Class → Chapter / Topic";
+    return;
+  }
+
+  loadClasses();
+});
+
+function loadClasses(){
+  classEl.innerHTML = '<option value="">Select Class</option>';
+
+  (levels[levelEl.value] || []).forEach(function(num){
+    const option = document.createElement("option");
+    option.value = "Class " + num;
+    option.textContent = "Class " + num;
+    classEl.appendChild(option);
+  });
+
+  infoEl.textContent =
+    levelEl.options[levelEl.selectedIndex].text +
+    " → " + subjectEl.value + " → Select Class";
+}
+
+classEl.addEventListener("change", function(){
+  topicEl.innerHTML = '<option value="">Select Chapter / Topic</option>';
+
+  const cls = this.value;
+  const subject = subjectEl.value;
+
+  if(!cls || !subject) return;
+
+  const num = Number(cls.replace("Class ",""));
+  const list = topics[subject]?.[num] || [];
+
+  list.forEach(function(topic){
+    const option = document.createElement("option");
+    option.value = topic;
+    option.textContent = topic;
+    topicEl.appendChild(option);
+  });
+
+  openBtn.disabled = true;
+  detailsEl.style.display = "none";
+  googleBtn.style.display = "none";
+
+  infoEl.textContent =
+    cls + " → " + subject + " → Select Chapter / Topic";
+});
+
+topicEl.addEventListener("change", function(){
+  const cls = classEl.value;
+  const subject = subjectEl.value;
+  const topic = this.value;
+
+  openBtn.disabled = !(cls && subject && topic);
+
+  if(cls && subject && topic){
+    infoEl.textContent =
+      "Selected: " + cls + " → " + subject + " → " + topic;
+  }
+});
+
+window.openMathTopic = function(){
+
+  const cls = classEl.value;
+  const subject = subjectEl.value;
+  const topic = topicEl.value;
+
+  if(!cls || !subject || !topic) return;
+
+  detailsEl.style.display = "block";
+  googleBtn.style.display = "inline-block";
+
+  detailsEl.innerHTML = `
+    <h3>📖 ${topic}</h3>
+
+    <p><b>Class:</b> ${cls}</p>
+    <p><b>Subject:</b> ${subject}</p>
+
+    <h4>🇮🇳 தமிழ் விளக்கம்</h4>
+    <p>
+      இந்த பாடத்தில் <b>${topic}</b> பற்றிய அடிப்படை கருத்துகள்,
+      விதிகள், சூத்திரங்கள் மற்றும் பயன்பாடுகளை படிப்படியாக கற்றுக்கொள்ளலாம்.
+    </p>
+
+    <h4>🇬🇧 English Explanation</h4>
+    <p>
+      Learn the basic concepts, rules, formulas, symbols,
+      examples and practical applications of <b>${topic}</b>.
+    </p>
+
+    <h4>📌 Learning Points</h4>
+    <ul>
+      <li>Definition / வரையறை</li>
+      <li>Rules / விதிகள்</li>
+      <li>Formula or Equation / சூத்திரம்</li>
+      <li>Symbols / குறியீடுகள்</li>
+      <li>Worked Example / எடுத்துக்காட்டு</li>
+      <li>Step-by-step Method / படிப்படியான முறை</li>
+      <li>Practice Questions / பயிற்சி கேள்விகள்</li>
+      <li>Answers & Revision / பதில்கள் மற்றும் மறுபயிற்சி</li>
+      <li>Summary / சுருக்கம்</li>
+    </ul>
+
+    <p class="note">
+      💡 Google Search மூலம் இந்த topic பற்றிய மேலும் விரிவான தகவல்களை பார்க்கலாம்.
+    </p>
+  `;
+
+  detailsEl.scrollIntoView({
+    behavior:"smooth",
+    block:"start"
+  });
+};
+
+window.searchMathTopic = function(){
+
+  const cls = classEl.value;
+  const subject = subjectEl.value;
+  const topic = topicEl.value;
+
+  if(!cls || !subject || !topic) return;
+
+  const query = encodeURIComponent(
+    "SASIKUMAR AI " + cls + " " + subject + " " + topic +
+    " Tamil English explanation formula examples"
+  );
+
+  window.open(
+    "https://www.google.com/search?q=" + query,
+    "_blank",
+    "noopener,noreferrer"
+  );
+};
+
+})();
+</script>
 
 <!-- MATHS -->
 <div class="card">
