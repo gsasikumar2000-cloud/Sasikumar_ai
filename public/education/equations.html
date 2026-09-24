@@ -1296,6 +1296,406 @@ function saveExamContent() {
 }
 </script>
 
+
+<!-- SASIKUMAR AI Government Exam Q&A Bank -->
+<section id="governmentQABank" style="
+  margin-top:24px;
+  padding:18px;
+  border:2px solid #222;
+  border-radius:14px;
+  background:#fff;
+">
+
+  <h2>📚 Government Exam Q&A Bank</h2>
+
+  <p>
+    🎓 10th & 12th • 📖 All Subjects • 🌐 Tamil / English
+  </p>
+
+  <label>🎓 Class</label>
+  <select id="qaClass" style="width:100%;padding:13px;margin:6px 0 14px;">
+    <option value="">Select Class</option>
+    <option value="10th">10th</option>
+    <option value="12th">12th</option>
+  </select>
+
+  <label>📖 Subject</label>
+  <select id="qaSubject" style="width:100%;padding:13px;margin:6px 0 14px;">
+    <option value="">All Subjects</option>
+    <option>Tamil</option>
+    <option>English</option>
+    <option>Mathematics</option>
+    <option>Science</option>
+    <option>Social Science</option>
+    <option>Physics</option>
+    <option>Chemistry</option>
+    <option>Biology</option>
+    <option>Computer Science</option>
+    <option>Commerce</option>
+    <option>Accountancy</option>
+    <option>Economics</option>
+  </select>
+
+  <label>🌐 Medium</label>
+  <select id="qaMedium" style="width:100%;padding:13px;margin:6px 0 14px;">
+    <option value="">All Mediums</option>
+    <option value="Tamil">Tamil Medium</option>
+    <option value="English">English Medium</option>
+  </select>
+
+  <label>⭐ Mark</label>
+  <select id="qaMark" style="width:100%;padding:13px;margin:6px 0 14px;">
+    <option value="">All Marks</option>
+    <option value="1">1 Mark</option>
+    <option value="2">2 Mark</option>
+    <option value="3">3 Mark</option>
+    <option value="5">5 Mark</option>
+    <option value="10">10 Mark</option>
+  </select>
+
+  <label>🔥 Importance</label>
+  <select id="qaImportant" style="width:100%;padding:13px;margin:6px 0 16px;">
+    <option value="">All Questions</option>
+    <option value="important">Important Questions</option>
+  </select>
+
+  <button onclick="loadGovernmentQABank()"
+    style="width:100%;padding:14px;font-weight:bold;">
+    📚 Load Q&A Bank
+  </button>
+
+  <div id="qaResultInfo" style="
+    margin-top:16px;
+    padding:12px;
+    text-align:center;
+    font-weight:bold;
+    background:#f5f5f5;
+    border-radius:10px;
+  ">
+    Select filters and load the Q&A Bank.
+  </div>
+
+  <!-- Legal-size result paper -->
+  <div id="qaResultBox" contenteditable="true" style="
+    width:215.9mm;
+    min-height:355.6mm;
+    max-width:100%;
+    box-sizing:border-box;
+    margin:16px auto;
+    padding:18mm;
+    background:#fff;
+    border:1px solid #bbb;
+    border-radius:4px;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+    overflow:auto;
+  ">
+    <h3>📚 Q&A Bank Result</h3>
+    <p>Select the filters above and click <b>Load Q&A Bank</b>.</p>
+  </div>
+<div id="qaResultFooter" style="
+  margin-top:24px;
+  padding-top:14px;
+  border-top:2px solid #999;
+  text-align:center;
+  font-size:14px;
+  line-height:1.8;
+">
+  <div>📄 A4 Paper</div>
+  <div>🤖 <strong>SASIKUMAR AI</strong></div>
+  <div>🌐 <span id="qaResultUrl"></span></div>
+  <div style="margin-top:10px;">
+    <button type="button" onclick="followUpQABank()">🔄 Follow Up</button>
+    <button type="button" onclick="shareQABank()">📤 Share</button>
+  </div>
+</div>
+
+
+  <div style="
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:12px;
+  ">
+    <button onclick="selectQABank()">☑️ Select</button>
+    <button onclick="copyQABank()">📋 Copy</button>
+    <button onclick="cutQABank()">✂️ Cut</button>
+    <button onclick="pasteQABank()">📌 Paste</button>
+    <button onclick="shareQABank()">🔗 Share</button>
+    <button onclick="moveQABank(-1)">⬆️ Up</button>
+    <button onclick="moveQABank(1)">⬇️ Down</button>
+    <button onclick="printQABank()">🖨️ Print</button>
+    <button onclick="saveQABank()">💾 Save</button>
+    <button onclick="popQABank()">🪟 Pop</button>
+  </div>
+
+</section>
+
+<script>
+const GOVERNMENT_QA_BANK = [
+  {
+    className: "10th",
+    subject: "Mathematics",
+    medium: "English",
+    mark: 1,
+    important: true,
+    question: "What is the value of 2 + 3?",
+    answer: "5"
+  },
+  {
+    className: "10th",
+    subject: "Mathematics",
+    medium: "Tamil",
+    mark: 2,
+    important: true,
+    question: "Solve: x + 5 = 12.",
+    answer: "x = 7."
+  },
+  {
+    className: "10th",
+    subject: "Science",
+    medium: "English",
+    mark: 1,
+    important: true,
+    question: "What is the basic unit of life?",
+    answer: "The cell is the basic unit of life."
+  },
+  {
+    className: "10th",
+    subject: "Social Science",
+    medium: "English",
+    mark: 3,
+    important: false,
+    question: "What is democracy?",
+    answer: "Democracy is a system of government in which people participate in choosing their representatives."
+  },
+  {
+    className: "12th",
+    subject: "Physics",
+    medium: "English",
+    mark: 2,
+    important: true,
+    question: "What is the SI unit of force?",
+    answer: "The SI unit of force is newton (N)."
+  },
+  {
+    className: "12th",
+    subject: "Chemistry",
+    medium: "English",
+    mark: 1,
+    important: true,
+    question: "What is the pH of a neutral solution at 25°C?",
+    answer: "The pH is 7."
+  },
+  {
+    className: "12th",
+    subject: "Biology",
+    medium: "Tamil",
+    mark: 3,
+    important: true,
+    question: "செல் என்றால் என்ன?",
+    answer: "செல் என்பது உயிரினங்களின் அடிப்படை கட்டமைப்பு மற்றும் செயல்பாட்டு அலகாகும்."
+  },
+  {
+    className: "12th",
+    subject: "Mathematics",
+    medium: "English",
+    mark: 5,
+    important: true,
+    question: "Define a matrix.",
+    answer: "A matrix is a rectangular arrangement of numbers or elements in rows and columns."
+  }
+];
+
+function loadGovernmentQABank() {
+  updateQABankUrl();
+  const cls = document.getElementById("qaClass")?.value || "";
+  const subject = document.getElementById("qaSubject")?.value || "";
+  const medium = document.getElementById("qaMedium")?.value || "";
+  const mark = document.getElementById("qaMark")?.value || "";
+  const important = document.getElementById("qaImportant")?.value || "";
+
+  const result = GOVERNMENT_QA_BANK.filter(item =>
+    (!cls || item.className === cls) &&
+    (!subject || item.subject === subject) &&
+    (!medium || item.medium === medium) &&
+    (!mark || String(item.mark) === String(mark)) &&
+    (!important || item.important === true)
+  );
+
+  const box = document.getElementById("qaResultBox");
+  const info = document.getElementById("qaResultInfo");
+
+  if (!result.length) {
+    info.textContent = "⚠️ No verified Q&A data is available for the selected filters.";
+
+    box.innerHTML = `
+      <h3>📚 Q&A Bank Result</h3>
+      <p>
+        No verified question-wise data is currently available.
+      </p>
+      <div style="
+        padding:14px;
+        background:#fff8dc;
+        border:1px solid #e0c766;
+        border-radius:8px;
+      ">
+        ⚠️ Unverified examination questions and answers are not generated.
+      </div>
+    `;
+    return;
+  }
+
+  info.textContent = `${result.length} verified question(s) found.`;
+
+  box.innerHTML = result.map((item, i) => `
+    <article style="
+      margin-bottom:20px;
+      padding-bottom:16px;
+      border-bottom:1px solid #ddd;
+    ">
+      <b>Question ${i + 1}</b>
+      <div style="margin-top:8px;">${item.question}</div>
+      <div style="margin-top:10px;">
+        <b>Answer:</b> ${item.answer}
+      </div>
+      <small>
+        ${item.mark} Mark • ${item.subject} • ${item.medium}
+      </small>
+    </article>
+  `).join("");
+}
+
+function getQABankText() {
+  return document.getElementById("qaResultBox")?.innerText || "";
+}
+
+function selectQABank() {
+  const box = document.getElementById("qaResultBox");
+  if (!box) return;
+  const range = document.createRange();
+  range.selectNodeContents(box);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
+
+async function copyQABank() {
+  const text = getQABankText();
+  if (!text) return;
+  await navigator.clipboard.writeText(text);
+  alert("✅ Q&A copied");
+}
+
+function cutQABank() {
+  selectQABank();
+  document.execCommand("cut");
+}
+
+async function pasteQABank() {
+  const text = await navigator.clipboard.readText();
+  document.getElementById("qaResultBox").focus();
+  document.execCommand("insertText", false, text);
+}
+
+async function shareQABank() {
+  const text = getQABankText();
+  if (navigator.share) {
+    await navigator.share({
+      title: "SASIKUMAR AI Q&A Bank",
+      text
+    });
+  } else {
+    await navigator.clipboard.writeText(text);
+    alert("✅ Q&A copied for sharing");
+  }
+}
+
+
+function followUpQABank() {
+  const box = document.getElementById("qaResultBox");
+  if (!box) return;
+
+  const followUp = prompt(
+    "SASIKUMAR AI Follow Up\n\nEnter your next question:"
+  );
+
+  if (followUp && followUp.trim()) {
+    box.innerHTML += `
+      <hr>
+      <h3>🔄 Follow Up</h3>
+      <p><strong>Question:</strong> ${followUp.trim()}</p>
+      <p>🤖 SASIKUMAR AI — Follow-up question received.</p>
+    `;
+  }
+}
+
+function updateQABankUrl() {
+  const el = document.getElementById("qaResultUrl");
+  if (el) el.textContent = window.location.href;
+}
+
+function moveQABank(direction) {
+  const box = document.getElementById("qaResultBox");
+  if (!box) return;
+  window.scrollBy({
+    top: direction * 500,
+    behavior: "smooth"
+  });
+}
+
+function printQABank() {
+  const box = document.getElementById("qaResultBox");
+  if (!box) return;
+
+  const w = window.open("", "_blank");
+  w.document.write(`
+    <html>
+    <head>
+      <title>SASIKUMAR AI — Q&A Bank</title>
+      <style>
+        @page { size: Legal; margin: 18mm; }
+        body { font-family: Arial, sans-serif; line-height:1.6; }
+      </style>
+    </head>
+    <body>${box.innerHTML}</body>
+    </html>
+  `);
+  w.document.close();
+  w.print();
+}
+
+function saveQABank() {
+  const blob = new Blob([getQABankText()], {
+    type: "text/plain;charset=utf-8"
+  });
+
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "sasikumar-ai-qa-bank.txt";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function popQABank() {
+  const box = document.getElementById("qaResultBox");
+  if (!box) return;
+
+  const w = window.open("", "SASIKUMAR_AI_QA",
+    "width=900,height=700,scrollbars=yes");
+
+  w.document.write(`
+    <html>
+    <head>
+      <title>SASIKUMAR AI Q&A Bank</title>
+    </head>
+    <body>${box.innerHTML}</body>
+    </html>
+  `);
+
+  w.document.close();
+}
+</script>
+
 <!-- SASIKUMAR AI Page Up / Down Tools -->
 <div id="pageUpDownTools" style="
   position:fixed;
