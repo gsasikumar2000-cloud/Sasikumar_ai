@@ -826,31 +826,42 @@ function saveResultText() {
 </script>
 
 
-<!-- SASIKUMAR AI Government Exam Papers -->
+<!-- SASIKUMAR AI Government Exam Papers — Clear Paper Viewer -->
 <section id="governmentExamPapers" style="
-  margin:24px 0;
+  margin-top:24px;
   padding:18px;
+  background:#fff;
   border:1px solid #ddd;
   border-radius:16px;
-  background:#fff;
 ">
+
   <h2>📚 Government Public Exam Papers</h2>
-  <p>10th & 12th • Previous Question Papers • Answer Key</p>
+
+  <div style="
+    padding:14px;
+    margin:12px 0;
+    background:#f5f8ff;
+    border:1px solid #cfd8ea;
+    border-radius:12px;
+  ">
+    <b>🏛️ Tamil Nadu Government Public Examination</b><br>
+    <small>10th & 12th Question Papers • Answer Key • Q&A Viewer</small>
+  </div>
 
   <label>📅 Year</label>
-  <select id="examYear" style="width:100%;padding:12px;margin:6px 0 12px;">
+  <select id="examYear" style="width:100%;padding:13px;margin:6px 0 12px;">
     <option value="">Select Year</option>
   </select>
 
   <label>🎓 Class</label>
-  <select id="examClass" style="width:100%;padding:12px;margin:6px 0 12px;">
+  <select id="examClass" style="width:100%;padding:13px;margin:6px 0 12px;">
     <option value="">Select Class</option>
     <option value="10th">10th</option>
     <option value="12th">12th</option>
   </select>
 
   <label>📖 Subject</label>
-  <select id="examSubject" style="width:100%;padding:12px;margin:6px 0 12px;">
+  <select id="examSubject" style="width:100%;padding:13px;margin:6px 0 12px;">
     <option value="">Select Subject</option>
     <option>Tamil</option>
     <option>English</option>
@@ -867,113 +878,297 @@ function saveResultText() {
   </select>
 
   <label>🌐 Medium</label>
-  <select id="examMedium" style="width:100%;padding:12px;margin:6px 0 16px;">
+  <select id="examMedium" style="width:100%;padding:13px;margin:6px 0 16px;">
     <option value="">Select Medium</option>
     <option value="Tamil">Tamil Medium</option>
     <option value="English">English Medium</option>
   </select>
 
-  <button onclick="openExamPaper()">📄 Open Question Paper</button>
-  <button onclick="openAnswerKey()">✅ Answer Key</button>
-
-  <div id="examPaperContent" style="
-    margin-top:18px;
-    padding:16px;
-    min-height:220px;
-    border:1px solid #ddd;
-    border-radius:12px;
-    line-height:1.8;
-    white-space:pre-wrap;
-  ">
-Select Year → Class → Subject → Medium
-then open the Question Paper or Answer Key.
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <button onclick="openExamPaper()">📄 Question Paper</button>
+    <button onclick="openAnswerKey()">✅ Answer Key</button>
   </div>
 
-  <div style="margin-top:16px;">
+  <div id="examPageInfo" style="
+    margin-top:16px;
+    padding:12px;
+    text-align:center;
+    font-weight:bold;
+    background:#f5f5f5;
+    border-radius:10px;
+  ">
+    Select Year → Class → Subject → Medium
+  </div>
+
+  <div id="examPaperContent" style="
+    margin-top:12px;
+    padding:20px;
+    min-height:520px;
+    background:#fff;
+    border:2px solid #222;
+    border-radius:10px;
+    line-height:1.8;
+    font-size:17px;
+    overflow-wrap:anywhere;
+  ">
+    <div style="text-align:center;padding:80px 10px;">
+      <div style="font-size:42px;">📄</div>
+      <h3>Government Exam Paper Viewer</h3>
+      <p>Select Year, Class, Subject and Medium.</p>
+      <p>Then choose Question Paper or Answer Key.</p>
+    </div>
+  </div>
+
+  <div id="examNavigation" style="
+    display:flex;
+    gap:8px;
+    justify-content:center;
+    flex-wrap:wrap;
+    margin-top:14px;
+  ">
+    <button onclick="goExamPage(-1)">◀️ Previous</button>
+    <button onclick="goExamPage(1)">Next ▶️</button>
+    <button onclick="goExamPage(0)">🔄 First Page</button>
+  </div>
+
+  <div style="
+    margin-top:14px;
+    padding:14px;
+    background:#fff8dc;
+    border:1px solid #e0c766;
+    border-radius:10px;
+  ">
+    ⭐ <b>Important Marks / Questions</b>
+    <div id="importantMarks" style="margin-top:8px;">
+      Select a paper first.
+    </div>
+  </div>
+
+  <div style="
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:16px;
+  ">
     <button onclick="selectExamContent()">☑️ Select</button>
     <button onclick="copyExamContent()">📋 Copy</button>
+    <button onclick="cutExamContent()">✂️ Cut</button>
+    <button onclick="pasteExamContent()">📌 Paste</button>
     <button onclick="sendExamContent()">📤 Send</button>
     <button onclick="shareExamContent()">🔗 Share</button>
     <button onclick="printExamContent()">🖨️ Print</button>
     <button onclick="saveExamContent()">💾 Save</button>
   </div>
+
 </section>
 
 <script>
-(function () {
-  const year = document.getElementById("examYear");
+let examPages = [];
+let examCurrentPage = 0;
+let examMode = "";
 
-  for (let y = new Date().getFullYear(); y >= 2000; y--) {
+(function loadExamYears() {
+  const year = document.getElementById("examYear");
+  if (!year) return;
+
+  const currentYear = new Date().getFullYear();
+
+  for (let y = currentYear; y >= 2000; y--) {
     const option = document.createElement("option");
-    option.value = y;
-    option.textContent = y;
+    option.value = String(y);
+    option.textContent = String(y);
     year.appendChild(option);
   }
 })();
 
-function examInfo() {
-  const year = document.getElementById("examYear").value;
-  const cls = document.getElementById("examClass").value;
-  const subject = document.getElementById("examSubject").value;
-  const medium = document.getElementById("examMedium").value;
+function getExamInfo() {
+  const year = document.getElementById("examYear")?.value;
+  const cls = document.getElementById("examClass")?.value;
+  const subject = document.getElementById("examSubject")?.value;
+  const medium = document.getElementById("examMedium")?.value;
 
   if (!year || !cls || !subject || !medium) {
     alert("⚠️ Please select Year, Class, Subject and Medium");
     return null;
   }
 
-  return { year, cls, subject, medium };
+  return {year, cls, subject, medium};
+}
+
+function setExamHeader(x, mode) {
+  return `
+    <div style="
+      padding:12px;
+      margin-bottom:16px;
+      background:#f5f5f5;
+      border-radius:10px;
+      border:1px solid #ddd;
+    ">
+      <b>${mode}</b><br>
+      📅 ${x.year} &nbsp; | &nbsp;
+      🎓 ${x.cls} &nbsp; | &nbsp;
+      📖 ${x.subject} &nbsp; | &nbsp;
+      🌐 ${x.medium}
+    </div>
+  `;
 }
 
 function openExamPaper() {
-  const x = examInfo();
+  const x = getExamInfo();
   if (!x) return;
 
-  document.getElementById("examPaperContent").textContent =
-`📄 GOVERNMENT PUBLIC EXAM QUESTION PAPER
+  examMode = "📄 Question Paper";
+  examCurrentPage = 0;
 
-Year: ${x.year}
-Class: ${x.cls}
-Subject: ${x.subject}
-Medium: ${x.medium}
+  /*
+   * Only verified paper content should be inserted here.
+   * Do not fabricate examination questions or answers.
+   */
+  examPages = [
+    `
+      ${setExamHeader(x, "📄 QUESTION PAPER")}
 
-Question Paper
-────────────────────────
-The selected official question paper will be displayed here.
+      <div style="
+        padding:18px;
+        border:2px solid #222;
+        border-radius:10px;
+        background:#fff;
+      ">
+        <h3>🏛️ Official Government Examination Paper</h3>
 
-Important:
-• Use the official paper where available.
-• Paper availability may vary by year, subject and medium.`;
+        <p>
+          <b>Year:</b> ${x.year}<br>
+          <b>Class:</b> ${x.cls}<br>
+          <b>Subject:</b> ${x.subject}<br>
+          <b>Medium:</b> ${x.medium}
+        </p>
+
+        <hr>
+
+        <p>
+          The actual question paper will be displayed here when
+          verified official paper data is added to SASIKUMAR AI.
+        </p>
+
+        <div style="
+          padding:14px;
+          background:#fff8dc;
+          border-radius:8px;
+          border:1px solid #e0c766;
+        ">
+          ⚠️ No unverified questions are generated.
+          Official/verified paper content is required for the
+          Question & Answer viewer.
+        </div>
+      </div>
+    `
+  ];
+
+  document.getElementById("importantMarks").textContent =
+    "Official marks and question-wise information will appear when verified paper data is available.";
+
+  showExamPage();
 }
 
 function openAnswerKey() {
-  const x = examInfo();
+  const x = getExamInfo();
   if (!x) return;
 
-  document.getElementById("examPaperContent").textContent =
-`✅ ANSWER KEY
+  examMode = "✅ Answer Key";
+  examCurrentPage = 0;
 
-Year: ${x.year}
-Class: ${x.cls}
-Subject: ${x.subject}
-Medium: ${x.medium}
+  examPages = [
+    `
+      ${setExamHeader(x, "✅ ANSWER KEY")}
 
-Answer Key
-────────────────────────
-The selected answer key will be displayed here.
+      <div style="
+        padding:18px;
+        border:2px solid #222;
+        border-radius:10px;
+        background:#fff;
+      ">
+        <h3>🏛️ Official Answer Key</h3>
 
-⭐ Important Marks
-• Question-wise answers
-• Mark allocation
-• Important questions`;
+        <p>
+          <b>Year:</b> ${x.year}<br>
+          <b>Class:</b> ${x.cls}<br>
+          <b>Subject:</b> ${x.subject}<br>
+          <b>Medium:</b> ${x.medium}
+        </p>
+
+        <hr>
+
+        <p>
+          The question-wise answer key will be displayed here
+          when verified official answer-key data is added.
+        </p>
+
+        <div style="
+          padding:14px;
+          background:#fff8dc;
+          border-radius:8px;
+          border:1px solid #e0c766;
+        ">
+          ⚠️ No unverified answers are generated.
+        </div>
+      </div>
+    `
+  ];
+
+  document.getElementById("importantMarks").textContent =
+    "Official answer and mark allocation will appear when verified answer-key data is available.";
+
+  showExamPage();
+}
+
+function showExamPage() {
+  const box = document.getElementById("examPaperContent");
+  const info = document.getElementById("examPageInfo");
+
+  if (!box || !info || !examPages.length) return;
+
+  if (examCurrentPage < 0) examCurrentPage = 0;
+  if (examCurrentPage >= examPages.length) {
+    examCurrentPage = examPages.length - 1;
+  }
+
+  box.innerHTML = examPages[examCurrentPage];
+
+  info.innerHTML =
+    `${examMode} &nbsp; • &nbsp; Page ${examCurrentPage + 1} / ${examPages.length}`;
+
+  box.scrollIntoView({
+    behavior:"smooth",
+    block:"start"
+  });
+}
+
+function goExamPage(step) {
+  if (!examPages.length) return;
+
+  if (step === 0) {
+    examCurrentPage = 0;
+  } else {
+    examCurrentPage += step;
+  }
+
+  if (examCurrentPage < 0) examCurrentPage = 0;
+  if (examCurrentPage >= examPages.length) {
+    examCurrentPage = examPages.length - 1;
+  }
+
+  showExamPage();
 }
 
 function getExamText() {
-  return document.getElementById("examPaperContent").textContent;
+  const box = document.getElementById("examPaperContent");
+  return box ? box.innerText.trim() : "";
 }
 
 function selectExamContent() {
   const box = document.getElementById("examPaperContent");
+  if (!box) return;
+
   const range = document.createRange();
   range.selectNodeContents(box);
 
@@ -985,82 +1180,144 @@ function selectExamContent() {
 async function copyExamContent() {
   const text = getExamText();
 
+  if (!text) return;
+
   try {
     await navigator.clipboard.writeText(text);
-    alert("✅ Copied");
-  } catch (e) {
+    alert("📋 Exam paper copied");
+  } catch {
     selectExamContent();
-    document.execCommand("copy");
-    alert("✅ Copied");
+    alert("📋 Text selected. Use Copy.");
+  }
+}
+
+function cutExamContent() {
+  selectExamContent();
+
+  try {
+    document.execCommand("cut");
+  } catch {}
+
+  alert("✂️ Selected exam content");
+}
+
+async function pasteExamContent() {
+  try {
+    const text = await navigator.clipboard.readText();
+
+    const box = document.getElementById("examPaperContent");
+    if (!box) return;
+
+    box.focus();
+    document.execCommand("insertText", false, text);
+
+    alert("📌 Pasted");
+  } catch {
+    alert("📌 Clipboard permission is required.");
   }
 }
 
 async function sendExamContent() {
   const text = getExamText();
+
+  if (!text) return;
+
   if (navigator.share) {
     try {
-      await navigator.share({ title: "SASIKUMAR AI Exam Paper", text });
-    } catch (e) {}
-  } else {
-    copyExamContent();
+      await navigator.share({
+        title:"SASIKUMAR AI Exam Paper",
+        text
+      });
+      return;
+    } catch {}
   }
+
+  await copyExamContent();
 }
 
 async function shareExamContent() {
   const text = getExamText();
 
+  if (!text) return;
+
   if (navigator.share) {
     try {
       await navigator.share({
-        title: "SASIKUMAR AI Government Exam Paper",
-        text: text
+        title:"SASIKUMAR AI Government Exam Paper",
+        text
       });
-    } catch (e) {}
-  } else {
-    copyExamContent();
+      return;
+    } catch {}
   }
+
+  await copyExamContent();
 }
 
 function printExamContent() {
-  const text = getExamText();
+  const box = document.getElementById("examPaperContent");
+  if (!box) return;
 
-  const win = window.open("", "_blank");
-  win.document.write(
-    "<html><head><title>SASIKUMAR AI Exam Paper</title></head>" +
-    "<body style='font-family:Arial;line-height:1.8;padding:25px;'>" +
-    "<pre style='white-space:pre-wrap;'>" +
-    text.replace(/&/g,"&amp;").replace(/</g,"&lt;") +
-    "</pre>
+  const printWindow = window.open("", "_blank");
 
+  if (!printWindow) {
+    alert("⚠️ Popup blocked. Please allow popups.");
+    return;
+  }
 
-</body></html>"
-  );
+  printWindow.document.write(`
+    <html>
+    <head>
+      <title>SASIKUMAR AI Exam Paper</title>
+      <style>
+        body{
+          font-family:Arial,sans-serif;
+          padding:30px;
+          line-height:1.8;
+        }
+        @page{
+          size:A4;
+          margin:15mm;
+        }
+      </style>
+    </head>
+    <body>${box.innerHTML}</body>
+    </html>
+  `);
 
-  win.document.close();
-  win.print();
+  printWindow.document.close();
+  printWindow.focus();
+
+  setTimeout(() => {
+    printWindow.print();
+  }, 300);
 }
 
 function saveExamContent() {
   const text = getExamText();
 
-  if (!text.trim()) {
-    alert("⚠️ Nothing to save");
-    return;
-  }
+  if (!text) return;
 
-  const blob = new Blob([text], {
-    type: "text/plain;charset=utf-8"
-  });
+  const blob = new Blob(
+    [text],
+    {type:"text/plain;charset=utf-8"}
+  );
 
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
 
   a.href = url;
-  a.download = "SASIKUMAR-AI-Exam-Paper.txt";
+  a.download =
+    "SASIKUMAR-AI-" +
+    (document.getElementById("examYear")?.value || "exam") +
+    "-paper.txt";
+
+  document.body.appendChild(a);
   a.click();
+  a.remove();
 
   URL.revokeObjectURL(url);
-  alert("💾 Saved");
+
+  alert("💾 Exam paper saved");
 }
 </script>
 
