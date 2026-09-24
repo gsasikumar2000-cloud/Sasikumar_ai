@@ -1503,11 +1503,122 @@ const GOVERNMENT_QA_BANK = [
     important: true,
     question: "Define a matrix.",
     answer: "A matrix is a rectangular arrangement of numbers or elements in rows and columns."
+  },
+
+  // SASIKUMAR AI Practice Q&A
+  {
+    className: "10th",
+    subject: "Tamil",
+    medium: "Tamil",
+    mark: 1,
+    important: true,
+    question: "தமிழ் மொழியின் சிறப்பை கூறுக.",
+    answer: "தமிழ் தொன்மையும் செம்மையும் சிறப்பும் கொண்ட செம்மொழியாகும்."
+  },
+  {
+    className: "10th",
+    subject: "English",
+    medium: "English",
+    mark: 2,
+    important: true,
+    question: "What is a noun?",
+    answer: "A noun is a word used to name a person, place, thing, or idea."
+  },
+  {
+    className: "10th",
+    subject: "Mathematics",
+    medium: "English",
+    mark: 3,
+    important: true,
+    question: "Solve: 2x + 5 = 15.",
+    answer: "2x = 10, therefore x = 5."
+  },
+  {
+    className: "10th",
+    subject: "Science",
+    medium: "English",
+    mark: 2,
+    important: true,
+    question: "What is photosynthesis?",
+    answer: "Photosynthesis is the process by which green plants make food using sunlight, carbon dioxide, and water."
+  },
+  {
+    className: "10th",
+    subject: "Social Science",
+    medium: "English",
+    mark: 5,
+    important: true,
+    question: "What is democracy?",
+    answer: "Democracy is a system of government in which people participate in choosing their representatives."
+  },
+  {
+    className: "12th",
+    subject: "Physics",
+    medium: "English",
+    mark: 2,
+    important: true,
+    question: "State Newton's second law of motion.",
+    answer: "The rate of change of momentum of an object is proportional to the applied force and occurs in the direction of the force."
+  },
+  {
+    className: "12th",
+    subject: "Chemistry",
+    medium: "English",
+    mark: 3,
+    important: true,
+    question: "What is a catalyst?",
+    answer: "A catalyst is a substance that changes the rate of a chemical reaction without being consumed permanently."
+  },
+  {
+    className: "12th",
+    subject: "Biology",
+    medium: "English",
+    mark: 2,
+    important: true,
+    question: "What is DNA?",
+    answer: "DNA is the molecule that carries genetic information in living organisms."
+  },
+  {
+    className: "12th",
+    subject: "Computer Science",
+    medium: "English",
+    mark: 5,
+    important: true,
+    question: "What is an algorithm?",
+    answer: "An algorithm is a finite sequence of clear steps used to solve a problem or perform a task."
+  },
+  {
+    className: "12th",
+    subject: "Commerce",
+    medium: "English",
+    mark: 3,
+    important: true,
+    question: "What is commerce?",
+    answer: "Commerce refers to activities involved in the exchange and distribution of goods and services."
+  },
+  {
+    className: "12th",
+    subject: "Accountancy",
+    medium: "English",
+    mark: 2,
+    important: true,
+    question: "What is a journal?",
+    answer: "A journal is a book of original entry in which business transactions are recorded chronologically."
+  },
+  {
+    className: "12th",
+    subject: "Economics",
+    medium: "English",
+    mark: 3,
+    important: true,
+    question: "What is demand?",
+    answer: "Demand is the quantity of a good or service that consumers are willing and able to buy at a given price and time."
   }
 ];
 
 function loadGovernmentQABank() {
   updateQABankUrl();
+
   const cls = document.getElementById("qaClass")?.value || "";
   const subject = document.getElementById("qaSubject")?.value || "";
   const medium = document.getElementById("qaMedium")?.value || "";
@@ -1526,12 +1637,12 @@ function loadGovernmentQABank() {
   const info = document.getElementById("qaResultInfo");
 
   if (!result.length) {
-    info.textContent = "⚠️ No verified Q&A data is available for the selected filters.";
+    info.textContent = "⚠️ No Practice Q&A data is available for the selected filters.";
 
     box.innerHTML = `
-      <h3>📚 Q&A Bank Result</h3>
+      <h3>📚 SASIKUMAR AI Practice Q&A</h3>
       <p>
-        No verified question-wise data is currently available.
+        No practice question-wise data is currently available for the selected filters.
       </p>
       <div style="
         padding:14px;
@@ -1539,30 +1650,48 @@ function loadGovernmentQABank() {
         border:1px solid #e0c766;
         border-radius:8px;
       ">
-        ⚠️ Unverified examination questions and answers are not generated.
+        ℹ️ These are SASIKUMAR AI practice questions, not verified Government examination questions.
       </div>
     `;
     return;
   }
 
-  info.textContent = `${result.length} verified question(s) found.`;
+  info.textContent = `${result.length} practice question(s) found.`;
 
-  box.innerHTML = result.map((item, i) => `
-    <article style="
-      margin-bottom:20px;
-      padding-bottom:16px;
-      border-bottom:1px solid #ddd;
+  box.innerHTML = `
+    <div style="
+      padding:12px;
+      margin-bottom:18px;
+      background:#eef7ff;
+      border:1px solid #b8d8f5;
+      border-radius:8px;
     ">
-      <b>Question ${i + 1}</b>
-      <div style="margin-top:8px;">${item.question}</div>
-      <div style="margin-top:10px;">
-        <b>Answer:</b> ${item.answer}
-      </div>
-      <small>
-        ${item.mark} Mark • ${item.subject} • ${item.medium}
-      </small>
-    </article>
-  `).join("");
+      <b>📚 SASIKUMAR AI Practice Q&A</b><br>
+      <small>⚠️ Practice content — not an official Government examination paper or answer key.</small>
+    </div>
+
+    ${result.map((item, i) => `
+      <article style="
+        margin-bottom:20px;
+        padding-bottom:16px;
+        border-bottom:1px solid #ddd;
+      ">
+        <b>Question ${i + 1}</b>
+
+        <div style="margin-top:8px;">
+          ${item.question}
+        </div>
+
+        <div style="margin-top:10px;">
+          <b>Answer:</b> ${item.answer}
+        </div>
+
+        <small>
+          ${item.mark} Mark • ${item.subject} • ${item.medium}
+        </small>
+      </article>
+    `).join("")}
+  `;
 }
 
 function getQABankText() {
