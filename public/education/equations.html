@@ -1013,20 +1013,23 @@ function setExamHeader(x, mode) {
   `;
 }
 
-function openExamPaper() {
+function openOfficialDgeExam(mode) {
   const x = getExamInfo();
   if (!x) return;
 
-  examMode = "📄 Question Paper";
+  examMode = mode === "paper"
+    ? "📄 Question Paper"
+    : "✅ Answer Key";
+
   examCurrentPage = 0;
 
-  /*
-   * Only verified paper content should be inserted here.
-   * Do not fabricate examination questions or answers.
-   */
+  const dgeUrl = x.cls === "10th"
+    ? "https://www.dge.tn.gov.in/ta/sslc.html"
+    : "https://www.dge.tn.gov.in/hsc.html";
+
   examPages = [
     `
-      ${setExamHeader(x, "📄 QUESTION PAPER")}
+      ${setExamHeader(x, examMode)}
 
       <div style="
         padding:18px;
@@ -1034,7 +1037,7 @@ function openExamPaper() {
         border-radius:10px;
         background:#fff;
       ">
-        <h3>🏛️ Official Government Examination Paper</h3>
+        <h3>🏛️ Tamil Nadu Directorate of Government Examinations</h3>
 
         <p>
           <b>Year:</b> ${x.year}<br>
@@ -1046,79 +1049,51 @@ function openExamPaper() {
         <hr>
 
         <p>
-          The actual question paper will be displayed here when
-          verified official paper data is added to SASIKUMAR AI.
+          Official DGE Question Bank-ல் இந்த தேர்வுக்கான
+          verified paper/document-ஐ பார்க்கலாம்.
         </p>
 
+        <button
+          onclick="window.open('${dgeUrl}', '_blank', 'noopener,noreferrer')"
+          style="
+            width:100%;
+            padding:14px;
+            font-size:16px;
+            font-weight:bold;
+          "
+        >
+          ${mode === "paper"
+            ? "📄 Open Official Question Paper"
+            : "✅ Open Official DGE Source"}
+        </button>
+
         <div style="
+          margin-top:14px;
           padding:14px;
           background:#fff8dc;
           border-radius:8px;
           border:1px solid #e0c766;
         ">
-          ⚠️ No unverified questions are generated.
-          Official/verified paper content is required for the
-          Question & Answer viewer.
+          ℹ️ SASIKUMAR AI does not generate or modify official
+          examination questions or answer keys.
+          The selected paper is opened from the official DGE source.
         </div>
       </div>
     `
   ];
 
   document.getElementById("importantMarks").textContent =
-    "Official marks and question-wise information will appear when verified paper data is available.";
+    "Official DGE source opened for the selected examination.";
 
   showExamPage();
 }
 
+function openExamPaper() {
+  openOfficialDgeExam("paper");
+}
+
 function openAnswerKey() {
-  const x = getExamInfo();
-  if (!x) return;
-
-  examMode = "✅ Answer Key";
-  examCurrentPage = 0;
-
-  examPages = [
-    `
-      ${setExamHeader(x, "✅ ANSWER KEY")}
-
-      <div style="
-        padding:18px;
-        border:2px solid #222;
-        border-radius:10px;
-        background:#fff;
-      ">
-        <h3>🏛️ Official Answer Key</h3>
-
-        <p>
-          <b>Year:</b> ${x.year}<br>
-          <b>Class:</b> ${x.cls}<br>
-          <b>Subject:</b> ${x.subject}<br>
-          <b>Medium:</b> ${x.medium}
-        </p>
-
-        <hr>
-
-        <p>
-          The question-wise answer key will be displayed here
-          when verified official answer-key data is added.
-        </p>
-
-        <div style="
-          padding:14px;
-          background:#fff8dc;
-          border-radius:8px;
-          border:1px solid #e0c766;
-        ">
-          ⚠️ No unverified answers are generated.
-        </div>
-      </div>
-    `
-  ];
-
-  document.getElementById("importantMarks").textContent =
-    "Official answer and mark allocation will appear when verified answer-key data is available.";
-
-  showExamPage();
+  openOfficialDgeExam("answer");
 }
 
 function showExamPage() {
