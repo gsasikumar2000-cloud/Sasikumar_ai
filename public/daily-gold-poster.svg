@@ -13,15 +13,15 @@
 
 <text x="500" y="150" text-anchor="middle"
  font-family="Arial,sans-serif" font-size="29" font-weight="800"
- fill="#ffffff">DAILY METAL TIP</text>
+ fill="#ffffff">PRICE AWARENESS</text>
 
 <text x="500" y="190" text-anchor="middle"
  font-family="Arial,sans-serif" font-size="19"
- fill="#dddddd">தினசரி தங்கம் • வெள்ளி குறிப்பு</text>
+ fill="#dddddd">தங்கம் • வெள்ளி விலை விழிப்புணர்வு</text>
 
 <text x="500" y="225" text-anchor="middle"
  font-family="Arial,sans-serif" font-size="20"
- fill="#bbbbbb">THANJAVUR • 19/09/2026</text>
+ fill="#bbbbbb">TAMIL NADU • THANJAVUR • LIVE RATE • 25/09/2026</text>
 
 <text x="75" y="270"
  font-family="Arial,sans-serif" font-size="24" font-weight="900"
@@ -35,7 +35,7 @@
         font-size="17" fill="#dddddd">99.9%</text>
       <text x="900" y="345" text-anchor="end"
         font-family="Arial,sans-serif" font-size="25"
-        font-weight="700" fill="#ffffff">₹13,501/g</text>
+        font-weight="700" fill="#ffffff">₹15,249/g</text>
       <rect x="55" y="377" width="890" height="53" rx="13" fill="#1d1d1d"/>
       <text x="80" y="411" font-family="Arial,sans-serif"
         font-size="23" font-weight="700" fill="#f5c542">22K / 916</text>
@@ -43,7 +43,7 @@
         font-size="17" fill="#dddddd">91.6%</text>
       <text x="900" y="411" text-anchor="end"
         font-family="Arial,sans-serif" font-size="25"
-        font-weight="700" fill="#ffffff">₹12,376/g</text>
+        font-weight="700" fill="#ffffff">₹13,978/g</text>
       <rect x="55" y="443" width="890" height="53" rx="13" fill="#1d1d1d"/>
       <text x="80" y="477" font-family="Arial,sans-serif"
         font-size="23" font-weight="700" fill="#f5c542">20K</text>
@@ -51,7 +51,7 @@
         font-size="17" fill="#dddddd">83.3%</text>
       <text x="900" y="477" text-anchor="end"
         font-family="Arial,sans-serif" font-size="25"
-        font-weight="700" fill="#ffffff">₹11,251/g</text>
+        font-weight="700" fill="#ffffff">₹12,708/g</text>
       <rect x="55" y="509" width="890" height="53" rx="13" fill="#1d1d1d"/>
       <text x="80" y="543" font-family="Arial,sans-serif"
         font-size="23" font-weight="700" fill="#f5c542">19K</text>
@@ -59,7 +59,7 @@
         font-size="17" fill="#dddddd">79.2%</text>
       <text x="900" y="543" text-anchor="end"
         font-family="Arial,sans-serif" font-size="25"
-        font-weight="700" fill="#ffffff">₹10,688/g</text>
+        font-weight="700" fill="#ffffff">₹12,072/g</text>
       <rect x="55" y="575" width="890" height="53" rx="13" fill="#1d1d1d"/>
       <text x="80" y="609" font-family="Arial,sans-serif"
         font-size="23" font-weight="700" fill="#f5c542">18K</text>
@@ -67,7 +67,7 @@
         font-size="17" fill="#dddddd">75.0%</text>
       <text x="900" y="609" text-anchor="end"
         font-family="Arial,sans-serif" font-size="25"
-        font-weight="700" fill="#ffffff">₹10,126/g</text>
+        font-weight="700" fill="#ffffff">₹11,437/g</text>
 
 <rect x="55" y="690" width="890" height="175" rx="22" fill="#1d1d1d"/>
 
@@ -96,7 +96,7 @@
 
 <text x="900" y="990" text-anchor="end"
  font-family="Arial,sans-serif" font-size="28" font-weight="800"
- fill="#ffffff">₹204</text>
+ fill="#ffffff">₹228</text>
 
 <text x="80" y="1035"
  font-family="Arial,sans-serif" font-size="22"
@@ -104,7 +104,7 @@
 
 <text x="900" y="1035" text-anchor="end"
  font-family="Arial,sans-serif" font-size="28" font-weight="800"
- fill="#ffffff">₹2,044</text>
+ fill="#ffffff">₹2,282</text>
 
 <text x="80" y="1080"
  font-family="Arial,sans-serif" font-size="22"
@@ -112,18 +112,18 @@
 
 <text x="900" y="1080" text-anchor="end"
  font-family="Arial,sans-serif" font-size="30" font-weight="900"
- fill="#ffffff">₹2,04,408</text>
+ fill="#ffffff">₹2,28,230</text>
 
 <text x="80" y="1120"
  font-family="Arial,sans-serif" font-size="21" font-weight="800"
- fill="#ffffff">▲ UP ₹3 (1.66%)</text>
+ fill="#ffffff">— NO CHANGE</text>
 
 <rect x="55" y="1170" width="890" height="95" rx="20"
  fill="#f5c542"/>
 
 <text x="500" y="1210" text-anchor="middle"
  font-family="Arial,sans-serif" font-size="20" font-weight="900"
- fill="#111111">GOLD 8G: ₹99,008 • SILVER 1KG: ₹2,04,408</text>
+ fill="#111111">GOLD 8G: ₹1,11,824 • SILVER 1KG: ₹2,28,230</text>
 
 <text x="500" y="1245" text-anchor="middle"
  font-family="Arial,sans-serif" font-size="25" font-weight="900"

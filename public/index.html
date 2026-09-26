@@ -871,6 +871,73 @@ function openEquations() {
 
 </style>
 
+
+<style id="sasikumar-colorful-design">
+:root{
+  --sa1:#6c2bd9;
+  --sa2:#00b8d9;
+  --sa3:#ffb300;
+  --sa4:#ff4f81;
+}
+body{
+  background:
+    radial-gradient(circle at 10% 10%,rgba(108,43,217,.18),transparent 28%),
+    radial-gradient(circle at 90% 15%,rgba(0,184,217,.18),transparent 28%),
+    radial-gradient(circle at 50% 100%,rgba(255,179,0,.15),transparent 30%),
+    linear-gradient(135deg,#f8fbff,#fff7fb,#f7f5ff) !important;
+}
+.dash-title{
+  background:linear-gradient(90deg,var(--sa1),var(--sa2),var(--sa4),var(--sa3));
+  background-size:300% 300%;
+  animation:saGradient 8s ease infinite;
+  color:#fff !important;
+  border-radius:18px;
+  padding:14px 16px !important;
+  box-shadow:0 8px 25px rgba(108,43,217,.25);
+}
+.dash-grid{
+  gap:12px !important;
+}
+.dash-grid button{
+  border:1px solid rgba(108,43,217,.12) !important;
+  background:rgba(255,255,255,.88) !important;
+  backdrop-filter:blur(10px);
+  box-shadow:0 5px 18px rgba(45,35,80,.10) !important;
+  transition:transform .2s ease,box-shadow .2s ease !important;
+}
+.dash-grid button:hover{
+  transform:translateY(-3px);
+  box-shadow:0 10px 25px rgba(108,43,217,.20) !important;
+}
+.dash-grid button:nth-child(4n+1){border-top:4px solid var(--sa1) !important;}
+.dash-grid button:nth-child(4n+2){border-top:4px solid var(--sa2) !important;}
+.dash-grid button:nth-child(4n+3){border-top:4px solid var(--sa3) !important;}
+.dash-grid button:nth-child(4n){border-top:4px solid var(--sa4) !important;}
+.gold-card{
+  background:linear-gradient(135deg,#fff7d6,#fff,#fff0b3) !important;
+  border:2px solid #e7b83c !important;
+  box-shadow:0 8px 24px rgba(190,145,20,.18) !important;
+}
+button{
+  transition:transform .15s ease,box-shadow .15s ease;
+}
+button:active{
+  transform:scale(.97);
+}
+@keyframes saGradient{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+body.dark{
+  background:linear-gradient(135deg,#101426,#17102a,#111c2b) !important;
+}
+body.dark .dash-grid button{
+  background:rgba(30,32,52,.92) !important;
+  border-color:rgba(255,255,255,.10) !important;
+}
+</style>
+
 </head>
 
 
