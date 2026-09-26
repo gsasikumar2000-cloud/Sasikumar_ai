@@ -24,19 +24,57 @@ button{padding:11px 16px;border:0;border-radius:10px;background:#b8860b;color:wh
 </header>
 
 <div class="container">
+<section class="card" style="margin-bottom:18px;">
+  <h2>🤖 Education AI • Web AI</h2>
+  <p>தமிழ் அல்லது English-ல் உங்கள் கல்வி கேள்வியை கேளுங்கள்.</p>
+  <textarea id="aiQuestion" rows="4" placeholder="உங்கள் கேள்வியை இங்கே எழுதுங்கள்..."></textarea>
+  <button onclick="askEducationAI()" style="margin-top:10px;padding:12px 18px;border:0;border-radius:10px;cursor:pointer;">🚀 Ask Education AI</button>
+  <div id="aiAnswer" style="margin-top:14px;white-space:pre-wrap;"></div>
+</section>
+
 <button class="back" onclick="location.href='/'">← Dashboard</button>
 
 <div class="card">
 <h2>🎓 Education Q&A</h2>
 
-<select id="classFilter" onchange="render()">
+<select id="classFilter" onchange="updateEducationFilters(); render()">
 <option value="">All Classes</option>
-<option>7th</option>
-<option>8th</option>
-<option>9th</option>
-<option>10th</option>
+<option hidden>7th</option>
+<option hidden>8th</option>
+<option hidden>9th</option>
+<option hidden>10th</option>
 <option>11th</option>
 <option>12th</option>
+</select>
+
+<select id="mediumFilter" onchange="render()">
+<option value="">All Mediums</option>
+<option value="Tamil">Tamil</option>
+<option value="English">English</option>
+</select>
+<select id="groupFilter" onchange="updateSubjectFilter(); render()">
+<option value="">All Groups</option>
+<option>2501</option>
+<option>2502</option>
+<option>2503</option>
+<option>2504</option>
+<option>2505</option>
+<option>2506</option>
+<option>2601</option>
+<option>2602</option>
+<option>2603</option>
+<option>2604</option>
+<option>2605</option>
+<option>2606</option>
+<option>2607</option>
+<option>2608</option>
+<option>2701</option>
+<option>2702</option>
+<option>2703</option>
+<option>2704</option>
+<option>2705</option>
+<option>2706</option>
+<option>2707</option>
 </select>
 
 <select id="subjectFilter" onchange="render()">
@@ -53,21 +91,79 @@ button{padding:11px 16px;border:0;border-radius:10px;background:#b8860b;color:wh
 <option>Commerce</option>
 <option>Accountancy</option>
 <option>Economics</option>
+<option>Agriculture</option>
+<option>Physical Education</option>
+<option>Statistics</option>
+<option>Bio-Chemistry</option>
+<option>Communicative English</option>
+<option>Home Science</option>
+<option>Micro-Biology</option>
+<option>General Nursing</option>
+<option>Nutrition and Dietetics</option>
+<option>Botany</option>
+<option>Zoology</option>
+<option>Computer Applications</option>
+<option>History</option>
+<option>Political Science</option>
+<option>Ethics and Indian Culture</option>
+<option>Advanced Language (Tamil)</option>
 </select>
 
-<input id="search" placeholder="🔎 Search question..." oninput="render()">
+<div style="display:flex;gap:6px;align-items:center"><input id="search" placeholder="Search question..." oninput="render()" onkeydown="if(event.key==='Enter') render()" style="flex:1"><button type="button" onclick="render()" aria-label="Search">🔎</button></div>
 </div>
 
 <div id="qaList"></div>
 </div>
 
+</script>
+<script>
+async function askEducationAI(){
+  const q = document.getElementById("aiQuestion").value.trim();
+  const out = document.getElementById("aiAnswer");
+
+  if(!q){
+    out.textContent = "⚠️ Please enter your education question.";
+    return;
+  }
+
+  out.textContent = "⏳ SASIKUMAR AI is thinking...";
+
+  try{
+    const r = await fetch("/api/chat", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({message:q})
+    });
+
+    const data = await r.json();
+
+    if(data.reply){
+      out.textContent = "🤖 " + data.reply;
+    }else{
+      out.textContent = "⚠️ AI response not available.";
+    }
+  }catch(err){
+    out.textContent = "❌ Web AI connection failed. Please try again.";
+  }
+}
+</script>
 <script>
 const QA=[
+{c:"10th",s:"Science",q:"What is photosynthesis?",a:"Photosynthesis is the process by which green plants make food using sunlight, carbon dioxide, and water."},
+{c:"10th",s:"Science",q:"ஒளிச்சேர்க்கை என்றால் என்ன?",a:"சூரிய ஒளியைப் பயன்படுத்தி பச்சைத் தாவரங்கள் கார்பன் டை ஆக்சைடு மற்றும் நீரிலிருந்து உணவை உருவாக்கும் செயல்முறை ஒளிச்சேர்க்கை எனப்படும்."},
+{c:"10th",s:"Mathematics",q:"What is a prime number?",a:"A prime number is a whole number greater than 1 that has exactly two factors: 1 and itself."},
+{c:"10th",s:"Mathematics",q:"பகா எண் என்றால் என்ன?",a:"1 மற்றும் அதே எண்ணைத் தவிர வேறு காரணிகள் இல்லாத, 1-ஐ விட பெரிய முழு எண் பகா எண் எனப்படும்."},
+{c:"10th",s:"English",q:"What is a noun?",a:"A noun is a word that names a person, place, thing, animal, or idea."},
+{c:"10th",s:"English",q:"பெயர்ச்சொல் என்றால் என்ன?",a:"ஒரு நபர், இடம், பொருள், விலங்கு அல்லது கருத்தின் பெயரைக் குறிக்கும் சொல் பெயர்ச்சொல் எனப்படும்."},
+{c:"11th",s:"Physics",q:"What is force?",a:"Force is a push or pull that can change the motion or shape of an object."},
+{c:"11th",s:"Physics",q:"விசை என்றால் என்ன?",a:"ஒரு பொருளின் இயக்கத்தையோ வடிவத்தையோ மாற்றக்கூடிய தள்ளுதல் அல்லது இழுத்தல் விசை எனப்படும்."},
+{c:"11th",s:"Chemistry",q:"What is an atom?",a:"An atom is the smallest unit of an element that retains the chemical properties of that element."},
+{c:"11th",s:"Chemistry",q:"அணு என்றால் என்ன?",a:"ஒரு தனிமத்தின் வேதியியல் பண்புகளைத் தக்கவைத்துக் கொள்ளும் மிகச் சிறிய அலகு அணு எனப்படும்."},
+
 {c:"7th",s:"Mathematics",q:"What is a fraction?",a:"A fraction represents a part of a whole, such as 1/2."},
 {c:"8th",s:"Science",q:"What is force?",a:"Force is a push or pull that can change the motion of an object."},
 {c:"9th",s:"Science",q:"What is an atom?",a:"An atom is the basic unit of an element that retains the chemical properties of that element."},
 {c:"10th",s:"Mathematics",q:"Solve: 2x + 5 = 15.",a:"2x = 10, so x = 5."},
-{c:"10th",s:"Science",q:"What is photosynthesis?",a:"Photosynthesis is the process by which green plants use light energy to make food from carbon dioxide and water."},
 {c:"10th",s:"Social Science",q:"What is democracy?",a:"Democracy is a system of government in which people participate in choosing their representatives."},
 {c:"10th",s:"English",q:"What is a noun?",a:"A noun is a word used to name a person, place, animal, thing, or idea."},
 {c:"11th",s:"Physics",q:"What is velocity?",a:"Velocity is the rate of change of displacement with respect to time."},
@@ -78,29 +174,142 @@ const QA=[
 {c:"12th",s:"Computer Science",q:"What is an algorithm?",a:"An algorithm is a finite sequence of clear steps used to solve a problem or perform a computation."},
 {c:"12th",s:"Commerce",q:"What is commerce?",a:"Commerce refers to activities involved in the exchange and distribution of goods and services."},
 {c:"12th",s:"Accountancy",q:"What is accounting?",a:"Accounting is the systematic process of recording, classifying and summarising financial transactions."},
-{c:"12th",s:"Economics",q:"What is demand?",a:"Demand is the quantity of a good or service that consumers are willing and able to buy at a given price and time."}
+{c:"12th",s:"Economics",q:"What is demand?",a:"Demand is the quantity of a good or service that consumers are willing and able to buy at a given price and time."},
+{c:"11th",s:"English",q:"What is a noun?",a:"A noun is a word that names a person, place, thing, animal, or idea."},
+{c:"11th",s:"English",q:"What is a verb?",a:"A verb is a word that expresses an action, occurrence, or state of being."},
+{c:"11th",s:"English",q:"What is a metaphor?",a:"A metaphor is a figure of speech that directly compares one thing with another."},
+
+{c:"10th",s:"நாகர்",q:"நாகர் வரலாறு என்றால் என்ன?",a:"நாகர் வரலாறு தொடர்பான முக்கிய நிகழ்வுகள், பண்பாடு மற்றும் வரலாற்றுச் சிறப்புகளைப் பற்றிய ஆய்வாகும்."},
 ];
 
-function render(){
- const c=document.getElementById("classFilter").value;
- const s=document.getElementById("subjectFilter").value;
- const q=document.getElementById("search").value.toLowerCase();
+const GROUPS={
+"2501":["Physics","Chemistry","Statistics","Mathematics"],
+"2502":["Physics","Chemistry","Computer Science","Mathematics"],
+"2503":["Physics","Chemistry","Biology","Mathematics"],
+"2504":["Physics","Chemistry","Bio-Chemistry","Mathematics"],
+"2505":["Physics","Chemistry","Communicative English","Mathematics"],
+"2506":["Physics","Chemistry","Mathematics","Home Science"],
+"2601":["Physics","Chemistry","Biology","Computer Science"],
+"2602":["Physics","Chemistry","Biology","Micro-Biology"],
+"2603":["Physics","Chemistry","Biology","Bio-Chemistry"],
+"2604":["Physics","Chemistry","Biology","General Nursing"],
+"2605":["Physics","Chemistry","Biology","Nutrition and Dietetics"],
+"2606":["Physics","Chemistry","Biology","Communicative English"],
+"2607":["Physics","Chemistry","Biology","Home Science"],
+"2608":["Physics","Chemistry","Botany","Zoology"],
+"2701":["Statistics","Economics","Commerce","Accountancy"],
+"2702":["Economics","Commerce","Accountancy","Computer Applications"],
+"2703":["Communicative English","Economics","Commerce","Accountancy"],
+"2704":["History","Economics","Commerce","Accountancy"],
+"2705":["Economics","Political Science","Commerce","Accountancy"],
+"2706":["Economics","Commerce","Accountancy","Ethics and Indian Culture"],
+"2707":["Economics","Commerce","Accountancy","Advanced Language (Tamil)"]
+};
 
- const data=QA.filter(x=>
-   (!c||x.c===c)&&(!s||x.s===s)&&
-   (!q||(x.q+" "+x.a+" "+x.s).toLowerCase().includes(q))
- );
+function updateEducationFilters(){
+  const c=document.getElementById("classFilter").value;
+  const g=document.getElementById("groupFilter");
 
- document.getElementById("qaList").innerHTML=data.length
- ? data.map((x,i)=>`
-   <div class="card">
-     <div><b>${x.c} • ${x.s}</b></div>
-     <div class="question">Q${i+1}. ${x.q}</div>
-     <div class="answer">✅ ${x.a}</div>
-   </div>`).join("")
- : `<div class="card">⚠️ No practice Q&A found for the selected filters.</div>`;
+  if(c==="11th"){
+    g.style.display="";
+    [...g.options].forEach(o=>{
+      o.hidden=!!o.value && !(o.value.startsWith("25") || o.value.startsWith("26"));
+    });
+  }else if(c==="12th"){
+    g.style.display="";
+    [...g.options].forEach(o=>{
+      o.hidden=!!o.value && !o.value.startsWith("27");
+    });
+  }else{
+    g.style.display="none";
+    g.value="";
+    [...g.options].forEach(o=>o.hidden=false);
+  }
+
+  updateSubjectFilter();
 }
 
+function updateSubjectFilter(){
+  const c=document.getElementById("classFilter").value;
+  const g=document.getElementById("groupFilter").value;
+  const subjectFilter=document.getElementById("subjectFilter");
+
+  let subjects=[];
+
+  if(c==="11th" || c==="12th"){
+    subjects=g && GROUPS[g]
+      ? [...new Set(GROUPS[g])]
+      : [...new Set(Object.values(GROUPS).flat())];
+  }else{
+    subjects=[
+      "Tamil",
+      "English",
+      "Mathematics",
+      "Science",
+      "Social Science"
+    ];
+  }
+
+  const current=subjectFilter.value;
+
+  subjectFilter.innerHTML =
+    '<option value="">All Subjects</option>' +
+    subjects.map(x=>`<option>${x}</option>`).join('');
+
+  subjectFilter.value=subjects.includes(current) ? current : '';
+}
+
+async function shareAnswer(i){
+  const x=QA[i];
+  const text=`${x.s}\nQ: ${x.q}\n\nAnswer: ${x.a}`;
+
+  if(navigator.share){
+    try{
+      await navigator.share({title:"SASIKUMAR AI",text});
+    }catch(e){}
+  }else if(navigator.clipboard){
+    await navigator.clipboard.writeText(text);
+    alert("✅ Answer copied");
+  }else{
+    alert("📋 Copy is available by long-pressing the text.");
+  }
+}
+
+function render(){
+  const c=document.getElementById("classFilter").value;
+  const m=document.getElementById("mediumFilter").value;
+  const s=document.getElementById("subjectFilter").value;
+  const g=document.getElementById("groupFilter").value;
+  const q=document.getElementById("search").value.toLowerCase();
+
+  const groupSubjects=GROUPS[g]||[];
+
+  const data=QA.filter(x=>{
+    const isTamil=/[\u0B80-\u0BFF]/.test(x.q+" "+x.a);
+    const medium=isTamil ? "Tamil" : "English";
+
+    return (!c||x.c===c)
+      &&(!m||medium===m)
+      &&(!s||x.s===s)
+      &&(!g||groupSubjects.includes(x.s))
+      &&(!q||(x.q+" "+x.a+" "+x.s).toLowerCase().includes(q));
+  });
+
+  document.getElementById("qaList").innerHTML=data.length
+    ? data.map((x,i)=>`
+      <div class="card">
+        <div><b>${x.c} • ${x.s}</b></div>
+        <div style="font-size:13px;margin:4px 0">
+          📚 Medium: ${/[\u0B80-\u0BFF]/.test(x.q+" "+x.a) ? "Tamil" : "English"}
+        </div>
+        <div class="question">Q${i+1}. ${x.q}</div>
+        <div class="answer">✅ ${x.a}</div>
+        <button onclick="shareAnswer(${i})">📤 Share</button>
+      </div>`).join("")
+    : `<div class="card">⚠️ No practice Q&A found for the selected filters.</div>`;
+}
+updateEducationFilters();
+updateSubjectFilter();
 render();
 </script>
 </body>
