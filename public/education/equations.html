@@ -96,6 +96,245 @@ input{
   line-height:1.8;
 }
 </style>
+
+<style id="sasikumar-education-3d">
+*{box-sizing:border-box}
+
+html{scroll-behavior:smooth}
+
+body{
+  font-family:Arial,sans-serif;
+  margin:0;
+  padding:16px;
+  min-height:100vh;
+  color:#172033;
+  background:
+    radial-gradient(circle at 8% 8%,rgba(124,58,237,.22),transparent 25%),
+    radial-gradient(circle at 92% 12%,rgba(6,182,212,.22),transparent 25%),
+    radial-gradient(circle at 50% 95%,rgba(245,158,11,.20),transparent 30%),
+    linear-gradient(135deg,#f8fbff,#fff7fc,#f8f5ff);
+  background-attachment:fixed;
+}
+
+.container{
+  max-width:1000px;
+  margin:auto;
+  perspective:1200px;
+}
+
+h1{
+  text-align:center;
+  margin:18px 0 8px;
+  font-size:clamp(28px,6vw,46px);
+  font-weight:900;
+  background:linear-gradient(90deg,#6d28d9,#0891b2,#db2777,#d97706,#6d28d9);
+  background-size:300% auto;
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  animation:eduGradient 7s linear infinite;
+  filter:drop-shadow(0 5px 10px rgba(80,40,150,.18));
+}
+
+.subtitle{
+  text-align:center;
+  color:#475569;
+  margin-bottom:24px;
+  font-weight:700;
+  letter-spacing:.3px;
+}
+
+.card{
+  position:relative;
+  background:rgba(255,255,255,.82);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  padding:20px;
+  margin:16px 0;
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,.75);
+  box-shadow:
+    0 12px 30px rgba(30,41,59,.12),
+    0 2px 6px rgba(30,41,59,.08);
+  transform:translateZ(0);
+  transition:transform .25s ease,box-shadow .25s ease;
+  overflow:hidden;
+}
+
+.card::before{
+  content:"";
+  position:absolute;
+  width:150px;
+  height:150px;
+  border-radius:50%;
+  top:-80px;
+  right:-60px;
+  background:linear-gradient(135deg,rgba(124,58,237,.18),rgba(6,182,212,.10));
+  pointer-events:none;
+}
+
+.card:hover{
+  transform:translateY(-5px) rotateX(.6deg);
+  box-shadow:
+    0 20px 40px rgba(30,41,59,.16),
+    0 5px 12px rgba(124,58,237,.10);
+}
+
+h2{
+  margin-top:0;
+  color:#5b21b6;
+  font-weight:900;
+}
+
+h3{
+  color:#334155;
+  margin-bottom:6px;
+}
+
+.eq{
+  font-size:20px;
+  font-weight:900;
+  color:#312e81;
+  background:linear-gradient(135deg,#eef2ff,#ecfeff);
+  padding:13px;
+  border-radius:13px;
+  margin:10px 0;
+  border-left:5px solid #7c3aed;
+  box-shadow:inset 0 1px 5px rgba(0,0,0,.04);
+}
+
+.note{
+  color:#475569;
+  font-size:14px;
+  line-height:1.7;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:15px;
+}
+
+button{
+  border:0;
+  border-radius:13px;
+  padding:11px 16px;
+  margin:5px;
+  cursor:pointer;
+  font-weight:800;
+  color:#fff;
+  background:linear-gradient(135deg,#7c3aed,#0891b2);
+  box-shadow:0 6px 14px rgba(79,70,229,.22);
+  transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;
+}
+
+button:hover{
+  transform:translateY(-3px) scale(1.02);
+  box-shadow:0 10px 22px rgba(79,70,229,.30);
+  filter:saturate(1.15);
+}
+
+button:active{
+  transform:scale(.96);
+}
+
+input{
+  width:100%;
+  padding:12px;
+  margin:6px 0 11px;
+  border:1px solid #cbd5e1;
+  border-radius:11px;
+  background:rgba(255,255,255,.9);
+  outline:none;
+  transition:border-color .2s,box-shadow .2s;
+}
+
+input:focus{
+  border-color:#7c3aed;
+  box-shadow:0 0 0 4px rgba(124,58,237,.12);
+}
+
+.result{
+  padding:12px;
+  margin-top:9px;
+  background:linear-gradient(135deg,#ecfdf5,#eff6ff);
+  border-radius:11px;
+  border-left:4px solid #10b981;
+  font-weight:800;
+}
+
+.top{
+  position:sticky;
+  top:8px;
+  z-index:10;
+  background:rgba(255,255,255,.78);
+  backdrop-filter:blur(15px);
+  -webkit-backdrop-filter:blur(15px);
+  padding:9px;
+  border:1px solid rgba(255,255,255,.8);
+  border-radius:16px;
+  text-align:center;
+  box-shadow:0 8px 24px rgba(15,23,42,.10);
+}
+
+.math-learning-card{
+  border:2px solid rgba(124,58,237,.18);
+  background:
+    linear-gradient(135deg,rgba(255,255,255,.92),rgba(245,243,255,.88));
+}
+
+.math-learning-card h2{
+  background:linear-gradient(90deg,#6d28d9,#0891b2);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+
+.math-learning-card select{
+  background:#fff;
+  color:#222;
+  border:1px solid #cbd5e1;
+  border-radius:11px;
+  padding:10px;
+}
+
+.math-details{
+  margin-top:16px;
+  padding:17px;
+  border-radius:15px;
+  background:linear-gradient(135deg,#ffffff,#f5f3ff,#ecfeff);
+  border:1px solid rgba(124,58,237,.18);
+  line-height:1.75;
+  overflow-wrap:anywhere;
+  box-shadow:inset 0 1px 8px rgba(0,0,0,.03);
+}
+
+.math-ai-content{
+  font-size:16px;
+  line-height:1.85;
+}
+
+@keyframes eduGradient{
+  0%{background-position:0% center}
+  50%{background-position:100% center}
+  100%{background-position:0% center}
+}
+
+@media(max-width:600px){
+  body{padding:10px}
+  .card{padding:15px;border-radius:18px}
+  .top{top:5px}
+  button{padding:10px 12px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation:none !important;
+    transition:none !important;
+  }
+}
+</style>
+
 </head>
 
 <body>
