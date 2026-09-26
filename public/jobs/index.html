@@ -12,6 +12,75 @@ header{background:#111;color:#fff;padding:20px;text-align:center}
 a{display:block;text-decoration:none;color:#111;font-size:18px;font-weight:bold}
 small{display:block;margin-top:8px;color:#666}
 </style>
+
+<style id="sasikumar-jobs-3d">
+body{
+  background:
+    radial-gradient(circle at 10% 20%,rgba(0,180,255,.28),transparent 32%),
+    radial-gradient(circle at 90% 20%,rgba(255,0,180,.25),transparent 30%),
+    radial-gradient(circle at 50% 90%,rgba(255,190,0,.25),transparent 35%),
+    linear-gradient(135deg,#eef7ff,#fff3fb,#fffbea);
+  background-size:180% 180%;
+  animation:jobsBg 12s ease infinite;
+}
+@keyframes jobsBg{
+  0%,100%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+}
+.card{
+  border:1px solid rgba(255,255,255,.75)!important;
+  border-radius:22px!important;
+  background:rgba(255,255,255,.72)!important;
+  backdrop-filter:blur(14px);
+  box-shadow:0 12px 30px rgba(30,60,120,.16),
+             inset 0 1px 0 rgba(255,255,255,.8);
+  transition:transform .3s ease,box-shadow .3s ease;
+  position:relative;
+  overflow:hidden;
+}
+.card::before{
+  content:"";
+  position:absolute;
+  width:120px;height:120px;
+  right:-55px;top:-55px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#00c6ff,#ff3cac);
+  opacity:.18;
+}
+.card:hover{
+  transform:translateY(-8px) rotateX(2deg) rotateY(-2deg) scale(1.02);
+  box-shadow:0 22px 45px rgba(30,60,120,.25);
+}
+.card a{
+  font-weight:800!important;
+  text-decoration:none;
+  transition:letter-spacing .2s ease;
+}
+.card a:hover{letter-spacing:.4px}
+.card small{
+  display:block;
+  margin-top:8px;
+  line-height:1.5;
+}
+h1,h2{
+  background:linear-gradient(90deg,#0066ff,#c000ff,#ff1493,#ff9800);
+  background-size:250% auto;
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  animation:jobsTitle 5s linear infinite;
+}
+@keyframes jobsTitle{
+  to{background-position:250% center}
+}
+@media(max-width:600px){
+  .card{border-radius:18px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+
 </head>
 <body>
 
