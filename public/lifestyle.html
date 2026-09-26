@@ -5,87 +5,202 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SASIKUMAR AI • Lifestyle Book</title>
 <style>
-body{margin:0;font-family:Arial,sans-serif;background:#0d0d0d;color:#fff}
-header{padding:18px;text-align:center;background:#151515}
-h1{margin:0;font-size:24px}
-.sub{color:#bbb;margin-top:6px}
-.container{max-width:900px;margin:auto;padding:15px}
-.card{background:#181818;border:1px solid #333;border-radius:16px;padding:18px;margin:12px 0}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#0b0b0b;color:#fff}
+header{padding:22px 15px;text-align:center;background:#151515;border-bottom:1px solid #333}
+h1{margin:0;font-size:25px}
+header p{color:#bbb;margin:8px 0 0}
+.container{max-width:950px;margin:auto;padding:15px}
+.back{width:100%;padding:13px;border:0;border-radius:12px;background:#222;color:#fff;font-size:16px;margin-bottom:15px}
+.categories{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px}
+.categories button{padding:13px 8px;border:1px solid #333;border-radius:13px;background:#171717;color:#fff}
+.book{margin-top:15px}
+.card{background:#151515;border:1px solid #303030;border-radius:16px;padding:18px;margin:12px 0}
 .card h2{margin-top:0}
-.card p{line-height:1.6;color:#ddd}
-button{border:0;border-radius:12px;padding:11px 15px;margin:5px;background:#252525;color:#fff}
-button:hover{background:#333}
-.tip{padding:12px;border-radius:12px;background:#111;margin-top:10px}
-.back{width:100%;font-size:16px}
+.card h3{margin-bottom:7px}
+.card p,.card li{color:#ddd;line-height:1.65}
+.tip{padding:13px;border-radius:12px;background:#101010;border-left:3px solid #777;margin-top:12px}
+.qa{padding:12px;border-radius:12px;background:#191919;margin-top:10px}
+.action{font-weight:bold}
+.small{color:#aaa;font-size:13px}
 </style>
 </head>
+
 <body>
 
 <header>
 <h1>📘 SASIKUMAR AI Lifestyle Book</h1>
-<div class="sub">Tamil + English • Practical Life Guide</div>
+<p>Tamil + English • Practical Knowledge • Everyday Life Guide</p>
 </header>
 
 <div class="container">
 
 <button class="back" onclick="location.href='/'">🏠 Back to SASIKUMAR AI</button>
 
-<div class="card">
-<h2>🌱 Daily Life</h2>
-<p><b>தமிழ்:</b> தினசரி வாழ்க்கையை ஒழுங்காக நடத்த சிறிய நல்ல பழக்கங்களை உருவாக்குங்கள்.</p>
-<p><b>English:</b> Build simple habits that make everyday life more organized and useful.</p>
-<div class="tip">💡 Tip: Plan tomorrow's important tasks before sleeping.</div>
+<div class="categories">
+<button onclick="showBook('daily')">🏠 Daily Life</button>
+<button onclick="showBook('money')">💰 Money & Savings</button>
+<button onclick="showBook('business')">💼 Business Life</button>
+<button onclick="showBook('education')">📚 Education & Learning</button>
+<button onclick="showBook('knowledge')">🧠 General Knowledge</button>
+<button onclick="showBook('technology')">💻 Technology</button>
+<button onclick="showBook('health')">🥗 Healthy Lifestyle</button>
+<button onclick="showBook('time')">⏰ Time Management</button>
+<button onclick="showBook('communication')">🤝 Communication</button>
+<button onclick="showBook('goals')">🎯 Goals & Development</button>
+<button onclick="showBook('puzzles')">🧩 Puzzles & Brain Games</button>
+<button onclick="showBook('updates')">📰 Daily Updates</button>
 </div>
 
-<div class="card">
-<h2>💰 Money & Savings</h2>
-<p><b>தமிழ்:</b> வருமானம், செலவு, சேமிப்பு ஆகியவற்றை தனித்தனியாக பதிவு செய்வது பண மேலாண்மைக்கு உதவும்.</p>
-<p><b>English:</b> Track income, expenses and savings separately to understand your money better.</p>
-<div class="tip">💡 Tip: Review your monthly expenses regularly.</div>
-</div>
-
-<div class="card">
-<h2>💼 Business Life</h2>
-<p><b>தமிழ்:</b> வாடிக்கையாளர் சேவை, நேர மேலாண்மை மற்றும் தெளிவான பதிவுகள் வணிகத்தில் முக்கியம்.</p>
-<p><b>English:</b> Customer service, time management and accurate records are important in business.</p>
-</div>
-
-<div class="card">
-<h2>📚 Education & Learning</h2>
-<p><b>தமிழ்:</b> தினமும் சிறிது நேரம் தொடர்ந்து கற்றுக்கொள்வது அறிவை வளர்க்கும்.</p>
-<p><b>English:</b> Consistent daily learning helps build knowledge over time.</p>
-</div>
-
-<div class="card">
-<h2>💻 Technology</h2>
-<p><b>தமிழ்:</b> புதிய தொழில்நுட்பங்களை பாதுகாப்பாகவும் பொறுப்புடனும் பயன்படுத்த கற்றுக்கொள்ளுங்கள்.</p>
-<p><b>English:</b> Learn to use new technology safely, responsibly and effectively.</p>
-</div>
-
-<div class="card">
-<h2>⏰ Time Management</h2>
-<p><b>தமிழ்:</b> முக்கியமான பணிகளை முதலில் செய்து, தேவையற்ற நேர விரயத்தை குறைக்கவும்.</p>
-<p><b>English:</b> Prioritize important tasks and reduce unnecessary distractions.</p>
-</div>
-
-<div class="card">
-<h2>🎯 Goals & Personal Development</h2>
-<p><b>தமிழ்:</b> பெரிய இலக்கை சிறிய, செய்யக்கூடிய படிகளாக பிரிக்கவும்.</p>
-<p><b>English:</b> Break a large goal into small, achievable steps.</p>
-</div>
-
-<div class="card">
-<h2>🧠 Puzzles & Brain Games</h2>
-<p><b>தமிழ்:</b> புதிர்கள் மற்றும் reasoning activities மூலம் சிந்தனை திறனை பயிற்சி செய்யலாம்.</p>
-<p><b>English:</b> Puzzles and reasoning activities can provide useful mental practice.</p>
-</div>
-
-<div class="card">
-<h2>🗣️ Communication</h2>
-<p><b>தமிழ்:</b> தெளிவாக கேட்டு, மரியாதையாக பதிலளிப்பது நல்ல தொடர்பை உருவாக்கும்.</p>
-<p><b>English:</b> Listening carefully and responding respectfully improves communication.</p>
-</div>
+<div id="book" class="book"></div>
 
 </div>
+
+<script>
+const BOOK={
+
+daily:{
+icon:"🏠",title:"Daily Life",
+ta:"தினசரி வாழ்க்கையை சிறிய நல்ல பழக்கங்களால் ஒழுங்குபடுத்தலாம்.",
+en:"A better daily life can be built through simple, consistent habits.",
+topics:["Morning planning","Personal organization","Home responsibilities","Digital habits"],
+tip:"💡 Tip: தினமும் செய்ய வேண்டிய 3 முக்கிய பணிகளை முதலில் எழுதுங்கள்.",
+qa:"Q: Why is a daily routine useful? A: It helps organize time and reduce unnecessary confusion.",
+action:"Action: இன்று 3 முக்கியமான tasks மட்டும் தேர்வு செய்து முடிக்கவும்."
+},
+
+money:{
+icon:"💰",title:"Money & Savings",
+ta:"பணம் சம்பாதிப்பது மட்டுமல்ல; அதை திட்டமிட்டு பயன்படுத்துவதும் முக்கியம்.",
+en:"Financial literacy means understanding income, expenses, saving, risk and long-term goals.",
+topics:["Income & expenses","Budgeting","Emergency savings","Assets & liabilities","Cash-flow thinking","Financial goals"],
+tip:"💡 Tip: மாத வருமானம் மற்றும் முக்கிய செலவுகளை தனித்தனியாக பதிவு செய்யுங்கள்.",
+qa:"Q: What is cash flow? A: It is the movement of money coming in and going out.",
+action:"Action: உங்கள் ஒரு மாத முக்கிய வரவு-செலவு பட்டியலை உருவாக்குங்கள்."
+},
+
+business:{
+icon:"💼",title:"Business Life",
+ta:"வாடிக்கையாளர் நம்பிக்கை, தரமான சேவை மற்றும் சரியான பதிவுகள் நல்ல வணிகத்தின் அடிப்படை.",
+en:"Good business combines customer service, useful products, accurate records and responsible decisions.",
+topics:["Customer service","Pricing basics","Record keeping","Communication","Business planning"],
+tip:"💡 Tip: ஒவ்வொரு முக்கிய business transaction-ஐயும் பதிவு செய்து வைத்திருங்கள்.",
+qa:"Q: Why are records important? A: They help understand business activity and support better decisions.",
+action:"Action: இன்று ஒரு business process-ஐ எழுதிப் பாருங்கள்."
+},
+
+education:{
+icon:"📚",title:"Education & Learning",
+ta:"தொடர்ச்சியான கற்றல் அறிவையும் திறமையையும் வளர்க்கிறது.",
+en:"Consistent learning builds knowledge and practical skills.",
+topics:["Reading","Practice","Revision","Question solving","Learning from mistakes"],
+tip:"💡 Tip: படித்ததை உங்கள் சொந்த வார்த்தைகளில் விளக்கிப் பாருங்கள்.",
+qa:"Q: What improves learning? A: Understanding, practice, revision and active recall.",
+action:"Action: இன்று ஒரு புதிய concept கற்றுக்கொண்டு 3 வரிகளில் எழுதுங்கள்."
+},
+
+knowledge:{
+icon:"🧠",title:"General Knowledge",
+ta:"உலகம், அறிவியல், வரலாறு, புவியியல் மற்றும் சமூகத்தைப் பற்றி தொடர்ந்து அறிந்து கொள்ளுங்கள்.",
+en:"General knowledge connects everyday events with science, history, geography and society.",
+topics:["Science","History","Geography","Civics","Everyday facts"],
+tip:"💡 Tip: ஒரு நாளுக்கு ஒரு புதிய useful fact கற்றுக்கொள்ளுங்கள்.",
+qa:"Q: Why is general knowledge useful? A: It helps us understand the world and communicate better.",
+action:"Action: இன்று ஒரு புதிய topic பற்றி 10 minutes படிக்கவும்."
+},
+
+technology:{
+icon:"💻",title:"Technology",
+ta:"தொழில்நுட்பத்தை பாதுகாப்பாகவும் பயனுள்ளதாகவும் பயன்படுத்த கற்றுக்கொள்ளுங்கள்.",
+en:"Technology can improve learning, communication, productivity and business when used responsibly.",
+topics:["AI basics","Internet","Mobile technology","Cyber safety","Digital productivity"],
+tip:"💡 Tip: Password மற்றும் verification codes-ஐ யாரிடமும் பகிர வேண்டாம்.",
+qa:"Q: What is AI? A: Artificial intelligence refers to computer systems designed to perform tasks that normally require human-like reasoning or pattern recognition.",
+action:"Action: இன்று ஒரு புதிய digital skill கற்றுக்கொள்ளுங்கள்."
+},
+
+health:{
+icon:"🥗",title:"Healthy Lifestyle",
+ta:"சீரான உணவு, போதுமான தூக்கம், தினசரி இயக்கம் மற்றும் நல்ல hygiene ஆகியவை உடல் நலத்திற்கு உதவும்.",
+en:"Balanced nutrition, adequate sleep, regular movement and good hygiene support overall health.",
+topics:["Balanced food","Sleep","Daily movement","Hydration","Personal hygiene"],
+tip:"💡 Tip: உங்கள் உடல்நல தேவைகளுக்கு ஏற்ற பழக்கங்களை பெற்றோர் அல்லது qualified health professional ஆலோசனையுடன் தேர்வு செய்யுங்கள்.",
+qa:"Q: Why is sleep important? A: Sleep supports normal physical recovery, learning and daily functioning.",
+action:"Action: இன்று உங்கள் sleep schedule-ஐ ஒழுங்குபடுத்த ஒரு சிறிய மாற்றம் செய்யுங்கள்."
+},
+
+time:{
+icon:"⏰",title:"Time Management",
+ta:"நேரத்தை திட்டமிட்டு பயன்படுத்தினால் முக்கியமான பணிகளுக்கு கவனம் செலுத்த முடியும்.",
+en:"Planning time helps prioritize important tasks and reduce distractions.",
+topics:["Priorities","To-do lists","Study time","Work blocks","Breaks"],
+tip:"💡 Tip: Important task ஒன்றை முதலில் முடிக்க முயற்சி செய்யுங்கள்.",
+qa:"Q: What is prioritization? A: Deciding which tasks need attention first based on importance and urgency.",
+action:"Action: நாளைய 3 priority tasks-ஐ இன்றே எழுதுங்கள்."
+},
+
+communication:{
+icon:"🤝",title:"Communication & Relationships",
+ta:"கவனமாக கேட்பது, தெளிவாக பேசுவது மற்றும் மரியாதையாக பதிலளிப்பது நல்ல தொடர்பை உருவாக்கும்.",
+en:"Good communication includes listening, clarity, respect and appropriate boundaries.",
+topics:["Active listening","Clear speech","Respect","Conflict handling","Digital communication"],
+tip:"💡 Tip: பதில் சொல்லும் முன் மற்றவர் சொல்வதை முழுமையாக புரிந்து கொள்ள முயற்சி செய்யுங்கள்.",
+qa:"Q: What is active listening? A: Giving attention to the speaker and making an effort to understand their meaning.",
+action:"Action: இன்று ஒரு conversation-ல் interrupt செய்யாமல் கவனமாக கேளுங்கள்."
+},
+
+goals:{
+icon:"🎯",title:"Goals & Personal Development",
+ta:"பெரிய இலக்குகளை சிறிய நடைமுறை படிகளாக பிரித்தால் தொடர்ந்து செயல்படுவது எளிதாகும்.",
+en:"Breaking large goals into small practical steps makes progress easier to track.",
+topics:["Goal setting","Habits","Progress tracking","Skills","Self-reflection"],
+tip:"💡 Tip: Goal-க்கு deadline மட்டும் அல்ல, அடுத்த small action-ஐயும் எழுதுங்கள்.",
+qa:"Q: What makes a goal practical? A: A clear target, realistic steps and a way to track progress.",
+action:"Action: உங்கள் ஒரு இலக்கிற்கு அடுத்த ஒரு small step-ஐ எழுதுங்கள்."
+},
+
+puzzles:{
+icon:"🧩",title:"Puzzles & Brain Games",
+ta:"Logic puzzles, patterns மற்றும் reasoning activities சிந்தனை பயிற்சிக்கு உதவும்.",
+en:"Logic puzzles, patterns and reasoning activities provide useful mental practice.",
+topics:["Number patterns","Logic","Memory","Word puzzles","Reasoning"],
+tip:"💡 Tip: பதிலை உடனே பார்க்காமல் முதலில் உங்கள் reasoning-ஐ முயற்சி செய்யுங்கள்.",
+qa:"Q: What does a logic puzzle practice? A: It can practice structured reasoning and problem-solving.",
+action:"Action: இன்று ஒரு புதிய logic puzzle முயற்சி செய்யுங்கள்."
+},
+
+updates:{
+icon:"📰",title:"Daily Updates",
+ta:"தினசரி செய்திகள் மற்றும் updates-ஐ நம்பகமான sources மூலம் சரிபார்த்து அறிந்து கொள்ளுங்கள்.",
+en:"Follow important daily updates through reliable sources and verify information before sharing.",
+topics:["Current events","Technology news","Education updates","Business updates","Fact checking"],
+tip:"💡 Tip: ஒரு செய்தியை share செய்வதற்கு முன் source மற்றும் date-ஐ சரிபாருங்கள்.",
+qa:"Q: Why verify news? A: Information online can be incomplete, outdated or inaccurate.",
+action:"Action: இன்று ஒரு important update-ஐ இரண்டு reliable sources மூலம் சரிபார்க்கவும்."
+}
+
+};
+
+function showBook(key){
+const x=BOOK[key];
+document.getElementById("book").innerHTML=`
+<div class="card">
+<h2>${x.icon} ${x.title}</h2>
+<h3>🇮🇳 தமிழ் விளக்கம்</h3>
+<p>${x.ta}</p>
+<h3>🇬🇧 English Explanation</h3>
+<p>${x.en}</p>
+<h3>📖 Topics</h3>
+<ul>${x.topics.map(t=>`<li>${t}</li>`).join("")}</ul>
+<div class="tip">${x.tip}</div>
+<div class="qa"><b>❓ Mini Q&A</b><p>${x.qa}</p></div>
+<div class="tip action">🎯 ${x.action}</div>
+</div>`;
+window.scrollTo({top:document.getElementById("book").offsetTop-10,behavior:"smooth"});
+}
+
+showBook("money");
+</script>
+
 </body>
 </html>
