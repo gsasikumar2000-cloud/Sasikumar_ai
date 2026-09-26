@@ -1,3 +1,5 @@
+const bcrypt = require("bcryptjs");
+const { Pool } = require("pg");
 require("dotenv").config({ override: true });
 
 const express = require("express");
@@ -6,10 +8,60 @@ const { tavily } = require("@tavily/core");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const dbPool = process.env.DATABASE_URL ? new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } }) : null;
 
 app.use(express.json({limit:"10mb"}));
 app.use(express.urlencoded({ extended: false }));
-app.post("/api/login", (req,res) => {
+app.post("/api/signup", async (req,res) => {
+  try {
+    if (!dbPool) {
+      return res.status(500).json({ ok:false, message:"Database not configured" });
+    }
+
+    const username = String(req.body?.username || "").trim();
+    const password = String(req.body?.password || "");
+
+    if (!username || !password) {
+      return res.status(400).json({ ok:false, message:"Username and password are required" });
+    }
+
+    if (username.length < 3 || username.length > 30) {
+      return res.status(400).json({ ok:false, message:"Username must be 3-30 characters" });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ ok:false, message:"Password must be at least 6 characters" });
+    }
+
+    const existing = await dbPool.query(
+      "SELECT id FROM public.users WHERE username = $1 LIMIT 1",
+      [username]
+    );
+
+    if (existing.rows.length) {
+      return res.status(409).json({ ok:false, message:"Username already exists" });
+    }
+
+    const passwordHash = await bcrypt.hash(password, 12);
+
+    await dbPool.query(
+      "INSERT INTO public.users (username, password_hash, role) VALUES ($1, $2, 'user')",
+      [username, passwordHash]
+    );
+
+    return res.status(201).json({
+      ok: true,
+      role: "user",
+      username,
+      message: "Account created successfully"
+    });
+  } catch (error) {
+    console.error("Signup error:", error.message);
+    return res.status(500).json({ ok:false, message:"Signup failed" });
+  }
+});
+
+app.post("/api/login", async (req,res) => {
   const { username, password } = req.body || {};
 
   if (
@@ -34,6 +86,31 @@ app.post("/api/login", (req,res) => {
       username,
       message: "User login successful"
     });
+  }
+
+  try {
+    if (dbPool) {
+      const result = await dbPool.query(
+        "SELECT username, password_hash, role FROM public.users WHERE username = $1 LIMIT 1",
+        [String(username || "").trim()]
+      );
+
+      if (result.rows.length) {
+        const user = result.rows[0];
+        const valid = await bcrypt.compare(String(password || ""), user.password_hash);
+
+        if (valid) {
+          return res.json({
+            ok: true,
+            role: user.role,
+            username: user.username,
+            message: "User login successful"
+          });
+        }
+      }
+    }
+  } catch (error) {
+    console.error("User login error:", error.message);
   }
 
   return res.status(401).json({

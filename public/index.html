@@ -1136,6 +1136,22 @@ document.getElementById("dailyScrollingMessage").style.background =
       font-weight:bold;
       cursor:pointer;
     ">
+
+    <button type="button" onclick="showSignupForm()" style="width:100%;margin-top:14px;padding:12px;border:0;border-radius:10px;background:#2563eb;color:#fff;font-weight:bold;cursor:pointer;">
+      🆕 USER SIGN UP
+    </button>
+
+    <div id="signupBox" style="display:none;margin-top:16px;text-align:left;">
+      <h3 style="text-align:center;color:#b8860b;">Create User Account</h3>
+      <input id="signupUsername" type="text" autocomplete="username" placeholder="New Username" style="width:100%;box-sizing:border-box;padding:12px;margin:6px 0;border:1px solid #ccc;border-radius:8px;">
+      <input id="signupPassword" type="password" autocomplete="new-password" placeholder="Password (minimum 6 characters)" style="width:100%;box-sizing:border-box;padding:12px;margin:6px 0;border:1px solid #ccc;border-radius:8px;">
+      <input id="signupConfirm" type="password" autocomplete="new-password" placeholder="Confirm Password" style="width:100%;box-sizing:border-box;padding:12px;margin:6px 0;border:1px solid #ccc;border-radius:8px;">
+      <button type="button" onclick="sasikumarSignup()" style="width:100%;margin-top:8px;padding:12px;border:0;border-radius:10px;background:#16a34a;color:#fff;font-weight:bold;cursor:pointer;">✅ CREATE ACCOUNT</button>
+      <button type="button" onclick="hideSignupForm()" style="width:100%;margin-top:8px;padding:10px;border:1px solid #aaa;border-radius:10px;background:#fff;color:#555;cursor:pointer;">↩ Back to Login</button>
+      <div id="signupMessage" style="margin-top:10px;min-height:22px;font-weight:bold;text-align:center;"></div>
+    </div>
+
+
       🔐 LOGIN
     </button>
 
@@ -1193,6 +1209,85 @@ async function sasikumarLogin() {
     document.getElementById("sasikumarLoginScreen").style.display = "none";
 
     msg.textContent = "";
+  } catch (error) {
+    console.error(error);
+    msg.textContent = "❌ Server connection error";
+    msg.style.color = "#c00";
+  }
+}
+
+function showSignupForm() {
+  document.getElementById("signupBox").style.display = "block";
+  document.getElementById("signupMessage").textContent = "";
+}
+
+function hideSignupForm() {
+  document.getElementById("signupBox").style.display = "none";
+  document.getElementById("signupMessage").textContent = "";
+}
+
+async function sasikumarSignup() {
+  const username = document.getElementById("signupUsername").value.trim();
+  const password = document.getElementById("signupPassword").value;
+  const confirm = document.getElementById("signupConfirm").value;
+  const msg = document.getElementById("signupMessage");
+
+  if (!username || !password || !confirm) {
+    msg.textContent = "⚠️ All fields are required.";
+    msg.style.color = "#c00";
+    return;
+  }
+
+  if (username.length < 3 || username.length > 30) {
+    msg.textContent = "⚠️ Username must be 3-30 characters.";
+    msg.style.color = "#c00";
+    return;
+  }
+
+  if (password.length < 6) {
+    msg.textContent = "⚠️ Password must be at least 6 characters.";
+    msg.style.color = "#c00";
+    return;
+  }
+
+  if (password !== confirm) {
+    msg.textContent = "⚠️ Passwords do not match.";
+    msg.style.color = "#c00";
+    return;
+  }
+
+  msg.textContent = "⏳ Creating account...";
+  msg.style.color = "#555";
+
+  try {
+    const response = await fetch("/api/signup", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({username, password})
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.ok) {
+      msg.textContent = "❌ " + (data.message || "Signup failed");
+      msg.style.color = "#c00";
+      return;
+    }
+
+    msg.textContent = "✅ Account created! Please login.";
+    msg.style.color = "#15803d";
+
+    document.getElementById("loginUsername").value = username;
+    document.getElementById("loginPassword").value = "";
+    document.getElementById("signupPassword").value = "";
+    document.getElementById("signupConfirm").value = "";
+
+    setTimeout(() => {
+      hideSignupForm();
+      document.getElementById("loginMessage").textContent = "✅ Account created. Please login.";
+      document.getElementById("loginMessage").style.color = "#15803d";
+    }, 800);
+
   } catch (error) {
     console.error(error);
     msg.textContent = "❌ Server connection error";
