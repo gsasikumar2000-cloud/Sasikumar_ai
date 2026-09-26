@@ -126,6 +126,28 @@ function openTool(name){
   <button class="primary" onclick="emi()">Calculate EMI</button>
   <div id="out" class="result"></div>`;
  }
+ else if(name==='AI Tools'){
+ c.innerHTML=`<h2>🤖 AI Tools</h2>
+ <textarea id="aiInput" rows="5" placeholder="Tamil அல்லது English-ல் உங்கள் கேள்வியை எழுதுங்கள்..."></textarea>
+ <button class="primary" onclick="askToolkitAI()">🤖 Ask SASIKUMAR AI</button>
+ <div id="out" class="result"></div>`;
+}
+else if(name==='Date & Time'){
+ c.innerHTML=`<h2>📅 Date & Time</h2>
+ <p><b>📅 Today:</b> <span id="todayDate"></span></p>
+ <p><b>🕐 Current Time:</b> <span id="currentTime"></span></p>
+ <hr>
+ <h3>🎂 Age Calculator</h3>
+ <input id="dob" type="date">
+ <button class="primary" onclick="calculateAge()">🎂 Calculate Age</button>
+ <div id="ageOut" class="result"></div>
+ <h3>📆 Date Difference</h3>
+ <input id="date1" type="date">
+ <input id="date2" type="date">
+ <button onclick="dateDifference()">📆 Calculate Difference</button>
+ <div id="dateOut" class="result"></div>`;
+ setTimeout(updateDateTime, 0);
+}
  else if(name==='Text Tools'){
   c.innerHTML=`<h2>📝 Text Tools</h2>
   <textarea id="txt" rows="7" placeholder="Type or paste text"></textarea>
@@ -147,6 +169,69 @@ function openTool(name){
   <p>இந்த section-ல் ${name} தொடர்பான smart tools விரைவில் சேர்க்கப்படும்.</p>
   <p>English: Smart tools for ${name} will be available here.</p>`;
  }
+}
+
+async function askToolkitAI(){
+ const input=document.getElementById('aiInput');
+ const out=document.getElementById('out');
+ if(!input||!out)return;
+ const message=input.value.trim();
+ if(!message){out.textContent='Please enter your question.';return;}
+ out.textContent='🤖 SASIKUMAR AI is thinking...';
+ try{
+   const r=await fetch('/api/intelligent-ai',{
+     method:'POST',
+     headers:{'Content-Type':'application/json'},
+     body:JSON.stringify({message:message,source:'toolkit'})
+   });
+   const d=await r.json();
+   if(!r.ok) throw new Error('API '+r.status);
+   out.textContent=d.reply||'AI response unavailable.';
+ }catch(e){
+   console.error('Toolkit AI error:',e);
+   out.textContent='❌ AI connection error. Please try again.';
+ }
+}
+
+function updateDateTime(){
+ const now=new Date();
+ document.getElementById('todayDate').textContent=now.toLocaleDateString('en-IN',{
+   weekday:'long',year:'numeric',month:'long',day:'numeric'
+ });
+ document.getElementById('currentTime').textContent=now.toLocaleTimeString('en-IN');
+}
+setInterval(()=>{
+ const el=document.getElementById('currentTime');
+ if(el) el.textContent=new Date().toLocaleTimeString('en-IN');
+},1000);
+
+function calculateAge(){
+ const v=document.getElementById('dob').value;
+ const out=document.getElementById('ageOut');
+ if(!v){out.textContent='Please select your date of birth.';return;}
+ const dob=new Date(v+'T00:00:00');
+ const now=new Date();
+ if(dob>now){out.textContent='Date of birth cannot be in the future.';return;}
+ let years=now.getFullYear()-dob.getFullYear();
+ let months=now.getMonth()-dob.getMonth();
+ let days=now.getDate()-dob.getDate();
+ if(days<0){
+   months--;
+   days+=new Date(now.getFullYear(),now.getMonth(),0).getDate();
+ }
+ if(months<0){years--;months+=12;}
+ out.textContent=`Age: ${years} years, ${months} months, ${days} days`;
+}
+
+function dateDifference(){
+ const a=document.getElementById('date1').value;
+ const b=document.getElementById('date2').value;
+ const out=document.getElementById('dateOut');
+ if(!a||!b){out.textContent='Please select both dates.';return;}
+ const d1=new Date(a+'T00:00:00');
+ const d2=new Date(b+'T00:00:00');
+ const days=Math.round(Math.abs(d2-d1)/86400000);
+ out.textContent=`Difference: ${days} days`;
 }
 
 function getIcon(n){
