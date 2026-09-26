@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI • Tool Kit</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#07111f;color:#fff}
+header{padding:22px 16px;text-align:center;background:linear-gradient(135deg,#102b4c,#07111f)}
+.logo{font-size:30px;font-weight:800}
+.sub{opacity:.8;margin-top:6px}
+.container{max-width:900px;margin:auto;padding:16px}
+.search{width:100%;padding:14px;border:0;border-radius:14px;margin-bottom:16px;font-size:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px}
+.card{background:#102238;border:1px solid #24405d;border-radius:18px;padding:18px;text-align:center;cursor:pointer;transition:.2s}
+.card:hover{transform:translateY(-2px)}
+.icon{font-size:30px}
+.name{font-weight:700;margin-top:8px}
+.desc{font-size:12px;opacity:.7;margin-top:5px}
+.panel{display:none;background:#102238;border-radius:18px;padding:18px;margin-top:18px}
+.panel h2{margin-top:0}
+input,textarea,select{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:1px solid #36516d;background:#081625;color:#fff}
+button{border:0;border-radius:10px;padding:12px 16px;margin:5px;cursor:pointer;font-weight:700}
+.primary{background:#fff;color:#07111f}
+.result{margin-top:12px;padding:14px;background:#07111f;border-radius:12px;white-space:pre-wrap}
+.back{display:inline-block;margin-bottom:12px}
+footer{text-align:center;padding:25px;opacity:.65;font-size:13px}
+</style>
+</head>
+<body>
+
+<header>
+<div class="logo">🧰 SASIKUMAR AI</div>
+<div class="sub">Smart Tool Kit • Tamil + English</div>
+</header>
+
+<div class="container">
+<input id="search" class="search" placeholder="🔍 Search tools..." oninput="filterTools()">
+
+<div id="tools" class="grid">
+
+<div class="card" data-name="calculator percentage ratio average">
+<div class="icon">🧮</div><div class="name">Calculation</div><div class="desc">Calculator • % • Ratio • Average</div>
+</div>
+
+<div class="card" data-name="finance emi interest loan savings profit">
+<div class="icon">💰</div><div class="name">Finance</div><div class="desc">EMI • Interest • Loan • Profit</div>
+</div>
+
+<div class="card" data-name="gold silver purity weight jewellery">
+<div class="icon">🪙</div><div class="name">Gold & Silver</div><div class="desc">Value • Weight • Purity</div>
+</div>
+
+<div class="card" data-name="business sales stock invoice customer expense">
+<div class="icon">🏢</div><div class="name">Business</div><div class="desc">Sales • Stock • Invoice</div>
+</div>
+
+<div class="card" data-name="education study qa quiz dictionary">
+<div class="icon">📚</div><div class="name">Study</div><div class="desc">Q&A • Quiz • Learning</div>
+</div>
+
+<div class="card" data-name="ai assistant web explain translate">
+<div class="icon">🤖</div><div class="name">AI Tools</div><div class="desc">Ask • Explain • Ideas</div>
+</div>
+
+<div class="card" data-name="text words copy share">
+<div class="icon">📝</div><div class="name">Text Tools</div><div class="desc">Word Count • Copy • Share</div>
+</div>
+
+<div class="card" data-name="date age time countdown">
+<div class="icon">📅</div><div class="name">Date & Time</div><div class="desc">Age • Date Difference</div>
+</div>
+
+<div class="card" data-name="measurement length weight area volume temperature">
+<div class="icon">📏</div><div class="name">Measurement</div><div class="desc">Length • Weight • Area</div>
+</div>
+
+<div class="card" data-name="mobile qr device">
+<div class="icon">📱</div><div class="name">Mobile</div><div class="desc">QR • Device Utilities</div>
+</div>
+
+<div class="card" data-name="brain puzzle memory challenge">
+<div class="icon">🧠</div><div class="name">Brain</div><div class="desc">Puzzle • Number Challenge</div>
+</div>
+
+<div class="card" data-name="share whatsapp telegram copy print">
+<div class="icon">📤</div><div class="name">Share Center</div><div class="desc">Share • Copy • Print</div>
+</div>
+
+</div>
+
+<div id="panel" class="panel">
+<button class="primary back" onclick="closePanel()">← Tool Kit</button>
+<div id="content"></div>
+</div>
+</div>
+
+<footer>SASIKUMAR AI • Smart Tools</footer>
+
+<script>
+const cards=[...document.querySelectorAll('.card')];
+cards.forEach(c=>c.onclick=()=>openTool(c.querySelector('.name').textContent));
+
+function filterTools(){
+ const q=document.getElementById('search').value.toLowerCase();
+ cards.forEach(c=>c.style.display=c.dataset.name.includes(q)?'block':'none');
+}
+
+function openTool(name){
+ document.getElementById('tools').style.display='none';
+ document.getElementById('panel').style.display='block';
+ const c=document.getElementById('content');
+
+ if(name==='Calculation'){
+  c.innerHTML=`<h2>🧮 Calculation</h2>
+  <input id="calc" placeholder="Example: 125*8+20">
+  <button class="primary" onclick="calculate()">Calculate</button>
+  <div id="out" class="result"></div>`;
+ }
+ else if(name==='Finance'){
+  c.innerHTML=`<h2>💰 Finance Tools</h2>
+  <input id="p" type="number" placeholder="Loan Amount">
+  <input id="r" type="number" placeholder="Annual Interest %">
+  <input id="n" type="number" placeholder="Months">
+  <button class="primary" onclick="emi()">Calculate EMI</button>
+  <div id="out" class="result"></div>`;
+ }
+ else if(name==='Text Tools'){
+  c.innerHTML=`<h2>📝 Text Tools</h2>
+  <textarea id="txt" rows="7" placeholder="Type or paste text"></textarea>
+  <button class="primary" onclick="wordCount()">Word Count</button>
+  <button onclick="copyText()">📋 Copy</button>
+  <button onclick="shareText()">📤 Share</button>
+  <div id="out" class="result"></div>`;
+ }
+ else if(name==='Share Center'){
+  c.innerHTML=`<h2>📤 Share Center</h2>
+  <textarea id="share" rows="6" placeholder="Enter text to share"></textarea>
+  <button class="primary" onclick="shareText2()">📤 Share</button>
+  <button onclick="copyShare()">📋 Copy</button>
+  <button onclick="window.print()">🖨️ Print</button>
+  <div id="out" class="result"></div>`;
+ }
+ else {
+  c.innerHTML=`<h2>${getIcon(name)} ${name}</h2>
+  <p>இந்த section-ல் ${name} தொடர்பான smart tools விரைவில் சேர்க்கப்படும்.</p>
+  <p>English: Smart tools for ${name} will be available here.</p>`;
+ }
+}
+
+function getIcon(n){
+ return { 'Gold & Silver':'🪙','Business':'🏢','Study':'📚','AI Tools':'🤖','Date & Time':'📅','Measurement':'📏','Mobile':'📱','Brain':'🧠'}[n]||'🧰';
+}
+
+function calculate(){
+ try{document.getElementById('out').textContent='Result: '+Function('"use strict";return ('+document.getElementById('calc').value+')')()}
+ catch(e){document.getElementById('out').textContent='Invalid calculation';}
+}
+
+function emi(){
+ const P=+document.getElementById('p').value;
+ const R=+document.getElementById('r').value/1200;
+ const N=+document.getElementById('n').value;
+ if(!P||!N){out.textContent='Enter valid values';return}
+ const E=R?P*R*Math.pow(1+R,N)/(Math.pow(1+R,N)-1):P/N;
+ document.getElementById('out').textContent='Monthly EMI: ₹'+E.toFixed(2);
+}
+
+function wordCount(){
+ const t=document.getElementById('txt').value.trim();
+ const words=t?t.split(/\s+/).length:0;
+ document.getElementById('out').textContent='Words: '+words+'\\nCharacters: '+t.length;
+}
+
+function copyText(){
+ navigator.clipboard.writeText(document.getElementById('txt').value);
+ document.getElementById('out').textContent='Copied ✓';
+}
+
+async function shareText(){
+ const text=document.getElementById('txt').value;
+ if(navigator.share) await navigator.share({title:'SASIKUMAR AI',text});
+ else {await navigator.clipboard.writeText(text);document.getElementById('out').textContent='Copied — share from your app';}
+}
+
+async function shareText2(){
+ const text=document.getElementById('share').value;
+ if(navigator.share) await navigator.share({title:'SASIKUMAR AI',text});
+ else {await navigator.clipboard.writeText(text);document.getElementById('out').textContent='Copied ✓';}
+}
+
+function copyShare(){
+ navigator.clipboard.writeText(document.getElementById('share').value);
+ document.getElementById('out').textContent='Copied ✓';
+}
+
+function closePanel(){
+ document.getElementById('panel').style.display='none';
+ document.getElementById('tools').style.display='grid';
+}
+</script>
+</body>
+</html>
