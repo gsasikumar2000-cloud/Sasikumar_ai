@@ -938,6 +938,72 @@ body.dark .dash-grid button{
 }
 </style>
 
+
+<style id="sasikumar-bg-animation">
+body{
+  position:relative;
+  overflow-x:hidden;
+  background:
+    radial-gradient(circle at 5% 15%,rgba(124,58,237,.28),transparent 24%),
+    radial-gradient(circle at 95% 20%,rgba(6,182,212,.25),transparent 24%),
+    radial-gradient(circle at 15% 85%,rgba(236,72,153,.20),transparent 25%),
+    radial-gradient(circle at 85% 90%,rgba(245,158,11,.22),transparent 25%),
+    linear-gradient(135deg,#f8fbff,#fff7fb,#f5f3ff,#ecfeff);
+  background-size:180% 180%;
+  animation:saBackgroundMove 14s ease-in-out infinite alternate;
+}
+
+body::before,
+body::after{
+  content:"";
+  position:fixed;
+  width:260px;
+  height:260px;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:-1;
+  filter:blur(5px);
+  opacity:.28;
+}
+
+body::before{
+  top:12%;
+  left:-100px;
+  background:linear-gradient(135deg,#7c3aed,#06b6d4);
+  animation:saFloatOne 10s ease-in-out infinite;
+}
+
+body::after{
+  right:-100px;
+  bottom:8%;
+  background:linear-gradient(135deg,#ec4899,#f59e0b);
+  animation:saFloatTwo 12s ease-in-out infinite;
+}
+
+@keyframes saBackgroundMove{
+  0%{background-position:0% 0%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 100%}
+}
+
+@keyframes saFloatOne{
+  0%,100%{transform:translate(0,0) scale(1)}
+  50%{transform:translate(55px,35px) scale(1.15)}
+}
+
+@keyframes saFloatTwo{
+  0%,100%{transform:translate(0,0) scale(1)}
+  50%{transform:translate(-45px,-30px) scale(1.12)}
+}
+
+body.dark{
+  background:
+    radial-gradient(circle at 10% 10%,rgba(124,58,237,.25),transparent 25%),
+    radial-gradient(circle at 90% 20%,rgba(6,182,212,.20),transparent 25%),
+    linear-gradient(135deg,#090d1a,#15102b,#0b1b27) !important;
+}
+</style>
+
 </head>
 
 
