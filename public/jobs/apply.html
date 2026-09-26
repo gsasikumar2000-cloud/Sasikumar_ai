@@ -8,7 +8,76 @@ header{background:#111;color:#fff;padding:20px;text-align:center}
 main{max-width:700px;margin:auto;padding:16px}
 .card{background:#fff;padding:18px;margin:14px 0;border-radius:16px;box-shadow:0 2px 8px #ccc}
 li{margin:10px 0}
-</style></head>
+</style>
+<style id="sasikumar-job-apply-3d">
+body{
+  background:
+    radial-gradient(circle at 8% 18%,rgba(0,190,255,.25),transparent 30%),
+    radial-gradient(circle at 92% 22%,rgba(255,0,180,.22),transparent 30%),
+    radial-gradient(circle at 50% 90%,rgba(255,190,0,.22),transparent 34%),
+    linear-gradient(135deg,#eef8ff,#fff3fb,#fffbea);
+  background-size:180% 180%;
+  animation:applyBg 12s ease infinite;
+}
+@keyframes applyBg{
+  0%,100%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+}
+.card{
+  position:relative;
+  overflow:hidden;
+  border-radius:22px!important;
+  border:1px solid rgba(255,255,255,.75)!important;
+  background:rgba(255,255,255,.72)!important;
+  backdrop-filter:blur(14px);
+  box-shadow:0 14px 34px rgba(30,60,120,.16),
+             inset 0 1px 0 rgba(255,255,255,.85);
+  transition:transform .3s ease,box-shadow .3s ease;
+}
+.card::after{
+  content:"";
+  position:absolute;
+  width:130px;height:130px;
+  right:-65px;top:-65px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#00c6ff,#ff3cac);
+  opacity:.16;
+  pointer-events:none;
+}
+.card:hover{
+  transform:translateY(-7px) rotateX(2deg) scale(1.01);
+  box-shadow:0 24px 48px rgba(30,60,120,.24);
+}
+h1,h2{
+  background:linear-gradient(90deg,#0066ff,#a000ff,#ff1493,#ff9800);
+  background-size:250% auto;
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  animation:applyTitle 5s linear infinite;
+}
+@keyframes applyTitle{
+  to{background-position:250% center}
+}
+li{
+  margin-bottom:8px;
+  line-height:1.5;
+}
+a{
+  transition:transform .2s ease,letter-spacing .2s ease;
+}
+a:hover{
+  letter-spacing:.3px;
+}
+@media(max-width:600px){
+  .card{border-radius:18px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+
+</head>
 <body>
 <header><h1>📝 Job Apply Details</h1><p>SASIKUMAR AI</p></header>
 <main>
