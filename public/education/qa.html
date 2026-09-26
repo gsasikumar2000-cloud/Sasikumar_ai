@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI • Education Q&A</title>
+<style>
+body{font-family:Arial,sans-serif;margin:0;background:#f7f3e8;color:#222}
+header{background:#b8860b;color:white;padding:18px;text-align:center}
+.container{max-width:900px;margin:auto;padding:18px}
+.card{background:white;border-radius:16px;padding:18px;margin:14px 0;box-shadow:0 2px 10px #0002}
+select,input{width:100%;padding:12px;margin:6px 0 12px;border:1px solid #ccc;border-radius:10px;box-sizing:border-box}
+.question{font-weight:bold;font-size:18px}
+.answer{margin-top:10px;padding:12px;background:#fff8cf;border-radius:10px}
+button{padding:11px 16px;border:0;border-radius:10px;background:#b8860b;color:white;font-weight:bold}
+.back{background:#555}
+</style>
+</head>
+<body>
+
+<header>
+<h1>📚 SASIKUMAR AI</h1>
+<div>Education Q&A • School Learning</div>
+</header>
+
+<div class="container">
+<button class="back" onclick="location.href='/'">← Dashboard</button>
+
+<div class="card">
+<h2>🎓 Education Q&A</h2>
+
+<select id="classFilter" onchange="render()">
+<option value="">All Classes</option>
+<option>7th</option>
+<option>8th</option>
+<option>9th</option>
+<option>10th</option>
+<option>11th</option>
+<option>12th</option>
+</select>
+
+<select id="subjectFilter" onchange="render()">
+<option value="">All Subjects</option>
+<option>Mathematics</option>
+<option>Science</option>
+<option>Social Science</option>
+<option>Tamil</option>
+<option>English</option>
+<option>Physics</option>
+<option>Chemistry</option>
+<option>Biology</option>
+<option>Computer Science</option>
+<option>Commerce</option>
+<option>Accountancy</option>
+<option>Economics</option>
+</select>
+
+<input id="search" placeholder="🔎 Search question..." oninput="render()">
+</div>
+
+<div id="qaList"></div>
+</div>
+
+<script>
+const QA=[
+{c:"7th",s:"Mathematics",q:"What is a fraction?",a:"A fraction represents a part of a whole, such as 1/2."},
+{c:"8th",s:"Science",q:"What is force?",a:"Force is a push or pull that can change the motion of an object."},
+{c:"9th",s:"Science",q:"What is an atom?",a:"An atom is the basic unit of an element that retains the chemical properties of that element."},
+{c:"10th",s:"Mathematics",q:"Solve: 2x + 5 = 15.",a:"2x = 10, so x = 5."},
+{c:"10th",s:"Science",q:"What is photosynthesis?",a:"Photosynthesis is the process by which green plants use light energy to make food from carbon dioxide and water."},
+{c:"10th",s:"Social Science",q:"What is democracy?",a:"Democracy is a system of government in which people participate in choosing their representatives."},
+{c:"10th",s:"English",q:"What is a noun?",a:"A noun is a word used to name a person, place, animal, thing, or idea."},
+{c:"11th",s:"Physics",q:"What is velocity?",a:"Velocity is the rate of change of displacement with respect to time."},
+{c:"11th",s:"Chemistry",q:"What is a catalyst?",a:"A catalyst changes the rate of a chemical reaction without being consumed in the overall reaction."},
+{c:"12th",s:"Physics",q:"State Newton's second law.",a:"The acceleration of an object depends on the net force acting on it and its mass."},
+{c:"12th",s:"Biology",q:"What is a cell?",a:"A cell is the basic structural and functional unit of living organisms."},
+{c:"12th",s:"Mathematics",q:"What is a matrix?",a:"A matrix is a rectangular arrangement of numbers or other mathematical elements in rows and columns."},
+{c:"12th",s:"Computer Science",q:"What is an algorithm?",a:"An algorithm is a finite sequence of clear steps used to solve a problem or perform a computation."},
+{c:"12th",s:"Commerce",q:"What is commerce?",a:"Commerce refers to activities involved in the exchange and distribution of goods and services."},
+{c:"12th",s:"Accountancy",q:"What is accounting?",a:"Accounting is the systematic process of recording, classifying and summarising financial transactions."},
+{c:"12th",s:"Economics",q:"What is demand?",a:"Demand is the quantity of a good or service that consumers are willing and able to buy at a given price and time."}
+];
+
+function render(){
+ const c=document.getElementById("classFilter").value;
+ const s=document.getElementById("subjectFilter").value;
+ const q=document.getElementById("search").value.toLowerCase();
+
+ const data=QA.filter(x=>
+   (!c||x.c===c)&&(!s||x.s===s)&&
+   (!q||(x.q+" "+x.a+" "+x.s).toLowerCase().includes(q))
+ );
+
+ document.getElementById("qaList").innerHTML=data.length
+ ? data.map((x,i)=>`
+   <div class="card">
+     <div><b>${x.c} • ${x.s}</b></div>
+     <div class="question">Q${i+1}. ${x.q}</div>
+     <div class="answer">✅ ${x.a}</div>
+   </div>`).join("")
+ : `<div class="card">⚠️ No practice Q&A found for the selected filters.</div>`;
+}
+
+render();
+</script>
+</body>
+</html>
