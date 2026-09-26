@@ -35,7 +35,7 @@
         font-size="17" fill="#dddddd">99.9%</text>
       <text x="900" y="345" text-anchor="end"
         font-family="Arial,sans-serif" font-size="25"
-        font-weight="700" fill="#ffffff">₹15,253/g</text>
+        font-weight="700" fill="#ffffff">₹15,251/g</text>
       <rect x="55" y="377" width="890" height="53" rx="13" fill="#10352d"/>
       <text x="80" y="411" font-family="Arial,sans-serif"
         font-size="23" font-weight="700" fill="#ffd54a">22K / 916</text>
@@ -43,7 +43,7 @@
         font-size="17" fill="#dddddd">91.6%</text>
       <text x="900" y="411" text-anchor="end"
         font-family="Arial,sans-serif" font-size="25"
-        font-weight="700" fill="#ffffff">₹13,982/g</text>
+        font-weight="700" fill="#ffffff">₹13,980/g</text>
       <rect x="55" y="443" width="890" height="53" rx="13" fill="#10352d"/>
       <text x="80" y="477" font-family="Arial,sans-serif"
         font-size="23" font-weight="700" fill="#ffd54a">20K</text>
@@ -51,7 +51,7 @@
         font-size="17" fill="#dddddd">83.3%</text>
       <text x="900" y="477" text-anchor="end"
         font-family="Arial,sans-serif" font-size="25"
-        font-weight="700" fill="#ffffff">₹12,711/g</text>
+        font-weight="700" fill="#ffffff">₹12,709/g</text>
       <rect x="55" y="509" width="890" height="53" rx="13" fill="#10352d"/>
       <text x="80" y="543" font-family="Arial,sans-serif"
         font-size="23" font-weight="700" fill="#ffd54a">19K</text>
@@ -59,7 +59,7 @@
         font-size="17" fill="#dddddd">79.2%</text>
       <text x="900" y="543" text-anchor="end"
         font-family="Arial,sans-serif" font-size="25"
-        font-weight="700" fill="#ffffff">₹12,075/g</text>
+        font-weight="700" fill="#ffffff">₹12,074/g</text>
       <rect x="55" y="575" width="890" height="53" rx="13" fill="#10352d"/>
       <text x="80" y="609" font-family="Arial,sans-serif"
         font-size="23" font-weight="700" fill="#ffd54a">18K</text>
@@ -67,7 +67,7 @@
         font-size="17" fill="#dddddd">75.0%</text>
       <text x="900" y="609" text-anchor="end"
         font-family="Arial,sans-serif" font-size="25"
-        font-weight="700" fill="#ffffff">₹11,440/g</text>
+        font-weight="700" fill="#ffffff">₹11,438/g</text>
 
 <rect x="55" y="690" width="890" height="175" rx="22" fill="#10352d"/>
 
@@ -123,7 +123,7 @@
 
 <text x="500" y="1210" text-anchor="middle"
  font-family="Arial,sans-serif" font-size="20" font-weight="900"
- fill="#111111">GOLD 8G: ₹1,11,856 • SILVER 1KG: ₹2,29,220</text>
+ fill="#111111">GOLD 8G: ₹1,11,840 • SILVER 1KG: ₹2,29,220</text>
 
 <text x="500" y="1245" text-anchor="middle"
  font-family="Arial,sans-serif" font-size="25" font-weight="900"
