@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🏀 Basketball Shot | SASIKUMAR AI</title>
+<style>
+body{font-family:Arial;margin:0;background:linear-gradient(135deg,#321000,#b45309);color:white;text-align:center}
+.card{max-width:650px;margin:30px auto;padding:25px;background:#ffffff18;border-radius:24px}
+button{font-size:22px;padding:18px 28px;margin:10px;border:0;border-radius:15px;cursor:pointer}
+.ball{font-size:85px}.info{background:#0004;padding:15px;border-radius:15px;text-align:left}
+</style></head><body><div class="card">
+<h1>🏀 Basketball Shot</h1><p>Tap SHOOT and try to score!</p>
+<h2>Score: <span id="score">0</span> | Shots: <span id="shots">0</span>/10</h2>
+<div class="ball">🏀</div><button onclick="shoot()">🏀 SHOOT</button><br>
+<div id="result"></div><button onclick="location.reload()">🔄 Play Again</button>
+<div class="info"><h2>📚 Basketball Knowledge</h2>
+<p>• A free throw is worth 1 point.</p>
+<p>• A successful field goal is normally worth 2 points.</p>
+<p>• A successful shot from beyond the three-point line is worth 3 points.</p></div>
+</div>
+<script>
+let score=0,shots=0;
+function shoot(){if(shots>=10)return;shots++;let made=Math.random()<.6;if(made){score+=Math.random()<.25?3:2;document.getElementById('result').textContent='🏀 SCORE!';}else document.getElementById('result').textContent='❌ MISS!';document.getElementById('score').textContent=score;document.getElementById('shots').textContent=shots;if(shots===10)setTimeout(()=>alert('Game Over! Score: '+score),100);}
+</script></body></html>
