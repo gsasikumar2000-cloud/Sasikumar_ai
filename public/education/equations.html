@@ -612,24 +612,22 @@ You are SASIKUMAR AI Education Tutor.
 
 Explain this school mathematics topic for ${cls}, ${subject}, topic: ${topic}.
 
-Give maximum useful educational detail suitable for the student's class.
+  Give class-appropriate, syllabus-focused educational detail.
 
 IMPORTANT:
-- Give Tamil explanation first.
-- Then give clear English explanation.
-- Use simple language.
-- Explain the definition/concept.
-- Give important rules.
-- Give formulas/equations with symbols explained.
-- Give at least 2 worked examples step-by-step.
-- Give common mistakes.
-- Give practical/real-life application where relevant.
-- Give 5 practice questions.
-- Give answers after the questions.
-- End with a short revision summary.
-- Do not invent an official textbook quotation.
-- Keep mathematics accurate.
-- Format with headings and bullet points.
+  - Tamil explanation MUST come first, followed by English.
+  - Teach ONLY the selected class, subject and topic.
+  - Prioritize the core concepts, definitions, rules, formulas and methods required for this topic.
+  - Do not fill the answer with unrelated general mathematics.
+  - Explain every formula symbol briefly.
+  - Give EXACTLY 2 short worked examples with correct steps.
+  - Give common mistakes specific to the selected topic.
+  - Give a practical application only when genuinely relevant.
+  - Give EXACTLY 5 topic-specific practice questions followed by short answers.
+  - End each language section with a short revision summary.
+  - Do not invent official textbook quotations or unsupported syllabus content.
+  - Keep mathematics accurate and appropriate for the selected class.
+  - Use clear headings and compact bullet points.
 `;
 
     const response = await fetch("/api/chat", {
