@@ -3,108 +3,431 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SASIKUMAR AI — Sports & Games</title>
+<meta name="theme-color" content="#2563eb">
+<title>SASIKUMAR AI — Sports Hub</title>
+<meta name="description" content="SASIKUMAR AI Sports Hub — sports details, history, rules, live matches, fixtures, results, news, tournaments, statistics and games.">
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#07152e,#123d68,#172554);color:#fff;min-height:100vh}
-.wrap{max-width:1100px;margin:auto;padding:20px}
-header{padding:24px 10px;text-align:center}
-h1{font-size:clamp(28px,6vw,48px);margin:8px 0}
-.sub{opacity:.85}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px}
-.card{border:1px solid #ffffff30;border-radius:22px;padding:22px 14px;text-align:center;background:#ffffff12;box-shadow:0 12px 30px #0005;transition:.2s;cursor:pointer}
-.card:hover{transform:translateY(-5px) scale(1.02);background:#ffffff20}
-.icon{font-size:48px}
-.name{font-weight:700;font-size:18px;margin-top:10px}
-h2{margin-top:34px}
-button{border:0;border-radius:14px;padding:12px 18px;font-weight:700;cursor:pointer}
-.home{margin-top:24px}
+body{
+ margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;
+ color:#172033;
+ background:
+ radial-gradient(circle at 10% 10%,#dbeafe 0,transparent 28%),
+ radial-gradient(circle at 90% 15%,#ede9fe 0,transparent 28%),
+ linear-gradient(135deg,#f8fbff,#eef4ff);
+}
+.container{max-width:1200px;margin:auto;padding:18px}
+.hero{
+ padding:30px 20px;text-align:center;color:white;border-radius:28px;
+ background:linear-gradient(135deg,#1d4ed8,#7c3aed,#0891b2);
+ box-shadow:0 15px 40px #1e3a8a44;margin-bottom:20px
+}
+.hero h1{font-size:clamp(30px,6vw,54px);margin:5px 0;font-weight:900}
+.hero p{margin:8px auto;max-width:850px;font-size:17px}
+.nav{
+ display:flex;gap:10px;overflow:auto;padding:5px 0 15px;
+ position:sticky;top:0;z-index:10;background:#f8fbffdd;backdrop-filter:blur(12px)
+}
+.nav a{
+ flex:0 0 auto;padding:11px 15px;border-radius:14px;background:white;
+ color:#1d4ed8;text-decoration:none;font-weight:800;box-shadow:0 4px 14px #0001
+}
+h2{margin:28px 0 14px;font-size:28px}
+h3{margin:8px 0}
+.grid{
+ display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px
+}
+.card,.panel{
+ background:#ffffffeb;border:1px solid #dbe4f2;border-radius:20px;
+ padding:18px;box-shadow:0 8px 25px #0000000c
+}
+.card{cursor:pointer;transition:.2s;min-height:150px}
+.card:hover{transform:translateY(-4px);box-shadow:0 14px 30px #0002}
+.icon{font-size:40px}
+.name{font-size:20px;font-weight:900;margin:6px 0}
+.small{font-size:14px;color:#64748b;line-height:1.5}
+.tag{
+ display:inline-block;padding:5px 9px;border-radius:10px;background:#eff6ff;
+ color:#1d4ed8;font-size:12px;font-weight:800;margin:3px
+}
+.live{
+ border:2px solid #ef4444;background:linear-gradient(135deg,#fff,#fff1f2)
+}
+.liveDot{
+ display:inline-block;width:10px;height:10px;border-radius:50%;
+ background:#ef4444;margin-right:7px;animation:pulse 1s infinite
+}
+@keyframes pulse{50%{opacity:.3;transform:scale(1.4)}}
+.score{
+ font-size:25px;font-weight:900;margin:8px 0
+}
+table{width:100%;border-collapse:collapse}
+th,td{padding:10px;border-bottom:1px solid #e5e7eb;text-align:left}
+th{background:#eff6ff}
+details{
+ background:white;border:1px solid #dbe4f2;border-radius:16px;
+ padding:14px 16px;margin:10px 0
+}
+summary{font-weight:900;cursor:pointer}
+.btn{
+ display:inline-block;padding:12px 18px;border-radius:14px;
+ background:linear-gradient(135deg,#2563eb,#7c3aed);
+ color:white;text-decoration:none;font-weight:900;margin:5px
+}
+.notice{
+ padding:14px;border-radius:15px;background:#fefce8;
+ border:1px solid #fde68a;color:#713f12
+}
+.footer{text-align:center;padding:30px 10px;color:#64748b}
+@media(max-width:600px){
+ .container{padding:10px}.hero{padding:24px 14px}
+ h2{font-size:24px}.card{min-height:130px}
+}
 </style>
 </head>
+
 <body>
-<div class="wrap">
-<header>
-<div style="font-size:58px">🏆🎮</div>
-<h1>SASIKUMAR AI — Sports & Games</h1>
-<div class="sub">Sports information + easy games for everyone</div>
-</header>
+<div class="container">
 
-<h2>🏆 Sports</h2>
+<section class="hero">
+<div style="font-size:42px">🏆⚽🏏🏀🎾</div>
+<h1>SASIKUMAR AI — Sports Hub</h1>
+<p>Sports Details • History • Rules • Live Matches • Fixtures • Results • News • Tournaments • Statistics • Games</p>
+</section>
+
+<nav class="nav">
+<a href="#details">📚 Details</a>
+<a href="#live">🔴 Live</a>
+<a href="#fixtures">📅 Fixtures</a>
+<a href="#results">🏁 Results</a>
+<a href="#news">📰 News</a>
+<a href="#tournaments">🏆 Tournaments</a>
+<a href="#stats">📊 Stats</a>
+<a href="#games">🎮 Games</a>
+</nav>
+
+<section id="details">
+<h2>📚 Sports Details & History</h2>
 <div class="grid">
-<div class="card"><div class="icon">🏏</div><div class="name">Cricket</div></div>
-<div class="card"><div class="icon">⚽</div><div class="name">Football</div></div>
-<div class="card"><div class="icon">🏀</div><div class="name">Basketball</div></div>
-<div class="card"><div class="icon">🎾</div><div class="name">Tennis</div></div>
-<div class="card"><div class="icon">🏸</div><div class="name">Badminton</div></div>
-<div class="card"><div class="icon">🏐</div><div class="name">Volleyball</div></div>
-<div class="card"><div class="icon">🏓</div><div class="name">Table Tennis</div></div>
-<div class="card"><div class="icon">♟️</div><div class="name">Chess</div></div>
-</div>
 
-<h2>🎮 Easy Games</h2>
-<div class="grid">
-<div class="card" onclick="location.href='games/number-guess.html'"><div class="icon">🔢</div><div class="name">Number Guess</div></div>
-<div class="card"><div class="icon">🧠</div><div class="name">Memory Match</div></div>
-<div class="card"><div class="icon">➕</div><div class="name">Math Challenge</div></div>
-<div class="card"><div class="icon">🧩</div><div class="name">Word Puzzle</div></div>
-<div class="card"><div class="icon">🎯</div><div class="name">Target Click</div></div>
-<div class="card"><div class="icon">✊</div><div class="name">Rock Paper Scissors</div></div>
-<div class="card"><div class="icon">❓</div><div class="name">Quick Quiz</div></div>
-<div class="card"><div class="icon">🔤</div><div class="name">Word Scramble</div></div>
-</div>
+<div class="card" onclick="openSportDetail('Cricket')" style="cursor:pointer"><div class="icon">🏏</div><div class="name">Cricket</div>
+<div class="small"><b>History:</b> Developed from bat-and-ball games in England and became an international sport.<br>
+<b>Basics:</b> Batting, bowling, fielding, wickets, runs and overs.<br>
+<b>Formats:</b> Test, ODI and T20.<br>
+<b>Learn:</b> Rules • Scoring • Positions • Equipment • Skills</div></div>
 
+<div class="card" onclick="openSportDetail('Football')" style="cursor:pointer"><div class="icon">⚽</div><div class="name">Football</div>
+<div class="small"><b>History:</b> Modern association football was codified in England in the 19th century.<br>
+<b>Basics:</b> Two teams attempt to score by putting the ball into the opponent's goal.<br>
+<b>Learn:</b> Positions • Fouls • Offside • Goals • Cards • Competitions</div></div>
 
+<div class="card" onclick="openSportDetail('Basketball')" style="cursor:pointer"><div class="icon">🏀</div><div class="name">Basketball</div>
+<div class="small"><b>History:</b> Invented by James Naismith in 1891 in the United States.<br>
+<b>Basics:</b> Teams attack a basket and defend their own basket.<br>
+<b>Learn:</b> Dribbling • Passing • Shooting • Fouls • Scoring</div></div>
 
-<section id="sports-details" style="margin:28px 0">
-<h2>🏆 Sports Details — விளையாட்டு தகவல்கள்</h2>
-<p style="text-align:center;font-weight:700">Learn the basics of major sports: players, rules, equipment, scoring, skills and competitions.</p>
-<div class="grid">
-<div class="card"><div class="icon">🏏</div><div class="name">Cricket</div><p><b>தமிழ்:</b> இரண்டு அணிகள் பேட்டிங், பந்துவீச்சு மற்றும் பீல்டிங் மூலம் போட்டியிடுகின்றன.</p><p><b>English:</b> Cricket is played between two teams using batting, bowling and fielding.</p><p><b>Basics:</b> Bat • Ball • Wickets • Overs • Runs • Boundaries</p></div>
-<div class="card"><div class="icon">⚽</div><div class="name">Football</div><p><b>தமிழ்:</b> பந்தை எதிரணியின் கோல் பகுதிக்குள் செலுத்தி கோல் பெறும் விளையாட்டு.</p><p><b>English:</b> Teams try to score by getting the ball into the opponent's goal.</p><p><b>Basics:</b> Goal • Passing • Dribbling • Defence • Referee</p></div>
-<div class="card"><div class="icon">🏀</div><div class="name">Basketball</div><p><b>தமிழ்:</b> பந்தை கூடை வழியாக செலுத்தி புள்ளிகள் பெறும் விளையாட்டு.</p><p><b>English:</b> Teams score by putting the ball through the basket.</p><p><b>Basics:</b> Court • Basket • Dribble • Pass • Shoot • Defence</p></div>
-<div class="card"><div class="icon">🎾</div><div class="name">Tennis</div><p><b>தமிழ்:</b> ராக்கெட் மற்றும் பந்தைப் பயன்படுத்தி வலைக்கு மேல் விளையாடப்படும் விளையாட்டு.</p><p><b>English:</b> Tennis is played with rackets and a ball over a net.</p><p><b>Basics:</b> Serve • Rally • Singles • Doubles • Sets</p></div>
-<div class="card"><div class="icon">🏸</div><div class="name">Badminton</div><p><b>தமிழ்:</b> Shuttlecock-ஐ racket மூலம் வலைக்கு மேல் அனுப்பும் விளையாட்டு.</p><p><b>English:</b> Badminton uses rackets and a shuttlecock in singles or doubles.</p><p><b>Basics:</b> Shuttle • Racket • Serve • Rally • Court</p></div>
-<div class="card"><div class="icon">🏓</div><div class="name">Table Tennis</div><p><b>தமிழ்:</b> மேசையின் மீது வலைக்கு மேல் சிறிய பந்தை racket மூலம் அடிக்கும் விளையாட்டு.</p><p><b>English:</b> Table tennis is played on a table divided by a net.</p><p><b>Basics:</b> Table • Net • Bat • Ball • Serve • Rally</p></div>
-<div class="card"><div class="icon">🏐</div><div class="name">Volleyball</div><p><b>தமிழ்:</b> வலைக்கு மேல் பந்தை அனுப்பி எதிரணியின் பகுதியில் தரையில் விழச் செய்து புள்ளி பெறுகின்றனர்.</p><p><b>English:</b> Teams send the ball over a net and try to make it land in the opponent's court.</p><p><b>Basics:</b> Serve • Pass • Set • Spike • Block • Rotation</p></div>
-<div class="card"><div class="icon">🎳</div><div class="name">Bowling</div><p><b>தமிழ்:</b> பந்தை உருட்டி pins-ஐ வீழ்த்தி score பெறும் விளையாட்டு.</p><p><b>English:</b> Players roll a ball toward pins and score according to the pins knocked down.</p><p><b>Basics:</b> Lane • Ball • Pins • Frame • Strike • Spare</p></div>
-<div class="card"><div class="icon">🏑</div><div class="name">Hockey</div><p><b>தமிழ்:</b> Hockey stick மூலம் பந்தை கட்டுப்படுத்தி எதிரணியின் goal-ல் செலுத்தும் விளையாட்டு.</p><p><b>English:</b> Field hockey uses sticks and a ball to create scoring opportunities.</p><p><b>Basics:</b> Stick • Ball • Goal • Passing • Dribbling</p></div>
-<div class="card"><div class="icon">🏃</div><div class="name">Athletics</div><p><b>தமிழ்:</b> ஓட்டம், தாண்டுதல் மற்றும் எறிதல் போன்ற track-and-field போட்டிகளை உள்ளடக்கியது.</p><p><b>English:</b> Athletics includes running, jumping and throwing events.</p><p><b>Basics:</b> Track • Running • Jumping • Throwing • Timing</p></div>
-<div class="card"><div class="icon">🏊</div><div class="name">Swimming</div><p><b>தமிழ்:</b> பல்வேறு strokes மற்றும் distances அடிப்படையில் நீச்சல் போட்டிகள் நடைபெறும்.</p><p><b>English:</b> Competitive swimming includes different strokes and distances.</p><p><b>Basics:</b> Freestyle • Backstroke • Breaststroke • Butterfly • Relay</p></div>
-<div class="card"><div class="icon">🥊</div><div class="name">Boxing</div><p><b>தமிழ்:</b> Ring-ல் விதிமுறைகளுக்குள் rounds அடிப்படையில் நடைபெறும் combat sport.</p><p><b>English:</b> Boxing is a regulated combat sport divided into rounds.</p><p><b>Basics:</b> Ring • Rounds • Gloves • Defence • Footwork • Scoring</p></div>
-<div class="card"><div class="icon">🏹</div><div class="name">Archery</div><p><b>தமிழ்:</b> வில் மற்றும் அம்பைப் பயன்படுத்தி இலக்கை துல்லியமாக அடிக்கும் விளையாட்டு.</p><p><b>English:</b> Archery tests accuracy by shooting arrows toward a target.</p><p><b>Basics:</b> Bow • Arrow • Target • Distance • Accuracy</p></div>
-<div class="card"><div class="icon">🏋️</div><div class="name">Weightlifting</div><p><b>தமிழ்:</b> நிர்ணயிக்கப்பட்ட lifts மூலம் எடையை தூக்கும் போட்டி.</p><p><b>English:</b> Olympic weightlifting includes the snatch and clean &amp; jerk.</p><p><b>Basics:</b> Barbell • Plates • Snatch • Clean &amp; Jerk • Attempts</p></div>
-<div class="card"><div class="icon">🏅</div><div class="name">Olympic Games</div><p><b>தமிழ்:</b> பல நாடுகளைச் சேர்ந்த athletes பங்கேற்கும் சர்வதேச பல்விளையாட்டு நிகழ்வு.</p><p><b>English:</b> The Olympic Games are an international multi-sport event.</p><p><b>Basics:</b> Athletes • Sports • Events • Medals • Records</p></div>
+<div class="card" onclick="openSportDetail('Tennis')" style="cursor:pointer"><div class="icon">🎾</div><div class="name">Tennis</div>
+<div class="small"><b>History:</b> Modern lawn tennis developed in Britain during the 19th century.<br>
+<b>Basics:</b> Singles or doubles, serving and returning over a net.<br>
+<b>Scoring:</b> Points • Games • Sets • Match</div></div>
+
+<div class="card" onclick="openSportDetail('Badminton')" style="cursor:pointer"><div class="icon">🏸</div><div class="name">Badminton</div>
+<div class="small"><b>History:</b> Modern badminton developed from earlier racket-and-shuttle games.<br>
+<b>Basics:</b> Players hit a shuttlecock over a net.<br>
+<b>Learn:</b> Singles • Doubles • Serve • Rally • Scoring • Court</div></div>
+
+<div class="card" onclick="openSportDetail('Table Tennis')" style="cursor:pointer"><div class="icon">🏓</div><div class="name">Table Tennis</div>
+<div class="small"><b>History:</b> Developed as an indoor racket sport in the late 19th century.<br>
+<b>Basics:</b> Players strike a lightweight ball across a table net.<br>
+<b>Learn:</b> Serve • Rally • Spin • Scoring • Equipment</div></div>
+
+<div class="card" onclick="openSportDetail('Volleyball')" style="cursor:pointer"><div class="icon">🏐</div><div class="name">Volleyball</div>
+<div class="small"><b>History:</b> Created by William G. Morgan in 1895 in the United States.<br>
+<b>Basics:</b> Teams send the ball over a net and try to make it land in the opponent's court.<br>
+<b>Learn:</b> Rotation • Positions • Rally scoring • Skills</div></div>
+
+<div class="card" onclick="openSportDetail('Hockey')" style="cursor:pointer"><div class="icon">🏑</div><div class="name">Hockey</div>
+<div class="small"><b>History:</b> Modern field hockey developed into an organized international sport in the 19th century.<br>
+<b>Basics:</b> Teams use sticks to move a ball and score goals.<br>
+<b>Learn:</b> Positions • Penalties • Goals • Field • Equipment</div></div>
+
+<div class="card" onclick="openSportDetail('Athletics')" style="cursor:pointer"><div class="icon">🏃</div><div class="name">Athletics</div>
+<div class="small"><b>Events:</b> Sprints • Middle distance • Long distance • Hurdles • Relays • Jumps • Throws.<br>
+<b>Learn:</b> Event rules • Timing • Measurements • Competition formats</div></div>
+
+<div class="card" onclick="openSportDetail('Swimming')" style="cursor:pointer"><div class="icon">🏊</div><div class="name">Swimming</div>
+<div class="small"><b>Events:</b> Freestyle • Backstroke • Breaststroke • Butterfly • Individual medley.<br>
+<b>Learn:</b> Lanes • Starts • Turns • Finishes • Timing</div></div>
+
+<div class="card" onclick="openSportDetail('Boxing')" style="cursor:pointer"><div class="icon">🥊</div><div class="name">Boxing</div>
+<div class="small"><b>Basics:</b> Contestants compete under rules divided into rounds.<br>
+<b>Learn:</b> Weight classes • Rounds • Scoring • Officials • Safety equipment</div></div>
+
+<div class="card" onclick="openSportDetail('Archery')" style="cursor:pointer"><div class="icon">🏹</div><div class="name">Archery</div>
+<div class="small"><b>Basics:</b> Competitors shoot arrows toward a target from specified distances.<br>
+<b>Learn:</b> Equipment • Target scoring • Rounds • Competition rules</div></div>
+
+<div class="card" onclick="openSportDetail('Weightlifting')" style="cursor:pointer"><div class="icon">🏋️</div><div class="name">Weightlifting</div>
+<div class="small"><b>Events:</b> Snatch and clean & jerk.<br>
+<b>Learn:</b> Weight classes • Attempts • Valid lifts • Competition scoring</div></div>
+
+<div class="card" onclick="openSportDetail('Bowling')" style="cursor:pointer"><div class="icon">🎳</div><div class="name">Bowling</div>
+<div class="small"><b>Basics:</b> Players roll a ball toward pins in frames.<br>
+<b>Learn:</b> Strikes • Spares • Frames • Scoring • Lane basics</div></div>
+
+<div class="card" onclick="openSportDetail('Olympic Sports')" style="cursor:pointer"><div class="icon">🥇</div><div class="name">Olympic Sports</div>
+<div class="small"><b>Learn:</b> Olympic history • Sports • Events • Medals • Athletes • Host cities • Competition structure</div></div>
+
+<div class="card" onclick="openSportDetail('Asian Games')" style="cursor:pointer"><div class="icon">🌏</div><div class="name">Asian Games</div>
+<div class="small"><b>Learn:</b> Asian multi-sport competition • Sports • Countries • Medals • Results • History</div></div>
+
 </div>
 </section>
 
+<section id="live">
+<h2>🔴 Live Matches</h2>
+<div class="panel live">
+<h3><span class="liveDot"></span>Live Sports Data</h3>
+<p id="liveStatus" class="small">Checking the SASIKUMAR AI sports data service…</p>
+<div id="liveMatches" class="grid"></div>
+</div>
+<div class="notice">Live scores, match status and current statistics should be supplied by a verified live sports-data provider. This page will not invent scores when live data is unavailable.</div>
+</section>
+
+<section id="fixtures">
+<h2>📅 Fixtures & Upcoming Matches</h2>
+<div class="panel">
+<p class="small">Upcoming fixtures can be displayed here from the sports-data API.</p>
+<div id="fixturesData">Loading fixtures service…</div>
+</div>
+</section>
+
+<section id="results">
+<h2>🏁 Recent Results</h2>
+<div class="panel">
+<p class="small">Completed match results can be displayed here from the sports-data API.</p>
+<div id="resultsData">Loading results service…</div>
+</div>
+</section>
+
+<section id="news">
+<h2>📰 Sports News</h2>
+<div class="grid">
+<div class="panel"><h3>🏏 Cricket News</h3><p class="small">Current cricket news, match reports, team updates and tournament information.</p></div>
+<div class="panel"><h3>⚽ Football News</h3><p class="small">Current football fixtures, results, transfers and competition updates.</p></div>
+<div class="panel"><h3>🎾 Tennis News</h3><p class="small">Tournament results, player updates and match information.</p></div>
+<div class="panel"><h3>🇮🇳 Indian Sports</h3><p class="small">Indian athletes, teams, tournaments and national sporting updates.</p></div>
+</div>
+</section>
+
+<section id="tournaments">
+<h2>🏆 Major Tournaments & Competitions</h2>
+<div class="grid">
+<div class="panel"><h3>🏏 Cricket</h3><p class="small">World Cups • Test competitions • T20 competitions • Domestic leagues</p></div>
+<div class="panel"><h3>⚽ Football</h3><p class="small">World Cup • Continental championships • Club competitions • Domestic leagues</p></div>
+<div class="panel"><h3>🎾 Racket Sports</h3><p class="small">Grand Slam tennis • International badminton • Table tennis championships</p></div>
+<div class="panel"><h3>🥇 Multi-Sport Events</h3><p class="small">Olympic Games • Asian Games • Commonwealth Games • Paralympic Games</p></div>
+</div>
+</section>
+
+<section id="stats">
+<h2>📊 Sports Statistics</h2>
+<div class="grid">
+<div class="panel"><h3>👤 Player Stats</h3><p class="small">Matches • Runs • Goals • Points • Wickets • Medals • Records</p></div>
+<div class="panel"><h3>👥 Team Stats</h3><p class="small">Matches • Wins • Losses • Draws • Points • Rankings</p></div>
+<div class="panel"><h3>📈 Match Stats</h3><p class="small">Score • Possession • Shots • Runs • Wickets • Sets • Timing and other sport-specific statistics.</p></div>
+<div class="panel"><h3>🏅 Records</h3><p class="small">Verified historical records can be shown with their sport, competition and date.</p></div>
+</div>
+</section>
+
+<section>
+<h2>❓ Sports Knowledge</h2>
+<details><summary>Why are sports rules important?</summary><p class="small">Rules create a common structure for competition, define scoring and help officials manage matches fairly and consistently.</p></details>
+<details><summary>What is a tournament?</summary><p class="small">A tournament is an organized competition involving multiple players or teams, usually with a defined schedule and competition format.</p></details>
+<details><summary>What is a live score?</summary><p class="small">A live score is a real-time or near-real-time update of the score and match status while a competition is taking place.</p></details>
+<details><summary>What sports information can SASIKUMAR AI show?</summary><p class="small">The Sports Hub can organize educational details, history, rules, fixtures, results, live data, news, tournaments, statistics and interactive games.</p></details>
+</section>
+
+
+<section id="sportsDetails">
+<h2>📚 Sports Details</h2>
+<p class="small">Explore basic rules, players, equipment, scoring, skills and facts for major sports.</p>
+<div class="grid">
+<script>
+document.write(Object.entries(SPORTS_DETAILS).map(([key,sport])=>`
+<div class="card" onclick="showSportDetail('${key}')">
+<div class="icon">${sport.title.split(" ")[0]}</div>
+<div class="name">${sport.title.substring(sport.title.indexOf(" ")+1)}</div>
+<div class="small">${sport.intro}</div>
+</div>`).join(""));
+</script>
+</div>
+</section>
+
+<section id="games">
 <h2>🎮 Sports Games</h2>
 <div class="grid">
-<div class="card" onclick="location.href='games/cricket-tap.html'"><div class="icon">🏏</div><div class="name">Cricket Tap</div></div>
-<div class="card" onclick="location.href='games/football-goal.html'"><div class="icon">⚽</div><div class="name">Football Goal</div></div>
-<div class="card" onclick="location.href='games/basketball-shot.html'"><div class="icon">🏀</div><div class="name">Basketball Shot</div></div>
-<div class="card" onclick="location.href='games/badminton-tap.html'"><div class="icon">🏸</div><div class="name">Badminton Tap</div></div>
-<div class="card" onclick="location.href='games/tennis-serve.html'"><div class="icon">🎾</div><div class="name">Tennis Serve</div></div>
-<div class="card" onclick="location.href='games/table-tennis.html'"><div class="icon">🏓</div><div class="name">Table Tennis</div></div>
-<div class="card" onclick="location.href='games/volleyball-tap.html'"><div class="icon">🏐</div><div class="name">Volleyball Tap</div></div>
-<div class="card" onclick="location.href='games/bowling.html'"><div class="icon">🎳</div><div class="name">Bowling</div></div>
-<div class="card" onclick="location.href='games/target-hit.html'"><div class="icon">🎯</div><div class="name">Target Hit</div></div>
-<div class="card" onclick="location.href='games/sports-quiz.html'"><div class="icon">🧠</div><div class="name">Sports Quiz</div></div>
+<div class="card" onclick="location.href='games/cricket-tap.html'"><div class="icon">🏏</div><div class="name">Cricket Tap</div><div class="small">Tap cricket game</div></div>
+<div class="card" onclick="location.href='games/football-goal.html'"><div class="icon">⚽</div><div class="name">Football Goal</div><div class="small">Goal shooting game</div></div>
+<div class="card" onclick="location.href='games/basketball-shot.html'"><div class="icon">🏀</div><div class="name">Basketball Shot</div><div class="small">Basket shooting game</div></div>
+<div class="card" onclick="location.href='games/badminton-tap.html'"><div class="icon">🏸</div><div class="name">Badminton Tap</div><div class="small">Tap badminton game</div></div>
+<div class="card" onclick="location.href='games/tennis-serve.html'"><div class="icon">🎾</div><div class="name">Tennis Serve</div><div class="small">Serve challenge</div></div>
+<div class="card" onclick="location.href='games/table-tennis.html'"><div class="icon">🏓</div><div class="name">Table Tennis</div><div class="small">Reaction game</div></div>
+<div class="card" onclick="location.href='games/volleyball-tap.html'"><div class="icon">🏐</div><div class="name">Volleyball Tap</div><div class="small">Tap volleyball game</div></div>
+<div class="card" onclick="location.href='games/bowling.html'"><div class="icon">🎳</div><div class="name">Bowling</div><div class="small">Pin bowling game</div></div>
+<div class="card" onclick="location.href='games/target-hit.html'"><div class="icon">🎯</div><div class="name">Target Hit</div><div class="small">Target challenge</div></div>
+<div class="card" onclick="location.href='games/sports-quiz.html'"><div class="icon">🧠</div><div class="name">Sports Quiz</div><div class="small">Sports knowledge quiz</div></div>
+</div>
+</section>
+
+<div style="text-align:center;margin:30px 0">
+<a class="btn" href="/">🏠 Dashboard</a>
+<a class="btn" href="/sports/games/">🎮 Open Games Hub</a>
 </div>
 
-<div class="home">
-<button onclick="location.href='/'">🏠 Dashboard</button>
-</div>
-</div>
-
-<div style="margin:24px 0;text-align:center">
-  <a href="/sports/games/index.html"
-     style="display:inline-block;padding:16px 28px;border-radius:18px;
-            background:linear-gradient(135deg,#7c3aed,#2563eb);
-            color:#fff;text-decoration:none;font-size:20px;font-weight:800;
-            box-shadow:0 8px 25px #0005">
-    🎮 Sports Games
-  </a>
+<div class="footer">
+<strong>SASIKUMAR AI</strong><br>
+Sports Hub • Education • Games • Live Data
 </div>
 
+</div>
+
+<script>
+async function loadSportsData(){
+ const status=document.getElementById('liveStatus');
+ const live=document.getElementById('liveMatches');
+ try{
+   const r=await fetch('/api/sports/live',{headers:{'Accept':'application/json'}});
+   if(!r.ok) throw new Error('API unavailable');
+   const data=await r.json();
+   const matches=Array.isArray(data)?data:(data.matches||data.events||[]);
+   if(!matches.length){
+     status.textContent='No live matches are currently available from the connected data service.';
+     return;
+   }
+   status.textContent=matches.length+' live match(es) found.';
+   live.innerHTML=matches.map(m=>`
+     <div class="card live">
+       <div class="name">🔴 ${m.sport||m.league||'Sport'}</div>
+       <div>${m.homeTeam||m.home||'Team A'} <b>vs</b> ${m.awayTeam||m.away||'Team B'}</div>
+       <div class="score">${m.score||m.homeScore+' - '+m.awayScore||'Live'}</div>
+       <div class="small">${m.status||'Live'} ${m.time?'• '+m.time:''}</div>
+     </div>`).join('');
+ }catch(e){
+   status.textContent='Live sports API is not connected yet. The page is ready for verified live-data integration.';
+   live.innerHTML='<div class="panel"><b>📡 Live Data Ready</b><p class="small">Connect a verified sports-data API to display real-time matches here.</p></div>';
+ }
+}
+loadSportsData();
+</script>
+
+
+<style>
+#sportDetailModal{display:none;position:fixed;inset:0;z-index:99999;background:#000b;padding:18px;overflow:auto}
+#sportDetailBox{max-width:850px;margin:25px auto;background:#fff;color:#111827;border-radius:24px;padding:25px;box-shadow:0 15px 50px #0008}
+#sportDetailBox h2{margin-top:0;font-size:30px}
+#sportDetailBox h3{color:#2563eb;margin-bottom:6px}
+#sportDetailBox p{line-height:1.7}
+#sportClose{float:right;background:#dc2626;color:#fff;border:0;border-radius:12px;padding:10px 16px;font-weight:800;font-size:16px}
+</style>
+
+
+<script>
+const SPORTS_DETAILS={
+cricket:{title:"🏏 Cricket",intro:"Cricket is a bat-and-ball team sport played between two teams, normally with 11 players each.",history:"Modern cricket developed in England and became an international sport.",players:"11 players per team on the fielding side; batting pairs take turns.",rules:"The batting team tries to score runs while the fielding team tries to dismiss batters and restrict runs.",equipment:"Bat, cricket ball, stumps, protective equipment and suitable clothing.",area:"A cricket field with a central pitch and wickets at both ends.",scoring:"Runs are scored by running between the wickets or by hitting boundaries. A boundary can score 4 or 6 depending on how the ball reaches the boundary.",skills:"Batting, bowling, catching, throwing, running and teamwork.",competitions:"International cricket includes Test, ODI and T20 formats.",facts:"Cricket uses different match formats with different time limits and strategies.",game:"games/cricket-tap.html"},
+football:{title:"⚽ Football",intro:"Football is a team sport in which players try to score by getting the ball into the opponent's goal.",history:"Modern association football was codified in England during the nineteenth century.",players:"A standard team has 11 players on the field, including a goalkeeper.",rules:"Players generally use their feet to control the ball. The goalkeeper has special handling rights within the penalty area.",equipment:"Football, goals, boots, shin guards and sports clothing.",area:"A rectangular pitch with two goals and marked penalty areas.",scoring:"A goal counts when the whole ball crosses the goal line between the posts and under the crossbar.",skills:"Passing, dribbling, shooting, defending, positioning and teamwork.",competitions:"International and club competitions are played around the world.",facts:"A match normally has two halves with a halftime interval.",game:"games/football-goal.html"},
+basketball:{title:"🏀 Basketball",intro:"Basketball is a team sport where players score by putting the ball through the opponent's hoop.",history:"Basketball was invented in the United States in 1891.",players:"Five players from each team are normally on the court at one time.",rules:"Players move the ball mainly by passing and dribbling. Physical contact is regulated by fouls.",equipment:"Basketball, hoops, backboards and sports shoes.",area:"A rectangular court with a basket at each end.",scoring:"A successful field goal normally scores 2 or 3 points depending on where the shot is taken; free throws score 1 point.",skills:"Dribbling, passing, shooting, rebounding and defense.",competitions:"Basketball is played in national leagues and international competitions.",facts:"Teams must attack and defend quickly, making transition play important.",game:"games/basketball-shot.html"},
+badminton:{title:"🏸 Badminton",intro:"Badminton is a racket sport played with a shuttlecock across a net.",history:"The modern form of badminton developed from earlier racket-and-shuttle games.",players:"Singles has one player per side; doubles has two players per side.",rules:"Players hit the shuttle over the net and try to make it land inside the opponent's court.",equipment:"Rackets, shuttlecocks, net and court shoes.",area:"A marked rectangular court divided by a net.",scoring:"Games are normally played to 21 points, with rally scoring.",skills:"Serving, clears, drops, smashes, movement and reaction.",competitions:"Badminton has major international championships and multi-sport events.",facts:"The shuttlecock has high drag, so its flight differs greatly from a ball.",game:"games/badminton-tap.html"},
+tennis:{title:"🎾 Tennis",intro:"Tennis is a racket sport played in singles or doubles across a net.",history:"Modern lawn tennis developed in Britain during the nineteenth century.",players:"Singles has one player per side; doubles has two players per side.",rules:"Players serve diagonally into the service box and return the ball before it bounces twice.",equipment:"Tennis racket, tennis ball, net and suitable court shoes.",area:"A rectangular court divided by a net with different markings for singles and doubles.",scoring:"Points progress through love, 15, 30 and 40; games combine into sets.",skills:"Serving, returning, groundstrokes, volleys, movement and placement.",competitions:"Major professional tournaments include the four Grand Slam events.",facts:"Matches can be played on different court surfaces, which affect ball movement.",game:"games/tennis-serve.html"},
+"table-tennis":{title:"🏓 Table Tennis",intro:"Table tennis is a fast racket sport played on a table divided by a net.",history:"The modern competitive form developed in the late nineteenth and early twentieth centuries.",players:"Singles has one player per side; doubles has two players per side.",rules:"Players strike the ball so it bounces on the opponent's side according to the service and rally rules.",equipment:"Table, net, small racket and lightweight ball.",area:"A regulation table divided into two sides by a net.",scoring:"A game is normally won by the first player or pair to reach 11 points with the required margin.",skills:"Serving, returning, spin, timing, placement and quick reactions.",competitions:"International championships and Olympic competition are major events.",facts:"Spin can strongly change the ball's bounce and direction.",game:"games/table-tennis.html"},
+volleyball:{title:"🏐 Volleyball",intro:"Volleyball is a team sport in which teams send a ball over a net and try to ground it on the opponent's court.",history:"Volleyball was created in the United States in 1895.",players:"Six players per team are normally on court in indoor volleyball.",rules:"A team normally has up to three contacts to return the ball over the net.",equipment:"Volleyball, net, court and suitable sports clothing.",area:"A rectangular court divided by a raised net.",scoring:"Rally scoring is used; sets are generally played to a target score with a required lead.",skills:"Serving, passing, setting, attacking, blocking and defense.",competitions:"Volleyball is played in international championships, leagues and the Olympic Games.",facts:"Players rotate positions when their team wins the right to serve from the receiving team.",game:"games/volleyball-tap.html"},
+bowling:{title:"🎳 Bowling",intro:"Ten-pin bowling is a target sport in which a player rolls a ball toward pins.",history:"Bowling has roots in several older European and American games.",players:"Bowling can be played individually or in teams.",rules:"Players roll a ball down a lane and try to knock down pins within the allowed deliveries.",equipment:"Bowling ball, pins and bowling lane.",area:"A long lane with a foul line, pins at the far end and gutters on both sides.",scoring:"A standard ten-pin game has 10 frames. Strikes and spares receive bonus scoring.",skills:"Accuracy, approach, release, control and consistency.",competitions:"Bowling has professional, national and international competitions.",facts:"A standard ten-pin setup contains 10 pins.",game:"games/bowling.html"},
+hockey:{title:"🏑 Hockey",intro:"Field hockey is a team sport in which players use sticks to move a ball and try to score in the opponent's goal.",history:"Organized field hockey developed into a modern international sport in the nineteenth and twentieth centuries.",players:"A standard outdoor team fields 11 players including a goalkeeper.",rules:"Players use the stick to control and pass the ball while following field and safety rules.",equipment:"Hockey stick, ball, goals, protective goalkeeper equipment and sports clothing.",area:"A marked rectangular field with goals at opposite ends.",scoring:"A goal is scored when the ball legally crosses the goal line inside the goal.",skills:"Passing, receiving, dribbling, shooting, tackling and positioning.",competitions:"International championships and Olympic hockey are major competitions.",facts:"The sport requires coordinated movement between attack, midfield and defense.",game:null},
+athletics:{title:"🏃 Athletics",intro:"Athletics is a group of track and field events including running, jumping and throwing.",history:"Athletics has ancient roots and is a central part of the modern Olympic movement.",players:"Events may be individual or relay-based.",rules:"Each event has specific rules for starts, attempts, lanes, measurements and finishes.",equipment:"Event-specific equipment such as starting blocks, hurdles, implements and measuring systems.",area:"Track events use a running track; field events use designated jumping and throwing areas.",scoring:"Individual events are usually decided by time, distance or height depending on the event.",skills:"Speed, endurance, coordination, technique and strength.",competitions:"Athletics is featured in major international championships and the Olympic Games.",facts:"Track and field contains many different events for different athletic abilities.",game:null},
+swimming:{title:"🏊 Swimming",intro:"Swimming competitions test speed over set distances using recognized strokes.",history:"Competitive swimming developed into an organized international sport over the nineteenth and twentieth centuries.",players:"Events may be individual or relay events.",rules:"Swimmers must follow stroke, start, turn and finish regulations for their event.",equipment:"Swimsuit, goggles, swim cap where permitted and competition timing equipment.",area:"A swimming pool with marked lanes.",scoring:"Races are normally decided by finishing time.",skills:"Technique, breathing, starts, turns, endurance and speed.",competitions:"Swimming is a major Olympic and international championship sport.",facts:"Common competitive strokes include freestyle, backstroke, breaststroke and butterfly.",game:null},
+boxing:{title:"🥊 Boxing",intro:"Boxing is a regulated combat sport in which competitors use gloved punches under rules and supervision.",history:"Boxing has ancient origins and developed into modern regulated competition over time.",players:"Two competitors take part in a bout.",rules:"Competitors follow rules covering legal target areas, rounds, equipment and conduct.",equipment:"Gloves, protective equipment required by the governing rules and a regulated ring.",area:"A square boxing ring with defined boundaries.",scoring:"Officials award points according to clean scoring punches and effective performance under the competition rules.",skills:"Footwork, defense, timing, controlled punching and strategy.",competitions:"Boxing is contested at amateur and professional levels and is part of the Olympic tradition.",facts:"Different weight classes help organize competition.",game:null},
+archery:{title:"🏹 Archery",intro:"Archery is a precision sport in which competitors shoot arrows toward a target.",history:"Archery has ancient origins and later developed into a modern competitive sport.",players:"Competitions can be individual or team-based.",rules:"Competitors shoot from a defined distance and follow equipment, timing and target rules.",equipment:"Bow, arrows, target and permitted protective equipment.",area:"A controlled range with a shooting line and targets at specified distances.",scoring:"Points depend on the scoring zone where an arrow lands.",skills:"Aim, posture, controlled release, concentration and consistency.",competitions:"Archery is included in major international championships and the Olympic Games.",facts:"Small differences in arrow placement can change scores significantly.",game:null},
+weightlifting:{title:"🏋️ Weightlifting",intro:"Olympic weightlifting is a strength sport based on the snatch and clean and jerk.",history:"Modern competitive weightlifting developed through organized strength competitions and became part of the Olympic program.",players:"Competitors are grouped by bodyweight categories according to the competition system.",rules:"Each lift must be completed according to technical and judging requirements.",equipment:"Barbell, weight plates, lifting platform and regulated competition equipment.",area:"A designated lifting platform and competition area.",scoring:"The competition result is based on successful lifts and the combined total of the two competition lifts.",skills:"Technique, coordination, controlled movement and strength.",competitions:"Weightlifting is contested at national, international and Olympic levels.",facts:"Competitors receive multiple attempts in each of the two lifts.",game:null},
+olympics:{title:"🏅 Olympic Games",intro:"The Olympic Games are a major international multi-sport event bringing athletes together from many countries.",history:"The modern Olympic Games began in 1896, inspired by the ancient Greek Olympic tradition.",players:"Athletes compete for their countries or national Olympic teams under the Olympic system.",rules:"Each sport has its own international rules and governing organization.",equipment:"Equipment varies by sport and must meet that sport's regulations.",area:"Venues vary from stadiums and pools to courts, fields and specialized facilities.",scoring:"Medals are awarded according to the results of individual events and team competitions.",skills:"Athletes develop sport-specific technical, physical and tactical abilities.",competitions:"Summer and Winter Olympic Games are held separately.",facts:"The Olympic program includes many different sports and events.",game:"games/sports-quiz.html"}
+};
+</script>
+
+<div id="sportDetailModal" onclick="if(event.target===this)closeSportDetail()">
+ <div id="sportDetailBox">
+
+<div id="sportDetailContent"></div>
+<script>
+function showSportDetail(key){
+ const x=SPORTS_DETAILS[key];
+ if(!x)return;
+ const box=document.getElementById("sportDetailContent");
+ box.innerHTML=`
+ <button id="sportClose" onclick="closeSportDetail()">✕ Close</button>
+ <h2>${x.title}</h2>
+ <p><b>Introduction:</b> ${x.intro}</p>
+ <p><b>History:</b> ${x.history}</p>
+ <p><b>Players:</b> ${x.players}</p>
+ <p><b>Basic Rules:</b> ${x.rules}</p>
+ <p><b>Equipment:</b> ${x.equipment}</p>
+ <p><b>Playing Area:</b> ${x.area}</p>
+ <p><b>Scoring:</b> ${x.scoring}</p>
+ <p><b>Skills:</b> ${x.skills}</p>
+ <p><b>Major Competitions:</b> ${x.competitions}</p>
+ <p><b>Basic Facts:</b> ${x.facts}</p>
+ ${x.game?`<p style="text-align:center"><a class="btn" href="${x.game}">🎮 Play Game</a></p>`:""}
+ `;
+ document.getElementById("sportDetailModal").style.display="block";
+}
+function closeSportDetail(){
+ document.getElementById("sportDetailModal").style.display="none";
+}
+</script>
+
+  <button id="sportClose" onclick="closeSportDetail()">✕ Close</button>
+
+ </div>
+</div>
+
+<script>
+const SPORT_INFO={
+"Cricket":["🏏","Cricket","A bat-and-ball team sport played between two teams.","Normally 11 players per team.","Batters score runs while bowlers try to dismiss batters.","Runs come from running and boundaries.","Bat • Ball • Wickets • Protective equipment.","Batting • Bowling • Fielding • Catching • Wicketkeeping"],
+"Football":["⚽","Football","A team sport where players try to score by putting the ball into the opponent's goal.","Normally 11 players on the field including a goalkeeper.","Players pass, dribble and shoot while following the Laws of the Game.","A goal counts when the whole ball crosses the goal line.","Ball • Goalposts • Boots • Protective equipment.","Passing • Dribbling • Shooting • Defending • Teamwork"],
+"Basketball":["🏀","Basketball","A team sport where players score by putting the ball through the opponent's basket.","Five players from each team are normally on court.","Players advance the ball by passing and dribbling.","Points depend on the type and location of the successful shot.","Ball • Hoop • Backboard • Court.","Dribbling • Passing • Shooting • Rebounding • Defense"],
+"Tennis":["🎾","Tennis","A racket sport played in singles or doubles with a ball sent over a net.","Singles has one player per side; doubles has two.","A serve starts each point and the ball must land within the correct court.","Games form sets and matches according to the competition format.","Racket • Ball • Net • Court.","Serving • Forehand • Backhand • Volley • Movement"],
+"Badminton":["🏸","Badminton","A racket sport played with a shuttlecock over a net.","Singles and doubles are standard formats.","Players return the shuttle while keeping it inside the appropriate court.","Rally scoring is normally used and games are commonly played to 21 points.","Racket • Shuttlecock • Net • Court.","Serve • Clear • Drop • Smash • Footwork"],
+"Table Tennis":["🏓","Table Tennis","A racket sport played on a table divided by a net.","Singles and doubles are played.","A legal serve starts the rally and players return the ball after the required bounce.","Games are normally played to 11 points under official rules.","Table • Net • Racket • Ball.","Serve • Return • Attack • Block • Footwork"],
+"Volleyball":["🏐","Volleyball","A team sport where players send a ball over a net and try to make it land in the opponent's court.","Indoor volleyball normally has six players on court.","A team normally has up to three contacts to return the ball.","Rally scoring is used and players rotate positions under the rules.","Ball • Net • Court • Team equipment.","Serve • Pass • Set • Attack • Block • Dig"],
+"Hockey":["🏑","Hockey","A team sport played with sticks and a ball on a rectangular field.","Teams use attackers, midfielders, defenders and a goalkeeper.","Players move the ball with sticks and try to create scoring opportunities.","A goal is scored when the ball legally enters the goal according to the rules.","Stick • Ball • Goal • Protective equipment.","Dribbling • Passing • Receiving • Tackling • Shooting"],
+"Athletics":["🏃","Athletics","A collection of track and field events.","Events include running, hurdles, relays, jumps and throws.","Each event has its own competition rules.","Running is mainly decided by time; field events use measurements such as distance or height.","Event-specific equipment and facilities.","Speed • Endurance • Technique • Coordination"],
+"Swimming":["🏊","Swimming","Competitive races held in pools over specified distances.","Events use individual and relay formats.","Swimmers compete in marked lanes under stroke-specific rules.","Results are primarily determined by finishing time.","Swimsuit • Goggles • Pool • Starting equipment.","Starts • Turns • Stroke technique • Breathing • Finishing"],
+"Boxing":["🥊","Boxing","A regulated combat sport conducted in rounds under competition rules.","Competitors are separated into weight categories.","Officials enforce rules and judges score bouts according to the applicable system.","Bout results depend on the competition rules and scoring system.","Gloves • Mouthguard • Required protective equipment.","Movement • Defense • Controlled technique • Ring awareness"],
+"Archery":["🏹","Archery","A target sport in which competitors shoot arrows toward a target.","Competitors shoot individually or as part of team formats.","Specified numbers of arrows are shot from defined distances.","Target rings have different point values.","Bow • Arrows • Target • Protective equipment.","Aiming • Consistency • Technique • Focus"],
+"Weightlifting":["🏋️","Weightlifting","An Olympic strength sport based on two competition lifts.","Athletes compete in weight categories.","The two lifts are the snatch and clean and jerk.","Successful lifts contribute to the competition total.","Barbell • Plates • Competition platform.","Technique • Balance • Coordination • Strength"],
+"Bowling":["🎳","Bowling","Ten-pin bowling involves rolling a ball toward ten pins.","Players take turns within frames.","The objective is to knock down pins with each roll.","Strikes and spares affect later frame scoring.","Ball • Pins • Lane.","Accuracy • Consistency • Approach • Release"],
+"Olympic Sports":["🥇","Olympic Sports","The Olympic Games bring athletes from many countries together in a wide range of sports.","Sports contain different events and competition formats.","Athletes compete for medals under the rules of their individual sports.","Medals are awarded according to event results.","Sport-specific equipment and venues.","Competition • Records • Teamwork • Skill"],
+"Asian Games":["🌏","Asian Games","A major multi-sport competition involving athletes from across Asia.","Many countries and territories participate.","Sports are divided into individual and team events.","Athletes compete for medals under each sport's rules.","Sport-specific equipment and venues.","Competition • Skill • Teamwork • Sportsmanship"]
+};
+
+function openSportDetail(name){
+ const d=SPORT_INFO[name];
+ if(!d)return;
+ document.getElementById("sportDetailContent").innerHTML=
+ `<h2>${d[0]} ${d[1]}</h2>
+ <h3>Introduction</h3><p>${d[2]}</p>
+ <h3>Players</h3><p>${d[3]}</p>
+ <h3>Basic Rules</h3><p>${d[4]}</p>
+ <h3>Scoring</h3><p>${d[5]}</p>
+ <h3>Equipment</h3><p>${d[6]}</p>
+ <h3>Important Skills</h3><p>${d[7]}</p>
+ <h3>📚 Learn More</h3><p>Use this section to study the sport's history, playing area, positions, rules, scoring system, equipment, skills and major competitions.</p>`;
+ document.getElementById("sportDetailModal").style.display="block";
+ document.body.style.overflow="hidden";
+}
+function closeSportDetail(){
+ document.getElementById("sportDetailModal").style.display="none";
+ document.body.style.overflow="";
+}
+</script>
 </body>
 </html>
