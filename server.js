@@ -504,6 +504,7 @@ function needsWeb(message){
 
 app.post("/api/chat",async(req,res)=>{
   const message=String(req.body?.message||"").trim();
+  const source=String(req.body?.source||"").trim();
   const attachment=req.body?.attachment||null;
 
   if(!message && !attachment)
@@ -556,7 +557,36 @@ app.post("/api/chat",async(req,res)=>{
 
   try{
 
-    const answer=await askAI(message,"",attachment);
+    let aiMessage=message;
+
+    if(source==="education-topic"){
+      aiMessage =
+        "You are SASIKUMAR AI Education Tutor.\n" +
+        "Follow the exact student class, subject and selected topic.\n" +
+        "Do not add unrelated subjects or generic information.\n" +
+        "Keep definitions, formulas, equations and scientific facts accurate.\n" +
+        "Use only formulas relevant to the selected topic and class syllabus.\n" +
+        "Use standard symbols consistently and define every symbol before or immediately after using it.\n" +
+        "For Chemistry, clearly distinguish moles (n), mass (m), molar mass (M), molarity (M), molality (m), and volume (V) using unambiguous notation.\n" +
+        "Never use an ambiguous, dimensionally incorrect, or invented formula. Check every formula before presenting it.\n" +
+        "Do not invent official textbook quotations.\n\n" +
+        "OUTPUT REQUIREMENTS:\n" +
+        "1. Tamil explanation first.\n" +
+        "2. Clear English explanation second.\n" +
+        "3. Definition / concept.\n" +
+        "4. Topic-specific rules or principles only.\n" +
+        "5. Important formulas/equations with symbols explained.\n" +
+        "6. At least 2 step-by-step worked examples suitable for the class.\n" +
+        "7. Common mistakes.\n" +
+        "8. Practical application when relevant.\n" +
+        "9. Exactly 5 practice questions.\n" +
+        "10. Answers after the questions.\n" +
+        "11. Short revision summary at the end.\n" +
+        "Use clear headings and bullets.\n\n" +
+        "STUDENT EDUCATION REQUEST:\n" + message;
+    }
+
+    const answer=await askAI(aiMessage,"",attachment);
 
     return res.json({
       reply:answer,
