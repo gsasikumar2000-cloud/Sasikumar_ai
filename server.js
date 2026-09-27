@@ -238,10 +238,20 @@ async function askGemini(message, forcedLanguage="", attachment=null){
     }
   }
 
-  const response=await geminiClient.interactions.create({
-    model:"gemini-3.6-flash",
-    input
-  });
+  const geminiTimeout = new Promise((_, reject) =>
+      setTimeout(
+        () => reject(new Error("Gemini request timeout after 15 seconds")),
+        15000
+      )
+    );
+
+    const response = await Promise.race([
+      geminiClient.interactions.create({
+        model:"gemini-3.6-flash",
+        input
+      }),
+      geminiTimeout
+    ]);
 
   return response.output_text || "பதில் கிடைக்கவில்லை.";
 }

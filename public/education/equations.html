@@ -580,57 +580,165 @@ topicEl.addEventListener("change", function(){
   }
 });
 
-window.openMathTopic = function(){
-
-  const cls = classEl.value;
+window.openMathTopic = async function(){
+  const level = levelEl.value;
   const subject = subjectEl.value;
+  const cls = classEl.value;
   const topic = topicEl.value;
 
   if(!cls || !subject || !topic) return;
 
   detailsEl.style.display = "block";
-  googleBtn.style.display = "inline-block";
-
   detailsEl.innerHTML = `
     <h3>📖 ${topic}</h3>
-
+    <p><b>Student Level:</b> ${level || "School"}</p>
     <p><b>Class:</b> ${cls}</p>
     <p><b>Subject:</b> ${subject}</p>
 
-    <h4>🇮🇳 தமிழ் விளக்கம்</h4>
-    <p>
-      இந்த பாடத்தில் <b>${topic}</b> பற்றிய அடிப்படை கருத்துகள்,
-      விதிகள், சூத்திரங்கள் மற்றும் பயன்பாடுகளை படிப்படியாக கற்றுக்கொள்ளலாம்.
-    </p>
-
-    <h4>🇬🇧 English Explanation</h4>
-    <p>
-      Learn the basic concepts, rules, formulas, symbols,
-      examples and practical applications of <b>${topic}</b>.
-    </p>
-
-    <h4>📌 Learning Points</h4>
-    <ul>
-      <li>Definition / வரையறை</li>
-      <li>Rules / விதிகள்</li>
-      <li>Formula or Equation / சூத்திரம்</li>
-      <li>Symbols / குறியீடுகள்</li>
-      <li>Worked Example / எடுத்துக்காட்டு</li>
-      <li>Step-by-step Method / படிப்படியான முறை</li>
-      <li>Practice Questions / பயிற்சி கேள்விகள்</li>
-      <li>Answers & Revision / பதில்கள் மற்றும் மறுபயிற்சி</li>
-      <li>Summary / சுருக்கம்</li>
-    </ul>
-
-    <p class="note">
-      💡 Google Search மூலம் இந்த topic பற்றிய மேலும் விரிவான தகவல்களை பார்க்கலாம்.
-    </p>
+    <div style="padding:14px;margin:12px 0;border-radius:10px;background:#f5f5f5;">
+      🤖 <b>SASIKUMAR AI is preparing the topic explanation...</b>
+      <br><small>தமிழ் + English • Examples • Formula • Step-by-step</small>
+    </div>
   `;
 
   detailsEl.scrollIntoView({
     behavior:"smooth",
     block:"start"
   });
+
+  try {
+    const prompt = `
+You are SASIKUMAR AI Education Tutor.
+
+Explain this school mathematics topic for ${cls}, ${subject}, topic: ${topic}.
+
+Give maximum useful educational detail suitable for the student's class.
+
+IMPORTANT:
+- Give Tamil explanation first.
+- Then give clear English explanation.
+- Use simple language.
+- Explain the definition/concept.
+- Give important rules.
+- Give formulas/equations with symbols explained.
+- Give at least 2 worked examples step-by-step.
+- Give common mistakes.
+- Give practical/real-life application where relevant.
+- Give 5 practice questions.
+- Give answers after the questions.
+- End with a short revision summary.
+- Do not invent an official textbook quotation.
+- Keep mathematics accurate.
+- Format with headings and bullet points.
+`;
+
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: prompt,
+        source: "education-topic"
+      })
+    });
+
+    if(!response.ok){
+      throw new Error("AI request failed: HTTP " + response.status);
+    }
+
+    const rawResponse = await response.text();
+        console.log("🤖 Q&A AI HTTP:", response.status, response.statusText);
+        console.log("🤖 Q&A AI raw:", rawResponse);
+
+        let data;
+        try {
+          data = JSON.parse(rawResponse);
+        } catch (e) {
+          throw new Error("Invalid JSON response from /api/chat");
+        }
+
+    const answer =
+      data.reply ||
+      data.response ||
+      data.message ||
+      data.answer ||
+      "";
+
+    if(!answer){
+      throw new Error("Empty AI response");
+    }
+
+    const safeAnswer = String(answer)
+      .replace(/&/g,"&amp;")
+      .replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;")
+      .replace(/\n/g,"<br>");
+
+    detailsEl.innerHTML = `
+      <h3>📖 ${topic}</h3>
+
+      <p>
+        <b>Student Level:</b> ${level || "School"}
+        &nbsp; | &nbsp;
+        <b>Class:</b> ${cls}
+        &nbsp; | &nbsp;
+        <b>Subject:</b> ${subject}
+      </p>
+
+      <div class="math-ai-explanation"
+           style="margin-top:14px;padding:16px;border-radius:12px;background:#fff;border:1px solid #ddd;line-height:1.65;">
+        <div style="font-size:18px;font-weight:700;margin-bottom:10px;">
+          🤖 SASIKUMAR AI — Topic Explanation
+        </div>
+        ${safeAnswer}
+      </div>
+
+      <div style="margin-top:14px;padding:12px;border-radius:10px;background:#f5f5f5;">
+        📚 <b>Learning:</b> Review the examples and try the practice questions before checking the answers.
+      </div>
+
+      <div style="margin-top:12px;">
+        <button type="button"
+          onclick="searchMathTopic()">
+          🔎 Google Search – More Details
+        </button>
+      </div>
+    `;
+
+  } catch(error) {
+    console.error("SASIKUMAR AI Topic Error:", error);
+
+    detailsEl.innerHTML = `
+      <h3>📖 ${topic}</h3>
+
+      <p><b>Class:</b> ${cls}</p>
+      <p><b>Subject:</b> ${subject}</p>
+
+      <div style="padding:14px;border-radius:10px;background:#fff3cd;border:1px solid #ffe69c;">
+        ⚠️ <b>AI explanation could not be loaded.</b>
+        <br><br>
+        ${String(error.message || error)}
+      </div>
+
+      <h4>📚 Topic Learning Guide</h4>
+      <ul>
+        <li>Definition / வரையறை</li>
+        <li>Concept / கருத்து</li>
+        <li>Rules / விதிகள்</li>
+        <li>Formula / சூத்திரம்</li>
+        <li>Worked Example / எடுத்துக்காட்டு</li>
+        <li>Step-by-step Method / படிப்படியான முறை</li>
+        <li>Practice Questions / பயிற்சி கேள்விகள்</li>
+        <li>Answers / பதில்கள்</li>
+        <li>Summary / சுருக்கம்</li>
+      </ul>
+
+      <button type="button" onclick="searchMathTopic()">
+        🔎 Google Search – More Details
+      </button>
+    `;
+  }
 };
 
 window.searchMathTopic = function(){
@@ -1090,6 +1198,24 @@ function saveResultText() {
   <label>📅 Year</label>
   <select id="examYear" style="width:100%;padding:13px;margin:6px 0 12px;">
     <option value="">Select Year</option>
+    <option value="2025-2026">2025–2026</option>
+    <option value="2024-2025">2024–2025</option>
+    <option value="2023-2024">2023–2024</option>
+    <option value="2022-2023">2022–2023</option>
+    <option value="2021-2022">2021–2022</option>
+    <option value="2020-2021">2020–2021</option>
+    <option value="2026">2026</option>
+    <option value="2025">2025</option>
+    <option value="2024">2024</option>
+    <option value="2023">2023</option>
+    <option value="2022">2022</option>
+    <option value="2021">2021</option>
+    <option value="2020">2020</option>
+    <option value="2007">2007</option>
+    <option value="2006">2006</option>
+    <option value="2005">2005</option>
+    <option value="2004">2004</option>
+    <option value="2003">2003</option>
   </select>
 
   <label>🎓 Class</label>
@@ -1206,124 +1332,48 @@ let examPages = [];
 let examCurrentPage = 0;
 let examMode = "";
 
-(function loadExamYears() {
-  const year = document.getElementById("examYear");
-  if (!year) return;
-
-  const currentYear = new Date().getFullYear();
-
-  for (let y = currentYear; y >= 2000; y--) {
-    const option = document.createElement("option");
-    option.value = String(y);
-    option.textContent = String(y);
-    year.appendChild(option);
-  }
-})();
-
-function getExamInfo() {
-  const year = document.getElementById("examYear")?.value;
-  const cls = document.getElementById("examClass")?.value;
-  const subject = document.getElementById("examSubject")?.value;
-  const medium = document.getElementById("examMedium")?.value;
-
-  if (!year || !cls || !subject || !medium) {
-    alert("⚠️ Please select Year, Class, Subject and Medium");
-    return null;
-  }
-
-  return {year, cls, subject, medium};
-}
-
-function setExamHeader(x, mode) {
-  return `
-    <div style="
-      padding:12px;
-      margin-bottom:16px;
-      background:#f5f5f5;
-      border-radius:10px;
-      border:1px solid #ddd;
-    ">
-      <b>${mode}</b><br>
-      📅 ${x.year} &nbsp; | &nbsp;
-      🎓 ${x.cls} &nbsp; | &nbsp;
-      📖 ${x.subject} &nbsp; | &nbsp;
-      🌐 ${x.medium}
-    </div>
-  `;
-}
-
 function openOfficialDgeExam(mode) {
-  const x = getExamInfo();
-  if (!x) return;
-
   examMode = mode === "paper"
-    ? "📄 Question Paper"
-    : "✅ Answer Key";
+    ? "📄 Official DGE Question Paper"
+    : "✅ Official DGE Answer Key";
+  const year = document.getElementById("examYear")?.value || "2024–2025";
+  const cls = document.getElementById("examClass")?.value || "10th";
+  const subject = document.getElementById("examSubject")?.value || "Social Science";
+  const medium = document.getElementById("examMedium")?.value || "Tamil Medium";
+
+  const dgeUrl =
+    "https://www.dge.tn.gov.in/";
+
+  const title = mode === "paper"
+    ? "📄 Official DGE Question Paper"
+    : "✅ Official DGE Answer Key";
+
+  examPages = [`
+    <div style="padding:16px;border-radius:12px;background:#fff;border:1px solid #ddd;">
+      <h3>🏛️ Tamil Nadu Government Public Examination</h3>
+      <p><b>📅 Academic Year:</b> ${year}</p>
+      <p><b>🎓 Class:</b> ${cls}</p>
+      <p><b>📖 Subject:</b> ${subject}</p>
+      <p><b>🌐 Medium:</b> ${medium}</p>
+      <hr>
+      <p>${title}</p>
+      <button
+        onclick="window.open('${dgeUrl}', '_blank', 'noopener,noreferrer')"
+        style="width:100%;padding:14px;font-size:16px;font-weight:bold;"
+      >${title}</button>
+      <div style="margin-top:14px;padding:14px;background:#fff8dc;border-radius:8px;border:1px solid #e0c766;">
+        ℹ️ SASIKUMAR AI does not generate or modify official examination questions or answer keys.
+        The selected paper is opened from the official DGE source.
+      </div>
+    </div>
+  `];
+
+  const marks = document.getElementById("importantMarks");
+  if (marks) {
+    marks.textContent = "Official DGE source opened for the selected examination.";
+  }
 
   examCurrentPage = 0;
-
-  const dgeUrl = x.cls === "10th"
-    ? "https://www.dge.tn.gov.in/ta/sslc.html"
-    : "https://www.dge.tn.gov.in/hsc.html";
-
-  examPages = [
-    `
-      ${setExamHeader(x, examMode)}
-
-      <div style="
-        padding:18px;
-        border:2px solid #222;
-        border-radius:10px;
-        background:#fff;
-      ">
-        <h3>🏛️ Tamil Nadu Directorate of Government Examinations</h3>
-
-        <p>
-          <b>Year:</b> ${x.year}<br>
-          <b>Class:</b> ${x.cls}<br>
-          <b>Subject:</b> ${x.subject}<br>
-          <b>Medium:</b> ${x.medium}
-        </p>
-
-        <hr>
-
-        <p>
-          Official DGE Question Bank-ல் இந்த தேர்வுக்கான
-          verified paper/document-ஐ பார்க்கலாம்.
-        </p>
-
-        <button
-          onclick="window.open('${dgeUrl}', '_blank', 'noopener,noreferrer')"
-          style="
-            width:100%;
-            padding:14px;
-            font-size:16px;
-            font-weight:bold;
-          "
-        >
-          ${mode === "paper"
-            ? "📄 Open Official Question Paper"
-            : "✅ Open Official DGE Source"}
-        </button>
-
-        <div style="
-          margin-top:14px;
-          padding:14px;
-          background:#fff8dc;
-          border-radius:8px;
-          border:1px solid #e0c766;
-        ">
-          ℹ️ SASIKUMAR AI does not generate or modify official
-          examination questions or answer keys.
-          The selected paper is opened from the official DGE source.
-        </div>
-      </div>
-    `
-  ];
-
-  document.getElementById("importantMarks").textContent =
-    "Official DGE source opened for the selected examination.";
-
   showExamPage();
 }
 
@@ -1479,22 +1529,30 @@ function printExamContent() {
   }
 
   printWindow.document.write(`
+    <!DOCTYPE html>
     <html>
     <head>
+      <meta charset="UTF-8">
       <title>SASIKUMAR AI Exam Paper</title>
       <style>
-        body{
-          font-family:Arial,sans-serif;
-          padding:30px;
-          line-height:1.8;
+        body {
+          font-family: Arial, sans-serif;
+          padding: 30px;
+          line-height: 1.8;
+          color: #111;
         }
-        @page{
-          size:A4;
-          margin:15mm;
+        @page {
+          size: A4;
+          margin: 15mm;
+        }
+        button {
+          display: none !important;
         }
       </style>
     </head>
-    <body>${box.innerHTML}</body>
+    <body>
+      ${box.innerHTML}
+    </body>
     </html>
   `);
 
@@ -1615,6 +1673,8 @@ function saveExamContent() {
   </div>
 
   <!-- Legal-size result paper -->
+  <div id="qaPagination"></div>
+
   <div id="qaResultBox" contenteditable="true" style="
     width:215.9mm;
     min-height:355.6mm;
@@ -1852,25 +1912,346 @@ const GOVERNMENT_QA_BANK = [
     important: true,
     question: "What is demand?",
     answer: "Demand is the quantity of a good or service that consumers are willing and able to buy at a given price and time."
+  },
+
+  {
+    className: "10th",
+    subject: "Science",
+    medium: "Tamil",
+    mark: 1,
+    important: true,
+    question: "ஒளிச்சேர்க்கை என்றால் என்ன?",
+    answer: "பச்சைத் தாவரங்கள் சூரிய ஒளியின் உதவியுடன் கார்பன் டைஆக்சைடு மற்றும் நீரைப் பயன்படுத்தி உணவை உருவாக்கும் செயல்முறை ஒளிச்சேர்க்கை எனப்படும்."
+  },
+  {
+    className: "10th",
+    subject: "Science",
+    medium: "Tamil",
+    mark: 2,
+    important: true,
+    question: "விசையின் SI அலகு என்ன?",
+    answer: "விசையின் SI அலகு நியூட்டன் (N) ஆகும்."
+  },
+  {
+    className: "10th",
+    subject: "Mathematics",
+    medium: "Tamil",
+    mark: 1,
+    important: true,
+    question: "25% ஐ பின்னமாக எழுதுக.",
+    answer: "25% = 25/100 = 1/4."
+  },
+  {
+    className: "10th",
+    subject: "Social Science",
+    medium: "Tamil",
+    mark: 1,
+    important: true,
+    question: "ஜனநாயகம் என்றால் என்ன?",
+    answer: "மக்கள் தங்கள் பிரதிநிதிகளைத் தேர்ந்தெடுப்பதில் பங்கேற்கும் ஆட்சி முறை ஜனநாயகம் ஆகும்."
+  },
+  {
+    className: "10th",
+    subject: "Tamil",
+    medium: "Tamil",
+    mark: 2,
+    important: true,
+    question: "திருக்குறளின் ஆசிரியர் யார்?",
+    answer: "திருக்குறளின் ஆசிரியர் திருவள்ளுவர்."
+  },
+  {
+    className: "10th",
+    subject: "English",
+    medium: "English",
+    mark: 1,
+    important: true,
+    question: "What is a verb?",
+    answer: "A verb is a word that expresses an action, occurrence, or state."
+  },
+  {
+    className: "10th",
+    subject: "Science",
+    medium: "English",
+    mark: 1,
+    important: true,
+    question: "What is photosynthesis?",
+    answer: "Photosynthesis is the process by which green plants make food using sunlight, carbon dioxide, and water."
+  },
+  {
+    className: "10th",
+    subject: "Mathematics",
+    medium: "English",
+    mark: 2,
+    important: true,
+    question: "Solve: 3x + 2 = 14.",
+    answer: "3x = 12, therefore x = 4."
+  },
+  {
+    className: "10th",
+    subject: "Social Science",
+    medium: "English",
+    mark: 2,
+    important: true,
+    question: "What is democracy?",
+    answer: "Democracy is a system of government in which people participate in choosing their representatives."
+  },
+  {
+    className: "12th",
+    subject: "Physics",
+    medium: "Tamil",
+    mark: 2,
+    important: true,
+    question: "நியூட்டனின் இரண்டாம் இயக்க விதியைக் கூறுக.",
+    answer: "ஒரு பொருளின் உந்தத்தின் மாறுபாட்டு வீதம் அதன்மீது செயல்படும் விசைக்கு நேர்விகிதமாகவும், விசையின் திசையிலும் இருக்கும்."
+  },
+  {
+    className: "12th",
+    subject: "Chemistry",
+    medium: "Tamil",
+    mark: 1,
+    important: true,
+    question: "வினையூக்கி என்றால் என்ன?",
+    answer: "வேதிவினையின் வேகத்தை மாற்றி, வினை முடிவில் நிரந்தரமாக நுகரப்படாத பொருள் வினையூக்கி எனப்படும்."
+  },
+  {
+    className: "12th",
+    subject: "Biology",
+    medium: "Tamil",
+    mark: 2,
+    important: true,
+    question: "DNA என்றால் என்ன?",
+    answer: "DNA என்பது உயிரினங்களின் மரபியல் தகவலைக் கொண்டிருக்கும் மூலக்கூறு ஆகும்."
+  },
+  {
+    className: "12th",
+    subject: "Mathematics",
+    medium: "Tamil",
+    mark: 2,
+    important: true,
+    question: "அணி (Matrix) என்றால் என்ன?",
+    answer: "வரிசைகள் மற்றும் நெடுவரிசைகளில் அமைக்கப்பட்ட எண்கள் அல்லது உறுப்புகளின் செவ்வக அமைப்பு அணி எனப்படும்."
+  },
+  {
+    className: "12th",
+    subject: "Computer Science",
+    medium: "Tamil",
+    mark: 2,
+    important: true,
+    question: "அல்காரிதம் என்றால் என்ன?",
+    answer: "ஒரு சிக்கலைத் தீர்க்க அல்லது ஒரு பணியைச் செய்யப் பயன்படும் தெளிவான மற்றும் வரையறுக்கப்பட்ட படிகளின் வரிசை அல்காரிதம் எனப்படும்."
+  },
+  {
+    className: "12th",
+    subject: "Commerce",
+    medium: "Tamil",
+    mark: 2,
+    important: true,
+    question: "வாணிபம் என்றால் என்ன?",
+    answer: "பொருட்கள் மற்றும் சேவைகளின் பரிமாற்றம் மற்றும் விநியோகத்துடன் தொடர்புடைய செயல்பாடுகள் வாணிபம் எனப்படும்."
+  },
+  {
+    className: "12th",
+    subject: "Accountancy",
+    medium: "Tamil",
+    mark: 2,
+    important: true,
+    question: "Journal என்றால் என்ன?",
+    answer: "வணிகப் பரிவர்த்தனைகள் காலவரிசைப்படி முதலில் பதிவு செய்யப்படும் புத்தகம் Journal எனப்படும்."
+  },
+  {
+    className: "12th",
+    subject: "Economics",
+    medium: "Tamil",
+    mark: 2,
+    important: true,
+    question: "தேவை (Demand) என்றால் என்ன?",
+    answer: "குறிப்பிட்ட விலை மற்றும் காலத்தில் நுகர்வோர் வாங்க விரும்பியும் வாங்கும் திறனுடனும் இருக்கும் பொருள் அல்லது சேவையின் அளவு தேவை எனப்படும்."
+  },
+  {
+    className: "12th",
+    subject: "Physics",
+    medium: "English",
+    mark: 1,
+    important: true,
+    question: "What is the SI unit of energy?",
+    answer: "The SI unit of energy is joule (J)."
+  },
+  {
+    className: "12th",
+    subject: "Chemistry",
+    medium: "English",
+    mark: 1,
+    important: true,
+    question: "What is the pH of a neutral solution at 25°C?",
+    answer: "The pH of a neutral solution at 25°C is 7."
+  },
+  {
+    className: "12th",
+    subject: "Biology",
+    medium: "English",
+    mark: 1,
+    important: true,
+    question: "What is a cell?",
+    answer: "A cell is the basic structural and functional unit of life."
+  },
+  {
+    className: "12th",
+    subject: "Mathematics",
+    medium: "English",
+    mark: 2,
+    important: true,
+    question: "What is the determinant of a 2 × 2 matrix [[a,b],[c,d]]?",
+    answer: "The determinant is ad − bc."
   }
+
 ];
 
-function loadGovernmentQABank() {
+let governmentQAPage = 0;
+const GOVERNMENT_QA_PAGE_SIZE = 1;
+
+function resetGovernmentQAPage() {
+  governmentQAPage = 0;
+}
+
+const qaAutoLoadInstalled = true;
+
+function installQAAutoLoad() {
+  ["qaClass","qaSubject","qaMedium","qaMark","qaImportant"].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el || el.dataset.qaAutoLoad === "1") return;
+
+    el.dataset.qaAutoLoad = "1";
+    el.addEventListener("change", () => {
+      resetGovernmentQAPage();
+      loadGovernmentQABank();
+    });
+  });
+}
+
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", installQAAutoLoad);
+} else {
+  installQAAutoLoad();
+}
+
+function renderGovernmentQAPagination(total) {
+  const box = document.getElementById("qaPagination");
+  if (!box) return;
+
+  const totalPages = Math.max(1, Math.ceil(total / GOVERNMENT_QA_PAGE_SIZE));
+
+  governmentQAPage = Math.max(
+    0,
+    Math.min(governmentQAPage, totalPages - 1)
+  );
+
+  box.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin:14px 0;padding:10px;border-radius:12px;background:#f3f4f6;">
+      <button
+        type="button"
+        onclick="changeGovernmentQAPage(-1)"
+        ${governmentQAPage <= 0 ? "disabled" : ""}
+        style="padding:10px 14px;border-radius:10px;font-weight:bold;">
+        ◀ Previous
+      </button>
+
+      <strong>
+        Question ${governmentQAPage + 1} / ${totalPages}
+      </strong>
+
+      <button
+        type="button"
+        onclick="changeGovernmentQAPage(1)"
+        ${governmentQAPage >= totalPages - 1 ? "disabled" : ""}
+        style="padding:10px 14px;border-radius:10px;font-weight:bold;">
+        Next ▶
+      </button>
+    </div>
+  `;
+}
+
+function changeGovernmentQAPage(direction) {
+  const step = Number(direction) || 0;
+  const total = Number(window.__governmentQATotal || 0);
+  console.log("📄 NEXT DEBUG:", {
+    direction: step,
+    currentPage: governmentQAPage,
+    totalQuestions: total,
+    pageSize: GOVERNMENT_QA_PAGE_SIZE
+  });
+
+  console.log("📄 QA PAGE CLICK:", {
+    direction: step,
+    currentPage: governmentQAPage,
+    total
+  });
+
+  if (!total) return;
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(total / GOVERNMENT_QA_PAGE_SIZE)
+  );
+
+  const nextPage = governmentQAPage + step;
+
+  if (nextPage < 0 || nextPage >= totalPages) return;
+
+  governmentQAPage = nextPage;
+  loadGovernmentQABank();
+}
+
+async function loadGovernmentQABank() {
   updateQABankUrl();
 
-  const cls = document.getElementById("qaClass")?.value || "";
-  const subject = document.getElementById("qaSubject")?.value || "";
-  const medium = document.getElementById("qaMedium")?.value || "";
-  const mark = document.getElementById("qaMark")?.value || "";
-  const important = document.getElementById("qaImportant")?.value || "";
+  const cls = String(document.getElementById("qaClass")?.value || "").trim();
+  const subject = String(document.getElementById("qaSubject")?.value || "").trim();
+  const medium = String(document.getElementById("qaMedium")?.value || "").trim();
+  const mark = String(document.getElementById("qaMark")?.value || "").trim();
+  const important = String(document.getElementById("qaImportant")?.value || "").trim();
 
-  const result = GOVERNMENT_QA_BANK.filter(item =>
-    (!cls || item.className === cls) &&
-    (!subject || item.subject === subject) &&
-    (!medium || item.medium === medium) &&
-    (!mark || String(item.mark) === String(mark)) &&
-    (!important || item.important === true)
-  );
+  console.log("📚 Government Q&A filters:", {
+    cls, subject, medium, mark, important
+  });
+
+  const result = GOVERNMENT_QA_BANK.filter(item => {
+    const classOK =
+      !cls ||
+      String(item.className ?? "").trim().toLowerCase() === String(cls).trim().toLowerCase();
+
+    const subjectOK =
+      !subject ||
+      subject === "All Subjects" ||
+      String(item.subject ?? "").trim().toLowerCase() === String(subject).trim().toLowerCase();
+
+    const mediumOK =
+      !medium ||
+      medium === "All Mediums" ||
+      (medium === "Tamil Medium" && String(item.medium ?? "").trim().toLowerCase() === "tamil") ||
+      (medium === "English Medium" && String(item.medium ?? "").trim().toLowerCase() === "english") ||
+      String(item.medium ?? "").trim().toLowerCase() === String(medium).trim().toLowerCase();
+
+    const markOK =
+      !mark ||
+      String(item.mark ?? "").trim() === String(mark).trim();
+
+    const importantOK =
+      !important ||
+      important !== "important" ||
+      item.important === true;
+
+    return classOK && subjectOK && mediumOK && markOK && importantOK;
+  });
+
+  console.log("📚 Government Q&A matched:", result.length);
+console.log("📚 QA DEBUG filters:", {cls, subject, medium, mark, important});
+console.log("📚 QA DEBUG bank size:", GOVERNMENT_QA_BANK.length);
+console.log("📚 QA DEBUG classes:", [...new Set(GOVERNMENT_QA_BANK.map(x => x.className))]);
+console.log("📚 QA DEBUG subjects:", [...new Set(GOVERNMENT_QA_BANK.map(x => x.subject))]);
+console.log("📚 QA DEBUG mediums:", [...new Set(GOVERNMENT_QA_BANK.map(x => x.medium))]);
+console.log("📚 QA DEBUG marks:", [...new Set(GOVERNMENT_QA_BANK.map(x => String(x.mark)))]);
+
 
   const box = document.getElementById("qaResultBox");
   const info = document.getElementById("qaResultInfo");
@@ -1880,15 +2261,8 @@ function loadGovernmentQABank() {
 
     box.innerHTML = `
       <h3>📚 SASIKUMAR AI Practice Q&A</h3>
-      <p>
-        No practice question-wise data is currently available for the selected filters.
-      </p>
-      <div style="
-        padding:14px;
-        background:#fff8dc;
-        border:1px solid #e0c766;
-        border-radius:8px;
-      ">
+      <p>No practice question-wise data is currently available for the selected filters.</p>
+      <div style="padding:14px;background:#fff8dc;border:1px solid #e0c766;border-radius:8px;">
         ℹ️ These are SASIKUMAR AI practice questions, not verified Government examination questions.
       </div>
     `;
@@ -1896,6 +2270,19 @@ function loadGovernmentQABank() {
   }
 
   info.textContent = `${result.length} practice question(s) found.`;
+
+  window.__governmentQATotal = result.length;
+
+  const pageStart =
+    governmentQAPage * GOVERNMENT_QA_PAGE_SIZE;
+
+  const pageResult =
+    result.slice(
+      pageStart,
+      pageStart + GOVERNMENT_QA_PAGE_SIZE
+    );
+
+  renderGovernmentQAPagination(result.length);
 
   box.innerHTML = `
     <div style="
@@ -1909,28 +2296,181 @@ function loadGovernmentQABank() {
       <small>⚠️ Practice content — not an official Government examination paper or answer key.</small>
     </div>
 
-    ${result.map((item, i) => `
-      <article style="
-        margin-bottom:20px;
-        padding-bottom:16px;
-        border-bottom:1px solid #ddd;
-      ">
-        <b>Question ${i + 1}</b>
+    ${pageResult.map((item, i) => `
+      <article
+        class="government-qa-item"
+        data-qa-index="${i}"
+        style="
+          margin-bottom:20px;
+          padding:16px;
+          border:1px solid #ddd;
+          border-radius:12px;
+          background:#fff;
+        "
+      >
+        <b>Question ${pageStart + i + 1}</b>
 
-        <div style="margin-top:8px;">
+        <div style="margin-top:10px;font-size:17px;">
           ${item.question}
         </div>
 
-        <div style="margin-top:10px;">
-          <b>Answer:</b> ${item.answer}
+        <div style="
+          margin-top:12px;
+          padding:12px;
+          background:#eefaf0;
+          border-left:4px solid #2e8b57;
+          border-radius:8px;
+        ">
+          <b>✅ Answer / பதில்</b><br>
+          ${item.answer}
         </div>
 
-        <small>
+        <div class="qa-ai-explanation"
+          style="
+            margin-top:12px;
+            padding:12px;
+            background:#f5f7ff;
+            border-left:4px solid #4b6cb7;
+            border-radius:8px;
+          "
+        >
+          🤖 <b>Explanation / விளக்கம்</b><br>
+          <span>Preparing AI explanation...</span>
+        </div>
+
+        <small style="display:block;margin-top:10px;">
           ${item.mark} Mark • ${item.subject} • ${item.medium}
         </small>
       </article>
     `).join("")}
   `;
+
+  console.log("🤖 Government Q&A AI loop started:", pageResult.length);
+
+  // Generate AI explanations only for the visible page.
+  for (let i = 0; i < pageResult.length; i++) {
+    const item = pageResult[i];
+
+    const article = box.querySelector(
+      `.government-qa-item[data-qa-index="${i}"]`
+    );
+
+    const explanationBox =
+      article?.querySelector(".qa-ai-explanation span");
+
+    console.log("🤖 Q&A item", i + 1, "explanationBox:", !!explanationBox);
+    if (!explanationBox) continue;
+
+    try {
+      explanationBox.textContent = "⏳ Generating AI explanation...";
+
+      const prompt = `
+You are SASIKUMAR AI, a careful school Education Tutor.
+
+Explain the following practice question for a ${item.className} student.
+
+Class: ${item.className}
+Subject: ${item.subject}
+Medium: ${item.medium}
+Question: ${item.question}
+Given Answer: ${item.answer}
+
+STRICT EDUCATIONAL ACCURACY RULES:
+1. Give Tamil explanation first, followed by simple English.
+2. Use natural, standard school-level Tamil. Do not invent Tamil words.
+3. Keep established English scientific/mathematical terms in brackets when useful, for example: குளோரோபில் (chlorophyll), குளோரோபிளாஸ்ட் (chloroplast), குளுக்கோஸ் (glucose).
+4. Never replace a scientific term with an uncertain or invented Tamil translation.
+5. For Science, use scientifically accepted facts only. Do not invent structures, processes, discoveries, or terminology.
+6. For Mathematics, check every calculation, formula, symbol, unit, and step before presenting it.
+7. Explain why the given answer is correct.
+8. Show step-by-step working only when the question requires it.
+9. Include a formula, rule, equation, or scientific concept only when relevant.
+10. Do not change, contradict, or silently rewrite the Given Answer. If it is incomplete, explain the missing detail separately without changing it.
+11. Keep the explanation appropriate for ${item.className}.
+12. Prefer clear, short paragraphs and numbered steps over unnecessary complexity.
+13. Do not use fake quotations or claim that this is an official Government examination question.
+14. Do not mention Web Search, Gemini, AI provider, API, model, or internal system details.
+15. Do not make unsupported claims.
+16. End with a short "Revision Point" in Tamil and simple English.
+
+QUALITY CHECK BEFORE ANSWERING:
+- Verify scientific terminology.
+- Verify mathematical calculations.
+- Remove any invented or awkward Tamil terminology.
+- Make sure Tamil is understandable to a school student.
+`;
+
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 90000);
+
+      try {
+        console.log("🤖 Sending Q&A AI request:", i + 1);
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            message: prompt,
+            source: "government-qa-explanation"
+          }),
+          signal: controller.signal
+        });
+
+        if (!response.ok) {
+          throw new Error("HTTP " + response.status);
+        }
+
+        const rawResponse = await response.text();
+        console.log("🤖 Q&A AI HTTP:", response.status);
+        console.log("🤖 Q&A AI raw:", rawResponse);
+
+        let data;
+        try {
+          data = JSON.parse(rawResponse);
+        } catch (e) {
+          throw new Error("Invalid JSON response from /api/chat");
+        }
+
+        let explanation =
+          data.reply ||
+          data.response ||
+          data.message ||
+          data.answer ||
+          "";
+
+        if (!explanation) {
+          throw new Error("Empty AI response");
+        }
+
+        // Clean accidental Web Search labels from Q&A explanations.
+        explanation = String(explanation)
+          .replace(/🌐\\s*Tavily Web Search/gi, "")
+          .replace(/🌐\\s*Web Search/gi, "")
+          .trim();
+
+        explanationBox.innerHTML = explanation
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/\n/g, "<br>");
+
+      } finally {
+        clearTimeout(timeout);
+      }
+
+    } catch (error) {
+      console.error(
+        "Government Q&A explanation error:",
+        error
+      );
+
+      explanationBox.innerHTML =
+        "⚠️ AI explanation error: " +
+        String(error?.message || error || "Unknown error") +
+        "<br><small>The Answer above remains available.</small>";
+    }
+  }
 }
 
 function getQABankText() {
