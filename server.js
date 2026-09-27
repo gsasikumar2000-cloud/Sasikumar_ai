@@ -160,7 +160,7 @@ async function askGroq(message, forcedLanguage=""){
         content: message
       }
     ],
-    max_completion_tokens: 1000
+    max_completion_tokens: 3000
   });
 
   return response.choices?.[0]?.message?.content || "பதில் கிடைக்கவில்லை.";
@@ -203,6 +203,16 @@ async function askGemini(message, forcedLanguage="", attachment=null){
       "IMPORTANT: Respond naturally in Tamil-English mixed language, matching the user's style. ";
   }
 
+  const educationMode = /EDUCATION REQUEST|You are SASIKUMAR AI Education Tutor/i.test(message);
+
+  if(educationMode){
+    languageRule =
+      "IMPORTANT EDUCATION LANGUAGE RULE: Respond in TWO parts. " +
+      "PART 1 MUST be in Tamil script and come first. " +
+      "PART 2 MUST be clear English and come second. " +
+      "Do not let the user's input language change this requirement. ";
+  }
+
   const prompt=
     "You are SASIKUMAR AI. " +
     languageRule +
@@ -240,19 +250,26 @@ async function askGemini(message, forcedLanguage="", attachment=null){
 
   const geminiTimeout = new Promise((_, reject) =>
       setTimeout(
-        () => reject(new Error("Gemini request timeout after 15 seconds")),
-        15000
+        () => reject(new Error("Gemini request timeout after 45 seconds")),
+        45000
       )
     );
 
     const response = await Promise.race([
       geminiClient.interactions.create({
         model:"gemini-3.6-flash",
-        input
+        input,
+        generation_config:{
+          max_output_tokens: educationMode ? 12000 : 5000,
+          thinking_level: educationMode ? "minimal" : "low"
+        }
       }),
       geminiTimeout
     ]);
 
+  console.log("🔎 GEMINI RESPONSE KEYS:", Object.keys(response || {}));
+  console.log("🔎 GEMINI STATUS:", response?.status || response?.finish_reason || response?.finishReason || "");
+  console.log("🔎 GEMINI OUTPUT TEXT LENGTH:", String(response?.output_text || "").length);
   return response.output_text || "பதில் கிடைக்கவில்லை.";
 }
 async function askAI(message, forcedLanguage="", attachment=null){
@@ -561,29 +578,34 @@ app.post("/api/chat",async(req,res)=>{
 
     if(source==="education-topic"){
       aiMessage =
-        "You are SASIKUMAR AI Education Tutor.\n" +
-        "Follow the exact student class, subject and selected topic.\n" +
-        "Do not add unrelated subjects or generic information.\n" +
-        "Keep definitions, formulas, equations and scientific facts accurate.\n" +
-        "Use only formulas relevant to the selected topic and class syllabus.\n" +
-        "Use standard symbols consistently and define every symbol before or immediately after using it.\n" +
-        "For Chemistry, clearly distinguish moles (n), mass (m), molar mass (M), molarity (M), molality (m), and volume (V) using unambiguous notation.\n" +
-        "Never use an ambiguous, dimensionally incorrect, or invented formula. Check every formula before presenting it.\n" +
-        "Do not invent official textbook quotations.\n\n" +
-        "OUTPUT REQUIREMENTS:\n" +
-        "1. Tamil explanation first.\n" +
-        "2. Clear English explanation second.\n" +
-        "3. Definition / concept.\n" +
-        "4. Topic-specific rules or principles only.\n" +
-        "5. Important formulas/equations with symbols explained.\n" +
-        "6. At least 2 step-by-step worked examples suitable for the class.\n" +
-        "7. Common mistakes.\n" +
-        "8. Practical application when relevant.\n" +
-        "9. Exactly 5 practice questions.\n" +
-        "10. Answers after the questions.\n" +
-        "11. Short revision summary at the end.\n" +
-        "Use clear headings and bullets.\n\n" +
-        "STUDENT EDUCATION REQUEST:\n" + message;
+      "EDUCATION REQUEST. You are SASIKUMAR AI Education Tutor.\\n" +
+      "Teach ONLY the exact class, subject and topic requested.\\n" +
+      "Use school-level syllabus knowledge appropriate to the stated class.\\n" +
+      "Be accurate. Never invent formulas, facts, textbook quotations or syllabus content.\\n" +
+      "Tamil MUST come first. English MUST come second.\\n" +
+      "Keep BOTH language sections compact; do not repeat unnecessary explanations.\\n\\n" +
+      "REQUIRED FORMAT — do not add extra sections:\\n" +
+      "PART 1 — தமிழ்\\n" +
+      "1. வரையறை\\n" +
+      "2. முக்கிய விதிகள் / சூத்திரங்கள்\\n" +
+      "3. சரியாக 2 சுருக்கமான Worked Examples\\n" +
+      "4. பொதுவான தவறுகள்\\n" +
+      "5. சரியாக 5 Practice Questions + 5 short Answers\\n" +
+      "6. Revision Summary\\n\\n" +
+      "PART 2 — ENGLISH\\n" +
+      "1. Definition\\n" +
+      "2. Important Rules / Formulas\\n" +
+      "3. Exactly 2 short Worked Examples\\n" +
+      "4. Common Mistakes\\n" +
+      "5. Exactly 5 Practice Questions + 5 short Answers\\n" +
+      "6. Revision Summary\\n\\n" +
+      "FORMULA RULE: Include only formulas directly relevant to the requested topic. Define every symbol briefly.\\n" +
+      "For Class 6–8 Physics, keep formulas elementary and use SI units.\\n" +
+      "For Class 8 Pressure calculations, use ONLY P = F/A unless the student explicitly asks for advanced formulas.\\n" +
+      "For Mathematics, show correct steps but keep each worked example short.\\n" +
+      "PRACTICE RULE: Questions and answers must be short. Do not give long explanations for practice answers.\\n" +
+      "LENGTH RULE: Finish every required section. Prefer compact bullet points over paragraphs. The final words MUST be the Revision Summary.\\n\\n" +
+      "STUDENT REQUEST:\\n" + message;
     }
 
     const answer=await askAI(aiMessage,"",attachment);
