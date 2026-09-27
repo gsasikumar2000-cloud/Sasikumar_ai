@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🎳 Bowling | SASIKUMAR AI</title>
+<style>
+body{font-family:Arial;margin:0;background:linear-gradient(135deg,#111827,#374151);color:#fff;text-align:center}
+.card{max-width:650px;margin:25px auto;padding:25px;background:#ffffff18;border-radius:24px}
+button{font-size:22px;padding:17px 28px;margin:10px;border:0;border-radius:15px;cursor:pointer}
+.pins{font-size:80px;margin:20px}.info{background:#0004;padding:15px;border-radius:15px;text-align:left}
+</style></head><body><div class="card">
+<h1>🎳 Bowling</h1><p>Roll the ball and knock down pins!</p>
+<h2>Pins Down: <span id="score">0</span> | Rolls: <span id="n">0</span>/10</h2>
+<div class="pins">🎳 🎳 🎳</div>
+<button onclick="roll()">🎳 ROLL</button><br>
+<button onclick="location.reload()">🔄 Play Again</button>
+<div class="info"><h2>📚 Bowling Knowledge</h2>
+<p>• Ten-pin bowling uses ten pins arranged in a triangle.</p>
+<p>• A strike means all pins are knocked down with the first roll of a frame.</p>
+<p>• A spare means all pins are knocked down using two rolls in a frame.</p>
+<p>• Accuracy and controlled ball speed are useful bowling skills.</p></div>
+</div>
+<script>
+let score=0,n=0;
+function roll(){if(n>=10)return;n++;let pins=Math.floor(Math.random()*11);score+=pins;document.getElementById('score').textContent=score;document.getElementById('n').textContent=n;if(n===10)setTimeout(()=>alert('🎳 Game Over! Pins down: '+score),100);}
+</script></body></html>

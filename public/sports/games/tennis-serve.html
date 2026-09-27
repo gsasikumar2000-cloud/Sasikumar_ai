@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🎾 Tennis Serve | SASIKUMAR AI</title>
+<style>
+body{font-family:Arial;margin:0;background:linear-gradient(135deg,#064e3b,#0f766e);color:#fff;text-align:center}
+.card{max-width:650px;margin:25px auto;padding:25px;background:#ffffff18;border-radius:24px}
+button{font-size:22px;padding:17px 28px;margin:10px;border:0;border-radius:15px;cursor:pointer}
+.ball{font-size:80px;margin:20px}.info{background:#0004;padding:15px;border-radius:15px;text-align:left}
+</style></head><body><div class="card">
+<h1>🎾 Tennis Serve</h1><p>Choose your serve direction.</p>
+<h2>Successful Serves: <span id="score">0</span> / <span id="n">10</span></h2>
+<div class="ball">🎾</div>
+<button onclick="serve('Left')">⬅️ Left</button>
+<button onclick="serve('Center')">⬆️ Center</button>
+<button onclick="serve('Right')">➡️ Right</button>
+<div id="result"></div><button onclick="location.reload()">🔄 Play Again</button>
+<div class="info"><h2>📚 Tennis Knowledge</h2>
+<p>• A tennis point starts with a serve.</p>
+<p>• The serve must land in the correct service box.</p>
+<p>• Tennis uses the scoring sequence 15, 30, 40 and game.</p>
+<p>• Placement, timing and consistency are important serving skills.</p></div>
+</div>
+<script>
+let score=0,n=0;
+function serve(d){if(n>=10)return;n++;let target=['Left','Center','Right'][Math.floor(Math.random()*3)];if(d===target){score++;document.getElementById('result').textContent='🎾 IN!';}else document.getElementById('result').textContent='❌ OUT!';document.getElementById('score').textContent=score;if(n===10)setTimeout(()=>alert('🎾 Game Over! Successful serves: '+score+'/10'),100);}
+</script></body></html>

@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🏓 Table Tennis | SASIKUMAR AI</title>
+<style>
+body{font-family:Arial;margin:0;background:linear-gradient(135deg,#172554,#1d4ed8);color:#fff;text-align:center}
+.card{max-width:650px;margin:25px auto;padding:25px;background:#ffffff18;border-radius:24px}
+button{font-size:22px;padding:17px 28px;margin:10px;border:0;border-radius:15px;cursor:pointer}
+.ball{font-size:80px;margin:20px}.info{background:#0004;padding:15px;border-radius:15px;text-align:left}
+</style></head><body><div class="card">
+<h1>🏓 Table Tennis</h1><p>React quickly and return the ball!</p>
+<h2>Score: <span id="score">0</span> | Returns: <span id="n">0</span>/10</h2>
+<div class="ball">🏓</div>
+<button onclick="returnBall()">🏓 RETURN</button>
+<div id="result"></div><button onclick="location.reload()">🔄 Play Again</button>
+<div class="info"><h2>📚 Table Tennis Knowledge</h2>
+<p>• Table tennis is played with paddles and a lightweight ball.</p>
+<p>• The ball must bounce on the correct side of the table during a legal serve.</p>
+<p>• Quick reactions and controlled strokes are important.</p></div>
+</div>
+<script>
+let score=0,n=0;
+function returnBall(){if(n>=10)return;n++;if(Math.random()<.7){score++;document.getElementById('result').textContent='🏓 GREAT RETURN!'}else document.getElementById('result').textContent='❌ MISS!';document.getElementById('score').textContent=score;document.getElementById('n').textContent=n;if(n===10)setTimeout(()=>alert('🏓 Game Over! Score: '+score),100);}
+</script></body></html>
