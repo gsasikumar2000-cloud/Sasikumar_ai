@@ -4406,5 +4406,28 @@ function pdfNotes(){
 
 
 </script>
-\n</body>
+\n
+<style id="sk3DAdButtonStyle">
+#sk3DAdButton{
+position:fixed;right:16px;bottom:18px;z-index:9999;
+border:0;border-radius:22px;padding:13px 18px;
+font-weight:900;font-size:14px;color:#fff;cursor:pointer;
+background:linear-gradient(135deg,#ff2bd6,#713cff,#00cfff);
+box-shadow:0 10px 30px rgba(0,0,0,.35);
+animation:sk3dFloat 2.8s ease-in-out infinite;
+}
+#sk3DAdButton:hover{transform:scale(1.06)}
+@keyframes sk3dFloat{
+0%,100%{transform:translateY(0) rotateX(0)}
+50%{transform:translateY(-8px) rotateX(8deg)}
+}
+</style>
+
+<button id="sk3DAdButton"
+onclick="location.href='/ads3d/'"
+aria-label="Open SASIKUMAR AI 3D Advertisement Hub">
+✨ 3D AD HUB
+</button>
+
+</body>
 </html>
