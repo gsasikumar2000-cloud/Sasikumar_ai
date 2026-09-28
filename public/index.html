@@ -3015,120 +3015,160 @@ function goldReport(){
 
  const box=document.createElement("div");
  box.className="msg ai";
-
  const id=Date.now();
+ const saved=JSON.parse(localStorage.getItem("sasikumarAppraisalReport")||"null");
 
  box.innerHTML=`
- <div class="report-box">
-
+ <div class="report-box" id="appraisalReport${id}">
    <div class="report-head">
      <h2>📋 APPRAISER REPORT</h2>
      <div>SASIKUMAR AI • Gold Appraiser</div>
    </div>
 
    <table class="report-table">
-     <tr>
-       <td>Customer Name</td>
-       <td><input id="arName${id}" type="text" placeholder="Customer Name"></td>
-     </tr>
-
-     <tr>
-       <td>Gold Weight (g)</td>
-       <td><input id="arWeight${id}" type="number" step="0.001" placeholder="Example: 10.000"></td>
-     </tr>
-
-     <tr>
-       <td>Remarks</td>
-       <td><textarea id="arRemarks${id}" rows="3" placeholder="Appraisal remarks"></textarea></td>
-     </tr>
+    <tr><td>Customer Name</td><td><input id="arName${id}" type="text" placeholder="Customer Name"></td></tr>
+    <tr><td>Phone</td><td><input id="arPhone${id}" type="tel" placeholder="Phone Number"></td></tr>
+    <tr><td>Gross Weight (g)</td><td><input id="arGross${id}" type="number" step="0.001" placeholder="Example: 10.000"></td></tr>
+    <tr><td>Stone Weight (g)</td><td><input id="arStone${id}" type="number" step="0.001" value="0"></td></tr>
+    <tr><td>Net Gold Weight (g)</td><td><input id="arNet${id}" type="number" step="0.001" readonly></td></tr>
+    <tr><td>Purity / Karat</td>
+      <td><select id="arKarat${id}">
+       <option value="24">24K</option>
+       <option value="22" selected>22K</option>
+       <option value="18">18K</option>
+       <option value="14">14K</option>
+       <option value="916">916</option>
+      </select></td>
+    </tr>
+    <tr><td>Gold Rate / g</td><td><input id="arRate${id}" type="number" step="0.01" placeholder="Rate per gram"></td></tr>
+    <tr><td>Estimated Gold Value</td><td><input id="arValue${id}" type="number" step="0.01" readonly></td></tr>
+    <tr><td>Remarks</td><td><textarea id="arRemarks${id}" rows="3" placeholder="Appraisal remarks"></textarea></td></tr>
    </table>
 
    <h3>📷 Gold Image</h3>
+   <input id="arCamera${id}" type="file" accept="image/*" capture="environment" style="display:none">
+   <input id="arUpload${id}" type="file" accept="image/*" style="display:none">
 
-   <input id="arCamera${id}"
-     type="file"
-     accept="image/*"
-     capture="environment"
-     style="display:none">
-
-   <input id="arUpload${id}"
-     type="file"
-     accept="image/*"
-     style="display:none">
-
-   <button class="loan-calc"
-     onclick="document.getElementById('arCamera${id}').click()">
-     📷 Web Camera
-   </button>
-
-   <button class="loan-calc"
-     onclick="document.getElementById('arUpload${id}').click()">
-     🖼️ Upload Image
-   </button>
-
+   <button class="loan-calc" onclick="document.getElementById('arCamera${id}').click()">📷 Web Camera</button>
+   <button class="loan-calc" onclick="document.getElementById('arUpload${id}').click()">🖼️ Upload Image</button>
    <div id="arPreview${id}" style="margin-top:12px"></div>
 
    <h3>📞 Appraiser Contact</h3>
-
    <div style="line-height:1.8">
-     📱 Cell: <b>98944 40400</b><br>
-     💬 WhatsApp: <b>95850 80842</b><br>
-     📧 Email: <b>gsasikumar2000@gmail.com</b><br>
-     📍 PIN Code: <b>614202</b>
+    📱 Cell: <b>98944 40400</b><br>
+    💬 WhatsApp: <b>95850 80842</b><br>
+    📧 Email: <b>gsasikumar2000@gmail.com</b><br>
+    📍 PIN Code: <b>614202</b>
    </div>
 
    <div class="report-actions">
-     <button onclick="printAppraisalReport(this)">🖨️ Print / PDF</button>
+    <button onclick="saveAppraisalReport('${id}')">💾 Save Report</button>
+    <button onclick="loadAppraisalReport('${id}')">📂 Load Saved</button>
+    <button onclick="clearAppraisalReport('${id}')">🗑️ Clear</button>
+    <button onclick="printAppraisalReport(this)">🖨️ Print / PDF</button>
    </div>
-
  </div>`;
 
  const chat=document.querySelector("#chat") || document.body;
  chat.appendChild(box);
 
+ function calc(){
+   const gross=parseFloat(document.getElementById("arGross"+id).value)||0;
+   const stone=parseFloat(document.getElementById("arStone"+id).value)||0;
+   const net=Math.max(0,gross-stone);
+   const rate=parseFloat(document.getElementById("arRate"+id).value)||0;
+   document.getElementById("arNet"+id).value=net.toFixed(3);
+   document.getElementById("arValue"+id).value=(net*rate).toFixed(2);
+ }
+
+ document.getElementById("arGross"+id).oninput=calc;
+ document.getElementById("arStone"+id).oninput=calc;
+ document.getElementById("arRate"+id).oninput=calc;
+
  function preview(file){
    if(!file) return;
-
    const reader=new FileReader();
-
    reader.onload=function(e){
-     document.getElementById("arPreview"+id).innerHTML=
-       '<img src="'+e.target.result+'" style="max-width:100%;max-height:300px;border-radius:10px;border:1px solid #ccc">';
+    document.getElementById("arPreview"+id).innerHTML=
+     '<img src="'+e.target.result+'" style="max-width:100%;max-height:300px;border-radius:10px;border:1px solid #ccc">';
    };
-
    reader.readAsDataURL(file);
  }
 
- document.getElementById("arCamera"+id).onchange=function(){
-   preview(this.files[0]);
- };
+ document.getElementById("arCamera"+id).onchange=function(){preview(this.files[0]);};
+ document.getElementById("arUpload"+id).onchange=function(){preview(this.files[0]);};
 
- document.getElementById("arUpload"+id).onchange=function(){
-   preview(this.files[0]);
- };
-
- box.scrollIntoView({behavior:"smooth",block:"end"});
+ if(saved){
+   document.getElementById("arName"+id).value=saved.name||"";
+   document.getElementById("arPhone"+id).value=saved.phone||"";
+   document.getElementById("arGross"+id).value=saved.gross||"";
+   document.getElementById("arStone"+id).value=saved.stone||0;
+   document.getElementById("arKarat"+id).value=saved.karat||"22";
+   document.getElementById("arRate"+id).value=saved.rate||"";
+   document.getElementById("arRemarks"+id).value=saved.remarks||"";
+   calc();
+ }
 }
 
+function saveAppraisalReport(id){
+ const get=(key)=>{
+   const el=document.getElementById(key+id);
+   return el ? el.value : "";
+ };
 
-window.addEventListener("DOMContentLoaded", function(){
-  const btn = document.getElementById("bankingServicesBtn");
-  if(btn){
-    btn.onclick = function(e){
-      e.preventDefault();
-      e.stopPropagation();
-      console.log("🏦 Banking button clicked");
-      bankingServices();
-    };
-    console.log("✅ Banking button connected");
-  }else{
-    console.log("❌ Banking button element not found");
-  }
-});
+ const data={
+  name:get("arName"),
+  phone:get("arPhone"),
+  gross:get("arGross"),
+  stone:get("arStone"),
+  net:get("arNet"),
+  karat:get("arKarat"),
+  rate:get("arRate"),
+  value:get("arValue"),
+  remarks:get("arRemarks"),
+  savedAt:new Date().toLocaleString("en-IN")
+ };
 
-</script>
+ localStorage.setItem("sasikumarAppraisalReport",JSON.stringify(data));
+ alert("✅ Appraisal Report saved successfully.");
+}
 
-<script>
+function loadAppraisalReport(id){
+ const data=JSON.parse(localStorage.getItem("sasikumarAppraisalReport")||"null");
+ if(!data){alert("No saved Appraisal Report found.");return;}
+
+ const set=(key,value)=>{
+   const el=document.getElementById(key+id);
+   if(el) el.value=value ?? "";
+ };
+
+ set("arName",data.name);
+ set("arPhone",data.phone);
+ set("arGross",data.gross);
+ set("arStone",data.stone);
+ set("arNet",data.net);
+ set("arKarat",data.karat || "22");
+ set("arRate",data.rate);
+ set("arValue",data.value);
+ set("arRemarks",data.remarks);
+
+ const gross=document.getElementById("arGross"+id);
+ if(gross) gross.dispatchEvent(new Event("input",{bubbles:true}));
+
+ alert("📂 Saved Appraisal Report loaded successfully.");
+}
+
+function clearAppraisalReport(id){
+ ["arName","arPhone","arGross","arStone","arRate","arRemarks"].forEach(x=>{
+  const el=document.getElementById(x+id);
+  if(el) el.value="";
+ });
+ document.getElementById("arStone"+id).value="0";
+ document.getElementById("arNet"+id).value="";
+ document.getElementById("arValue"+id).value="";
+ alert("🗑️ Current report cleared.");
+}
+
 
 function updateLiveDateTime(){
  const now=new Date();
