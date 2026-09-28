@@ -1849,6 +1849,13 @@ function closeAdminControl(){
 <button onclick="bottomChat()">⬇️ Down</button>
 </div>
 
+<div id="skAIQuickQuestions" style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;">
+  <button type="button" class="skBtn" onclick="skAIQuick('இன்றைய தங்க விலை என்ன?')">🪙 Gold Rate</button>
+  <button type="button" class="skBtn" onclick="skAIQuick('இன்றைய வானிலை எப்படி?')">🌦️ Weather</button>
+  <button type="button" class="skBtn" onclick="skAIQuick('இன்றைய முக்கிய செய்திகள் என்ன?')">📰 News</button>
+  <button type="button" class="skBtn" onclick="skAIQuick('GST எப்படி கணக்கிடுவது?')">📊 GST</button>
+  <button type="button" class="skBtn" onclick="skAIQuick('Class 10 mathematics பற்றி உதவி வேண்டும்')">📚 Education</button>
+</div>
 <div id="chat">
 <div class="msg ai">🤖 வணக்கம்! நான் SASIKUMAR AI.
 
@@ -1922,6 +1929,14 @@ function goldExpert(){
   const chat=document.querySelector(".chat") || document.querySelector("#chat") || document.body;
   chat.appendChild(box);
   box.scrollIntoView({behavior:"smooth",block:"end"});
+}
+
+function skAIQuick(message){
+  const input=document.getElementById("q");
+  if(!input)return;
+  input.value=message;
+  input.focus();
+  send();
 }
 
 async function send(){
