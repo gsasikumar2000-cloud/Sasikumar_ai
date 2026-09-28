@@ -1686,7 +1686,7 @@ function closeAdminControl(){
 <button onclick="printNotes()">🖨️ Print</button>
 <button onclick="pdfNotes()">📄 PDF</button>
 <button onclick="shareChat()">📤 Share</button>
-<button onclick="popNotes()">🪟 Pop-up</button>
+
 
 <button class="luxury-toggle" onclick="toggleDark()">🌙 Dark</button>
 <button onclick="clearChat()">🧹 Clear</button>
@@ -4130,30 +4130,7 @@ function pdfNotes(){
   window.print();
 }
 
-function popNotes(){
-  const w = window.open("", "SASIKUMAR_AI_NOTES",
-    "width=900,height=700,resizable=yes,scrollbars=yes");
 
-  if(!w){
-    alert("Pop-up blocked. Please allow pop-ups for this website.");
-    return;
-  }
-
-  w.document.write(
-    "<!doctype html><html><head><title>SASIKUMAR AI Notes</title>" +
-    "<style>" +
-    "body{font-family:Arial,sans-serif;padding:30px;line-height:1.6;background:#fff;color:#111}" +
-    "h1{color:#111}" +
-    ".notes-content{white-space:pre-wrap}" +
-    "</style></head><body>" +
-    "<h1>SASIKUMAR AI Notes</h1>" +
-    "<div class='notes-content'>" +
-    ((document.getElementById("notesText") || {}).value || "") +
-    "</div></body></html>"
-  );
-
-  w.document.close();
-}
 
 
 
