@@ -302,11 +302,12 @@ async function loadSportsData(){
    if(!r.ok) throw new Error('API unavailable');
    const data=await r.json();
 
-   const matches=Array.isArray(data)
-     ? data
-     : (Array.isArray(data.response)
-        ? data.response
-        : (Array.isArray(data.results) ? data.results : []));
+   const matches =
+     Array.isArray(data?.data?.response) ? data.data.response :
+     Array.isArray(data?.response) ? data.response :
+     Array.isArray(data?.data) ? data.data :
+     Array.isArray(data) ? data :
+     [];
 
    if(!matches.length){
      status.textContent='No live matches are currently available from the connected data service.';
