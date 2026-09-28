@@ -301,25 +301,54 @@ async function loadSportsData(){
    const r=await fetch('/api/sports/live',{headers:{'Accept':'application/json'}});
    if(!r.ok) throw new Error('API unavailable');
    const data=await r.json();
-   const matches=Array.isArray(data)?data:(data.matches||data.events||[]);
+
+   const matches=Array.isArray(data)
+     ? data
+     : (Array.isArray(data.response)
+        ? data.response
+        : (Array.isArray(data.results) ? data.results : []));
+
    if(!matches.length){
      status.textContent='No live matches are currently available from the connected data service.';
+     live.innerHTML='<div class="panel"><b>🔴 No Live Matches</b><p class="small">The verified sports-data service returned no current live matches.</p></div>';
      return;
    }
+
    status.textContent=matches.length+' live match(es) found.';
-   live.innerHTML=matches.map(m=>`
-     <div class="card live">
-       <div class="name">🔴 ${m.sport||m.league||'Sport'}</div>
-       <div>${m.homeTeam||m.home||'Team A'} <b>vs</b> ${m.awayTeam||m.away||'Team B'}</div>
-       <div class="score">${m.score||m.homeScore+' - '+m.awayScore||'Live'}</div>
-       <div class="small">${m.status||'Live'} ${m.time?'• '+m.time:''}</div>
-     </div>`).join('');
+
+   live.innerHTML=matches.map(m=>{
+     const fixture=m.fixture||{};
+     const teams=m.teams||{};
+     const goals=m.goals||{};
+     const league=m.league||{};
+
+     const home=teams.home?.name || m.homeTeam || m.home || 'Team A';
+     const away=teams.away?.name || m.awayTeam || m.away || 'Team B';
+
+     const hs=goals.home ?? m.homeScore ?? '-';
+     const as=goals.away ?? m.awayScore ?? '-';
+
+     const minute=fixture.status?.elapsed
+       ? fixture.status.elapsed+'′'
+       : (m.time||'');
+
+     const state=fixture.status?.long || fixture.status?.short || m.status || 'Live';
+
+     return `<div class="panel sportsLiveCard">
+       <div class="name">🔴 ${league.name||m.sport||'Sport'}</div>
+       <div><b>${home}</b> <span class="small">vs</span> <b>${away}</b></div>
+       <div class="score">${hs} - ${as}</div>
+       <div class="small">${state}${minute?' • '+minute:''}</div>
+     </div>`;
+   }).join('');
+
  }catch(e){
-   status.textContent='Live sports API is not connected yet. The page is ready for verified live-data integration.';
-   live.innerHTML='<div class="panel"><b>📡 Live Data Ready</b><p class="small">Connect a verified sports-data API to display real-time matches here.</p></div>';
+   status.textContent='Live sports API connection error.';
+   live.innerHTML='<div class="panel"><b>📡 Live Data Error</b><p class="small">Unable to load verified live sports data right now.</p></div>';
  }
 }
 loadSportsData();
+setInterval(loadSportsData,60000);
 </script>
 
 
