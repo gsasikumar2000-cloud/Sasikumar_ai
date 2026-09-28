@@ -1167,6 +1167,27 @@ body.dark{
   </div>
 </div>
 
+<div id="skMoreDetails" class="skCard" style="margin-bottom:18px">
+  <h3>📋 More Details</h3>
+  <p>🪙 <b>Gold & Silver:</b> View latest rates and gold-related tools.</p>
+  <p>📚 <b>Education:</b> Class 1–12 learning, equations and Q&A.</p>
+  <p>💼 <b>Jobs:</b> Government, bank and state job information.</p>
+  <p>🏏 <b>Sports:</b> Sports information and latest updates.</p>
+  <p>🤖 <b>AI:</b> Ask SASIKUMAR AI in Tamil or English.</p>
+</div>
+
+<div id="skExtraOptions" class="skCard" style="margin-bottom:18px">
+  <h3>⚙️ Extra Options</h3>
+  <div class="skLinks">
+    <button onclick="document.getElementById('skMoreDetails').scrollIntoView({behavior:'smooth'})">📋 More Details</button>
+    <button onclick="liveGoldRate()">🪙 Live Gold</button>
+    <button onclick="location.href='/education/equations.html'">📐 Equations</button>
+    <button onclick="location.href='/education/qa.html'">🤖 Education AI</button>
+    <button onclick="location.href='/sports/index.html'">🏏 Sports</button>
+    <button onclick="skShareHome()">📤 Share</button>
+  </div>
+</div>
+
 <div class="skShare">
   <h3>📢 Share SASIKUMAR AI</h3>
   <p>AI • Gold • Education • Jobs • Sports • Business</p>
@@ -2937,6 +2958,59 @@ function calculateGoldPractical(){
    "Final purity confirmationக்கு XRF/assay testing பயன்படுத்தவும்.";
 }
 
+
+function printAppraisalReport(btn){
+  const report=btn.closest(".report-box");
+  if(!report){
+    alert("Appraisal Report not found.");
+    return;
+  }
+
+  const w=window.open("", "_blank");
+  if(!w){
+    alert("Please allow pop-ups for Print / PDF.");
+    return;
+  }
+
+  w.document.write(`
+    <!doctype html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>SASIKUMAR AI - Appraisal Report</title>
+      <style>
+        body{font-family:Arial,sans-serif;margin:20px;color:#111}
+        .report-box{max-width:850px;margin:auto}
+        .report-head{text-align:center;margin-bottom:20px}
+        .report-head h2{margin:0 0 6px}
+        table{width:100%;border-collapse:collapse}
+        td,th{border:1px solid #999;padding:9px;text-align:left}
+        td:first-child{font-weight:bold;width:32%}
+        input,textarea{width:100%;box-sizing:border-box;border:0;font:inherit}
+        img{max-width:100%;height:auto}
+        button{display:none}
+        @media print{body{margin:10mm}}
+      </style>
+    </head>
+    <body>
+      ${report.outerHTML}
+      <script>
+        document.querySelectorAll("input,textarea").forEach(function(el){
+          const span=document.createElement("span");
+          span.textContent=el.value || "";
+          el.replaceWith(span);
+        });
+        window.onload=function(){
+          setTimeout(function(){window.print();},300);
+        };
+      <\/script>
+    </body>
+    </html>
+  `);
+
+  w.document.close();
+}
+
 function goldReport(){
 
  const box=document.createElement("div");
@@ -3004,7 +3078,7 @@ function goldReport(){
    </div>
 
    <div class="report-actions">
-     <button onclick="window.print()">🖨️ Print / PDF</button>
+     <button onclick="printAppraisalReport(this)">🖨️ Print / PDF</button>
    </div>
 
  </div>`;
