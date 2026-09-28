@@ -1332,7 +1332,8 @@ async function sportsApi(path) {
       ok:false,
       configured:true,
       status:response.status,
-      message:data?.message || "Sports API request failed"
+      message:data?.message || "Sports API request failed",
+      errors:data?.errors || null
     };
   }
 
