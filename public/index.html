@@ -357,6 +357,139 @@ font-family:"Noto Sans Tamil","Nirmala UI","Latha",Arial,sans-serif !important;
 text-decoration:none !important;
 }
 </style>
+
+<!-- SASIKUMAR AI EXTRA OPENINGS + DETAILS PREVIEW -->
+<section id="skExtraOpenings" style="margin:20px 0;padding:18px;border-radius:24px;background:linear-gradient(135deg,#eef6ff,#fff7e8);box-shadow:0 12px 35px rgba(0,0,0,.12);">
+  <h2 style="margin:0 0 6px;">✨ Extra Openings</h2>
+  <p style="margin:0 0 15px;">Open a quick preview before entering the full SASIKUMAR AI page.</p>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;">
+    <button class="skBtn" onclick="skPreview('gold')">🪙 Gold Details</button>
+    <button class="skBtn" onclick="skPreview('education')">📚 Education</button>
+    <button class="skBtn" onclick="skPreview('jobs')">💼 Jobs</button>
+    <button class="skBtn" onclick="skPreview('sports')">🏆 Sports</button>
+    <button class="skBtn" onclick="skPreview('ai')">🤖 AI Assistant</button>
+    <button class="skBtn" onclick="skPreview('appraiser')">📋 Appraiser</button>
+    <button class="skBtn" onclick="skPreview('poster')">🖼️ Gold Poster</button>
+    <button class="skBtn" onclick="skPreview('equations')">📐 Equations</button>
+    <button class="skBtn" onclick="skShareHome()">📤 Share</button>
+  </div>
+</section>
+
+<div id="skPreviewPanel" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.65);padding:18px;overflow:auto;">
+  <div id="skPreviewCard" style="max-width:620px;margin:35px auto;background:#fff;border-radius:26px;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.35);">
+    <div id="skPreviewContent"></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;">
+      <button class="skBtn" onclick="skOpenPreview()">🚀 Open Full Page</button>
+      <button class="skBtn" onclick="document.getElementById('skPreviewPanel').style.display='none'">✖ Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const data = {
+    gold:{
+      icon:"🪙", title:"Gold & Silver",
+      detail:"Live Gold Rate, Silver Rate and useful gold calculation tools.",
+      url:"/"
+    },
+    education:{
+      icon:"📚", title:"Education Hub",
+      detail:"Class 1–12 learning, equations, subjects, Q&A and learning tools.",
+      url:"/education/equations.html"
+    },
+    jobs:{
+      icon:"💼", title:"Jobs Hub",
+      detail:"Central Government, State Government, Bank Jobs and job application tools.",
+      url:"/jobs/"
+    },
+    sports:{
+      icon:"🏆", title:"Sports Hub",
+      detail:"Sports information and useful sports sections in SASIKUMAR AI.",
+      url:"/sports/"
+    },
+    ai:{
+      icon:"🤖", title:"Ask SASIKUMAR AI",
+      detail:"Ask questions and get AI-powered assistance from the dashboard.",
+      url:"/"
+    },
+    appraiser:{
+      icon:"📋", title:"Gold Appraiser Report",
+      detail:"Customer details, weight, purity, rate, value, remarks, image, Save, Load, Clear and Print/PDF.",
+      url:"/"
+    },
+    poster:{
+      icon:"🖼️", title:"Daily Gold Poster",
+      detail:"Daily SASIKUMAR AI gold poster with current rate information.",
+      url:"/daily-gold-poster.svg"
+    },
+    equations:{
+      icon:"📐", title:"Mathematics & Equations",
+      detail:"Class 1–12 mathematics equations, calculators and learning tools.",
+      url:"/education/equations.html"
+    }
+  };
+
+  let current = "gold";
+
+  window.skPreview = function(type){
+    current = data[type] ? type : "gold";
+    const x = data[current];
+
+    document.getElementById("skPreviewContent").innerHTML = `
+      <div style="font-size:48px">${x.icon}</div>
+      <h2 style="margin:8px 0">${x.title}</h2>
+      <p style="font-size:17px;line-height:1.6">${x.detail}</p>
+      <div style="padding:12px;border-radius:14px;background:#f5f7fb;">
+        <b>SASIKUMAR AI Preview</b><br>
+        Select “Open Full Page” to continue.
+      </div>
+    `;
+
+    document.getElementById("skPreviewPanel").style.display = "block";
+  };
+
+  window.skOpenPreview = function(){
+    const x = data[current];
+
+    if(current === "gold" && typeof liveGoldRate === "function"){
+      document.getElementById("skPreviewPanel").style.display = "none";
+      liveGoldRate();
+      return;
+    }
+
+    if(current === "appraiser" && typeof goldReport === "function"){
+      document.getElementById("skPreviewPanel").style.display = "none";
+      goldReport();
+      return;
+    }
+
+    if(current === "ai"){
+      document.getElementById("skPreviewPanel").style.display = "none";
+      const chat = document.getElementById("chatInput") ||
+                   document.querySelector('textarea') ||
+                   document.querySelector('input[type="text"]');
+      if(chat){
+        chat.scrollIntoView({behavior:"smooth",block:"center"});
+        chat.focus();
+      } else {
+        window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});
+      }
+      return;
+    }
+
+    window.location.href = x.url;
+  };
+
+  document.addEventListener("click", function(e){
+    const panel = document.getElementById("skPreviewPanel");
+    if(e.target === panel) panel.style.display = "none";
+  });
+})();
+</script>
+<!-- END SASIKUMAR AI EXTRA OPENINGS -->
+
 <script>
 function openDailyPoster(){
   const url="https://www.sasikumarai.com/daily-gold-poster.svg";
