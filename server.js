@@ -1305,6 +1305,104 @@ app.post("/twilio/webhook", async (req, res) => {
   }
 });
 
+
+// ===== SASIKUMAR AI SPORTS LIVE / FIXTURES / RESULTS =====
+const SPORTS_API_BASE = "https://v3.football.api-sports.io";
+
+async function sportsApi(path) {
+  const key = process.env.SPORTS_API_KEY;
+  if (!key) {
+    return {
+      ok:false,
+      configured:false,
+      message:"SPORTS_API_KEY is not configured"
+    };
+  }
+
+  const response = await fetch(SPORTS_API_BASE + path, {
+    headers: {
+      "x-apisports-key": key
+    }
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    return {
+      ok:false,
+      configured:true,
+      status:response.status,
+      message:data?.message || "Sports API request failed"
+    };
+  }
+
+  return {
+    ok:true,
+    configured:true,
+    data
+  };
+}
+
+app.get("/api/sports/live", async (req,res) => {
+  try {
+    const result = await sportsApi("/fixtures?live=all");
+    res.json(result);
+  } catch (e) {
+    res.status(500).json({
+      ok:false,
+      message:"Unable to load live sports data"
+    });
+  }
+});
+
+app.get("/api/sports/fixtures", async (req,res) => {
+  try {
+    const date = req.query.date ||
+      new Date().toISOString().slice(0,10);
+
+    const result = await sportsApi(
+      "/fixtures?date=" + encodeURIComponent(date)
+    );
+
+    res.json(result);
+  } catch (e) {
+    res.status(500).json({
+      ok:false,
+      message:"Unable to load fixtures"
+    });
+  }
+});
+
+app.get("/api/sports/results", async (req,res) => {
+  try {
+    const date = req.query.date ||
+      new Date().toISOString().slice(0,10);
+
+    const result = await sportsApi(
+      "/fixtures?date=" + encodeURIComponent(date) +
+      "&status=FT"
+    );
+
+    res.json(result);
+  } catch (e) {
+    res.status(500).json({
+      ok:false,
+      message:"Unable to load results"
+    });
+  }
+});
+
+app.get("/api/sports/status", (req,res) => {
+  res.json({
+    ok:true,
+    service:"SASIKUMAR AI Sports Hub",
+    live:"/api/sports/live",
+    fixtures:"/api/sports/fixtures",
+    results:"/api/sports/results",
+    configured:!!process.env.SPORTS_API_KEY
+  });
+});
+
 app.listen(PORT,()=>{
   console.log("🤖 SASIKUMAR AI");
   console.log("✅ Server running on port " + PORT);
