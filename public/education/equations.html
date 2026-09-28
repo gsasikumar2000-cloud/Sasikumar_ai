@@ -1549,7 +1549,77 @@ function printExamContent() {
     </head>
     <body>
       ${box.innerHTML}
-    </body>
+
+<section id="primaryAnimals" style="
+margin:20px 0;padding:20px;border-radius:24px;
+background:linear-gradient(135deg,#fff7ed,#ecfeff,#f0fdf4);
+box-shadow:0 12px 35px rgba(0,0,0,.12);">
+
+<h2>🐾 Class 1–5 — Animals Learning</h2>
+<p>🖼️ Picture • 🔊 Sound • 📖 Simple Details • தமிழ் + English</p>
+
+<div id="animalCard" style="
+text-align:center;padding:20px;border-radius:20px;
+background:#fff;box-shadow:0 8px 20px rgba(0,0,0,.10);">
+
+<div id="animalImage" style="font-size:80px">🐘</div>
+<h3 id="animalName">Elephant — யானை</h3>
+<p id="animalDetails">A large animal with a long trunk.</p>
+<p id="animalFood">🍃 Food: Grass, leaves and plants</p>
+<p id="animalHabitat">🌳 Habitat: Forest and grassland</p>
+
+<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+<button onclick="animalSpeak()">🔊 Sound / Listen</button>
+<button onclick="nextAnimal()">➡️ Next Animal</button>
+</div>
+
+</div>
+</section>
+
+<script>
+const primaryAnimals = [
+ {emoji:"🐘",name:"Elephant — யானை",details:"A large animal with a long trunk.",food:"Grass, leaves and plants",habitat:"Forest and grassland"},
+ {emoji:"🦁",name:"Lion — சிங்கம்",details:"A wild animal known for its mane.",food:"Meat",habitat:"Grassland and savanna"},
+ {emoji:"🐯",name:"Tiger — புலி",details:"A striped wild cat.",food:"Meat",habitat:"Forest and grassland"},
+ {emoji:"🐄",name:"Cow — மாடு",details:"A domestic farm animal that gives milk.",food:"Grass and plants",habitat:"Farm"},
+ {emoji:"🐕",name:"Dog — நாய்",details:"A common domestic animal and companion.",food:"Animal food and suitable foods",habitat:"Homes"},
+ {emoji:"🐈",name:"Cat — பூனை",details:"A small domestic animal that can climb and hunt.",food:"Suitable cat food",habitat:"Homes"},
+ {emoji:"🐎",name:"Horse — குதிரை",details:"A strong animal that can run fast.",food:"Grass and hay",habitat:"Farm and grassland"},
+ {emoji:"🐒",name:"Monkey — குரங்கு",details:"An active animal that can climb trees.",food:"Fruits, leaves and plants",habitat:"Forest"}
+];
+
+let animalIndex=0;
+
+function showAnimal(){
+ const a=primaryAnimals[animalIndex];
+ document.getElementById("animalImage").textContent=a.emoji;
+ document.getElementById("animalName").textContent=a.name;
+ document.getElementById("animalDetails").textContent=a.details;
+ document.getElementById("animalFood").textContent="🍃 Food: "+a.food;
+ document.getElementById("animalHabitat").textContent="🌳 Habitat: "+a.habitat;
+}
+
+function nextAnimal(){
+ animalIndex=(animalIndex+1)%primaryAnimals.length;
+ showAnimal();
+}
+
+function animalSpeak(){
+ const a=primaryAnimals[animalIndex];
+ if("speechSynthesis" in window){
+   const text=a.name.replace(" — ",". ");
+   speechSynthesis.cancel();
+   const u=new SpeechSynthesisUtterance(text);
+   u.lang="en-IN";
+   speechSynthesis.speak(u);
+ }else{
+   alert("Audio is not supported on this device.");
+ }
+}
+
+showAnimal();
+</script>
+</body>
     </html>
   `);
 
@@ -2562,7 +2632,9 @@ function printQABank() {
         body { font-family: Arial, sans-serif; line-height:1.6; }
       </style>
     </head>
-    <body>${box.innerHTML}</body>
+    <body>${box.innerHTML}
+
+</body>
     </html>
   `);
   w.document.close();
@@ -2593,7 +2665,9 @@ function popQABank() {
     <head>
       <title>SASIKUMAR AI Q&A Bank</title>
     </head>
-    <body>${box.innerHTML}</body>
+    <body>${box.innerHTML}
+
+</body>
     </html>
   `);
 
@@ -2653,5 +2727,7 @@ window.addEventListener("scroll", updateUpDownTools);
 window.addEventListener("resize", updateUpDownTools);
 updateUpDownTools();
 </script>
+
+
 </body>
 </html>
