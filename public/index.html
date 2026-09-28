@@ -2007,6 +2007,10 @@ async function send(){
       ?"🤖 "+d.reply
       :"❌ பதில் கிடைக்கவில்லை.";
 
+    if(d.reply && voiceEnabled && typeof speakTamil==="function"){
+      speakTamil(String(d.reply).replace(/^🤖\s*/,""));
+    }
+
     if(replyAttachment){
       removeReplyAttachment();
     }
