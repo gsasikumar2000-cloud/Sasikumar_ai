@@ -1137,6 +1137,54 @@ body.dark{
 }
 </style>
 
+
+<style id="smart-home-perfect-grid">
+#skSmartDashboard .smart-grid,
+#skSmartDashboard .smart-home-grid,
+#skSmartDashboard .smartCards,
+#skSmartDashboard .smart-grid-container{
+  display:grid !important;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr)) !important;
+  gap:16px !important;
+  align-items:stretch !important;
+  width:100% !important;
+  box-sizing:border-box !important;
+}
+#skSmartDashboard .smart-card,
+#skSmartDashboard .smartCard,
+#skSmartDashboard .smart-item,
+#skSmartDashboard .smart-grid > *,
+#skSmartDashboard .smart-home-grid > *{
+  width:100% !important;
+  min-width:0 !important;
+  height:100% !important;
+  min-height:120px !important;
+  box-sizing:border-box !important;
+  margin:0 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:center !important;
+  align-items:center !important;
+  text-align:center !important;
+}
+@media(max-width:600px){
+  #skSmartDashboard .smart-grid,
+  #skSmartDashboard .smart-home-grid,
+  #skSmartDashboard .smartCards,
+  #skSmartDashboard .smart-grid-container{
+    grid-template-columns:1fr !important;
+    gap:12px !important;
+  }
+}
+@media(min-width:601px) and (max-width:900px){
+  #skSmartDashboard .smart-grid,
+  #skSmartDashboard .smart-home-grid,
+  #skSmartDashboard .smartCards,
+  #skSmartDashboard .smart-grid-container{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+}
+</style>
 </head>
 
 
