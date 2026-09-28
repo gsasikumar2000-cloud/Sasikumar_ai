@@ -1009,6 +1009,217 @@ body.dark{
 
 <body>
 
+<!-- SASIKUMAR AI — NEW SMART HOME DASHBOARD -->
+<section id="skSmartDashboard" aria-label="SASIKUMAR AI Smart Dashboard">
+<style>
+#skSmartDashboard{
+  padding:18px 12px;
+  max-width:1100px;
+  margin:auto;
+  font-family:inherit;
+}
+.skHero{
+  padding:24px 18px;
+  border-radius:24px;
+  background:linear-gradient(135deg,#fff7d6,#e7f5ff,#f5e7ff);
+  box-shadow:0 10px 30px rgba(0,0,0,.12);
+  text-align:center;
+  margin-bottom:18px;
+}
+.skHero h2{margin:4px 0 8px;font-size:28px}
+.skHero p{margin:0 0 16px;font-size:15px}
+.skQuick{
+  display:flex;
+  gap:9px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+.skBtn{
+  border:0;
+  border-radius:14px;
+  padding:11px 15px;
+  cursor:pointer;
+  font-weight:700;
+  background:#fff;
+  box-shadow:0 5px 14px rgba(0,0,0,.10);
+}
+.skGrid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:14px;
+  margin-bottom:18px;
+}
+.skCard{
+  padding:18px;
+  border-radius:20px;
+  background:rgba(255,255,255,.94);
+  box-shadow:0 8px 24px rgba(0,0,0,.10);
+  border:1px solid rgba(0,0,0,.06);
+}
+.skCard h3{margin:0 0 9px;font-size:19px}
+.skCard p{margin:5px 0;line-height:1.5}
+.skSearch{
+  width:100%;
+  box-sizing:border-box;
+  padding:14px 16px;
+  border-radius:14px;
+  border:1px solid #ccc;
+  font-size:16px;
+  outline:none;
+}
+.skSearch:focus{box-shadow:0 0 0 3px rgba(0,120,255,.12)}
+.skLinks{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+.skLinks button{
+  border:0;
+  border-radius:11px;
+  padding:9px 11px;
+  cursor:pointer;
+  background:#f1f4f8;
+}
+.skUpdate{
+  padding:10px 0;
+  border-bottom:1px solid #eee;
+}
+.skUpdate:last-child{border-bottom:0}
+.skShare{
+  text-align:center;
+  padding:22px 15px;
+  border-radius:22px;
+  background:linear-gradient(135deg,#eafff0,#eaf3ff,#fff0f8);
+}
+</style>
+
+<div class="skHero">
+  <h2>🧠 SASIKUMAR AI</h2>
+  <p>Your Daily Smart Information Hub<br>
+  AI • Gold • Education • Jobs • Sports • Business</p>
+
+  <div class="skQuick">
+    <button class="skBtn" onclick="document.getElementById('skQuickSearch').focus()">🔎 Quick Search</button>
+    <button class="skBtn" onclick="document.getElementById('skAskAI').scrollIntoView({behavior:'smooth'})">🤖 Ask AI</button>
+    <button class="skBtn" onclick="location.href='/gold.html'">🪙 Gold Rate</button>
+    <button class="skBtn" onclick="location.href='/education/'">📚 Education</button>
+    <button class="skBtn" onclick="location.href='/jobs/'">💼 Jobs</button>
+  </div>
+</div>
+
+<div class="skGrid">
+
+  <div class="skCard">
+    <h3>⭐ Today's Highlights</h3>
+    <p>🪙 Gold & Silver — Daily rates</p>
+    <p>📚 Education — Class 1–12</p>
+    <p>💼 Jobs — Latest opportunities</p>
+    <p>🏏 Sports — Latest information</p>
+    <div class="skLinks">
+      <button onclick="location.href='/gold.html'">Gold →</button>
+      <button onclick="location.href='/education/'">Education →</button>
+      <button onclick="location.href='/jobs/'">Jobs →</button>
+    </div>
+  </div>
+
+  <div class="skCard">
+    <h3>🔎 Quick Search</h3>
+    <input id="skQuickSearch" class="skSearch"
+      placeholder="Search Gold, Education, Jobs, Sports..."
+      onkeydown="if(event.key==='Enter')skHomeSearch(this.value)">
+    <div class="skLinks">
+      <button onclick="skHomeSearch('Gold Rate')">🪙 Gold</button>
+      <button onclick="skHomeSearch('Education')">📚 Education</button>
+      <button onclick="skHomeSearch('Jobs')">💼 Jobs</button>
+      <button onclick="skHomeSearch('Sports')">🏏 Sports</button>
+    </div>
+  </div>
+
+  <div class="skCard">
+    <h3>🛠️ Popular Tools</h3>
+    <p>🪙 Gold Calculator</p>
+    <p>📐 Mathematics & Equations</p>
+    <p>💰 Business Calculators</p>
+    <p>📊 Useful AI Tools</p>
+    <div class="skLinks">
+      <button onclick="location.href='/education/equations.html'">📐 Equations</button>
+      <button onclick="location.href='/education/qa.html'">📚 Q&A</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="skCard" style="margin-bottom:18px">
+  <h3>🔥 Latest Updates</h3>
+  <div class="skUpdate">🪙 <b>Gold & Silver</b> — Check today's latest rates.</div>
+  <div class="skUpdate">📚 <b>Education</b> — Explore Class 1–12 learning tools.</div>
+  <div class="skUpdate">💼 <b>Jobs</b> — Explore government and bank job information.</div>
+  <div class="skUpdate">🏏 <b>Sports</b> — Follow sports information and updates.</div>
+</div>
+
+<div id="skAskAI" class="skCard" style="margin-bottom:18px">
+  <h3>🤖 Ask SASIKUMAR AI</h3>
+  <p>தமிழ் அல்லது English-ல் உங்கள் கேள்வியை கேளுங்கள்.</p>
+  <div class="skLinks">
+    <button class="skBtn" onclick="location.href='/education/qa.html'">🤖 Ask AI →</button>
+    <button class="skBtn" onclick="alert('Use the SASIKUMAR AI chat feature to ask your question.')">💬 Start Chat</button>
+  </div>
+</div>
+
+<div class="skShare">
+  <h3>📢 Share SASIKUMAR AI</h3>
+  <p>AI • Gold • Education • Jobs • Sports • Business</p>
+  <button class="skBtn" onclick="skShareHome()">📤 Share SASIKUMAR AI</button>
+</div>
+
+<script>
+function skHomeSearch(q){
+  q=(q||'').trim();
+  if(!q)return;
+  const x=q.toLowerCase();
+
+  if(x.includes('gold') || x.includes('silver')){
+    location.href='/gold.html';
+  }else if(x.includes('education') || x.includes('math') || x.includes('equation') || x.includes('study')){
+    location.href='/education/';
+  }else if(x.includes('job') || x.includes('career')){
+    location.href='/jobs/';
+  }else if(x.includes('sport') || x.includes('cricket') || x.includes('football')){
+    location.href='/sports/';
+  }else{
+    const target=document.getElementById('searchInput');
+    if(target){
+      target.value=q;
+      target.dispatchEvent(new Event('input',{bubbles:true}));
+      target.focus();
+    }else{
+      alert('Search: '+q);
+    }
+  }
+}
+
+async function skShareHome(){
+  const data={
+    title:'SASIKUMAR AI',
+    text:'SASIKUMAR AI — AI • Gold • Education • Jobs • Sports • Business',
+    url:location.origin
+  };
+  try{
+    if(navigator.share) await navigator.share(data);
+    else if(navigator.clipboard){
+      await navigator.clipboard.writeText(location.href);
+      alert('🔗 SASIKUMAR AI link copied!');
+    }else{
+      alert('🔗 Copy this page link: '+location.href);
+    }
+  }catch(e){}
+}
+</script>
+</section>
+<!-- END SASIKUMAR AI — NEW SMART HOME DASHBOARD -->
+
+
 <div id="dailyScrollingMessage" class="daily-ticker">
   <span id="dailyMessageText"></span>
 </div>
