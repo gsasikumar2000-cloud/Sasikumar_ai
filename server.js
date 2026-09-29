@@ -1371,9 +1371,8 @@ app.listen(PORT,()=>{
 
 
 /* ================= SASIKUMAR AI — REFERRAL TRACKING ================= */
-const referralStats = new Map();
 
-app.get("/api/referral/status", (req,res) => {
+app.get("/api/referral/status", async (req,res) => {
   const code = String(req.query.code || "").trim().toUpperCase();
 
   if (!code || !/^[A-Z0-9-]{3,40}$/.test(code)) {
@@ -1383,19 +1382,41 @@ app.get("/api/referral/status", (req,res) => {
     });
   }
 
-  const stats = referralStats.get(code) || {
-    code,
-    referrals: 0,
-    unique_referrals: 0
-  };
+  if (!dbPool) {
+    return res.status(503).json({
+      status_id: 2,
+      message: "Referral database is not configured."
+    });
+  }
 
-  res.json({
-    status_id: 1,
-    data: stats
-  });
+  try {
+    const result = await dbPool.query(
+      `SELECT COUNT(*)::int AS unique_referrals
+       FROM public.referrals
+       WHERE referral_code = $1`,
+      [code]
+    );
+
+    const count = result.rows[0].unique_referrals || 0;
+
+    res.json({
+      status_id: 1,
+      data: {
+        code,
+        referrals: count,
+        unique_referrals: count
+      }
+    });
+  } catch (error) {
+    console.error("Referral status error:", error.message);
+    res.status(500).json({
+      status_id: 2,
+      message: "Referral database error."
+    });
+  }
 });
 
-app.post("/api/referral/track", (req,res) => {
+app.post("/api/referral/track", async (req,res) => {
   const body = req.body || {};
   const code = String(body.code || "").trim().toUpperCase();
   const visitorId = String(body.visitor_id || "").trim();
@@ -1414,46 +1435,60 @@ app.post("/api/referral/track", (req,res) => {
     });
   }
 
-  let stats = referralStats.get(code);
-
-  if (!stats) {
-    stats = {
-      code,
-      referrals: 0,
-      unique_referrals: 0,
-      visitors: new Set()
-    };
-    referralStats.set(code, stats);
-  }
-
   if (code === "SKAI-FREE") {
     return res.json({
       status_id: 1,
       message: "Referral code captured.",
       data: {
         code,
-        referrals: stats.referrals,
-        unique_referrals: stats.unique_referrals
+        referrals: 0,
+        unique_referrals: 0
       }
     });
   }
 
-  if (!stats.visitors.has(visitorId)) {
-    stats.visitors.add(visitorId);
-    stats.referrals += 1;
-    stats.unique_referrals += 1;
+  if (!dbPool) {
+    return res.status(503).json({
+      status_id: 2,
+      message: "Referral database is not configured."
+    });
   }
 
-  res.json({
-    status_id: 1,
-    message: "Referral tracked.",
-    data: {
-      code,
-      referrals: stats.referrals,
-      unique_referrals: stats.unique_referrals
-    }
-  });
+  try {
+    await dbPool.query(
+      `INSERT INTO public.referrals (referral_code, visitor_id)
+       VALUES ($1, $2)
+       ON CONFLICT (referral_code, visitor_id) DO NOTHING`,
+      [code, visitorId]
+    );
+
+    const result = await dbPool.query(
+      `SELECT COUNT(*)::int AS unique_referrals
+       FROM public.referrals
+       WHERE referral_code = $1`,
+      [code]
+    );
+
+    const count = result.rows[0].unique_referrals || 0;
+
+    res.json({
+      status_id: 1,
+      message: "Referral tracked.",
+      data: {
+        code,
+        referrals: count,
+        unique_referrals: count
+      }
+    });
+  } catch (error) {
+    console.error("Referral tracking error:", error.message);
+    res.status(500).json({
+      status_id: 2,
+      message: "Referral database error."
+    });
+  }
 });
+
 /* ================= END REFERRAL TRACKING ================= */
 
 /* ================= SASIKUMAR AI — PAY2ALL RECHARGE ================= */
