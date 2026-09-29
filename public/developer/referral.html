@@ -56,9 +56,46 @@ button{width:100%;padding:14px;border:0;border-radius:12px;margin-top:8px;font-w
 </div>
 
 <script>
+const params=new URLSearchParams(location.search);
+const incomingRef=(params.get("ref")||"").trim().toUpperCase();
 const code="SKAI-FREE";
+const savedRef=localStorage.getItem("sasikumar_referrer");
+
+if(incomingRef && incomingRef !== code && /^[A-Z0-9-]{3,40}$/.test(incomingRef)){
+  if(!savedRef){
+    localStorage.setItem("sasikumar_referrer",incomingRef);
+    localStorage.setItem("sasikumar_referral_saved_at",new Date().toISOString());
+  }
+}
+
 const link=location.origin+"/?ref="+encodeURIComponent(code);
 document.getElementById("refLink").value=link;
+
+const activeRef=localStorage.getItem("sasikumar_referrer");
+
+if(activeRef){
+  document.getElementById("refCount").textContent="1";
+
+  let visitorId=localStorage.getItem("sasikumar_visitor_id");
+  if(!visitorId){
+    visitorId="v-"+crypto.randomUUID();
+    localStorage.setItem("sasikumar_visitor_id",visitorId);
+  }
+
+  fetch("/api/referral/track",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      code:activeRef,
+      visitor_id:visitorId
+    })
+  }).then(r=>r.json()).then(data=>{
+    if(data.status_id===1 && data.data){
+      document.getElementById("refCount").textContent=
+        String(data.data.unique_referrals || 0);
+    }
+  }).catch(()=>{});
+}
 
 function copyReferral(){
  navigator.clipboard.writeText(link).then(()=>alert("✅ Referral link copied"));

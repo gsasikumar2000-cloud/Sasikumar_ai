@@ -1369,6 +1369,93 @@ app.listen(PORT,()=>{
 
 
 
+
+/* ================= SASIKUMAR AI — REFERRAL TRACKING ================= */
+const referralStats = new Map();
+
+app.get("/api/referral/status", (req,res) => {
+  const code = String(req.query.code || "").trim().toUpperCase();
+
+  if (!code || !/^[A-Z0-9-]{3,40}$/.test(code)) {
+    return res.status(400).json({
+      status_id: 2,
+      message: "Valid referral code is required."
+    });
+  }
+
+  const stats = referralStats.get(code) || {
+    code,
+    referrals: 0,
+    unique_referrals: 0
+  };
+
+  res.json({
+    status_id: 1,
+    data: stats
+  });
+});
+
+app.post("/api/referral/track", (req,res) => {
+  const body = req.body || {};
+  const code = String(body.code || "").trim().toUpperCase();
+  const visitorId = String(body.visitor_id || "").trim();
+
+  if (!code || !/^[A-Z0-9-]{3,40}$/.test(code)) {
+    return res.status(400).json({
+      status_id: 2,
+      message: "Invalid referral code."
+    });
+  }
+
+  if (!visitorId || visitorId.length > 100) {
+    return res.status(400).json({
+      status_id: 2,
+      message: "Valid visitor ID is required."
+    });
+  }
+
+  let stats = referralStats.get(code);
+
+  if (!stats) {
+    stats = {
+      code,
+      referrals: 0,
+      unique_referrals: 0,
+      visitors: new Set()
+    };
+    referralStats.set(code, stats);
+  }
+
+  if (code === "SKAI-FREE") {
+    return res.json({
+      status_id: 1,
+      message: "Referral code captured.",
+      data: {
+        code,
+        referrals: stats.referrals,
+        unique_referrals: stats.unique_referrals
+      }
+    });
+  }
+
+  if (!stats.visitors.has(visitorId)) {
+    stats.visitors.add(visitorId);
+    stats.referrals += 1;
+    stats.unique_referrals += 1;
+  }
+
+  res.json({
+    status_id: 1,
+    message: "Referral tracked.",
+    data: {
+      code,
+      referrals: stats.referrals,
+      unique_referrals: stats.unique_referrals
+    }
+  });
+});
+/* ================= END REFERRAL TRACKING ================= */
+
 /* ================= SASIKUMAR AI — PAY2ALL RECHARGE ================= */
 const pay2allRechargeStatus = new Map();
 const PAY2ALL_BASE_URL = process.env.PAY2ALL_BASE_URL || "https://pay2all.in/api/v1";
