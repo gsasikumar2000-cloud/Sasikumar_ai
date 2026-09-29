@@ -1642,3 +1642,183 @@ app.post("/api/recharge/webhook", (req,res) => {
 });
 
 /* ================= END PAY2ALL RECHARGE ================= */
+
+/* ================= SASIKUMAR AI — PAY2ALL TRAVEL UAT ================= */
+
+async function pay2allRequest(path, method="GET", body=null) {
+  if (!PAY2ALL_API_KEY) {
+    throw new Error("Pay2All API key is not configured.");
+  }
+
+  const options = {
+    method,
+    headers: {
+      "Authorization": `Bearer ${PAY2ALL_API_KEY}`,
+      "Accept": "application/json",
+      "Content-Type": "application/json"
+    }
+  };
+
+  if (body !== null) options.body = JSON.stringify(body);
+
+  const response = await fetch(`${PAY2ALL_BASE_URL}${path}`, options);
+  const data = await response.json();
+
+  return { ok: response.ok, status: response.status, data };
+}
+
+/* ---------- FLIGHTS ---------- */
+
+app.post("/api/travel/flights/search", async (req,res) => {
+  try {
+    const body = { ...(req.body || {}), mode: "UAT" };
+    const result = await pay2allRequest("/flights/search", "POST", body);
+    res.status(result.ok ? 200 : result.status).json(result.data);
+  } catch (error) {
+    console.error("Pay2All flight search:", error.message);
+    res.status(502).json({
+      status_id: 2,
+      message: "Flight search service connection failed."
+    });
+  }
+});
+
+app.post("/api/travel/flights/book", async (req,res) => {
+  try {
+    const body = { ...(req.body || {}), mode: "UAT" };
+    const result = await pay2allRequest("/flights/book", "POST", body);
+    res.status(result.ok ? 200 : result.status).json(result.data);
+  } catch (error) {
+    console.error("Pay2All flight booking:", error.message);
+    res.status(502).json({
+      status_id: 2,
+      message: "Flight booking service connection failed."
+    });
+  }
+});
+
+app.post("/api/travel/flights/ticket", async (req,res) => {
+  try {
+    const body = { ...(req.body || {}), mode: "UAT" };
+    const result = await pay2allRequest("/flights/ticket", "POST", body);
+    res.status(result.ok ? 200 : result.status).json(result.data);
+  } catch (error) {
+    console.error("Pay2All flight ticket:", error.message);
+    res.status(502).json({
+      status_id: 2,
+      message: "Flight ticket service connection failed."
+    });
+  }
+});
+
+/* ---------- BUSES ---------- */
+
+app.get("/api/travel/buses/cities", async (req,res) => {
+  try {
+    const q = String(req.query.q || "").trim();
+    const path = `/buses/cities${q ? `?q=${encodeURIComponent(q)}` : ""}`;
+    const result = await pay2allRequest(path, "GET");
+    res.status(result.ok ? 200 : result.status).json(result.data);
+  } catch (error) {
+    console.error("Pay2All bus cities:", error.message);
+    res.status(502).json({
+      status_id: 2,
+      message: "Bus city service connection failed."
+    });
+  }
+});
+
+app.post("/api/travel/buses/search", async (req,res) => {
+  try {
+    const body = { ...(req.body || {}), mode: "UAT" };
+    const result = await pay2allRequest("/buses/search", "POST", body);
+    res.status(result.ok ? 200 : result.status).json(result.data);
+  } catch (error) {
+    console.error("Pay2All bus search:", error.message);
+    res.status(502).json({
+      status_id: 2,
+      message: "Bus search service connection failed."
+    });
+  }
+});
+
+app.post("/api/travel/buses/seat-layout", async (req,res) => {
+  try {
+    const body = { ...(req.body || {}), mode: "UAT" };
+    const result = await pay2allRequest("/buses/seat-layout", "POST", body);
+    res.status(result.ok ? 200 : result.status).json(result.data);
+  } catch (error) {
+    console.error("Pay2All bus seat layout:", error.message);
+    res.status(502).json({
+      status_id: 2,
+      message: "Bus seat service connection failed."
+    });
+  }
+});
+
+app.post("/api/travel/buses/book", async (req,res) => {
+  try {
+    const body = { ...(req.body || {}), mode: "UAT" };
+    const result = await pay2allRequest("/buses/book", "POST", body);
+    res.status(result.ok ? 200 : result.status).json(result.data);
+  } catch (error) {
+    console.error("Pay2All bus booking:", error.message);
+    res.status(502).json({
+      status_id: 2,
+      message: "Bus booking service connection failed."
+    });
+  }
+});
+
+/* ---------- HOLIDAY PACKAGES ---------- */
+
+app.get("/api/travel/holidays", async (req,res) => {
+  try {
+    const params = new URLSearchParams();
+    for (const key of ["destination","category","min_price","max_price","page","per_page"]) {
+      if (req.query[key] !== undefined) params.set(key, String(req.query[key]));
+    }
+
+    const query = params.toString();
+    const path = `/holidays/packages${query ? `?${query}` : ""}`;
+    const result = await pay2allRequest(path, "GET");
+    res.status(result.ok ? 200 : result.status).json(result.data);
+  } catch (error) {
+    console.error("Pay2All holidays:", error.message);
+    res.status(502).json({
+      status_id: 2,
+      message: "Holiday package service connection failed."
+    });
+  }
+});
+
+app.get("/api/travel/holidays/:slug", async (req,res) => {
+  try {
+    const slug = encodeURIComponent(req.params.slug);
+    const result = await pay2allRequest(`/holidays/packages/${slug}`, "GET");
+    res.status(result.ok ? 200 : result.status).json(result.data);
+  } catch (error) {
+    console.error("Pay2All holiday details:", error.message);
+    res.status(502).json({
+      status_id: 2,
+      message: "Holiday details service connection failed."
+    });
+  }
+});
+
+app.post("/api/travel/holidays/:id/enquiry", async (req,res) => {
+  try {
+    const id = encodeURIComponent(req.params.id);
+    const result = await pay2allRequest(`/holidays/packages/${id}/enquiry`, "POST", req.body || {});
+    res.status(result.ok ? 200 : result.status).json(result.data);
+  } catch (error) {
+    console.error("Pay2All holiday enquiry:", error.message);
+    res.status(502).json({
+      status_id: 2,
+      message: "Holiday enquiry service connection failed."
+    });
+  }
+});
+
+/* ================= END PAY2ALL TRAVEL UAT ================= */
+
