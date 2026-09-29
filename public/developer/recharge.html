@@ -5,18 +5,24 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SASIKUMAR AI - Mobile Recharge</title>
 <style>
-body{font-family:Arial,sans-serif;background:#f3f6fb;margin:0;padding:20px}
-.card{max-width:520px;margin:30px auto;background:#fff;padding:24px;border-radius:18px;box-shadow:0 8px 30px #0002}
-h1{text-align:center}label{display:block;margin-top:14px;font-weight:bold}
+body{font-family:Arial,sans-serif;background:linear-gradient(135deg,#e8fff1,#eef7ff);margin:0;padding:20px}
+.card{max-width:520px;margin:30px auto;background:#fff;padding:24px;border-radius:22px;box-shadow:0 10px 35px #0002}
+h1{text-align:center;color:#008f45;margin-bottom:5px}
+h2{text-align:center;margin-top:5px}
+label{display:block;margin-top:14px;font-weight:bold}
 input,select,button{width:100%;padding:13px;margin-top:7px;border-radius:10px;border:1px solid #ccc;box-sizing:border-box}
-button{background:#111;color:#fff;border:0;font-weight:bold;margin-top:20px}
+button{background:linear-gradient(135deg,#00c853,#008f45);color:#fff;border:0;font-weight:bold;margin-top:20px;cursor:pointer}
+button:disabled{opacity:.6}
 #result{margin-top:18px;padding:12px;border-radius:10px;background:#f1f1f1;white-space:pre-wrap}
+.status{text-align:center;font-size:13px;margin-top:10px}
 </style>
 </head>
 <body>
 <div class="card">
 <h1>📱 SASIKUMAR AI</h1>
 <h2>Mobile Recharge</h2>
+
+<div id="apiStatus" class="status">Checking Pay2All...</div>
 
 <label>Mobile Number</label>
 <input id="number" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number">
@@ -32,29 +38,85 @@ button{background:#111;color:#fff;border:0;font-weight:bold;margin-top:20px}
 <label>Amount ₹</label>
 <input id="amount" type="number" min="1" placeholder="Recharge amount">
 
-<button onclick="check()">Check Recharge</button>
+<button id="rechargeBtn" onclick="recharge()">RECHARGE</button>
 <div id="result">Recharge system ready.</div>
 </div>
 
 <script>
-async function check(){
+async function loadConfig(){
+  const status=document.getElementById("apiStatus");
+  try{
+    const r=await fetch("/api/recharge/config");
+    const d=await r.json();
+    status.textContent=d.enabled
+      ? "🟢 Pay2All API Connected • UAT/Sandbox"
+      : "🔴 Pay2All API Not Configured";
+  }catch(e){
+    status.textContent="🔴 Recharge API unavailable";
+  }
+}
+
+async function recharge(){
   const number=document.getElementById("number").value.trim();
   const provider_id=document.getElementById("provider").value;
   const amount=Number(document.getElementById("amount").value);
   const result=document.getElementById("result");
+  const btn=document.getElementById("rechargeBtn");
 
   if(!/^[6-9]\d{9}$/.test(number)){
     result.textContent="Enter a valid 10-digit mobile number.";
     return;
   }
+
   if(!amount || amount<1){
     result.textContent="Enter a valid recharge amount.";
     return;
   }
 
   const client_id="SKAI-"+Date.now();
-  result.textContent="Recharge backend ready. LIVE payment/recharge activation will be enabled after Pay2All approval and server configuration.";
+
+  btn.disabled=true;
+  result.textContent="Checking recharge service...";
+
+  try{
+    const config=await fetch("/api/recharge/config").then(r=>r.json());
+
+    if(!config.enabled){
+      result.textContent="Pay2All API is not configured.";
+      return;
+    }
+
+    if(!config.live){
+      result.textContent=
+        "✅ Pay2All API connected.\n\n"+
+        "🟡 LIVE recharge is not activated yet.\n"+
+        "Current mode: UAT/Sandbox.\n"+
+        "No real recharge was submitted.";
+      return;
+    }
+
+    const response=await fetch("/api/recharge/order",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        client_id,
+        provider_id:Number(provider_id),
+        number,
+        amount
+      })
+    });
+
+    const data=await response.json();
+    result.textContent=JSON.stringify(data,null,2);
+
+  }catch(error){
+    result.textContent="Recharge service connection failed.";
+  }finally{
+    btn.disabled=false;
+  }
 }
+
+loadConfig();
 </script>
 </body>
 </html>
