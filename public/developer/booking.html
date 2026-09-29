@@ -75,7 +75,7 @@ a{color:inherit;text-decoration:none}
   <div class="icon">🚌</div>
   <h2>Bus Booking</h2>
   <p>Bus ticket booking centre</p>
-  <button class="soon" onclick="comingSoon('Bus Booking')">Coming Soon</button>
+  <button class="available" onclick="openTravel('bus')">OPEN BUS UAT</button>
 </div>
 
 <div class="card">
@@ -89,7 +89,14 @@ a{color:inherit;text-decoration:none}
   <div class="icon">✈️</div>
   <h2>Flight Booking</h2>
   <p>Flight ticket booking centre</p>
-  <button class="soon" onclick="comingSoon('Flight Booking')">Coming Soon</button>
+  <button class="available" onclick="openTravel('flight')">OPEN FLIGHT UAT</button>
+</div>
+
+<div class="card">
+  <div class="icon">🏖️</div>
+  <h2>Holiday Packages</h2>
+  <p>Pay2All holiday package enquiry</p>
+  <button class="available" onclick="openTravel('holiday')">OPEN HOLIDAYS</button>
 </div>
 
 <div class="card">
@@ -125,8 +132,49 @@ a{color:inherit;text-decoration:none}
 </div>
 
 <script>
+async function openTravel(type){
+  try{
+    let r;
+
+    if(type==="flight"){
+      r=await fetch("/api/travel/flights/search",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+          origin:"MAA",
+          destination:"DEL",
+          depart_date:new Date().toISOString().slice(0,10),
+          adults:1,
+          children:0,
+          infants:0,
+          cabin_class:"Economy"
+        })
+      });
+      alert("✈️ Flight UAT response received. Status: "+r.status);
+    }
+
+    if(type==="bus"){
+      r=await fetch("/api/travel/buses/cities?q=Chennai");
+      alert("🚌 Bus UAT service connected. Status: "+r.status);
+    }
+
+    if(type==="holiday"){
+      r=await fetch("/api/travel/holidays");
+      alert("🏖️ Holiday service connected. Status: "+r.status);
+    }
+
+    if(r){
+      const data=await r.json();
+      console.log("SASIKUMAR AI Travel UAT:",data);
+    }
+  }catch(e){
+    console.error(e);
+    alert("Travel service connection failed.");
+  }
+}
+
 function comingSoon(name){
-  alert(name + " is coming soon in SASIKUMAR AI.");
+  alert(name+" is coming soon in SASIKUMAR AI.");
 }
 </script>
 </body>
