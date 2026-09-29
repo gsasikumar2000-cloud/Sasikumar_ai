@@ -426,80 +426,32 @@ function isGoldRateIntent(message){
 
 async function getLiveGoldRate(){
   try{
-    if(!process.env.TAVILY_API_KEY)
-      throw new Error("TAVILY_API_KEY missing");
+    const port=process.env.PORT || 3000;
 
-    const tvly=tavily({
-      apiKey:process.env.TAVILY_API_KEY
-    });
-
-    const result=await tvly.search(
-      "Thanjavur Tamil Nadu gold price today 24K 22K 916 18K rupees per gram",
-      {
-        search_depth:"advanced",
-        max_results:8,
-        include_answer:true
-      }
+    const response=await fetch(
+      `http://127.0.0.1:${port}/api/gold-rate?state=${encodeURIComponent("Tamil Nadu")}&district=${encodeURIComponent("Thanjavur")}`
     );
 
-    const text=[
-      result.answer || "",
-      ...(result.results || []).map(r =>
-        (r.title || "")+" "+(r.content || "")
-      )
-    ].join(" ");
+    if(!response.ok)
+      throw new Error(`Gold API HTTP ${response.status}`);
 
-    const clean=text.replace(/,/g," ");
+    const data=await response.json();
 
-    function findRate(labelPatterns){
-      for(const label of labelPatterns){
-
-        let m=clean.match(
-          new RegExp(label+"[^₹0-9]{0,120}(?:₹|Rs\\.?|INR)?\\s*(\\d{4,6})","i")
-        );
-        if(m) return Number(m[1]);
-
-        m=clean.match(
-          new RegExp("(?:₹|Rs\\.?|INR)?\\s*(\\d{4,6})[^₹0-9]{0,80}"+label,"i")
-        );
-        if(m) return Number(m[1]);
-      }
-      return 0;
-    }
-
-    const rate24=findRate([
-      "24K","24 K","24-carat","24 carat","24ct"
-    ]);
-
-    const rate22=findRate([
-      "22K","22 K","916","22-carat","22 carat","22ct"
-    ]);
-
-    const rate18=findRate([
-      "18K","18 K","18-carat","18 carat","18ct"
-    ]);
-
-    if(!rate24 || !rate22){
-      console.error("Tavily Gold Text:",text.slice(0,3000));
-      throw new Error("Live gold rate parsing failed");
-    }
-
-    const rate20=Math.round(rate22*20/22);
-    const rate19=Math.round(rate22*19/22);
+    if(!data || !data.rate24 || !data.rate22)
+      throw new Error("Gold API returned invalid live rates");
 
     return {
-      rate24,
-      rate22,
-      rate20,
-      rate19,
-      rate18,
-      rate24_8g:rate24*8,
-      rate22_8g:rate22*8,
-      rate20_8g:rate20*8,
-      rate19_8g:rate19*8,
-      rate18_8g:rate18*8
+      rate24:Number(data.rate24),
+      rate22:Number(data.rate22),
+      rate20:Number(data.rate20 || Math.round(data.rate22*20/22)),
+      rate19:Number(data.rate19 || Math.round(data.rate22*19/22)),
+      rate18:Number(data.rate18 || Math.round(data.rate22*18/22)),
+      rate24_8g:Number(data.rate24)*8,
+      rate22_8g:Number(data.rate22)*8,
+      rate20_8g:Number(data.rate20 || Math.round(data.rate22*20/22))*8,
+      rate19_8g:Number(data.rate19 || Math.round(data.rate22*19/22))*8,
+      rate18_8g:Number(data.rate18 || Math.round(data.rate22*18/22))*8
     };
-
   }catch(e){
     console.error("Live Gold Rate Error:",e.message);
     return null;
