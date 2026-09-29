@@ -274,14 +274,21 @@ const dailyTypes=[
 let todayType=null;
 
 function dailyContent(){
-  const day=Math.floor(Date.now()/86400000);
-  const index=day%dailyTypes.length;
+  const now=Date.now();
+  const twelveHours=12*60*60*1000;
+  const windowId=Math.floor(now/twelveHours);
+  const index=windowId%dailyTypes.length;
   todayType=dailyTypes[index];
 
   const tip=document.getElementById("tip");
-  if(tip) tip.textContent=tips[day%tips.length];
+  if(tip) tip.textContent=tips[windowId%tips.length];
 
   document.title="SASIKUMAR AI • "+todayType.title;
+
+  const remaining=twelveHours-(now%(twelveHours));
+  setTimeout(()=>{
+    location.reload();
+  },remaining+1000);
 }
 
 function speak(text){
