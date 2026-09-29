@@ -24,6 +24,70 @@ header p{color:#bbb;margin:8px 0 0}
 .action{font-weight:bold}
 .small{color:#aaa;font-size:13px}
 </style>
+
+<style>
+.book-detail-btn,
+.book-return-btn{
+  border:0;
+  border-radius:14px;
+  padding:12px 18px;
+  margin-top:12px;
+  cursor:pointer;
+  font-weight:700;
+  font-size:15px;
+}
+.book-detail-btn{
+  background:linear-gradient(135deg,#ffd54f,#ff9800);
+  color:#111;
+}
+.book-return-btn{
+  background:linear-gradient(135deg,#90caf9,#42a5f5);
+  color:#07111f;
+}
+.lifestyle-popup-overlay{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  background:rgba(0,0,0,.72);
+  backdrop-filter:blur(6px);
+}
+.lifestyle-popup{
+  width:min(720px,100%);
+  max-height:88vh;
+  overflow:auto;
+  border-radius:24px;
+  padding:20px;
+  background:linear-gradient(145deg,#fffdf5,#f3f8ff);
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+}
+.lifestyle-popup-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  font-size:21px;
+  font-weight:800;
+  margin-bottom:15px;
+}
+.lifestyle-popup-head button{
+  border:0;
+  background:#eee;
+  border-radius:50%;
+  width:38px;
+  height:38px;
+  cursor:pointer;
+  font-size:18px;
+}
+.lifestyle-popup h3{
+  margin-top:18px;
+}
+.lifestyle-popup li{
+  margin:8px 0;
+}
+</style>
 </head>
 
 <body>
@@ -183,20 +247,127 @@ action:"Action: இன்று ஒரு important update-ஐ இரண்ட�
 
 function showBook(key){
 const x=BOOK[key];
+
 document.getElementById("book").innerHTML=`
 <div class="card">
 <h2>${x.icon} ${x.title}</h2>
+
 <h3>🇮🇳 தமிழ் விளக்கம்</h3>
 <p>${x.ta}</p>
+
 <h3>🇬🇧 English Explanation</h3>
 <p>${x.en}</p>
+
 <h3>📖 Topics</h3>
 <ul>${x.topics.map(t=>`<li>${t}</li>`).join("")}</ul>
+
 <div class="tip">${x.tip}</div>
-<div class="qa"><b>❓ Mini Q&A</b><p>${x.qa}</p></div>
+
+<div class="qa">
+<b>❓ Mini Q&A</b>
+<p>${x.qa}</p>
+</div>
+
 <div class="tip action">🎯 ${x.action}</div>
+
+<button class="book-detail-btn"
+onclick="openLifestyleDetails('${key}')">
+📚 Extra Details
+</button>
+
+<br><br>
+
+<button class="book-return-btn"
+onclick="returnToLifestyleBook()">
+🔙 Return to Lifestyle Book
+</button>
 </div>`;
-window.scrollTo({top:document.getElementById("book").offsetTop-10,behavior:"smooth"});
+
+window.scrollTo({
+top:document.getElementById("book").offsetTop-10,
+behavior:"smooth"
+});
+}
+
+function openLifestyleDetails(key){
+const x=BOOK[key];
+
+const details={
+money:{
+ta:"பணம் தொடர்பான முடிவுகளில் வருமானம், செலவு, சேமிப்பு மற்றும் தேவைகளை தெளிவாக பதிவு செய்வது உதவும். பெரிய நிதி முடிவுகளுக்கு முன் நம்பகமான தகவல்களை சரிபார்க்கவும்.",
+en:"Good money habits include understanding income, expenses, saving and financial priorities. For major financial decisions, verify information and consider qualified professional guidance.",
+points:["Budget planning","Saving habits","Needs vs wants","Financial awareness","Information verification"]
+},
+learning:{
+ta:"தொடர்ந்து கற்றல் என்பது பள்ளி அல்லது கல்லூரியுடன் மட்டும் முடிவதில்லை. வாசிப்பு, practice மற்றும் self-review மூலம் புதிய திறன்களை வளர்க்கலாம்.",
+en:"Learning can continue throughout life through reading, practice, feedback and reflection.",
+points:["Reading","Practice","Revision","Skill building","Self-review"]
+},
+health:{
+ta:"நல்ல lifestyle-க்கு போதுமான தூக்கம், சீரான உணவு, தினசரி உடல் இயக்கம் மற்றும் மன அமைதிக்கான நேரம் முக்கியம்.",
+en:"A healthy lifestyle includes adequate sleep, balanced nutrition, regular physical activity and time for rest.",
+points:["Sleep","Balanced food","Physical activity","Rest","Daily routine"]
+},
+technology:{
+ta:"Technology-ஐ பயனுள்ளதாக பயன்படுத்தும்போது privacy, passwords, updates மற்றும் online information verification போன்றவற்றை கவனிக்க வேண்டும்.",
+en:"Useful technology habits include protecting privacy, using strong passwords, keeping software updated and checking information before trusting or sharing it.",
+points:["Digital safety","Privacy","Passwords","Updates","Fact checking"]
+}
+};
+
+const d=details[key] || {
+ta:"இந்த topic பற்றிய கூடுதல் தகவல்களை படித்து, நடைமுறையில் சிறிய steps மூலம் பயன்படுத்துங்கள்.",
+en:"Explore the topic further and apply useful ideas through small practical steps.",
+points:x.topics
+};
+
+const old=document.getElementById("lifestyleDetailPopup");
+if(old) old.remove();
+
+const popup=document.createElement("div");
+popup.id="lifestyleDetailPopup";
+popup.innerHTML=`
+<div class="lifestyle-popup-overlay" onclick="closeLifestyleDetails(event)">
+ <div class="lifestyle-popup" onclick="event.stopPropagation()">
+  <div class="lifestyle-popup-head">
+   <span>${x.icon} ${x.title}</span>
+   <button onclick="closeLifestyleDetails()">✕</button>
+  </div>
+
+  <h3>🇮🇳 Extra தமிழ் விளக்கம்</h3>
+  <p>${d.ta}</p>
+
+  <h3>🇬🇧 Extra English Explanation</h3>
+  <p>${d.en}</p>
+
+  <h3>📌 முக்கிய பகுதிகள்</h3>
+  <ul>${d.points.map(p=>`<li>${p}</li>`).join("")}</ul>
+
+  <div class="tip">
+   💡 <b>Practical Note:</b> தகவலை உங்கள் தினசரி routine-க்கு ஏற்ற சிறிய steps ஆக பயன்படுத்துங்கள்.
+  </div>
+
+  <button class="book-return-btn" onclick="closeLifestyleDetails()">
+   🔙 Return to Lifestyle Book
+  </button>
+ </div>
+</div>`;
+
+document.body.appendChild(popup);
+}
+
+function closeLifestyleDetails(event){
+if(event && event.target && !event.target.classList.contains("lifestyle-popup-overlay")) return;
+const popup=document.getElementById("lifestyleDetailPopup");
+if(popup) popup.remove();
+}
+
+function returnToLifestyleBook(){
+closeLifestyleDetails();
+window.scrollTo({
+top:document.getElementById("book").offsetTop-10,
+behavior:"smooth"
+});
 }
 
 showBook("money");
