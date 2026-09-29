@@ -335,7 +335,56 @@ https://sasikumar-ai-9wdq.onrender.com/daily-gold-poster.svg`
   }
 }
 
-async function generate(){
+async function sendDailyWhatsAppUpdate(data){
+  try{
+    const token=process.env.WHATSAPP_ACCESS_TOKEN;
+    const phoneNumberId=process.env.WHATSAPP_PHONE_NUMBER_ID;
+    const to=process.env.WHATSAPP_TO_NUMBER;
+
+    if(!token || !phoneNumberId || !to){
+      console.log('WhatsApp variables missing - daily update skipped');
+      return false;
+    }
+
+    const message =
+      '📢 SASIKUMAR AI — Daily Update\n\n' +
+      '🪙 Gold 24K: ₹' + money(data.gold.r24) + '/g\n' +
+      '🪙 Gold 22K: ₹' + money(data.gold.r22) + '/g\n' +
+      '🥈 Silver 1g: ₹' + money(data.silver.gram) + '\n' +
+      '🥈 Silver 1kg: ₹' + money(data.silver.kg) + '\n\n' +
+      '🖼️ Daily Gold + Silver Poster:\n' +
+      'https://sasikumar-ai-9wdq.onrender.com/daily-gold-poster.svg\n\n' +
+      '🎬 SASIKUMAR AI Daily Video:\n' +
+      'https://sasikumar-ai-9wdq.onrender.com/daily-video.html\n\n' +
+      '⏰ Daily update: 10:00 AM IST';
+
+    const response=await fetch(
+      'https://graph.facebook.com/v23.0/' + phoneNumberId + '/messages',
+      {
+        method:'POST',
+        headers:{
+          Authorization:'Bearer ' + token,
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify({
+          messaging_product:'whatsapp',
+          to:to,
+          type:'text',
+          text:{body:message}
+        })
+      }
+    );
+
+    const result=await response.json();
+    console.log('📲 Daily WhatsApp response:',result);
+    return response.ok;
+  }catch(e){
+    console.error('❌ Daily WhatsApp update failed:',e.message);
+    return false;
+  }
+}
+
+async function generate(notify=false){
   try{
     const data=await getRates();
     const svg=poster(data);
@@ -351,18 +400,44 @@ async function generate(){
 
     await sendDiscordUpdate(data);
 
+    if(notify){
+      await sendDailyWhatsAppUpdate(data);
+    }
+
   }catch(e){
     console.error('❌ Gold + Silver Daily Poster failed:',e.message);
   }
 }
 
+function autoDeleteOldPoster(){
+  try{
+    if(!fs.existsSync(OUT)) return;
+
+    const ageMs = Date.now() - fs.statSync(OUT).mtimeMs;
+    const twelveHours = 12 * 60 * 60 * 1000;
+
+    if(ageMs >= twelveHours){
+      fs.unlinkSync(OUT);
+      console.log('🗑️ Daily Gold + Silver Poster deleted after 12 hours');
+    }
+  }catch(e){
+    console.error('❌ Poster auto-delete failed:', e.message);
+  }
+}
+
+cron.schedule(
+  '*/10 * * * *',
+  autoDeleteOldPoster,
+  {timezone:'Asia/Kolkata'}
+);
+
 cron.schedule(
   '0 10 * * *',
-  generate,
+  ()=>generate(true),
   {timezone:'Asia/Kolkata'}
 );
 
 console.log('🟢 SASIKUMAR AI Gold + Silver Poster automation started');
 console.log('⏰ Schedule: Every day at 10:00 AM IST');
 
-generate();
+generate(false);
