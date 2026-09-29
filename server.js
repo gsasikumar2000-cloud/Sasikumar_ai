@@ -255,6 +255,7 @@ async function askGemini(message, forcedLanguage="", attachment=null){
       )
     );
 
+    console.log("🟡 Gemini request START");
     const response = await Promise.race([
       geminiClient.interactions.create({
         model:"gemini-3.6-flash",
@@ -266,6 +267,7 @@ async function askGemini(message, forcedLanguage="", attachment=null){
       }),
       geminiTimeout
     ]);
+    console.log("🟢 Gemini request DONE");
 
   console.log("🔎 GEMINI RESPONSE KEYS:", Object.keys(response || {}));
   console.log("🔎 GEMINI STATUS:", response?.status || response?.finish_reason || response?.finishReason || "");
