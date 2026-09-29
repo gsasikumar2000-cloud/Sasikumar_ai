@@ -74,8 +74,6 @@ document.getElementById("refLink").value=link;
 const activeRef=localStorage.getItem("sasikumar_referrer");
 
 if(activeRef){
-  document.getElementById("refCount").textContent="1";
-
   let visitorId=localStorage.getItem("sasikumar_visitor_id");
   if(!visitorId){
     visitorId="v-"+crypto.randomUUID();
@@ -96,6 +94,16 @@ if(activeRef){
     }
   }).catch(()=>{});
 }
+
+fetch("/api/referral/status?code="+encodeURIComponent(code))
+  .then(r=>r.json())
+  .then(data=>{
+    if(data.status_id===1 && data.data){
+      document.getElementById("refCount").textContent=
+        String(data.data.unique_referrals || 0);
+    }
+  })
+  .catch(()=>{});
 
 function copyReferral(){
  navigator.clipboard.writeText(link).then(()=>alert("✅ Referral link copied"));
