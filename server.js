@@ -1432,7 +1432,8 @@ app.post("/api/recharge/order", async (req,res) => {
         client_id: String(client_id).slice(0,64),
         provider_id: Number(provider_id),
         number: String(number),
-        amount: Number(amount)
+        amount: Number(amount),
+        mode: "UAT"
       })
     });
 
