@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI — All Booking Centre</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:Arial,sans-serif;
+  color:#fff;
+  background:linear-gradient(135deg,#07152e,#172554,#312e81,#0f766e);
+}
+.wrap{max-width:1000px;margin:auto;padding:24px}
+.header{
+  text-align:center;
+  padding:25px 10px;
+}
+.logo{width:90px;height:90px;object-fit:contain}
+h1{margin:10px 0 5px;font-size:32px}
+.sub{opacity:.85}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+  gap:18px;
+  margin-top:25px;
+}
+.card{
+  padding:22px;
+  border-radius:22px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.2);
+  box-shadow:0 10px 30px rgba(0,0,0,.25);
+  text-align:center;
+  backdrop-filter:blur(10px);
+}
+.icon{font-size:42px}
+.card h2{font-size:20px;margin:12px 0 8px}
+.card p{font-size:14px;opacity:.8;min-height:38px}
+button{
+  width:100%;
+  padding:12px;
+  border:0;
+  border-radius:12px;
+  font-weight:bold;
+  cursor:pointer;
+}
+.available{background:#22c55e;color:#062e16}
+.soon{background:#facc15;color:#422006}
+.note{
+  margin-top:25px;
+  padding:16px;
+  border-radius:16px;
+  background:rgba(0,0,0,.22);
+  font-size:14px;
+  line-height:1.6;
+}
+a{color:inherit;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="header">
+  <img class="logo" src="/assets/sasikumar-ai-logo.svg" alt="SASIKUMAR AI">
+  <h1>📚 All Booking Centre</h1>
+  <div class="sub">SASIKUMAR AI — One place for booking services</div>
+</header>
+
+<section class="grid">
+
+<div class="card">
+  <div class="icon">🚌</div>
+  <h2>Bus Booking</h2>
+  <p>Bus ticket booking centre</p>
+  <button class="soon" onclick="comingSoon('Bus Booking')">Coming Soon</button>
+</div>
+
+<div class="card">
+  <div class="icon">🚆</div>
+  <h2>Train Booking</h2>
+  <p>Train ticket booking centre</p>
+  <button class="soon" onclick="comingSoon('Train Booking')">Coming Soon</button>
+</div>
+
+<div class="card">
+  <div class="icon">✈️</div>
+  <h2>Flight Booking</h2>
+  <p>Flight ticket booking centre</p>
+  <button class="soon" onclick="comingSoon('Flight Booking')">Coming Soon</button>
+</div>
+
+<div class="card">
+  <div class="icon">🏨</div>
+  <h2>Hotel Booking</h2>
+  <p>Hotel reservation centre</p>
+  <button class="soon" onclick="comingSoon('Hotel Booking')">Coming Soon</button>
+</div>
+
+<div class="card">
+  <div class="icon">🎟️</div>
+  <h2>Movie & Event</h2>
+  <p>Movie and event ticket centre</p>
+  <button class="soon" onclick="comingSoon('Movie & Event Booking')">Coming Soon</button>
+</div>
+
+<div class="card">
+  <div class="icon">📱</div>
+  <h2>Mobile Recharge</h2>
+  <p>Pay2All recharge centre</p>
+  <a href="/developer/recharge.html">
+    <button class="available">OPEN RECHARGE</button>
+  </a>
+</div>
+
+</section>
+
+<div class="note">
+  ℹ️ Booking integrations will be activated only when the required provider/API is configured.
+  Do not enter payment details on services that are not yet activated.
+</div>
+
+</div>
+
+<script>
+function comingSoon(name){
+  alert(name + " is coming soon in SASIKUMAR AI.");
+}
+</script>
+</body>
+</html>
