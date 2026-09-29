@@ -1496,6 +1496,33 @@ const pay2allRechargeStatus = new Map();
 const PAY2ALL_BASE_URL = process.env.PAY2ALL_BASE_URL || "https://pay2all.in/api/v1";
 const PAY2ALL_API_KEY = process.env.PAY2ALL_API_KEY || "";
 
+app.get("/api/recharge/balance", async (req,res) => {
+  if (!PAY2ALL_API_KEY) {
+    return res.status(503).json({
+      status_id: 2,
+      message: "Pay2All API key is not configured."
+    });
+  }
+
+  try {
+    const response = await fetch(`${PAY2ALL_BASE_URL}/balance`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${PAY2ALL_API_KEY}`,
+        "Accept": "application/json"
+      }
+    });
+
+    const data = await response.json();
+    res.status(response.ok ? 200 : response.status).json(data);
+  } catch (error) {
+    res.status(502).json({
+      status_id: 2,
+      message: "Pay2All balance connection failed."
+    });
+  }
+});
+
 app.get("/api/recharge/providers", (req,res) => {
   res.json({
     status_id: 1,
