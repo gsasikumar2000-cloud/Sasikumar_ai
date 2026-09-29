@@ -29,10 +29,7 @@ button:disabled{opacity:.6}
 
 <label>Operator</label>
 <select id="provider">
-<option value="1">Airtel</option>
-<option value="2">Jio</option>
-<option value="3">Vi</option>
-<option value="4">BSNL</option>
+<option value="">Loading operators...</option>
 </select>
 
 <label>Amount ₹</label>
@@ -43,6 +40,32 @@ button:disabled{opacity:.6}
 </div>
 
 <script>
+async function loadProviders(){
+  const select=document.getElementById("provider");
+
+  try{
+    const response=await fetch("/api/recharge/providers");
+    const data=await response.json();
+
+    const providers=(data.data||[]);
+
+    select.innerHTML="";
+
+    providers.forEach(p=>{
+      const option=document.createElement("option");
+      option.value=p.provider_id;
+      option.textContent=p.name;
+      select.appendChild(option);
+    });
+
+    if(!providers.length){
+      select.innerHTML='<option value="">No operators available</option>';
+    }
+  }catch(error){
+    select.innerHTML='<option value="">Unable to load operators</option>';
+  }
+}
+
 async function loadConfig(){
   const status=document.getElementById("apiStatus");
   try{
@@ -116,6 +139,7 @@ async function recharge(){
   }
 }
 
+loadProviders();
 loadConfig();
 </script>
 </body>
