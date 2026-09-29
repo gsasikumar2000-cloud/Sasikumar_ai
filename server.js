@@ -1370,6 +1370,7 @@ app.listen(PORT,()=>{
 
 
 /* ================= SASIKUMAR AI — PAY2ALL RECHARGE ================= */
+const pay2allRechargeStatus = new Map();
 const PAY2ALL_BASE_URL = process.env.PAY2ALL_BASE_URL || "https://pay2all.in/api/v1";
 const PAY2ALL_API_KEY = process.env.PAY2ALL_API_KEY || "";
 
@@ -1446,19 +1447,47 @@ app.post("/api/recharge/order", async (req,res) => {
 });
 
 app.get("/api/recharge/status/:clientId", (req,res) => {
+  const clientId = req.params.clientId;
+  const saved = pay2allRechargeStatus.get(clientId);
+
+  if (!saved) {
+    return res.json({
+      status_id: 3,
+      message: "Recharge status pending.",
+      data: { client_id: clientId }
+    });
+  }
+
   res.json({
-    status_id: 3,
-    message: "Recharge status tracking endpoint ready.",
-    data: { client_id: req.params.clientId }
+    status_id: saved.status_id,
+    message: saved.message || "Recharge status received.",
+    data: saved
   });
 });
 
 app.post("/api/recharge/webhook", (req,res) => {
+  const body = req.body || {};
+  const clientId = body.client_id;
+
+  if (clientId) {
+    pay2allRechargeStatus.set(clientId, {
+      client_id: clientId,
+      txn_id: body.txn_id || "",
+      status_id: Number(body.status_id) || 3,
+      utr: body.utr || "",
+      report_id: body.report_id || "",
+      amount: Number(body.amount) || 0,
+      wallet_balance: Number(body.wallet_balance) || 0,
+      message: "Pay2All webhook status received."
+    });
+  }
+
   console.log("Pay2All recharge webhook:", {
-    client_id: req.body?.client_id,
-    txn_id: req.body?.txn_id,
-    status_id: req.body?.status_id
+    client_id: clientId,
+    txn_id: body.txn_id,
+    status_id: body.status_id
   });
+
   res.json({ status_id: 1, message: "Webhook received." });
 });
 
