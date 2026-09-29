@@ -1366,6 +1366,30 @@ app.listen(PORT,()=>{
   require("./daily-gold-poster");
 });
 
+
+app.get("/api/recharge/pay2all-test", async (req,res) => {
+  if (!PAY2ALL_API_KEY) {
+    return res.status(503).json({ok:false,message:"Pay2All API key not configured"});
+  }
+
+  try {
+    const response = await fetch(`${PAY2ALL_BASE_URL}/providers`, {
+      headers: {
+        "Authorization": `Bearer ${PAY2ALL_API_KEY}`,
+        "Accept": "application/json"
+      }
+    });
+
+    const data = await response.json();
+    res.status(response.ok ? 200 : response.status).json(data);
+  } catch (error) {
+    res.status(502).json({
+      ok:false,
+      message:"Pay2All connection failed."
+    });
+  }
+});
+
 /* ================= SASIKUMAR AI — PAY2ALL RECHARGE ================= */
 const PAY2ALL_BASE_URL = process.env.PAY2ALL_BASE_URL || "https://pay2all.in/api/v1";
 const PAY2ALL_API_KEY = process.env.PAY2ALL_API_KEY || "";
