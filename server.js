@@ -1365,3 +1365,98 @@ app.listen(PORT,()=>{
   // SASIKUMAR AI Daily Gold Poster
   require("./daily-gold-poster");
 });
+
+/* ================= SASIKUMAR AI — PAY2ALL RECHARGE ================= */
+const PAY2ALL_BASE_URL = process.env.PAY2ALL_BASE_URL || "https://pay2all.in/api/v1";
+const PAY2ALL_API_KEY = process.env.PAY2ALL_API_KEY || "";
+
+app.get("/api/recharge/providers", (req,res) => {
+  res.json({
+    status_id: 1,
+    message: "Mobile recharge providers",
+    data: [
+      { provider_id: 1, name: "Airtel", code: "AIRTEL" },
+      { provider_id: 2, name: "Jio", code: "JIO" },
+      { provider_id: 3, name: "Vi", code: "VI" },
+      { provider_id: 4, name: "BSNL", code: "BSNL" }
+    ]
+  });
+});
+
+app.get("/api/recharge/config", (req,res) => {
+  res.json({
+    enabled: Boolean(PAY2ALL_API_KEY),
+    live: false,
+    message: PAY2ALL_API_KEY
+      ? "Recharge API configured; LIVE activation requires server configuration."
+      : "Recharge system ready. Pay2All API key not configured."
+  });
+});
+
+app.post("/api/recharge/order", async (req,res) => {
+  if (!PAY2ALL_API_KEY) {
+    return res.status(503).json({
+      status_id: 2,
+      message: "Pay2All API key is not configured. Recharge is not LIVE."
+    });
+  }
+
+  const { client_id, provider_id, number, amount } = req.body || {};
+
+  if (!client_id || !provider_id || !number || !amount) {
+    return res.status(400).json({
+      status_id: 2,
+      message: "client_id, provider_id, number and amount are required."
+    });
+  }
+
+  if (!/^[6-9]\d{9}$/.test(String(number))) {
+    return res.status(400).json({
+      status_id: 2,
+      message: "Invalid Indian mobile number."
+    });
+  }
+
+  try {
+    const response = await fetch(`${PAY2ALL_BASE_URL}/recharge`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${PAY2ALL_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        client_id: String(client_id).slice(0,64),
+        provider_id: Number(provider_id),
+        number: String(number),
+        amount: Number(amount)
+      })
+    });
+
+    const data = await response.json();
+    res.status(response.ok ? 200 : response.status).json(data);
+  } catch (error) {
+    res.status(502).json({
+      status_id: 2,
+      message: "Recharge provider connection failed."
+    });
+  }
+});
+
+app.get("/api/recharge/status/:clientId", (req,res) => {
+  res.json({
+    status_id: 3,
+    message: "Recharge status tracking endpoint ready.",
+    data: { client_id: req.params.clientId }
+  });
+});
+
+app.post("/api/recharge/webhook", (req,res) => {
+  console.log("Pay2All recharge webhook:", {
+    client_id: req.body?.client_id,
+    txn_id: req.body?.txn_id,
+    status_id: req.body?.status_id
+  });
+  res.json({ status_id: 1, message: "Webhook received." });
+});
+
+/* ================= END PAY2ALL RECHARGE ================= */
