@@ -1185,6 +1185,111 @@ body.dark{
   }
 }
 </style>
+
+
+<style id="sk-all-services-style">
+.sk-all-services-card{
+  margin:16px 0 20px;
+  padding:18px;
+  border-radius:26px;
+  background:linear-gradient(135deg,#fff8df,#eef7ff,#f5edff);
+  border:2px solid rgba(120,90,220,.18);
+  box-shadow:0 12px 30px rgba(0,0,0,.10);
+}
+.sk-all-services-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:15px;
+}
+.sk-all-services-title{
+  font-size:22px;
+  font-weight:900;
+}
+.sk-all-services-sub{
+  margin-top:4px;
+  font-size:13px;
+  opacity:.75;
+}
+.sk-all-services-head button,
+.sk-extra-details button{
+  border:0;
+  border-radius:14px;
+  padding:9px 13px;
+  font-weight:800;
+  cursor:pointer;
+}
+.sk-service-zigzag{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+.sk-service-zigzag button{
+  min-height:92px;
+  padding:13px;
+  border:0;
+  border-radius:20px;
+  background:rgba(255,255,255,.82);
+  box-shadow:0 7px 18px rgba(0,0,0,.08);
+  cursor:pointer;
+  text-align:left;
+  transition:.2s ease;
+}
+.sk-service-zigzag button:nth-child(even){
+  transform:translateY(12px);
+}
+.sk-service-zigzag button:hover{
+  transform:translateY(-3px) scale(1.015);
+}
+.sk-service-zigzag button:nth-child(even):hover{
+  transform:translateY(8px) scale(1.015);
+}
+.sk-service-zigzag button:first-letter{
+  font-size:25px;
+}
+.sk-service-zigzag span{
+  display:block;
+  margin-top:5px;
+  font-weight:900;
+}
+.sk-service-zigzag small{
+  display:block;
+  margin-top:4px;
+  font-size:11px;
+  opacity:.7;
+}
+.sk-extra-details{
+  margin-top:22px;
+  padding:13px;
+  border-radius:18px;
+  background:rgba(255,255,255,.7);
+}
+.sk-extra-details summary{
+  cursor:pointer;
+  font-weight:900;
+}
+.sk-extra-details div{
+  padding-top:10px;
+  font-size:13px;
+}
+@media(max-width:600px){
+  .sk-all-services-head{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+  .sk-service-zigzag{
+    grid-template-columns:1fr;
+  }
+  .sk-service-zigzag button:nth-child(even){
+    transform:translateY(0);
+  }
+  .sk-service-zigzag button:nth-child(even):hover{
+    transform:translateY(-3px) scale(1.015);
+  }
+}
+</style>
+
 </head>
 
 
@@ -1285,7 +1390,7 @@ body.dark{
 }
 </style>
 
-<div id="skTodaySmart" class="skCard" style="margin:18px 0;padding:18px;border-radius:22px;background:linear-gradient(135deg,#e8f7ff,#fff3e8,#f3edff);"><h3>📅 Today Smart Info</h3><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;"><div class="skCard">📅 <b>Date</b><br><span id="skTodayDate">Loading...</span></div><div class="skCard">⏰ <b>Live Time</b><br><span id="skLiveTime">Loading...</span></div><div class="skCard">📍 <b>Location</b><br><span id="skUserLocation">Kumbakonam, Tamil Nadu</span></div><div class="skCard">🌤️ <b>Weather</b><br><span id="skWeatherInfo">Weather update</span></div></div><div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;"><button class="skBtn" onclick="alert(&quot;Daily alerts: Check important announcements, jobs, education and safety updates.&quot;)">🔔 Daily Alerts</button><button class="skBtn" onclick="if(&quot;speechSynthesis&quot; in window){speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(&quot;Vanakkam! Welcome to SASIKUMAR AI.&quot;))}else{alert(&quot;Voice is not supported in this browser.&quot;)}">🎙️ Voice</button><button class="skBtn" onclick="location.reload()">🔄 Refresh</button></div></div><script>(function(){function u(){var d=new Date(),w=[&quot;Sunday&quot;,&quot;Monday&quot;,&quot;Tuesday&quot;,&quot;Wednesday&quot;,&quot;Thursday&quot;,&quot;Friday&quot;,&quot;Saturday&quot;],a=document.getElementById(&quot;skTodayDate&quot;),t=document.getElementById(&quot;skLiveTime&quot;);if(a)a.textContent=d.toLocaleDateString(&quot;en-IN&quot;,{day:&quot;2-digit&quot;,month:&quot;long&quot;,year:&quot;numeric&quot;})+&quot; • &quot;+w[d.getDay()];if(t)t.textContent=d.toLocaleTimeString(&quot;en-IN&quot;,{hour:&quot;2-digit&quot;,minute:&quot;2-digit&quot;,second:&quot;2-digit&quot;,hour12:true})}u();setInterval(u,1000)})();</script><div id="skDailyLifeHub" class="skCard" style="margin:18px 0;padding:18px;border-radius:22px;background:linear-gradient(135deg,#fff7e6,#eef7ff,#f7efff);"><h3>🌟 SASIKUMAR AI — Daily Life & Utility Hub</h3><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;"><button class="skBtn" onclick="location.href='/sports/'">🏏 Sports</button><button class="skBtn" onclick="location.href='/education/'">📚 Education</button><button class="skBtn" onclick="location.href='/jobs/'">💼 Jobs</button><button class="skBtn" onclick="location.href='/gold.html'">🪙 Gold & Silver</button><button class="skBtn" onclick="document.getElementById('skAskAI')?.scrollIntoView({behavior:'smooth'})">🤖 Ask AI</button><button class="skBtn" onclick="alert('🛡️ Never share OTP, PIN or passwords.')">🛡️ Safety</button><button class="skBtn" onclick="alert('💰 Plan a budget and track expenses.')">💰 Money</button><button class="skBtn" onclick="alert('🍲 Food safety: keep food clean and cook thoroughly.')">🍲 Food</button></div></div>
+<div id="skTodaySmart" class="skCard" style="margin:18px 0;padding:18px;border-radius:22px;background:linear-gradient(135deg,#e8f7ff,#fff3e8,#f3edff);"><h3>📅 Today Smart Info</h3><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;"><div class="skCard">📅 <b>Date</b><br><span id="skTodayDate">Loading...</span></div><div class="skCard">⏰ <b>Live Time</b><br><span id="skLiveTime">Loading...</span></div><div class="skCard">📍 <b>Location</b><br><span id="skUserLocation">Detecting...</span></div><div class="skCard">🌤️ <b>Weather</b><br><span id="skWeatherInfo">Loading weather...</span></div></div><div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;"><button class="skBtn" onclick="alert(&quot;Daily alerts: Check important announcements, jobs, education and safety updates.&quot;)">🔔 Daily Alerts</button><button class="skBtn" onclick="if(&quot;speechSynthesis&quot; in window){speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(&quot;Vanakkam! Welcome to SASIKUMAR AI.&quot;))}else{alert(&quot;Voice is not supported in this browser.&quot;)}">🎙️ Voice</button><button class="skBtn" onclick="location.reload()">🔄 Refresh</button></div></div><script>(function(){function u(){var d=new Date(),w=[&quot;Sunday&quot;,&quot;Monday&quot;,&quot;Tuesday&quot;,&quot;Wednesday&quot;,&quot;Thursday&quot;,&quot;Friday&quot;,&quot;Saturday&quot;],a=document.getElementById(&quot;skTodayDate&quot;),t=document.getElementById(&quot;skLiveTime&quot;);if(a)a.textContent=d.toLocaleDateString(&quot;en-IN&quot;,{day:&quot;2-digit&quot;,month:&quot;long&quot;,year:&quot;numeric&quot;})+&quot; • &quot;+w[d.getDay()];if(t)t.textContent=d.toLocaleTimeString(&quot;en-IN&quot;,{hour:&quot;2-digit&quot;,minute:&quot;2-digit&quot;,second:&quot;2-digit&quot;,hour12:true})}u();setInterval(u,1000)})();</script><div id="skDailyLifeHub" class="skCard" style="margin:18px 0;padding:18px;border-radius:22px;background:linear-gradient(135deg,#fff7e6,#eef7ff,#f7efff);"><h3>🌟 SASIKUMAR AI — Daily Life & Utility Hub</h3><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;"><button class="skBtn" onclick="location.href='/sports/'">🏏 Sports</button><button class="skBtn" onclick="location.href='/education/'">📚 Education</button><button class="skBtn" onclick="location.href='/jobs/'">💼 Jobs</button><button class="skBtn" onclick="location.href='/gold.html'">🪙 Gold & Silver</button><button class="skBtn" onclick="document.getElementById('skAskAI')?.scrollIntoView({behavior:'smooth'})">🤖 Ask AI</button><button class="skBtn" onclick="alert('🛡️ Never share OTP, PIN or passwords.')">🛡️ Safety</button><button class="skBtn" onclick="alert('💰 Plan a budget and track expenses.')">💰 Money</button><button class="skBtn" onclick="alert('🍲 Food safety: keep food clean and cook thoroughly.')">🍲 Food</button></div></div>
 <div class="skHero">
   <h2>🧠 SASIKUMAR AI</h2>
   <p>Your Daily Smart Information Hub<br>
@@ -1855,6 +1960,37 @@ function closeAdminControl(){
 <div id="dashboard" class="dashboard">
   <div class="dash-title">✨ SASIKUMAR AI <button id="adminSettingsBtn" onclick="openAdminControl()" title="Admin Control" style="margin-left:8px;border:0;background:transparent;font-size:18px;cursor:pointer;padding:2px 5px;">⚙️</button></div>
   <div class="dash-sub">Smart Assistant • Gold • News • Voice</div>
+
+  <div id="skAllServicesCard" class="sk-all-services-card">
+    <div class="sk-all-services-head">
+      <div>
+        <div class="sk-all-services-title">⚡ ALL SERVICES</div>
+        <div class="sk-all-services-sub">SASIKUMAR AI • Smart Services Hub</div>
+      </div>
+      <button type="button" onclick="window.location.href='/'">🏠 Main Home</button>
+    </div>
+
+    <div class="sk-service-zigzag">
+      <button onclick="openEquations()">📚<span>Education</span><small>School • Q&A • Equations</small></button>
+      <button onclick="liveGoldRate()">💰<span>Gold & Silver</span><small>Rates • Gold Tools</small></button>
+      <button onclick="window.location.href='/jobs/index.html'">💼<span>Jobs</span><small>Career • Opportunities</small></button>
+      <button onclick="window.location.href='/developer/booking.html'">🎫<span>Booking</span><small>Bus • Train • Flight • Hotel</small></button>
+      <button onclick="window.location.href='/developer/referral.html'">🔗<span>Referral Centre</span><small>Referral • Commission</small></button>
+      <button onclick="window.location.href='/lifestyle.html'">📘<span>Lifestyle Book</span><small>Life • Money • Learning</small></button>
+      <button onclick="window.location.href='/toolkit.html'">🧰<span>Tool Kit</span><small>Smart Tools • Finance • AI</small></button>
+      <button onclick="window.location.href='/daily-video.html'">🎬<span>SASIKUMAR AI Video</span><small>Daily AI Show • Tamil Voice</small></button>
+    </div>
+
+    <details class="sk-extra-details">
+      <summary>➕ Extra Details</summary>
+      <div>
+        <p>All SASIKUMAR AI services are organized here for quick access.</p>
+        <p>Each service opens its dedicated page or existing service function.</p>
+        <button type="button" onclick="history.back()">← Back</button>
+        <button type="button" onclick="window.location.href='/'">🏠 Main Home</button>
+      </div>
+    </details>
+  </div>
 
   <div class="dash-grid">
     <button onclick="openEquations()">📐📚<span>Equations & Education</span><small>Math • School • Q&A • Learning</small></button>
