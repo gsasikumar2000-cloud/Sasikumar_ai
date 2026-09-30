@@ -1290,6 +1290,92 @@ body.dark{
 }
 </style>
 
+
+<style id="sasikumar-3d-luxury">
+.skCard,
+.skServiceBtn,
+a.skServiceBtn,
+section.skCard {
+  position:relative;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.55);
+  border-radius:24px;
+  background:linear-gradient(135deg,rgba(255,255,255,.96),rgba(245,247,255,.88),rgba(255,248,235,.92));
+  box-shadow:
+    0 14px 30px rgba(40,40,90,.16),
+    inset 0 1px 0 rgba(255,255,255,.9);
+  transform:translateZ(0);
+  transition:transform .25s ease,box-shadow .25s ease;
+}
+
+.skCard:hover,
+.skServiceBtn:hover {
+  transform:translateY(-4px);
+  box-shadow:
+    0 20px 40px rgba(55,45,120,.22),
+    inset 0 1px 0 rgba(255,255,255,1);
+}
+
+.skCard::before {
+  content:"";
+  position:absolute;
+  width:180px;
+  height:180px;
+  right:-70px;
+  top:-80px;
+  border-radius:50%;
+  background:linear-gradient(135deg,rgba(255,215,0,.28),rgba(120,80,255,.10));
+  filter:blur(3px);
+  pointer-events:none;
+}
+
+.skCard h2,
+.skCard h3 {
+  text-shadow:0 2px 8px rgba(60,40,100,.15);
+}
+
+.skServiceBtn {
+  display:flex !important;
+  align-items:center;
+  justify-content:center;
+  min-height:58px;
+  padding:12px 14px;
+  text-decoration:none !important;
+  color:#202040 !important;
+  font-weight:700;
+  background:linear-gradient(145deg,#ffffff,#eef1ff);
+}
+
+.skServiceBtn:active {
+  transform:scale(.97);
+}
+
+#smartHomeCard {
+  background:
+    radial-gradient(circle at 15% 20%,rgba(0,210,255,.20),transparent 32%),
+    radial-gradient(circle at 85% 20%,rgba(150,80,255,.20),transparent 32%),
+    linear-gradient(135deg,#f9fbff,#f3efff,#fff8ec) !important;
+}
+
+#smartHomeCard h2 {
+  font-size:clamp(22px,5vw,32px);
+  font-weight:900;
+}
+
+@media(max-width:600px) {
+  .skCard {
+    margin:14px 0 !important;
+    padding:16px !important;
+    border-radius:20px !important;
+  }
+  .skServiceBtn {
+    min-height:52px;
+    font-size:14px;
+    border-radius:16px !important;
+  }
+}
+</style>
+
 </head>
 
 
