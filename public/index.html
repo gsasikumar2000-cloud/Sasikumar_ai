@@ -3551,13 +3551,14 @@ function printAppraisalReport(btn){
         td:first-child{font-weight:bold;width:32%}
         input,textarea{width:100%;box-sizing:border-box;border:0;font:inherit}
         img{max-width:100%;height:auto}
-        button,.report-actions{display:none}
+        button{display:none}
         @media print{body{margin:10mm}}
       </style>
     </head>
     <body>
       ${report.outerHTML}
-      <script>
+      <div id="printScriptPlaceholder"></div>
+      ${String.fromCharCode(60)}script>
         document.querySelectorAll("input,textarea").forEach(function(el){
           const span=document.createElement("span");
           span.textContent=el.value || "";
@@ -3566,13 +3567,332 @@ function printAppraisalReport(btn){
         window.onload=function(){
           setTimeout(function(){window.print();},300);
         };
-      <\/script>
-    </body>
+      ${String.fromCharCode(60)}/script>
+    <a href="/developer/recharge.html" class="recharge-btn" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:14px;text-decoration:none;font-weight:700;background:linear-gradient(135deg,#00c853,#00a844);color:#fff;box-shadow:0 6px 18px rgba(0,200,83,.25);">📱 Mobile Recharge</a>
+
+<script>
+(function(){
+  const loc=document.getElementById("skUserLocation");
+  const weather=document.getElementById("skWeatherInfo");
+  if(loc) loc.textContent="Detecting location...";
+  if(!navigator.geolocation){
+    if(loc) loc.textContent="Location unavailable";
+    if(weather) weather.textContent="Weather unavailable";
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(async function(pos){
+    const lat=pos.coords.latitude, lon=pos.coords.longitude;
+    try{
+      const r=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lon+"&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&timezone=auto");
+      const d=await r.json();
+      if(loc) loc.textContent=lat.toFixed(2)+", "+lon.toFixed(2);
+      if(weather && d.current){
+        weather.textContent=d.current.temperature_2m+"°C • Humidity "+d.current.relative_humidity_2m+"% • Wind "+d.current.wind_speed_10m+" km/h";
+      }
+    }catch(e){
+      if(weather) weather.textContent="Weather temporarily unavailable";
+    }
+  },function(){
+    if(loc) loc.textContent="Location permission needed";
+    if(weather) weather.textContent="Weather unavailable";
+  },{enableHighAccuracy:false,timeout:10000,maximumAge:300000});
+})();
+${String.fromCharCode(60)}/script>
+
+<!-- SASIKUMAR AI RETAIL -->
+<button id="sasikumarRetailDashboardBtn" type="button" onclick="document.getElementById('sasikumarRetailCard')?.scrollIntoView({behavior:'smooth',block:'start'})" style="display:block;width:100%;margin:12px 0;padding:16px;border:0;border-radius:18px;background:linear-gradient(135deg,#fff3b0,#ffd6a5,#d8f3dc);font-size:17px;font-weight:800;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.12);">🛍️ SASIKUMAR AI RETAIL</button><section id="sasikumarRetailCard" class="skCard" style="margin:18px 0;padding:20px;border-radius:24px;background:linear-gradient(135deg,#fff7e6,#eef7ff,#f4edff);box-shadow:0 10px 30px rgba(0,0,0,.12);">
+  <h2 style="margin:0 0 8px;">🛍️ SASIKUMAR AI Retail</h2>
+  <p style="margin:0 0 14px;">Shop products from trusted company links</p>
+
+  <button type="button" onclick="document.getElementById('skRetailShop').scrollIntoView({behavior:'smooth'})"
+    style="width:100%;padding:14px;border:0;border-radius:16px;font-weight:700;cursor:pointer;">
+    🛒 SHOP
+  </button>
+
+  <div id="skRetailShop" style="margin-top:16px;display:grid;gap:12px;">
+    <div style="padding:15px;border-radius:18px;background:#fff;">
+      <b>1️⃣ Meesho</b><br>
+      <input id="skMeeshoSearch" type="search" placeholder="Search Meesho products"
+        style="width:100%;box-sizing:border-box;margin:10px 0;padding:12px;border-radius:12px;border:1px solid #ccc;">
+      <button type="button" onclick="skRetailSearch('meesho')">🔎 Search / Open</button>
+    </div>
+
+    <div style="padding:15px;border-radius:18px;background:#fff;">
+      <b>2️⃣ Flipkart</b><br>
+      <input id="skFlipkartSearch" type="search" placeholder="Search Flipkart products"
+        style="width:100%;box-sizing:border-box;margin:10px 0;padding:12px;border-radius:12px;border:1px solid #ccc;">
+      <button type="button" onclick="skRetailSearch('flipkart')">🔎 Search / Open</button>
+    </div>
+
+    <div style="padding:15px;border-radius:18px;background:#fff;">
+      <b>3️⃣ All Companies</b><br>
+      <button type="button" onclick="skRetailAllCompanies()">🏢 View Companies</button>
+    </div>
+
+    <div style="padding:15px;border-radius:18px;background:#fff;">
+      <b>4️⃣ Other Company</b><br>
+      <button type="button" onclick="alert('Company link can be added from Retail Admin.')">🔗 Open</button>
+    </div>
+
+    <div style="padding:15px;border-radius:18px;background:#fff;">
+      <b>6️⃣ Custom Company</b><br>
+      <button type="button" onclick="alert('Custom company link can be added from Retail Admin.')">🔗 Open</button>
+    </div>
+  </div>
+
+  <!-- Referral Business intentionally hidden from customer view -->
+  <div id="skRetailReferralBusiness" style="display:none!important;"></div>
+</section>
+
+<script>
+function skRetailSearch(company){
+  const id = company === 'meesho' ? 'skMeeshoSearch' : 'skFlipkartSearch';
+  const q = (document.getElementById(id)?.value || '').trim();
+  if(!q){ alert('Please enter a product to search.'); return; }
+
+  const base = company === 'meesho'
+    ? 'https://www.meesho.com/search?q='
+    : 'https://www.flipkart.com/search?q=';
+
+  window.open(base + encodeURIComponent(q), '_blank', 'noopener');
+}
+
+function skRetailAllCompanies(){
+  alert('Shop: Meesho • Flipkart • Other Companies');
+}
+</script>
+<!-- SASIKUMAR AI PAY2ALL -->
+<section id="sasikumarPay2AllCard" class="skCard" style="margin:18px 0;padding:20px;border-radius:24px;background:linear-gradient(135deg,#e8f7ff,#f4edff,#fff3df);box-shadow:0 10px 30px rgba(0,0,0,.12);">
+<h2 style="margin:0 0 8px;">💳 SASIKUMAR AI Pay2All</h2>
+<p>All Services</p>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">
+<button type="button" onclick="skPay2AllOpen('Recharge')">📱 1. Recharge</button>
+<button type="button" onclick="skPay2AllOpen('Booking')">📅 2. Booking</button>
+<button type="button" onclick="skPay2AllOpen('AEPS')">🏦 3. AEPS</button>
+<button type="button" onclick="skPay2AllOpen('PAN')">🪪 4. PAN</button>
+<button type="button" onclick="skPay2AllOpen('Ticket')">🎫 5. Ticket</button>
+<button type="button" onclick="skPay2AllOpen('Bill Payment')">💡 6. Bill Payment</button>
+<button type="button" onclick="skPay2AllOpen('Money Transfer')">💸 7. Money Transfer</button>
+<button type="button" onclick="skPay2AllOpen('Insurance')">🛡️ 8. Insurance</button>
+<button type="button" onclick="skPay2AllOpen('Other Services')">📋 9. Other Services</button>
+</div>
+</section>
+<script>
+function skPay2AllOpen(service){
+alert('SASIKUMAR AI Pay2AllSelected Service: '+service);
+}
+<\/script>
+<!-- SASIKUMAR_AI_BUSINESS_SHOP_DASHBOARD -->
+<style>
+.sasikumarBusinessShop{
+  margin:18px 0;
+  padding:20px;
+  border-radius:24px;
+  background:linear-gradient(135deg,#071b36,#123b68,#081426);
+  color:#fff;
+  box-shadow:0 12px 35px rgba(0,0,0,.28);
+  border:1px solid rgba(255,255,255,.16);
+}
+.sasikumarBusinessShop h2{
+  margin:0 0 6px;
+  font-size:25px;
+}
+.sasikumarBusinessShop .shopSub{
+  opacity:.82;
+  margin-bottom:16px;
+}
+.sasikumarShopSearch{
+  width:100%;
+  box-sizing:border-box;
+  padding:13px 15px;
+  border:0;
+  border-radius:14px;
+  margin-bottom:14px;
+  font-size:15px;
+}
+.sasikumarShopGrid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+.sasikumarShopBtn{
+  border:0;
+  border-radius:17px;
+  padding:16px 10px;
+  min-height:82px;
+  cursor:pointer;
+  font-weight:700;
+  font-size:14px;
+  color:#fff;
+  background:linear-gradient(135deg,#1769aa,#263b80);
+  box-shadow:0 7px 18px rgba(0,0,0,.25);
+}
+.sasikumarShopBtn:active{
+  transform:scale(.97);
+}
+.sasikumarShopResult{
+  margin-top:14px;
+  padding:13px;
+  border-radius:14px;
+  background:rgba(255,255,255,.08);
+  display:none;
+}
+@media(max-width:600px){
+  .sasikumarShopGrid{grid-template-columns:1fr 1fr}
+  .sasikumarBusinessShop{padding:16px}
+}
+</style>
+
+<section class="sasikumarBusinessShop" id="sasikumarBusinessShop">
+  <h2>🏪 SASIKUMAR AI BUSINESS SHOP</h2>
+  <div class="shopSub">Business Shopping & Affiliate Marketing Hub</div>
+
+  <input
+    id="sasikumarShopSearch"
+    class="sasikumarShopSearch"
+    type="search"
+    placeholder="🔎 Search company / product..."
+    oninput="sasikumarShopSearch()"
+  >
+
+  <div class="sasikumarShopGrid">
+    <button class="sasikumarShopBtn" onclick="sasikumarOpenShop('Meesho')">
+      🛍️<br>Meesho
+    </button>
+
+    <button class="sasikumarShopBtn" onclick="sasikumarOpenShop('Flipkart')">
+      🛒<br>Flipkart
+    </button>
+
+    <button class="sasikumarShopBtn" onclick="sasikumarOpenShop('All Companies')">
+      🏢<br>All Companies
+    </button>
+
+    <button class="sasikumarShopBtn" onclick="sasikumarOpenShop('Other Company')">
+      ➕<br>Other Company
+    </button>
+
+    <button class="sasikumarShopBtn" onclick="sasikumarOpenShop('Custom Company')">
+      ⚙️<br>Custom Company
+    </button>
+
+    <button class="sasikumarShopBtn" onclick="sasikumarAffiliate()">
+      🔗<br>Affiliate Marketing
+    </button>
+
+    <button class="sasikumarShopBtn" onclick="sasikumarCommission()">
+      📊<br>Sales & Commission
+    </button>
+
+    <button class="sasikumarShopBtn" onclick="sasikumarReferral()">
+      👥<br>Referral
+    </button>
+  </div>
+
+  <div id="sasikumarShopResult" class="sasikumarShopResult"></div>
+
+
+<!-- SASIKUMAR_AI_MAP_LIVE_LOCATION_MENU -->
+<div id="SASIKUMAR_AI_MAP_LIVE_LOCATION_MENU"
+     style="margin:12px 0;padding:16px;border-radius:18px;background:linear-gradient(135deg,#073b66,#126e8c);box-shadow:0 10px 25px rgba(0,0,0,.22);text-align:center;">
+  <a href="/business-hub-map.html"
+     style="display:block;text-decoration:none;color:#fff;font-weight:800;font-size:17px;">
+    🗺️ Map & Live Location
+  </a>
+  <div style="margin-top:6px;color:rgba(255,255,255,.82);font-size:13px;">
+    📍 Nearby Shops • 🔧 Services • 📢 Offers
+  </div>
+</div>
+<!-- /SASIKUMAR_AI_MAP_LIVE_LOCATION_MENU -->
+
+</section>
+
+<script>
+(function(){
+  window.sasikumarShopSearch = function(){
+    const q = (document.getElementById("sasikumarShopSearch")?.value || "").trim();
+    const box = document.getElementById("sasikumarShopResult");
+    if(!box) return;
+
+    if(!q){
+      box.style.display = "none";
+      box.innerHTML = "";
+      return;
+    }
+
+    box.style.display = "block";
+    box.innerHTML =
+      "<b>🔎 Shop Search</b><br>" +
+      "Searching for: <strong>" +
+      q.replace(/[&<>"']/g, function(x){
+        return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[x];
+      }) +
+      "</strong><br><small>Select a company above to continue.</small>";
+  };
+
+  window.sasikumarOpenShop = function(company){
+    const box = document.getElementById("sasikumarShopResult");
+    if(!box) return;
+
+    box.style.display = "block";
+    box.innerHTML =
+      "<b>🏪 " + company + "</b><br>" +
+      "<small>Company / affiliate destination can be configured here.</small>";
+  };
+
+  window.sasikumarAffiliate = function(){
+    const box = document.getElementById("sasikumarShopResult");
+    if(!box) return;
+    box.style.display = "block";
+    box.innerHTML =
+      "<b>🔗 Affiliate Marketing</b><br>" +
+      "<small>Referral links, clicks, sales and commission tracking.</small>";
+  };
+
+  window.sasikumarCommission = function(){
+    const box = document.getElementById("sasikumarShopResult");
+    if(!box) return;
+    box.style.display = "block";
+    box.innerHTML =
+      "<b>📊 Sales & Commission</b><br>" +
+      "<small>Track affiliate sales and commission history.</small>";
+  };
+
+  window.sasikumarReferral = function(){
+    const box = document.getElementById("sasikumarShopResult");
+    if(!box) return;
+    box.style.display = "block";
+    box.innerHTML =
+      "<b>👥 Referral</b><br>" +
+      "<small>Referral code and customer referral tracking.</small>";
+  };
+})();
+</script>
+<!-- /SASIKUMAR_AI_BUSINESS_SHOP_DASHBOARD -->
+
+
+<!-- SASIKUMAR AI — ALL REGISTRATION MENU -->
+<section id="allRegistrationMenu" style="margin:20px 0;padding:20px;border-radius:22px;background:linear-gradient(135deg,#fff8e1,#e3f2fd);box-shadow:0 10px 30px rgba(0,0,0,.15);border:2px solid #d4af37;">
+  <h2 style="margin:0 0 8px;text-align:center;">📝 ALL REGISTRATION</h2>
+  <p style="text-align:center;margin:0 0 16px;">SASIKUMAR AI Registration Hub</p>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;">
+    <button onclick="alert('Customer Registration')" style="padding:16px;border:0;border-radius:16px;cursor:pointer;">👤<br><b>Customer</b></button>
+    <button onclick="alert('Gold Appraiser Registration')" style="padding:16px;border:0;border-radius:16px;cursor:pointer;">💎<br><b>Gold Appraiser</b></button>
+    <button onclick="alert('Retail Registration')" style="padding:16px;border:0;border-radius:16px;cursor:pointer;">🏪<br><b>Retail</b></button>
+    <button onclick="alert('Business Hub Registration')" style="padding:16px;border:0;border-radius:16px;cursor:pointer;">🏢<br><b>Business Hub</b></button>
+    <button onclick="alert('Student Registration')" style="padding:16px;border:0;border-radius:16px;cursor:pointer;">🎓<br><b>Student</b></button>
+    <button onclick="alert('Job Registration')" style="padding:16px;border:0;border-radius:16px;cursor:pointer;">💼<br><b>Job</b></button>
+    <button onclick="alert('Partner / Referral Registration')" style="padding:16px;border:0;border-radius:16px;cursor:pointer;">🤝<br><b>Partner</b></button>
+  </div>
+</section>
+
+</body>
     </html>
   `);
 
   w.document.close();
-} 
+}
 
 function goldReport(){
 
