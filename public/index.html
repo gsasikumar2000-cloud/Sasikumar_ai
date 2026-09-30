@@ -567,7 +567,7 @@ function openDailyPoster(){
 
   document.getElementById("dpWhatsApp").onclick=()=>{
     window.open(
-      "https://wa.me/?text="+encodeURIComponent(text+"\n"+url),
+      "https://wa.me/?text="+encodeURIComponent(text+""+url),
       "_blank"
     );
   };
@@ -1644,7 +1644,7 @@ document.addEventListener("DOMContentLoaded",function(){
 <div style="font-size:21px;font-weight:900;color:#fff;">Mobile Recharge</div>
 <div style="color:#eafff3;margin:5px 0 12px;">Airtel • Jio • Vi • BSNL</div>
 <a href="/developer/recharge.html" style="display:inline-block;padding:11px 24px;border-radius:25px;background:#fff;color:#008f45;text-decoration:none;font-weight:900;">RECHARGE NOW →</a>
-</div>\n🛠️ Popular Tools</h3>
+</div>🛠️ Popular Tools</h3>
     <p>🪙 Gold Calculator</p>
     <p>📐 Mathematics & Equations</p>
     <p>💰 Business Calculators</p>
@@ -1808,7 +1808,7 @@ document.getElementById("dailyScrollingMessage").style.background =
   `linear-gradient(90deg,${colors[0]},${colors[1]})`;
 </script>
 
-\n
+
 <!-- SASIKUMAR_LOGIN_SCREEN -->
 <div id="sasikumarLoginScreen" style="
   min-height:100vh;
@@ -2060,7 +2060,7 @@ function technologyMenu(){
     "🔐 Cyber Safety",
     "🆕 Technology News",
     "🛠️ Tech Troubleshooting"
-  ].join("\n");
+  ].join("");
 
   loading.appendChild(box);
   chatBox.appendChild(loading);
@@ -2169,35 +2169,7 @@ function closeAdminControl(){
   <div id="skAllServicesCard" class="sk-all-services-card">
     <div class="sk-all-services-head">
       <div>
-        <div class="sk-all-services-title">⚡ ALL SERVICES</div><!-- CLEAN MAIN DASHBOARD -->
-<section id="skCleanMainDashboard" class="skCard" style="margin:16px 0;padding:16px;border-radius:22px;background:linear-gradient(135deg,#eef7ff,#fff7e6,#f4edff);box-shadow:0 8px 24px rgba(0,0,0,.10);">
-<h2 style="margin:0 0 6px;">🏠 SASIKUMAR AI — Main Dashboard</h2>
-<p style="margin:0 0 14px;">All important services in one clear place</p>
-<div class="skMainDashGrid">
-<button type="button" onclick="window.location.href='/'">🏠<span>Main Home</span></button>
-<button type="button" onclick="window.location.href='/education/'">📚<span>Education</span></button>
-<button type="button" onclick="window.location.href='/gold.html'">💰<span>Gold & Silver</span></button>
-<button type="button" onclick="window.location.href='/jobs/index.html'">💼<span>Jobs</span></button>
-<button type="button" onclick="window.location.href='/developer/booking.html'">🎫<span>Booking</span></button>
-<button type="button" onclick="document.getElementById('sasikumarPay2AllCard')?.scrollIntoView({behavior:'smooth',block:'start'})">💳<span>Pay2All</span></button>
-<button type="button" onclick="window.location.href='/developer/referral.html'">🔗<span>Referral Centre</span></button>
-<button type="button" onclick="window.location.href='/developer/lifestyle.html'">📘<span>Lifestyle</span></button>
-<button type="button" onclick="window.location.href='/developer/tools.html'">🧰<span>Tool Kit</span></button>
-</div>
-</section>
-<style id="skCleanMainDashboardStyle">
-.skMainDashGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.skMainDashGrid button{min-height:72px;border:0;border-radius:16px;padding:10px;background:rgba(255,255,255,.85);font-weight:800;font-size:15px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.08)}
-.skMainDashGrid button span{display:block;margin-top:5px}
-@media(max-width:600px){
-.skMainDashGrid{grid-template-columns:1fr 1fr}
-.skMainDashGrid button{min-height:64px;font-size:14px}
-}
-@media(max-width:380px){
-.skMainDashGrid{grid-template-columns:1fr}
-}
-</style>
-        <div class="sk-all-services-sub">SASIKUMAR AI • Smart Services Hub</div>
+        <div class="sk-all-services-title">⚡ ALL SERVICES</div>
       </div>
       <button type="button" onclick="window.location.href='/'">🏠 Main Home</button>
     </div>
@@ -2451,7 +2423,7 @@ async function send(){
   }catch(e){
     console.error(e);
     loading.innerText=
-      "❌ Server connection error.\\n\\n"+
+      "❌ Server connection error.\\"+
       "Server இயங்குகிறதா என்று பார்க்கவும்.";
   }finally{
     sendBtn.disabled=false;
@@ -2689,18 +2661,18 @@ async function nationalNews(){
         throw new Error(d.reply||"News unavailable");
 
       const lines=String(d.reply)
-        .split(/\r?\n/)
+        .split(/\r?/)
         .filter(Boolean)
         .slice(0,10);
 
       result.innerText=
-        "🤖 📰 "+d.state+" - "+d.district+" News\n\n"+
-        lines.join("\n");
+        "🤖 📰 "+d.state+" - "+d.district+" News"+
+        lines.join("");
 
     }catch(e){
       console.error(e);
       result.innerText=
-        "❌ News தற்போது கிடைக்கவில்லை.\n\n"+
+        "❌ News தற்போது கிடைக்கவில்லை."+
         "சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.";
     }
 
@@ -3603,7 +3575,7 @@ function printAppraisalReport(btn){
           setTimeout(function(){window.print();},300);
         };
       ${String.fromCharCode(60)}/script>
-    <a href="/developer/recharge.html" class="recharge-btn" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:14px;text-decoration:none;font-weight:700;background:linear-gradient(135deg,#00c853,#00a844);color:#fff;box-shadow:0 6px 18px rgba(0,200,83,.25);">📱 Mobile Recharge</a>\n
+    <a href="/developer/recharge.html" class="recharge-btn" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:14px;text-decoration:none;font-weight:700;background:linear-gradient(135deg,#00c853,#00a844);color:#fff;box-shadow:0 6px 18px rgba(0,200,83,.25);">📱 Mobile Recharge</a>
 
 <script>
 (function(){
@@ -3714,7 +3686,7 @@ function skRetailAllCompanies(){
 </section>
 <script>
 function skPay2AllOpen(service){
-alert('SASIKUMAR AI Pay2All\n\nSelected Service: '+service);
+alert('SASIKUMAR AI Pay2AllSelected Service: '+service);
 }
 </script></body>
     </html>
@@ -4847,7 +4819,7 @@ window.showEducationFolder=function(){
     el.style.display='';
     el.scrollIntoView({behavior:'smooth',block:'start'});
   }else{
-    alert('📚 EDUCATION FOLDER\n\nEducation content will be available here.');
+    alert('📚 EDUCATION FOLDEREducation content will be available here.');
   }
 };
 
@@ -4965,7 +4937,7 @@ function pdfNotes(){
 
 
 </script>
-\n
+
 <style id="sk3DAdButtonStyle">
 #sk3DAdButton{
 position:fixed;right:16px;bottom:18px;z-index:9999;
