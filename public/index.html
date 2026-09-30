@@ -2169,7 +2169,34 @@ function closeAdminControl(){
   <div id="skAllServicesCard" class="sk-all-services-card">
     <div class="sk-all-services-head">
       <div>
-        <div class="sk-all-services-title">⚡ ALL SERVICES</div>
+        <div class="sk-all-services-title">⚡ ALL SERVICES</div><!-- CLEAN MAIN DASHBOARD -->
+<section id="skCleanMainDashboard" class="skCard" style="margin:16px 0;padding:16px;border-radius:22px;background:linear-gradient(135deg,#eef7ff,#fff7e6,#f4edff);box-shadow:0 8px 24px rgba(0,0,0,.10);">
+<h2 style="margin:0 0 6px;">🏠 SASIKUMAR AI — Main Dashboard</h2>
+<p style="margin:0 0 14px;">All important services in one clear place</p>
+<div class="skMainDashGrid">
+<button type="button" onclick="window.location.href='/'">🏠<span>Main Home</span></button>
+<button type="button" onclick="window.location.href='/education/'">📚<span>Education</span></button>
+<button type="button" onclick="window.location.href='/gold.html'">💰<span>Gold & Silver</span></button>
+<button type="button" onclick="window.location.href='/jobs/index.html'">💼<span>Jobs</span></button>
+<button type="button" onclick="window.location.href='/developer/booking.html'">🎫<span>Booking</span></button>
+<button type="button" onclick="document.getElementById('sasikumarPay2AllCard')?.scrollIntoView({behavior:'smooth',block:'start'})">💳<span>Pay2All</span></button>
+<button type="button" onclick="window.location.href='/developer/referral.html'">🔗<span>Referral Centre</span></button>
+<button type="button" onclick="window.location.href='/developer/lifestyle.html'">📘<span>Lifestyle</span></button>
+<button type="button" onclick="window.location.href='/developer/tools.html'">🧰<span>Tool Kit</span></button>
+</div>
+</section>
+<style id="skCleanMainDashboardStyle">
+.skMainDashGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.skMainDashGrid button{min-height:72px;border:0;border-radius:16px;padding:10px;background:rgba(255,255,255,.85);font-weight:800;font-size:15px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.skMainDashGrid button span{display:block;margin-top:5px}
+@media(max-width:600px){
+.skMainDashGrid{grid-template-columns:1fr 1fr}
+.skMainDashGrid button{min-height:64px;font-size:14px}
+}
+@media(max-width:380px){
+.skMainDashGrid{grid-template-columns:1fr}
+}
+</style>
         <div class="sk-all-services-sub">SASIKUMAR AI • Smart Services Hub</div>
       </div>
       <button type="button" onclick="window.location.href='/'">🏠 Main Home</button>
