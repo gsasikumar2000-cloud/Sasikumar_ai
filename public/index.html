@@ -3590,6 +3590,69 @@ function printAppraisalReport(btn){
   },{enableHighAccuracy:false,timeout:10000,maximumAge:300000});
 })();
 ${String.fromCharCode(60)}/script>
+
+<!-- SASIKUMAR AI RETAIL -->
+<section id="sasikumarRetailCard" class="skCard" style="margin:18px 0;padding:20px;border-radius:24px;background:linear-gradient(135deg,#fff7e6,#eef7ff,#f4edff);box-shadow:0 10px 30px rgba(0,0,0,.12);">
+  <h2 style="margin:0 0 8px;">🛍️ SASIKUMAR AI Retail</h2>
+  <p style="margin:0 0 14px;">Shop products from trusted company links</p>
+
+  <button type="button" onclick="document.getElementById('skRetailShop').scrollIntoView({behavior:'smooth'})"
+    style="width:100%;padding:14px;border:0;border-radius:16px;font-weight:700;cursor:pointer;">
+    🛒 SHOP
+  </button>
+
+  <div id="skRetailShop" style="margin-top:16px;display:grid;gap:12px;">
+    <div style="padding:15px;border-radius:18px;background:#fff;">
+      <b>1️⃣ Meesho</b><br>
+      <input id="skMeeshoSearch" type="search" placeholder="Search Meesho products"
+        style="width:100%;box-sizing:border-box;margin:10px 0;padding:12px;border-radius:12px;border:1px solid #ccc;">
+      <button type="button" onclick="skRetailSearch('meesho')">🔎 Search / Open</button>
+    </div>
+
+    <div style="padding:15px;border-radius:18px;background:#fff;">
+      <b>2️⃣ Flipkart</b><br>
+      <input id="skFlipkartSearch" type="search" placeholder="Search Flipkart products"
+        style="width:100%;box-sizing:border-box;margin:10px 0;padding:12px;border-radius:12px;border:1px solid #ccc;">
+      <button type="button" onclick="skRetailSearch('flipkart')">🔎 Search / Open</button>
+    </div>
+
+    <div style="padding:15px;border-radius:18px;background:#fff;">
+      <b>3️⃣ All Companies</b><br>
+      <button type="button" onclick="skRetailAllCompanies()">🏢 View Companies</button>
+    </div>
+
+    <div style="padding:15px;border-radius:18px;background:#fff;">
+      <b>4️⃣ Other Company</b><br>
+      <button type="button" onclick="alert('Company link can be added from Retail Admin.')">🔗 Open</button>
+    </div>
+
+    <div style="padding:15px;border-radius:18px;background:#fff;">
+      <b>6️⃣ Custom Company</b><br>
+      <button type="button" onclick="alert('Custom company link can be added from Retail Admin.')">🔗 Open</button>
+    </div>
+  </div>
+
+  <!-- Referral Business intentionally hidden from customer view -->
+  <div id="skRetailReferralBusiness" style="display:none!important;"></div>
+</section>
+
+<script>
+function skRetailSearch(company){
+  const id = company === 'meesho' ? 'skMeeshoSearch' : 'skFlipkartSearch';
+  const q = (document.getElementById(id)?.value || '').trim();
+  if(!q){ alert('Please enter a product to search.'); return; }
+
+  const base = company === 'meesho'
+    ? 'https://www.meesho.com/search?q='
+    : 'https://www.flipkart.com/search?q=';
+
+  window.open(base + encodeURIComponent(q), '_blank', 'noopener');
+}
+
+function skRetailAllCompanies(){
+  alert('Shop: Meesho • Flipkart • Other Companies');
+}
+</script>
 </body>
     </html>
   `);
