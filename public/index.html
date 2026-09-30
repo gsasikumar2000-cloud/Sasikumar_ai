@@ -3372,6 +3372,34 @@ function printAppraisalReport(btn){
       <\/script>
     <a href="/developer/recharge.html" class="recharge-btn" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:14px;text-decoration:none;font-weight:700;background:linear-gradient(135deg,#00c853,#00a844);color:#fff;box-shadow:0 6px 18px rgba(0,200,83,.25);">📱 Mobile Recharge</a>\n
 
+<script>
+(function(){
+  const loc=document.getElementById("skUserLocation");
+  const weather=document.getElementById("skWeatherInfo");
+  if(loc) loc.textContent="Detecting location...";
+  if(!navigator.geolocation){
+    if(loc) loc.textContent="Location unavailable";
+    if(weather) weather.textContent="Weather unavailable";
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(async function(pos){
+    const lat=pos.coords.latitude, lon=pos.coords.longitude;
+    try{
+      const r=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lon+"&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&timezone=auto");
+      const d=await r.json();
+      if(loc) loc.textContent=lat.toFixed(2)+", "+lon.toFixed(2);
+      if(weather && d.current){
+        weather.textContent=d.current.temperature_2m+"°C • Humidity "+d.current.relative_humidity_2m+"% • Wind "+d.current.wind_speed_10m+" km/h";
+      }
+    }catch(e){
+      if(weather) weather.textContent="Weather temporarily unavailable";
+    }
+  },function(){
+    if(loc) loc.textContent="Location permission needed";
+    if(weather) weather.textContent="Weather unavailable";
+  },{enableHighAccuracy:false,timeout:10000,maximumAge:300000});
+})();
+</script>
 </body>
     </html>
   `);
