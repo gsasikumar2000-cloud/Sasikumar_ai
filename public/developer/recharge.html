@@ -25,6 +25,14 @@ button:disabled{opacity:.6}
 <div id="apiStatus" class="status">Checking Pay2All...</div>
 
 <label>Mobile Number</label>
+<div style="display:flex;gap:10px;margin:12px 0;">
+<label style="flex:1;padding:12px;border-radius:14px;background:#e8f7ff;text-align:center;font-weight:800;">
+<input type="radio" name="rechargeMode" id="rechargeMode" value="prepaid" checked> 🔵 Prepaid
+</label>
+<label style="flex:1;padding:12px;border-radius:14px;background:#f3edff;text-align:center;font-weight:800;">
+<input type="radio" name="rechargeMode" value="postpaid"> 🟣 Postpaid
+</label>
+</div>
 <input id="number" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number">
 
 <label>Operator</label>
@@ -141,6 +149,17 @@ async function recharge(){
 
 loadProviders();
 loadConfig();
+</script>
+
+<script>
+function updateRechargeMode(){
+  const mode=document.querySelector('input[name="rechargeMode"]:checked')?.value || "prepaid";
+  const btn=document.getElementById("rechargeBtn");
+  if(btn) btn.textContent = mode==="postpaid" ? "PAY BILL" : "RECHARGE";
+}
+document.querySelectorAll('input[name="rechargeMode"]').forEach(el=>{
+  el.addEventListener("change",updateRechargeMode);
+});
 </script>
 </body>
 </html>
