@@ -4029,9 +4029,10 @@ function clearAppraisalReport(id){
   const el=document.getElementById(x+id);
   if(el) el.value="";
  });
- document.getElementById("arStone"+id).value="0";
- document.getElementById("arNet"+id).value="";
- document.getElementById("arValue"+id).value="";
+ ["arStone","arNet","arValue"].forEach(x=>{
+  const el=document.getElementById(x+id);
+  if(el) el.value=(x==="arStone" ? "0" : "");
+ });
  alert("🗑️ Current report cleared.");
 }
 
