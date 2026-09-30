@@ -3688,7 +3688,181 @@ function skRetailAllCompanies(){
 function skPay2AllOpen(service){
 alert('SASIKUMAR AI Pay2AllSelected Service: '+service);
 }
-<\/script></body>
+<\/script>
+<!-- SASIKUMAR_AI_BUSINESS_SHOP_DASHBOARD -->
+<style>
+.sasikumarBusinessShop{
+  margin:18px 0;
+  padding:20px;
+  border-radius:24px;
+  background:linear-gradient(135deg,#071b36,#123b68,#081426);
+  color:#fff;
+  box-shadow:0 12px 35px rgba(0,0,0,.28);
+  border:1px solid rgba(255,255,255,.16);
+}
+.sasikumarBusinessShop h2{
+  margin:0 0 6px;
+  font-size:25px;
+}
+.sasikumarBusinessShop .shopSub{
+  opacity:.82;
+  margin-bottom:16px;
+}
+.sasikumarShopSearch{
+  width:100%;
+  box-sizing:border-box;
+  padding:13px 15px;
+  border:0;
+  border-radius:14px;
+  margin-bottom:14px;
+  font-size:15px;
+}
+.sasikumarShopGrid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+.sasikumarShopBtn{
+  border:0;
+  border-radius:17px;
+  padding:16px 10px;
+  min-height:82px;
+  cursor:pointer;
+  font-weight:700;
+  font-size:14px;
+  color:#fff;
+  background:linear-gradient(135deg,#1769aa,#263b80);
+  box-shadow:0 7px 18px rgba(0,0,0,.25);
+}
+.sasikumarShopBtn:active{
+  transform:scale(.97);
+}
+.sasikumarShopResult{
+  margin-top:14px;
+  padding:13px;
+  border-radius:14px;
+  background:rgba(255,255,255,.08);
+  display:none;
+}
+@media(max-width:600px){
+  .sasikumarShopGrid{grid-template-columns:1fr 1fr}
+  .sasikumarBusinessShop{padding:16px}
+}
+</style>
+
+<section class="sasikumarBusinessShop" id="sasikumarBusinessShop">
+  <h2>🏪 SASIKUMAR AI BUSINESS SHOP</h2>
+  <div class="shopSub">Business Shopping & Affiliate Marketing Hub</div>
+
+  <input
+    id="sasikumarShopSearch"
+    class="sasikumarShopSearch"
+    type="search"
+    placeholder="🔎 Search company / product..."
+    oninput="sasikumarShopSearch()"
+  >
+
+  <div class="sasikumarShopGrid">
+    <button class="sasikumarShopBtn" onclick="sasikumarOpenShop('Meesho')">
+      🛍️<br>Meesho
+    </button>
+
+    <button class="sasikumarShopBtn" onclick="sasikumarOpenShop('Flipkart')">
+      🛒<br>Flipkart
+    </button>
+
+    <button class="sasikumarShopBtn" onclick="sasikumarOpenShop('All Companies')">
+      🏢<br>All Companies
+    </button>
+
+    <button class="sasikumarShopBtn" onclick="sasikumarOpenShop('Other Company')">
+      ➕<br>Other Company
+    </button>
+
+    <button class="sasikumarShopBtn" onclick="sasikumarOpenShop('Custom Company')">
+      ⚙️<br>Custom Company
+    </button>
+
+    <button class="sasikumarShopBtn" onclick="sasikumarAffiliate()">
+      🔗<br>Affiliate Marketing
+    </button>
+
+    <button class="sasikumarShopBtn" onclick="sasikumarCommission()">
+      📊<br>Sales & Commission
+    </button>
+
+    <button class="sasikumarShopBtn" onclick="sasikumarReferral()">
+      👥<br>Referral
+    </button>
+  </div>
+
+  <div id="sasikumarShopResult" class="sasikumarShopResult"></div>
+</section>
+
+<script>
+(function(){
+  window.sasikumarShopSearch = function(){
+    const q = (document.getElementById("sasikumarShopSearch")?.value || "").trim();
+    const box = document.getElementById("sasikumarShopResult");
+    if(!box) return;
+
+    if(!q){
+      box.style.display = "none";
+      box.innerHTML = "";
+      return;
+    }
+
+    box.style.display = "block";
+    box.innerHTML =
+      "<b>🔎 Shop Search</b><br>" +
+      "Searching for: <strong>" +
+      q.replace(/[&<>"']/g, function(x){
+        return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[x];
+      }) +
+      "</strong><br><small>Select a company above to continue.</small>";
+  };
+
+  window.sasikumarOpenShop = function(company){
+    const box = document.getElementById("sasikumarShopResult");
+    if(!box) return;
+
+    box.style.display = "block";
+    box.innerHTML =
+      "<b>🏪 " + company + "</b><br>" +
+      "<small>Company / affiliate destination can be configured here.</small>";
+  };
+
+  window.sasikumarAffiliate = function(){
+    const box = document.getElementById("sasikumarShopResult");
+    if(!box) return;
+    box.style.display = "block";
+    box.innerHTML =
+      "<b>🔗 Affiliate Marketing</b><br>" +
+      "<small>Referral links, clicks, sales and commission tracking.</small>";
+  };
+
+  window.sasikumarCommission = function(){
+    const box = document.getElementById("sasikumarShopResult");
+    if(!box) return;
+    box.style.display = "block";
+    box.innerHTML =
+      "<b>📊 Sales & Commission</b><br>" +
+      "<small>Track affiliate sales and commission history.</small>";
+  };
+
+  window.sasikumarReferral = function(){
+    const box = document.getElementById("sasikumarShopResult");
+    if(!box) return;
+    box.style.display = "block";
+    box.innerHTML =
+      "<b>👥 Referral</b><br>" +
+      "<small>Referral code and customer referral tracking.</small>";
+  };
+})();
+</script>
+<!-- /SASIKUMAR_AI_BUSINESS_SHOP_DASHBOARD -->
+
+</body>
     </html>
   `);
 
