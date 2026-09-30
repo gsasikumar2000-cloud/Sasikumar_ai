@@ -3956,7 +3956,7 @@ function goldReport(){
    const reader=new FileReader();
    reader.onload=function(e){
     document.getElementById("arPreview"+id).innerHTML=
-     '<img src="'+e.target.result+'" style="max-width:100%;max-height:300px;border-radius:10px;border:1px solid #ccc">';
+     '<img src="'+e.target.result+'" style="width:100%;max-width:520px;max-height:420px;object-fit:contain;border-radius:14px;border:2px solid #d4af37;display:block;margin:12px auto;background:#fff;box-shadow:0 8px 24px rgba(0,0,0,.18);">';
    };
    reader.readAsDataURL(file);
  }
