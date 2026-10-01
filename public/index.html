@@ -1508,6 +1508,26 @@ button,button *{font-size:10px!important;min-height:28px!important;padding:4px 6
 input,input *,select,select *,textarea,textarea *{font-size:11px!important;min-height:30px!important;padding:4px 6px!important}
 }
 </style>
+<style id="smart-home-separate-cards">
+.smart-home-grid{display:block!important;width:100%!important;box-sizing:border-box!important;margin:10px 0!important;padding:12px!important;border-radius:20px!important;background:rgba(255,255,255,.94)!important;box-shadow:0 8px 24px rgba(0,0,0,.10)!important;border:1px solid rgba(0,0,0,.06)!important}
+.smart-home-grid .skServiceBtn{display:flex!important;width:100%!important;box-sizing:border-box!important;align-items:center!important;justify-content:center!important;text-align:center!important;min-height:44px!important;border-radius:14px!important}
+.smart-home-grid+.smart-home-grid{margin-top:10px!important}
+@media(max-width:600px){
+#smartHomeCard{padding:10px!important;margin:10px 0!important}
+#smartHomeCard h2{font-size:16px!important;margin:4px 0!important}
+#smartHomeCard p{font-size:10px!important;margin:3px 0 7px!important}
+.smart-home-grid{margin:6px 0!important;padding:7px!important;border-radius:14px!important}
+.smart-home-grid .skServiceBtn{font-size:10px!important;min-height:34px!important;padding:5px 6px!important}
+}
+</style>
+<style id="smart-home-six-types">
+#smartHomeCard .smart-home-grid:nth-of-type(1){background:linear-gradient(135deg,#fff8c4,#e8f5e9)!important;border-left:5px solid #f6c900!important}
+#smartHomeCard .smart-home-grid:nth-of-type(2){background:linear-gradient(135deg,#e3f2fd,#ede7f6)!important;border-left:5px solid #5c6bc0!important}
+#smartHomeCard .smart-home-grid:nth-of-type(3){background:linear-gradient(135deg,#e0f7fa,#e8eaf6)!important;border-left:5px solid #00acc1!important}
+#smartHomeCard .smart-home-grid:nth-of-type(4){background:linear-gradient(135deg,#fce4ec,#ede7f6)!important;border-left:5px solid #8e24aa!important}
+#smartHomeCard .smart-home-grid:nth-of-type(5){background:linear-gradient(135deg,#e8eaf6,#e0f2f1)!important;border-left:5px solid #3949ab!important}
+#smartHomeCard .smart-home-grid:nth-of-type(6){background:linear-gradient(135deg,#fff3e0,#e8f5e9)!important;border-left:5px solid #43a047!important}
+</style>
 <!-- SMART HOME MOBILE COMPACT -->
 <style id="smart-home-mobile-compact">
 @media(max-width:600px){
@@ -1549,15 +1569,25 @@ document.addEventListener("DOMContentLoaded",function(){
 
 
 <!-- SASIKUMAR AI — NEW SMART HOME DASHBOARD -->
-<section id="smartHomeCard" class="skCard" style="margin:18px 0;padding:20px;border-radius:24px;background:linear-gradient(135deg,#e8f7ff,#f3edff,#fff3e8);box-shadow:0 8px 24px rgba(0,0,0,.12);">
+<section id="smartHomeCard" class="skCard" style="margin:18px 0;padding:16px;border-radius:24px;background:linear-gradient(135deg,#e8f7ff,#f3edff,#fff3e8);box-shadow:0 8px 24px rgba(0,0,0,.12);">
 <h2>🏠 Smart Home</h2>
-<p>Smart Home services — அனைத்தும் ஒரே இடத்தில்</p>
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">
+<p>Smart Home services — அனைத்தும் தனித்தனி cards</p>
+<div class="smart-home-grid">
 <a href="#" class="skServiceBtn">💡 Smart Lights</a>
+</div>
+<div class="smart-home-grid">
 <a href="#" class="skServiceBtn">📺 TV & Entertainment</a>
+</div>
+<div class="smart-home-grid">
 <a href="#" class="skServiceBtn">❄️ AC / Fan</a>
+</div>
+<div class="smart-home-grid">
 <a href="#" class="skServiceBtn">🔒 Home Security</a>
+</div>
+<div class="smart-home-grid">
 <a href="#" class="skServiceBtn">📹 CCTV</a>
+</div>
+<div class="smart-home-grid">
 <a href="#" class="skServiceBtn">🔌 Smart Devices</a>
 </div>
 </section>
@@ -1728,12 +1758,16 @@ document.addEventListener("DOMContentLoaded",function(){
   </div>
 
   <div class="skCard">
-    <h3><div id="mainMobileRecharge" style="margin:16px 0;padding:18px;border-radius:20px;background:linear-gradient(135deg,#00c853,#00695c);text-align:center;box-shadow:0 8px 25px rgba(0,0,0,.2);">
+    <div id="mainMobileRecharge" style="margin:16px 0;padding:18px;border-radius:20px;background:linear-gradient(135deg,#00c853,#00695c);text-align:center;box-shadow:0 8px 25px rgba(0,0,0,.2);">
 <div style="font-size:30px;">📱</div>
 <div style="font-size:21px;font-weight:900;color:#fff;">Mobile Recharge</div>
 <div style="color:#eafff3;margin:5px 0 12px;">Airtel • Jio • Vi • BSNL</div>
 <a href="/developer/recharge.html" style="display:inline-block;padding:11px 24px;border-radius:25px;background:#fff;color:#008f45;text-decoration:none;font-weight:900;">RECHARGE NOW →</a>
-</div>🛠️ Popular Tools</h3>
+    </div>
+</div>
+
+<div class="skCard">
+<h3>🛠️ Popular Tools</h3>
     <p>🪙 Gold Calculator</p>
     <p>📐 Mathematics & Equations</p>
     <p>💰 Business Calculators</p>
