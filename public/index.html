@@ -1748,76 +1748,16 @@ document.addEventListener("DOMContentLoaded",function(){
 
 <div id="skTodaySmart" class="skCard" style="margin:18px 0;padding:18px;border-radius:22px;background:linear-gradient(135deg,#e8f7ff,#fff3e8,#f3edff);"><h3>📅 Today Smart Info</h3><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;"><div class="skCard">📅 <b>Date</b><br><span id="skTodayDate">Loading...</span></div><div class="skCard">⏰ <b>Live Time</b><br><span id="skLiveTime">Loading...</span></div><div class="skCard">📍 <b>Location</b><br><span id="skUserLocation">Detecting...</span></div><div class="skCard">🌤️ <b>Weather</b><br><span id="skWeatherInfo">Loading weather...</span></div></div><div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;"><button class="skBtn" onclick="alert(&quot;Daily alerts: Check important announcements, jobs, education and safety updates.&quot;)">🔔 Daily Alerts</button><button class="skBtn" onclick="if(&quot;speechSynthesis&quot; in window){speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(&quot;Vanakkam! Welcome to SASIKUMAR AI.&quot;))}else{alert(&quot;Voice is not supported in this browser.&quot;)}">🎙️ Voice</button><button class="skBtn" onclick="location.reload()">🔄 Refresh</button></div></div><script>(function(){function u(){var d=new Date(),w=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],a=document.getElementById("skTodayDate"),t=document.getElementById("skLiveTime");if(a)a.textContent=d.toLocaleDateString("en-IN",{day:"2-digit",month:"long",year:"numeric"})+" • "+w[d.getDay()];if(t)t.textContent=d.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true})}u();setInterval(u,1000)})();</script><div id="skDailyLifeHub" class="skCard" style="margin:18px 0;padding:18px;border-radius:22px;background:linear-gradient(135deg,#fff7e6,#eef7ff,#f7efff);"><h3>🌟 SASIKUMAR AI — Daily Life & Utility Hub</h3><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;"><button class="skBtn" onclick="location.href='/sports/'">🏏 Sports</button><button class="skBtn" onclick="location.href='/education/'">📚 Education</button><button class="skBtn" onclick="location.href='/jobs/'">💼 Jobs</button><button class="skBtn" onclick="location.href='/gold.html'">🪙 Gold & Silver</button><button class="skBtn" onclick="document.getElementById('skAskAI')?.scrollIntoView({behavior:'smooth'})">🤖 Ask AI</button><button class="skBtn" onclick="alert('🛡️ Never share OTP, PIN or passwords.')">🛡️ Safety</button><button class="skBtn" onclick="alert('💰 Plan a budget and track expenses.')">💰 Money</button><button class="skBtn" onclick="alert('🍲 Food safety: keep food clean and cook thoroughly.')">🍲 Food</button></div></div>
 <div class="skHero">
-  <h2>🧠 SASIKUMAR AI</h2>
-  <p>Your Daily Smart Information Hub<br>
-  AI • Gold • Education • Jobs • Sports • Business</p>
+  <h2>⚡ SASIKUMAR AI Quick Services</h2>
+  <p>Fast access to your main services</p>
 
   <div class="skQuick">
-    <button class="skBtn" onclick="document.getElementById('skQuickSearch').focus()">🔎 Quick Search</button>
-    <button class="skBtn" onclick="document.getElementById('skAskAI').scrollIntoView({behavior:'smooth'})">🤖 Ask AI</button>
-    <button class="skBtn" onclick="liveGoldRate()">🪙 Gold Rate</button>
+    <button class="skBtn" onclick="location.href='/gold.html'">🪙 Gold & Silver</button>
     <button class="skBtn" onclick="location.href='/education/'">📚 Education</button>
     <button class="skBtn" onclick="location.href='/jobs/'">💼 Jobs</button>
+    <button class="skBtn" onclick="location.href='/sports/index.html'">🏏 Sports</button>
+    <button class="skBtn" onclick="document.getElementById('skAskAI')?.scrollIntoView({behavior:'smooth'})">🤖 Ask AI</button>
   </div>
-</div>
-
-<div class="skGrid">
-
-  <div class="skCard">
-    <h3>⭐ Today's Highlights</h3>
-    <p>🪙 Gold & Silver — Daily rates</p>
-    <p>📚 Education — Class 1–12</p>
-    <p>💼 Jobs — Latest opportunities</p>
-    <p>🏏 Sports — Latest information</p>
-    <div class="skLinks">
-      <button onclick="liveGoldRate()">Gold →</button>
-      <button onclick="location.href='/education/'">Education →</button>
-      <button onclick="location.href='/jobs/'">Jobs →</button>
-    </div>
-  </div>
-
-  <div class="skCard">
-    <h3>🔎 Quick Search</h3>
-    <input id="skQuickSearch" class="skSearch"
-      placeholder="Search Gold, Education, Jobs, Sports..."
-      onkeydown="if(event.key==='Enter')skHomeSearch(this.value)">
-    <div class="skLinks">
-      <button onclick="skHomeSearch('Gold Rate')">🪙 Gold</button>
-      <button onclick="skHomeSearch('Education')">📚 Education</button>
-      <button onclick="skHomeSearch('Jobs')">💼 Jobs</button>
-      <button onclick="skHomeSearch('Sports')">🏏 Sports</button>
-    </div>
-  </div>
-
-  <div class="skCard">
-    <div id="mainMobileRecharge" style="margin:16px 0;padding:18px;border-radius:20px;background:linear-gradient(135deg,#00c853,#00695c);text-align:center;box-shadow:0 8px 25px rgba(0,0,0,.2);">
-<div style="font-size:30px;">📱</div>
-<div style="font-size:21px;font-weight:900;color:#fff;">Mobile Recharge</div>
-<div style="color:#eafff3;margin:5px 0 12px;">Airtel • Jio • Vi • BSNL</div>
-<a href="/developer/recharge.html" style="display:inline-block;padding:11px 24px;border-radius:25px;background:#fff;color:#008f45;text-decoration:none;font-weight:900;">RECHARGE NOW →</a>
-    </div>
-</div>
-
-<div class="skCard">
-<h3>🛠️ Popular Tools</h3>
-    <p>🪙 Gold Calculator</p>
-    <p>📐 Mathematics & Equations</p>
-    <p>💰 Business Calculators</p>
-    <p>📊 Useful AI Tools</p>
-    <div class="skLinks">
-      <button onclick="location.href='/education/equations.html'">📐 Equations</button>
-      <button onclick="location.href='/education/qa.html'">📚 Q&A</button>
-    </div>
-  </div>
-
-</div>
-
-<div class="skCard" style="margin-bottom:18px">
-  <h3>🔥 Latest Updates</h3>
-  <div class="skUpdate">🪙 <b>Gold & Silver</b> — Check today's latest rates.</div>
-  <div class="skUpdate">📚 <b>Education</b> — Explore Class 1–12 learning tools.</div>
-  <div class="skUpdate">💼 <b>Jobs</b> — Explore government and bank job information.</div>
-  <div class="skUpdate">🏏 <b>Sports</b> — Follow sports information and updates.</div>
 </div>
 
 <div id="skAskAI" class="skCard" style="margin-bottom:18px">
