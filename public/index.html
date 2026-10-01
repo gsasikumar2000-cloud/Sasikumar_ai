@@ -1440,56 +1440,38 @@ button,input,select,textarea{max-width:100%;font-size:16px}
   [style*="display:flex"]{max-width:100%}
 }
 </style>
-<style id="appraiser-mobile-size-fix">
+<style id="appraiser-mobile-size-fix-safe">
 .appraiser-report{
-  width:100% !important;
-  max-width:100% !important;
-  box-sizing:border-box !important;
-  margin:12px 0 !important;
-  padding:14px !important;
-  overflow:hidden !important;
-}
-.appraiser-report *{
-  box-sizing:border-box !important;
-  max-width:100%;
+  width:100%!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+  padding:12px!important;
 }
 .appraiser-report input,
 .appraiser-report select,
 .appraiser-report textarea{
-  width:100% !important;
-  min-height:44px !important;
-  padding:9px 10px !important;
-  font-size:16px !important;
-  border-radius:8px !important;
+  width:100%!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  min-height:42px!important;
+  font-size:16px!important;
 }
 .appraiser-report textarea{
-  min-height:80px !important;
-  resize:vertical;
+  min-height:75px!important;
 }
-.appraiser-report button,
-.appraiser-report label{
-  max-width:100% !important;
-}
-@media (max-width:600px){
+@media(max-width:600px){
   .appraiser-report{
-    width:calc(100vw - 24px) !important;
-    margin-left:auto !important;
-    margin-right:auto !important;
-    padding:12px !important;
-    font-size:14px !important;
-  }
-  .appraiser-report input,
-  .appraiser-report select,
-  .appraiser-report textarea{
-    font-size:16px !important;
+    width:100%!important;
+    margin:10px 0!important;
+    padding:10px!important;
   }
 }
 @media print{
   .appraiser-report{
-    width:100% !important;
-    max-width:100% !important;
-    margin:0 !important;
-    padding:10px !important;
+    width:100%!important;
+    max-width:100%!important;
+    margin:0!important;
   }
 }
 </style>
