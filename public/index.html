@@ -1608,6 +1608,107 @@ input,input *,select,select *,textarea,textarea *{font-size:11px!important;min-h
 
 
 <body>
+<!-- SASIKUMAR AI WELCOME BOARD -->
+<section id="sasikumarWelcomeBoard" style="
+margin:18px auto;
+max-width:900px;
+padding:22px;
+border-radius:24px;
+background:linear-gradient(135deg,#101828,#1d2940,#111827);
+color:#fff;
+text-align:center;
+box-shadow:0 12px 35px rgba(0,0,0,.28);
+border:1px solid rgba(255,255,255,.12);
+overflow:hidden;
+">
+  <img src="/assets/sasikumar-ai-logo.png"
+       class="sasikumarWelcomeLogo"
+       alt="SASIKUMAR AI"
+       style="width:26px;height:26px;object-fit:contain;cursor:pointer;transition:transform .6s ease"
+       onclick="sasikumarWelcomeSpeak(this)">
+
+  <div style="font-size:24px;font-weight:800;margin-top:10px">
+    Welcome to SASIKUMAR AI
+  </div>
+
+  <div id="welcomeDateTime" style="margin-top:10px;font-size:16px;opacity:.9"></div>
+  <div style="margin-top:7px;font-size:15px;opacity:.85">
+    📍 Papanasam, Thanjavur, Tamil Nadu
+  </div>
+
+  <div id="welcomeKural" style="
+    margin:18px auto 0;
+    max-width:700px;
+    padding:15px;
+    border-radius:16px;
+    background:rgba(255,255,255,.08);
+    animation:sasikumarKuralFloat 3s ease-in-out infinite;
+  ">
+    <div style="font-size:14px;opacity:.7">திருக்குறள்</div>
+    <div id="welcomeKuralText" style="font-size:18px;line-height:1.7;font-weight:600">
+      அகர முதல எழுத்தெல்லாம் ஆதி<br>
+      பகவன் முதற்றே உலகு
+    </div>
+    <div style="font-size:13px;opacity:.65;margin-top:5px">குறள் 1</div>
+  </div>
+
+  <div style="margin-top:14px;font-size:12px;opacity:.65">
+    Logo-வை click செய்தால் 🔊 SASIKUMAR AI voice welcome
+  </div>
+</section>
+
+<style>
+@keyframes sasikumarKuralFloat {
+  0%,100% { transform:translateY(0); }
+  50% { transform:translateY(-5px); }
+}
+@keyframes sasikumarWelcomeSpin {
+  from { transform:rotate(0deg); }
+  to { transform:rotate(360deg); }
+}
+.sasikumarWelcomeLogo.welcome-spin {
+  animation:sasikumarWelcomeSpin .7s ease;
+}
+</style>
+
+<script>
+(function(){
+  function updateWelcomeDateTime(){
+    const el=document.getElementById("welcomeDateTime");
+    if(!el)return;
+    const now=new Date();
+    const date=now.toLocaleDateString("en-IN",{
+      weekday:"long",year:"numeric",month:"long",day:"numeric",
+      timeZone:"Asia/Kolkata"
+    });
+    const time=now.toLocaleTimeString("en-IN",{
+      hour:"2-digit",minute:"2-digit",second:"2-digit",
+      hour12:true,timeZone:"Asia/Kolkata"
+    });
+    el.textContent="📅 "+date+"  •  🕐 "+time;
+  }
+
+  window.sasikumarWelcomeSpeak=function(el){
+    el.classList.remove("welcome-spin");
+    void el.offsetWidth;
+    el.classList.add("welcome-spin");
+
+    if("speechSynthesis" in window){
+      speechSynthesis.cancel();
+      const msg=new SpeechSynthesisUtterance("Welcome to SASIKUMAR AI");
+      msg.lang="en-IN";
+      msg.rate=.9;
+      msg.pitch=1;
+      speechSynthesis.speak(msg);
+    }
+  };
+
+  updateWelcomeDateTime();
+  setInterval(updateWelcomeDateTime,1000);
+})();
+</script>
+<!-- /SASIKUMAR AI WELCOME BOARD -->
+
 
 <!-- UPI HEAD DASHBOARD -->
 <section id="upi-head-dashboard" style="margin:18px 0;">
@@ -5163,106 +5264,7 @@ else skRefreshPay2AllWallet();
 </script>
 
 
-<!-- SASIKUMAR AI WELCOME BOARD -->
-<section id="sasikumarWelcomeBoard" style="
-margin:18px auto;
-max-width:900px;
-padding:22px;
-border-radius:24px;
-background:linear-gradient(135deg,#101828,#1d2940,#111827);
-color:#fff;
-text-align:center;
-box-shadow:0 12px 35px rgba(0,0,0,.28);
-border:1px solid rgba(255,255,255,.12);
-overflow:hidden;
-">
-  <img src="/assets/sasikumar-ai-logo.png"
-       class="sasikumarWelcomeLogo"
-       alt="SASIKUMAR AI"
-       style="width:26px;height:26px;object-fit:contain;cursor:pointer;transition:transform .6s ease"
-       onclick="sasikumarWelcomeSpeak(this)">
 
-  <div style="font-size:24px;font-weight:800;margin-top:10px">
-    Welcome to SASIKUMAR AI
-  </div>
-
-  <div id="welcomeDateTime" style="margin-top:10px;font-size:16px;opacity:.9"></div>
-  <div style="margin-top:7px;font-size:15px;opacity:.85">
-    📍 Papanasam, Thanjavur, Tamil Nadu
-  </div>
-
-  <div id="welcomeKural" style="
-    margin:18px auto 0;
-    max-width:700px;
-    padding:15px;
-    border-radius:16px;
-    background:rgba(255,255,255,.08);
-    animation:sasikumarKuralFloat 3s ease-in-out infinite;
-  ">
-    <div style="font-size:14px;opacity:.7">திருக்குறள்</div>
-    <div id="welcomeKuralText" style="font-size:18px;line-height:1.7;font-weight:600">
-      அகர முதல எழுத்தெல்லாம் ஆதி<br>
-      பகவன் முதற்றே உலகு
-    </div>
-    <div style="font-size:13px;opacity:.65;margin-top:5px">குறள் 1</div>
-  </div>
-
-  <div style="margin-top:14px;font-size:12px;opacity:.65">
-    Logo-வை click செய்தால் 🔊 SASIKUMAR AI voice welcome
-  </div>
-</section>
-
-<style>
-@keyframes sasikumarKuralFloat {
-  0%,100% { transform:translateY(0); }
-  50% { transform:translateY(-5px); }
-}
-@keyframes sasikumarWelcomeSpin {
-  from { transform:rotate(0deg); }
-  to { transform:rotate(360deg); }
-}
-.sasikumarWelcomeLogo.welcome-spin {
-  animation:sasikumarWelcomeSpin .7s ease;
-}
-</style>
-
-<script>
-(function(){
-  function updateWelcomeDateTime(){
-    const el=document.getElementById("welcomeDateTime");
-    if(!el)return;
-    const now=new Date();
-    const date=now.toLocaleDateString("en-IN",{
-      weekday:"long",year:"numeric",month:"long",day:"numeric",
-      timeZone:"Asia/Kolkata"
-    });
-    const time=now.toLocaleTimeString("en-IN",{
-      hour:"2-digit",minute:"2-digit",second:"2-digit",
-      hour12:true,timeZone:"Asia/Kolkata"
-    });
-    el.textContent="📅 "+date+"  •  🕐 "+time;
-  }
-
-  window.sasikumarWelcomeSpeak=function(el){
-    el.classList.remove("welcome-spin");
-    void el.offsetWidth;
-    el.classList.add("welcome-spin");
-
-    if("speechSynthesis" in window){
-      speechSynthesis.cancel();
-      const msg=new SpeechSynthesisUtterance("Welcome to SASIKUMAR AI");
-      msg.lang="en-IN";
-      msg.rate=.9;
-      msg.pitch=1;
-      speechSynthesis.speak(msg);
-    }
-  };
-
-  updateWelcomeDateTime();
-  setInterval(updateWelcomeDateTime,1000);
-})();
-</script>
-<!-- /SASIKUMAR AI WELCOME BOARD -->
 
 </body>
 </html>
