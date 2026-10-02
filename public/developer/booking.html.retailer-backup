@@ -64,7 +64,7 @@ a{color:inherit;text-decoration:none}
 <div class="wrap">
 
 <header class="header">
-  <img class="logo" src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI">
+  <img class="logo" src="/assets/sasikumar-ai-logo.svg" alt="SASIKUMAR AI">
   <h1>📚 All Booking Centre</h1>
   <div class="sub">SASIKUMAR AI — One place for booking services</div>
 </header>
@@ -111,62 +111,6 @@ a{color:inherit;text-decoration:none}
   <h2>Movie & Event</h2>
   <p>Movie and event ticket centre</p>
   <button class="soon" onclick="comingSoon('Movie & Event Booking')">Coming Soon</button>
-</div>
-
-<div class="card">
-<div class="icon">📺</div>
-<h2>DTH Recharge</h2>
-<p>Pay2All DTH recharge service</p>
-<button class="available" onclick="retailerInfo('DTH Recharge')">OPEN DTH</button>
-</div>
-
-<div class="card">
-<div class="icon">💡</div>
-<h2>BBPS / Bill Payment</h2>
-<p>Electricity • Water • Gas • Broadband • Bills</p>
-<button class="available" onclick="retailerInfo('BBPS / Bill Payment')">OPEN BBPS</button>
-</div>
-
-<div class="card">
-<div class="icon">🏦</div>
-<h2>AEPS</h2>
-<p>Cash Withdrawal • Balance Enquiry • Mini Statement</p>
-<button class="available" onclick="retailerInfo('AEPS')">OPEN AEPS</button>
-</div>
-
-<div class="card">
-<div class="icon">💸</div>
-<h2>Money Transfer</h2>
-<p>Domestic Money Transfer</p>
-<button class="available" onclick="retailerInfo('Money Transfer')">OPEN DMT</button>
-</div>
-
-<div class="card">
-<div class="icon">🪪</div>
-<h2>PAN Services</h2>
-<p>UTI PAN service</p>
-<button class="available" onclick="retailerInfo('PAN Services')">OPEN PAN</button>
-</div>
-
-<div class="card">
-<div class="icon">🔐</div>
-<h2>Bank / UPI Verification</h2>
-<p>Bank account and UPI verification</p>
-<button class="available" onclick="retailerInfo('Bank / UPI Verification')">OPEN VERIFY</button>
-</div>
-
-<div class="card">
-<div class="icon">🚗</div>
-<h2>eChallan</h2>
-<p>eChallan service</p>
-<button class="available" onclick="retailerInfo('eChallan')">OPEN eCHALLAN</button>
-</div>
-
-<div class="card">
-<div class="icon">🎁</div>
-<h2>Gift Cards</h2>
-<p>Digital gift card service</p>
-<button class="available" onclick="retailerInfo('Gift Cards')">OPEN GIFT CARDS</button>
 </div>
 
 <div class="card">
@@ -227,10 +171,6 @@ async function openTravel(type){
     console.error(e);
     alert("Travel service connection failed.");
   }
-}
-
-function retailerInfo(name){
-alert("🏪 "+name+"\\n\\nPay2All retailer service integration.\\n\\nLIVE activation requires the required Pay2All service/KYC approval.");
 }
 
 function comingSoon(name){

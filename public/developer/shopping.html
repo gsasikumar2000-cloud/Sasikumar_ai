@@ -70,7 +70,7 @@ button{
 <div class="wrap">
 
 <header class="header">
-<img class="logo" src="/assets/sasikumar-ai-logo.svg" alt="SASIKUMAR AI">
+<img class="logo" src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI">
 <h1>🛒 Shopping & Referral Centre</h1>
 <div class="sub">
 SASIKUMAR AI — Retail Shopping • Affiliate Partners • Referral Commission
@@ -260,6 +260,108 @@ fetch("/api/referral/status?code="+encodeURIComponent(code))
 </script>
 
 <section id="referral-flow-section" style="margin:28px 0;padding:22px;border-radius:22px;background:linear-gradient(135deg,#111827,#1e3a8a,#312e81);color:#fff;box-shadow:0 12px 35px rgba(0,0,0,.25)">
+
+<section id="affiliateManager" style="margin:25px 0;padding:20px;border-radius:20px;background:rgba(255,255,255,.10);backdrop-filter:blur(10px)">
+<h2 style="text-align:center">🔗 Affiliate Referral Manager</h2>
+
+<div style="display:grid;gap:10px;max-width:650px;margin:auto">
+<input id="refCompany" placeholder="Company Name" style="padding:14px;border-radius:12px;border:0">
+<input id="refLink" placeholder="Referral / Affiliate Link" style="padding:14px;border-radius:12px;border:0">
+<button onclick="saveReferral()" style="padding:14px;border:0;border-radius:12px;cursor:pointer">💾 SAVE REFERRAL</button>
+</div>
+
+<div id="refList" style="margin-top:20px"></div>
+</section>
+
+<script>
+const REF_KEY='sasikumar_ai_affiliate_referrals';
+let referrals=JSON.parse(localStorage.getItem(REF_KEY)||'[]');
+
+function saveReferral(){
+  const company=document.getElementById('refCompany').value.trim();
+  const link=document.getElementById('refLink').value.trim();
+  if(!company || !link){ alert('Company Name and Referral Link required'); return; }
+
+  referrals.push({
+    id:Date.now(),
+    company,
+    link,
+    visited:0,
+    orders:0,
+    confirmed:0,
+    commission:0
+  });
+
+  localStorage.setItem(REF_KEY,JSON.stringify(referrals));
+  document.getElementById('refCompany').value='';
+  document.getElementById('refLink').value='';
+  renderReferrals();
+}
+
+function deleteReferral(id){
+  referrals=referrals.filter(x=>x.id!==id);
+  localStorage.setItem(REF_KEY,JSON.stringify(referrals));
+  renderReferrals();
+}
+
+function shareReferral(id){
+  const r=referrals.find(x=>x.id===id);
+  if(!r)return;
+  if(navigator.share){
+    navigator.share({title:'SASIKUMAR AI - '+r.company,text:'Shop through my referral link',url:r.link});
+  }else{
+    navigator.clipboard.writeText(r.link);
+    alert('Referral link copied');
+  }
+}
+
+function visitReferral(id){
+  const r=referrals.find(x=>x.id===id);
+  if(!r)return;
+  r.visited++;
+  localStorage.setItem(REF_KEY,JSON.stringify(referrals));
+  window.open(r.link,'_blank');
+  renderReferrals();
+}
+
+function editReferral(id){
+  const r=referrals.find(x=>x.id===id);
+  if(!r)return;
+  document.getElementById('refCompany').value=r.company;
+  document.getElementById('refLink').value=r.link;
+  deleteReferral(id);
+  window.scrollTo({top:document.getElementById('affiliateManager').offsetTop,behavior:'smooth'});
+}
+
+function renderReferrals(){
+  const box=document.getElementById('refList');
+  if(!referrals.length){
+    box.innerHTML='<p style="text-align:center">No saved referrals yet.</p>';
+    return;
+  }
+
+  box.innerHTML=referrals.map(r=>`
+    <div style="margin:12px 0;padding:16px;border-radius:16px;background:rgba(0,0,0,.18)">
+      <h3>🛍️ ${escapeHtml(r.company)}</h3>
+      <div>👁️ Visited: <b>${r.visited}</b> &nbsp; 🛒 Orders: <b>${r.orders}</b></div>
+      <div>✅ Confirmed: <b>${r.confirmed}</b> &nbsp; 💰 Commission: <b>₹${Number(r.commission).toFixed(2)}</b></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+        <button onclick="visitReferral(${r.id})">🔗 OPEN / TRACK</button>
+        <button onclick="shareReferral(${r.id})">📤 SHARE</button>
+        <button onclick="editReferral(${r.id})">✏️ EDIT</button>
+        <button onclick="deleteReferral(${r.id})">🗑️ DELETE</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function escapeHtml(v){
+  return String(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+}
+
+renderReferrals();
+</script>
+
 <h2 style="text-align:center;margin:0 0 18px">🚀 Referral Commission Flow</h2>
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;text-align:center">
 <div style="padding:16px;border-radius:16px;background:rgba(255,255,255,.12)">🔗<br><b>Referral</b><br><small>Referral Link / Code</small></div>
