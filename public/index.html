@@ -394,7 +394,7 @@ text-decoration:none !important;
 (function(){
   const data = {
     gold:{
-      icon:"🪙", title:"Gold & Silver",
+      icon:'<img src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI" style="width:26px;height:26px;object-fit:contain;display:block;margin:auto;">', title:"Gold & Silver",
       detail:"Live Gold Rate, Silver Rate and useful gold calculation tools.",
       url:"/"
     },
@@ -442,7 +442,7 @@ text-decoration:none !important;
     const x = data[current];
 
     document.getElementById("skPreviewContent").innerHTML = `
-      <div style="font-size:48px">${x.icon}</div>
+      <div style="display:flex;justify-content:center;align-items:center;min-height:26px">${x.icon}</div>
       <h2 style="margin:8px 0">${x.title}</h2>
       <p style="font-size:17px;line-height:1.6">${x.detail}</p>
       <div style="padding:12px;border-radius:14px;background:#f5f7fb;">
