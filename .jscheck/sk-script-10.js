@@ -422,7 +422,7 @@ async function liveGoldRate(){
       </div>
 
       <div class="skHeader">
-        <div class="skLogo"><img src="/assets/sasikumar-ai-logo.svg" alt="SASIKUMAR AI"></div>
+        <div class="skLogo"><img src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI"></div>
         <div>
           <h2>Gold & Silver Price</h2>
           <p>🇮🇳 India • Live Market Rate</p>
