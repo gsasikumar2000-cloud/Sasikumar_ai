@@ -1,131 +1,124 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SASIKUMAR AI HUB</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#080b12;color:#fff}
-header{text-align:center;padding:20px;background:#101522}
-header h1{margin:0;font-size:22px}
-header p{color:#aeb7ca;font-size:13px}
-.grid{max-width:650px;margin:auto;padding:16px;display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-button{border:1px solid #30384d;background:#121827;color:#fff;border-radius:16px;padding:18px 8px;min-height:105px}
-.icon{display:block;font-size:30px;margin-bottom:8px}
-small{color:#9fa9bc}
-#panel{max-width:650px;margin:auto;padding:0 16px 20px}
-.card{background:#111725;border:1px solid #30384d;border-radius:16px;padding:16px}
-input,select{width:100%;padding:12px;margin:7px 0;background:#080b12;color:#fff;border:1px solid #3a4358;border-radius:10px}
-.action{width:100%;min-height:auto;margin-top:8px;padding:12px;border-radius:10px}
-.preview{margin-top:12px;padding:12px;background:#080b12;border-radius:12px}
-img,video{max-width:100%;border-radius:12px}
-@keyframes zoom{from{transform:scale(1)}to{transform:scale(1.08)}}
-@keyframes fade{from{opacity:0}to{opacity:1}}
-@keyframes slide{from{transform:translateY(25px);opacity:0}to{transform:translateY(0);opacity:1}}
-.zoom{animation:zoom 5s infinite alternate}
-.fade{animation:fade 1.5s}
-.slide{animation:slide 1s}
+body{margin:0;background:#080b12;color:white;font-family:Arial;text-align:center}
+h1{margin:20px 0 5px;font-size:24px}
+p{color:#aaa}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:16px;max-width:600px;margin:auto}
+button{border:1px solid #39445c;background:#141a28;color:white;border-radius:15px;padding:18px 8px;font-size:16px;min-height:90px}
+.icon{font-size:30px;display:block;margin-bottom:7px}
+#box{max-width:600px;margin:10px auto;padding:16px}
+.card{background:#111827;border:1px solid #39445c;border-radius:15px;padding:18px}
+input,select{width:100%;box-sizing:border-box;padding:12px;margin:7px 0;border-radius:9px;border:1px solid #39445c;background:#080b12;color:white}
+.action{width:100%;min-height:auto;margin-top:8px}
+video,img{max-width:100%;margin-top:12px;border-radius:12px}
+.ok{color:#62e58b}.bad{color:#ff7373}
 </style>
 </head>
 <body>
 
-<header>
 <h1>🤖 SASIKUMAR AI HUB</h1>
 <p>Video & Poster AD Dashboard</p>
-</header>
 
 <div class="grid">
-<button onclick="openBox('video')"><span class="icon">🎬</span><b>Video</b><br><small>Minimum 2 minutes</small></button>
-<button onclick="openBox('poster')"><span class="icon">🖼️</span><b>Poster AD</b><br><small>Daily creative</small></button>
-<button onclick="openBox('creative')"><span class="icon">🎨</span><b>Creative</b><br><small>Font & Animation</small></button>
-<button onclick="openBox('link')"><span class="icon">🔗</span><b>Link</b><br><small>Copy / Open</small></button>
-<button onclick="openBox('share')"><span class="icon">📤</span><b>Share</b><br><small>Share link</small></button>
-<button onclick="openBox('daily')"><span class="icon">📅</span><b>Daily Auto</b><br><small>9:30 AM</small></button>
+<button onclick="videoBox()"><span class="icon">🎬</span>Video</button>
+<button onclick="posterBox()"><span class="icon">🖼️</span>Poster AD</button>
+<button onclick="creativeBox()"><span class="icon">🎨</span>Creative</button>
+<button onclick="linkBox()"><span class="icon">🔗</span>Link Manager</button>
+<button onclick="shareBox()"><span class="icon">📤</span>Share</button>
+<button onclick="dailyBox()"><span class="icon">📅</span>Daily Auto</button>
+<button onclick="metaBox()"><span class="icon">▶️</span>Meta Video</button>
+<button onclick="statusBox()"><span class="icon">📊</span>Status</button>
 </div>
 
-<div id="panel"></div>
+<div id="box"></div>
 
 <script>
-function openBox(type){
-let p=document.getElementById("panel");
+function show(html){document.getElementById("box").innerHTML=html}
 
-if(type==="video"){
-p.innerHTML='<div class="card"><h2>🎬 Video</h2><input id="vf" type="file" accept="video/*" onchange="checkVideo(this)"><div id="vs">Minimum 02:00</div><div id="vp"></div></div>';
-}
-
-if(type==="poster"){
-p.innerHTML='<div class="card"><h2>🖼️ Poster AD</h2><input id="pf" type="file" accept="image/*" onchange="poster(this)"><div id="pp"></div></div>';
-}
-
-if(type==="creative"){
-p.innerHTML='<div class="card"><h2>🎨 Creative</h2><input id="txt" placeholder="Enter title"><select id="font"><option>Arial</option><option>Georgia</option><option>Impact</option><option>Verdana</option></select><select id="ani"><option value="fade">Fade</option><option value="slide">Slide</option><option value="zoom">Zoom</option></select><button class="action" onclick="makeCreative()">Preview</button><div id="cp"></div></div>';
-}
-
-if(type==="link"){
-p.innerHTML='<div class="card"><h2>🔗 Link</h2><input id="link" placeholder="Enter link"><button class="action" onclick="copyLink()">📋 Copy</button><button class="action" onclick="openLink()">↗️ Open</button></div>';
-}
-
-if(type==="share"){
-p.innerHTML='<div class="card"><h2>📤 Share</h2><input id="share" placeholder="Enter link"><button class="action" onclick="shareLink()">📤 Share</button></div>';
-}
-
-if(type==="daily"){
-p.innerHTML='<div class="card"><h2>📅 Daily Auto Post</h2><p>🕤 Release: 09:30 AM IST</p><p>🌙 Cleanup: 12:00 AM IST</p><p>Timezone: Asia/Kolkata</p></div>';
-}
-}
-
-function checkVideo(input){
-let file=input.files[0];
-if(!file)return;
-let v=document.createElement("video");
+function videoBox(){
+show('<div class="card"><h2>🎬 Video</h2><input id="videoFile" type="file" accept="video/*"><p id="videoStatus">Minimum 02:00</p><div id="videoPreview"></div></div>');
+document.getElementById("videoFile").onchange=function(){
+var f=this.files[0]; if(!f)return;
+var v=document.createElement("video");
 v.preload="metadata";
 v.onloadedmetadata=function(){
 if(v.duration<120){
-document.getElementById("vs").innerText="❌ Rejected: minimum 02:00";
-}else{
-document.getElementById("vs").innerText="✅ Accepted: "+Math.floor(v.duration/60)+":"+String(Math.floor(v.duration%60)).padStart(2,"0");
-document.getElementById("vp").innerHTML='<video controls src="'+URL.createObjectURL(file)+'"></video>';
+document.getElementById("videoStatus").innerHTML='<span class="bad">❌ Rejected — minimum 02:00</span>';
+return;
 }
+document.getElementById("videoStatus").innerHTML='<span class="ok">✅ Accepted — '+Math.floor(v.duration/60)+':'+String(Math.floor(v.duration%60)).padStart(2,"0")+'</span>';
+document.getElementById("videoPreview").innerHTML='<video controls src="'+URL.createObjectURL(f)+'"></video>';
 };
-v.src=URL.createObjectURL(file);
+v.src=URL.createObjectURL(f);
+}
 }
 
-function poster(input){
-let f=input.files[0];
-if(!f)return;
-document.getElementById("pp").innerHTML='<div class="preview"><img class="zoom" src="'+URL.createObjectURL(f)+'"></div>';
+function posterBox(){
+show('<div class="card"><h2>🖼️ Poster AD</h2><input id="posterFile" type="file" accept="image/*"><div id="posterPreview"></div></div>');
+document.getElementById("posterFile").onchange=function(){
+var f=this.files[0];if(!f)return;
+document.getElementById("posterPreview").innerHTML='<img src="'+URL.createObjectURL(f)+'">';
+};
 }
 
-function makeCreative(){
-let t=document.getElementById("txt").value||"SASIKUMAR AI";
-let font=document.getElementById("font").value;
-let ani=document.getElementById("ani").value;
-document.getElementById("cp").innerHTML='<div class="preview"><h2 class="'+ani+'" style="font-family:'+font+'">'+escapeHTML(t)+'</h2><small>SASIKUMAR AI</small></div>';
+function creativeBox(){
+show('<div class="card"><h2>🎨 Creative Studio</h2><input id="creativeText" placeholder="Enter title"><select id="creativeFont"><option>Arial</option><option>Georgia</option><option>Impact</option><option>Verdana</option></select><select id="creativeAnim"><option>Fade</option><option>Slide</option><option>Zoom</option><option>Typewriter</option></select><button class="action" onclick="creativePreview()">Preview</button><div id="creativePreview"></div></div>');
 }
 
-function copyLink(){
-let x=document.getElementById("link");
-if(!x.value)return;
-navigator.clipboard.writeText(x.value);
-alert("Link copied");
+function creativePreview(){
+var t=document.getElementById("creativeText").value||"SASIKUMAR AI";
+var f=document.getElementById("creativeFont").value;
+document.getElementById("creativePreview").innerHTML='<div class="card"><h2 style="font-family:'+f+'">'+t.replace(/[&<>]/g,"")+'</h2><small>SASIKUMAR AI</small></div>';
 }
 
-function openLink(){
-let x=document.getElementById("link").value.trim();
+function linkBox(){
+show('<div class="card"><h2>🔗 Link Manager</h2><input id="url" placeholder="Enter URL"><button class="action" onclick="copyUrl()">📋 Copy</button><button class="action" onclick="openUrl()">↗️ Open</button></div>');
+}
+
+function copyUrl(){
+var x=document.getElementById("url").value;
+if(x){navigator.clipboard.writeText(x).then(function(){alert("Link copied");});}
+}
+
+function openUrl(){
+var x=document.getElementById("url").value.trim();
 if(x)window.open(x,"_blank");
 }
 
-async function shareLink(){
-let x=document.getElementById("share").value.trim();
-if(!x)return;
-if(navigator.share)await navigator.share({title:"SASIKUMAR AI HUB",url:x});
-else{await navigator.clipboard.writeText(x);alert("Link copied");}
+function shareBox(){
+show('<div class="card"><h2>📤 Share</h2><input id="shareUrl" placeholder="Enter URL"><button class="action" onclick="shareUrl()">📤 Share</button></div>');
 }
 
-function escapeHTML(x){
-return String(x).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+function shareUrl(){
+var x=document.getElementById("shareUrl").value.trim();
+if(!x)return;
+if(navigator.share){navigator.share({title:"SASIKUMAR AI HUB",url:x});}
+else{navigator.clipboard.writeText(x).then(function(){alert("Link copied");});}
+}
+
+function dailyBox(){
+show('<div class="card"><h2>📅 Daily Auto Post</h2><p>🕤 Release: <b>09:30 AM IST</b></p><p>🌙 Cleanup: <b>12:00 AM IST</b></p><p>Timezone: <b>Asia/Kolkata</b></p></div>');
+}
+
+function metaBox(){
+show('<div class="card"><h2>▶️ Meta Video</h2><input id="metaUrl" placeholder="Public Facebook / Instagram video URL"><button class="action" onclick="metaPreview()">👁️ Preview</button><div id="metaResult"></div></div>');
+}
+
+function metaPreview(){
+var x=document.getElementById("metaUrl").value.trim();
+if(!x)return;
+document.getElementById("metaResult").innerHTML='<p class="ok">✅ URL ready</p><button class="action" onclick="window.open(\''+x.replace(/'/g,"")+'\',\'_blank\')">↗️ Open Video</button>';
+}
+
+function statusBox(){
+show('<div class="card"><h2>📊 Status</h2><p class="ok">● Hub Page Online</p><p>Video minimum: 02:00</p><p>Release: 09:30 AM IST</p><p>Cleanup: 12:00 AM IST</p></div>');
 }
 </script>
+
 </body>
 </html>
