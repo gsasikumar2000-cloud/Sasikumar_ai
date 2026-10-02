@@ -1619,6 +1619,37 @@ app.delete("/api/video/library/:id", (req, res) => {
 
 /* ================= END SASIKUMAR AI VIDEO LIBRARY ================= */
 
+
+// === SASIKUMAR AI WHATSAPP WEBHOOK ===
+const WHATSAPP_VERIFY_TOKEN =
+  process.env.WHATSAPP_VERIFY_TOKEN || "sasikumar_ai_whatsapp_verify_2026";
+
+// Meta webhook verification
+app.get("/api/whatsapp/webhook", (req, res) => {
+  const mode = req.query["hub.mode"];
+  const token = req.query["hub.verify_token"];
+  const challenge = req.query["hub.challenge"];
+
+  if (mode === "subscribe" && token === WHATSAPP_VERIFY_TOKEN) {
+    console.log("✅ WhatsApp webhook verified");
+    return res.status(200).send(challenge);
+  }
+
+  console.warn("❌ WhatsApp webhook verification failed");
+  return res.sendStatus(403);
+});
+
+// WhatsApp incoming messages/status updates
+app.post("/api/whatsapp/webhook", (req, res) => {
+  try {
+    console.log("📩 WhatsApp webhook:", JSON.stringify(req.body));
+    return res.sendStatus(200);
+  } catch (err) {
+    console.error("WhatsApp webhook error:", err);
+    return res.sendStatus(500);
+  }
+});
+
 app.listen(PORT,()=>{
   console.log("🤖 SASIKUMAR AI");
   console.log("✅ Server running on port " + PORT);
