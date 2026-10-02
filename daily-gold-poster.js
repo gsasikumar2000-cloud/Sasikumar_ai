@@ -18,7 +18,7 @@ const designs = [
 const posterTypes = [
   ['GOLD & SILVER PRICE','தங்கம் மற்றும் வெள்ளி விலை','DAILY PRICE UPDATE'],
   ['PRECIOUS METALS UPDATE','தங்கம் • வெள்ளி தினசரி தகவல்','LIVE PRICE UPDATE'],
-  ['GOLD & SILVER NEWS','தங்கம் மற்றும் வெள்ளி தகவல்','DAILY MARKET UPDATE'],
+  ['GOLD &amp; SILVER NEWS','தங்கம் மற்றும் வெள்ளி தகவல்','DAILY MARKET UPDATE'],
   ['PRICE AWARENESS','தங்கம் • வெள்ளி விலை விழிப்புணர்வு','PRICE AWARENESS'],
   ['APPRAISER UPDATE','Gold Appraiser • Gold Valuer','APPRAISER INFORMATION'],
   ['DAILY METAL TIP','தினசரி தங்கம் • வெள்ளி குறிப்பு','METAL AWARENESS'],
