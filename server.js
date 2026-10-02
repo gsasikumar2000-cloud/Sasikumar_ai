@@ -1358,6 +1358,267 @@ app.get("/api/sports/status", (req,res) => {
   });
 });
 
+
+/* ================= SASIKUMAR AI VIDEO LIBRARY ================= */
+
+const fs = require("fs");
+const crypto = require("crypto");
+
+const VIDEO_DIR = path.join(__dirname, "data", "videos");
+const VIDEO_META = path.join(VIDEO_DIR, "library.json");
+const VIDEO_MAX_BYTES = 100 * 1024 * 1024; // 100 MB
+
+fs.mkdirSync(VIDEO_DIR, { recursive: true });
+
+function readVideoLibrary() {
+  try {
+    if (!fs.existsSync(VIDEO_META)) return [];
+    const data = JSON.parse(fs.readFileSync(VIDEO_META, "utf8"));
+    return Array.isArray(data) ? data : [];
+  } catch (e) {
+    console.error("Video library read error:", e.message);
+    return [];
+  }
+}
+
+function writeVideoLibrary(items) {
+  fs.writeFileSync(
+    VIDEO_META,
+    JSON.stringify(items, null, 2),
+    "utf8"
+  );
+}
+
+function isAllowedVideoHost(hostname) {
+  const host = hostname.toLowerCase();
+
+  return (
+    host === "facebook.com" ||
+    host.endsWith(".facebook.com") ||
+    host === "fb.watch" ||
+    host === "instagram.com" ||
+    host.endsWith(".instagram.com")
+  );
+}
+
+app.get("/api/video/library", (req, res) => {
+  try {
+    const items = readVideoLibrary();
+
+    res.json({
+      ok: true,
+      count: items.length,
+      videos: items
+    });
+  } catch (e) {
+    res.status(500).json({
+      ok: false,
+      message: "Unable to load video library"
+    });
+  }
+});
+
+app.get("/api/video/file/:id", (req, res) => {
+  const items = readVideoLibrary();
+  const item = items.find(v => v.id === req.params.id);
+
+  if (!item) {
+    return res.status(404).json({
+      ok: false,
+      message: "Video not found"
+    });
+  }
+
+  const filePath = path.join(VIDEO_DIR, item.filename);
+
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({
+      ok: false,
+      message: "Video file is missing"
+    });
+  }
+
+  res.sendFile(filePath);
+});
+
+app.post("/api/video/import", async (req, res) => {
+  try {
+    const inputUrl = String(req.body?.url || "").trim();
+
+    if (!inputUrl) {
+      return res.status(400).json({
+        ok: false,
+        message: "Video URL is required"
+      });
+    }
+
+    let parsed;
+
+    try {
+      parsed = new URL(inputUrl);
+    } catch {
+      return res.status(400).json({
+        ok: false,
+        message: "Invalid URL"
+      });
+    }
+
+    if (parsed.protocol !== "https:") {
+      return res.status(400).json({
+        ok: false,
+        message: "Only HTTPS URLs are allowed"
+      });
+    }
+
+    if (!isAllowedVideoHost(parsed.hostname)) {
+      return res.status(400).json({
+        ok: false,
+        message:
+          "Only public/authorized Facebook, Instagram or fb.watch URLs are accepted"
+      });
+    }
+
+    /*
+     * Important:
+     * A Facebook/Instagram page URL is normally NOT a direct MP4 URL.
+     * This endpoint intentionally does not bypass login, private content,
+     * DRM or platform protections.
+     *
+     * It accepts a directly accessible video response from an authorized
+     * URL only when the response itself is a video.
+     */
+
+    const response = await axios.get(inputUrl, {
+      responseType: "stream",
+      timeout: 30000,
+      maxRedirects: 3,
+      validateStatus: status => status >= 200 && status < 300
+    });
+
+    const contentType =
+      String(response.headers["content-type"] || "").toLowerCase();
+
+    if (!contentType.startsWith("video/")) {
+      response.data.destroy();
+
+      return res.status(400).json({
+        ok: false,
+        message:
+          "The supplied URL did not return a direct video file. Use a public/authorized direct video URL."
+      });
+    }
+
+    const contentLength = Number(
+      response.headers["content-length"] || 0
+    );
+
+    if (contentLength > VIDEO_MAX_BYTES) {
+      response.data.destroy();
+
+      return res.status(413).json({
+        ok: false,
+        message: "Video is larger than the 100 MB limit"
+      });
+    }
+
+    const id = crypto.randomUUID();
+    const extension =
+      contentType.includes("webm") ? ".webm" :
+      contentType.includes("ogg") ? ".ogv" :
+      ".mp4";
+
+    const filename = id + extension;
+    const filePath = path.join(VIDEO_DIR, filename);
+
+    const output = fs.createWriteStream(filePath);
+    let downloaded = 0;
+
+    response.data.on("data", chunk => {
+      downloaded += chunk.length;
+
+      if (downloaded > VIDEO_MAX_BYTES) {
+        response.data.destroy(
+          new Error("Video exceeds 100 MB limit")
+        );
+      }
+    });
+
+    await new Promise((resolve, reject) => {
+      response.data.on("error", reject);
+      output.on("error", reject);
+      output.on("finish", resolve);
+      response.data.pipe(output);
+    });
+
+    const item = {
+      id,
+      filename,
+      sourceUrl: inputUrl,
+      contentType,
+      size: downloaded,
+      createdAt: new Date().toISOString(),
+      videoUrl: "/api/video/file/" + id
+    };
+
+    const items = readVideoLibrary();
+    items.unshift(item);
+    writeVideoLibrary(items);
+
+    res.json({
+      ok: true,
+      message: "Video saved to SASIKUMAR AI library",
+      video: item
+    });
+
+  } catch (e) {
+    console.error("Video import error:", e.message);
+
+    res.status(500).json({
+      ok: false,
+      message:
+        "Video import failed. The URL may not be a directly accessible video file."
+    });
+  }
+});
+
+app.delete("/api/video/library/:id", (req, res) => {
+  try {
+    const items = readVideoLibrary();
+    const index = items.findIndex(v => v.id === req.params.id);
+
+    if (index === -1) {
+      return res.status(404).json({
+        ok: false,
+        message: "Video not found"
+      });
+    }
+
+    const item = items[index];
+    const filePath = path.join(VIDEO_DIR, item.filename);
+
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+
+    items.splice(index, 1);
+    writeVideoLibrary(items);
+
+    res.json({
+      ok: true,
+      message: "Video deleted"
+    });
+  } catch (e) {
+    console.error("Video delete error:", e.message);
+
+    res.status(500).json({
+      ok: false,
+      message: "Unable to delete video"
+    });
+  }
+});
+
+/* ================= END SASIKUMAR AI VIDEO LIBRARY ================= */
+
 app.listen(PORT,()=>{
   console.log("🤖 SASIKUMAR AI");
   console.log("✅ Server running on port " + PORT);
