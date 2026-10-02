@@ -363,6 +363,169 @@ setInterval(loadGold,60000);
 </script>
 
 <script>function toggleMenu(e){if(e)e.stopPropagation();document.getElementById("controlMenu").classList.toggle("show")}function closeMenu(){document.getElementById("controlMenu").classList.remove("show")}document.addEventListener("touchstart",function(e){if(!e.target.closest(".menu-wrap"))closeMenu()},{passive:true})</script>
-<section id="metaVideoSave" style="margin:20px auto;max-width:700px;padding:20px;border-radius:18px;background:#111827;color:#fff"><h2>Meta Video Save</h2><p>Paste your video URL below.</p><input id="metaVideoUrl" type="url" placeholder="Paste Meta video URL" style="width:100%;box-sizing:border-box;padding:14px;border-radius:12px;margin:8px 0 12px;font-size:16px"><button id="metaVideoSaveBtn" type="button" style="width:100%;padding:14px;border:0;border-radius:12px;background:#16a34a;color:white;font-size:16px;font-weight:bold">Save Video</button><div id="metaVideoStatus" style="margin-top:14px"></div></section><script>(function(){const i=document.getElementById("metaVideoUrl"),b=document.getElementById("metaVideoSaveBtn"),st=document.getElementById("metaVideoStatus");b.onclick=async function(){const u=i.value.trim();if(!u){st.textContent="Please paste a video URL.";return}try{new URL(u)}catch(e){st.textContent="Invalid URL.";return}st.textContent="Preparing download...";try{const r=await fetch(u);if(!r.ok)throw Error();const x=await r.blob();if(!x.type.startsWith("video/"))throw Error();const z=URL.createObjectURL(x),a=document.createElement("a");a.href=z;a.download="sasikumar-ai-meta-video.mp4";a.click();URL.revokeObjectURL(z);st.textContent="Download started."}catch(e){st.textContent="This Meta URL cannot be downloaded directly. It may require login or block direct access."}}})();</script></body>
+<section id="metaVideoSave" style="margin:20px auto;max-width:900px;padding:20px;border-radius:18px;background:#111827;color:#fff">
+<h2 style="margin-top:0">Meta Video Save</h2>
+<p>Save a public/authorized directly accessible Facebook or Instagram video URL to your SASIKUMAR AI library.</p>
+
+<input id="metaVideoUrl" type="url"
+placeholder="Paste Facebook / Instagram video URL"
+style="width:100%;box-sizing:border-box;padding:14px;border-radius:12px;margin:8px 0 12px;font-size:16px">
+
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+<button id="metaVideoSaveBtn" type="button"
+style="flex:1;min-width:150px;padding:14px;border:0;border-radius:12px;background:#16a34a;color:white;font-size:16px;font-weight:bold">
+Save Video
+</button>
+
+<button id="metaVideoRefreshBtn" type="button"
+style="flex:1;min-width:150px;padding:14px;border:0;border-radius:12px;background:#2563eb;color:white;font-size:16px;font-weight:bold">
+Refresh Library
+</button>
+</div>
+
+<div id="metaVideoStatus" style="margin-top:14px"></div>
+
+<div style="margin-top:24px">
+<h3>Video Library</h3>
+<div id="metaVideoLibrary"></div>
+</div>
+</section>
+
+<script>
+(function(){
+  const input = document.getElementById("metaVideoUrl");
+  const saveBtn = document.getElementById("metaVideoSaveBtn");
+  const refreshBtn = document.getElementById("metaVideoRefreshBtn");
+  const status = document.getElementById("metaVideoStatus");
+  const library = document.getElementById("metaVideoLibrary");
+
+  function esc(value){
+    return String(value || "").replace(/[&<>"']/g,function(c){
+      return {
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#039;"
+      }[c];
+    });
+  }
+
+  function formatSize(bytes){
+    const n = Number(bytes || 0);
+    if(n < 1024) return n + " B";
+    if(n < 1024 * 1024) return (n / 1024).toFixed(1) + " KB";
+    return (n / (1024 * 1024)).toFixed(1) + " MB";
+  }
+
+  async function loadLibrary(){
+    library.innerHTML = "<p>Loading library...</p>";
+
+    try{
+      const r = await fetch("/api/video/library");
+      const data = await r.json();
+
+      if(!r.ok || !data.ok){
+        throw new Error(data.message || "Unable to load library");
+      }
+
+      if(!data.videos || !data.videos.length){
+        library.innerHTML = "<p>No saved videos yet.</p>";
+        return;
+      }
+
+      library.innerHTML = data.videos.map(function(v){
+        return `
+          <article style="margin:14px 0;padding:14px;border-radius:14px;background:#1f2937">
+            <video controls preload="metadata"
+              style="width:100%;max-height:420px;border-radius:10px;background:#000"
+              src="${esc(v.videoUrl)}"></video>
+
+            <div style="margin-top:10px;font-size:13px;word-break:break-word">
+              <div><strong>Saved:</strong> ${esc(v.createdAt)}</div>
+              <div><strong>Size:</strong> ${formatSize(v.size)}</div>
+              <div><strong>Source:</strong> ${esc(v.sourceUrl)}</div>
+            </div>
+
+            <button type="button"
+              onclick="window.deleteSasikumarVideo('${esc(v.id)}')"
+              style="margin-top:10px;padding:10px 14px;border:0;border-radius:10px;background:#dc2626;color:#fff;font-weight:bold">
+              Delete
+            </button>
+          </article>
+        `;
+      }).join("");
+
+    }catch(e){
+      library.innerHTML =
+        '<p style="color:#fca5a5">' +
+        esc(e.message || "Unable to load library") +
+        '</p>';
+    }
+  }
+
+  saveBtn.onclick = async function(){
+    const url = input.value.trim();
+
+    if(!url){
+      status.textContent = "Please paste a video URL.";
+      return;
+    }
+
+    saveBtn.disabled = true;
+    status.textContent = "Saving video on server...";
+
+    try{
+      const r = await fetch("/api/video/import",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({url:url})
+      });
+
+      const data = await r.json();
+
+      if(!r.ok || !data.ok){
+        throw new Error(data.message || "Video import failed");
+      }
+
+      status.textContent = "Video saved successfully.";
+      input.value = "";
+      await loadLibrary();
+
+    }catch(e){
+      status.textContent = e.message || "Video import failed.";
+    }finally{
+      saveBtn.disabled = false;
+    }
+  };
+
+  refreshBtn.onclick = loadLibrary;
+
+  window.deleteSasikumarVideo = async function(id){
+    if(!confirm("Delete this saved video?")) return;
+
+    try{
+      const r = await fetch(
+        "/api/video/library/" + encodeURIComponent(id),
+        {method:"DELETE"}
+      );
+
+      const data = await r.json();
+
+      if(!r.ok || !data.ok){
+        throw new Error(data.message || "Delete failed");
+      }
+
+      await loadLibrary();
+
+    }catch(e){
+      status.textContent = e.message || "Delete failed.";
+    }
+  };
+
+  loadLibrary();
+})();
+</script>
+</body>
 </html>
 
