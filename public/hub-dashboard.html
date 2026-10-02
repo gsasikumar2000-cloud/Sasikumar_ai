@@ -21,6 +21,39 @@ input,select{width:100%;box-sizing:border-box;padding:12px;margin:7px 0;border-r
 video,img{max-width:100%;margin-top:12px;border-radius:12px}
 .ok{color:#62e58b}.bad{color:#ff7373}
 </style>
+
+
+<style id="sai-click-animation">
+button{transition:transform .16s ease,filter .16s ease,box-shadow .16s ease}
+button:active{transform:translateY(3px) scale(.96) rotateX(4deg);filter:brightness(1.3);box-shadow:0 2px 6px rgba(0,0,0,.5)}
+.sai-click-wave{animation:saiClickWave .45s ease}
+@keyframes saiClickWave{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
+</style>
+
+<script id="sai-click-voice">
+(function(){
+function saiVoice(){
+try{
+ if(window.speechSynthesis){
+   window.speechSynthesis.cancel();
+   var u=new SpeechSynthesisUtterance("SASIKUMAR AI");
+   u.lang="en-IN";
+   u.rate=.95;
+   u.pitch=1;
+   window.speechSynthesis.speak(u);
+ }
+}catch(e){}
+}
+document.addEventListener("click",function(e){
+ var b=e.target.closest("button");
+ if(!b)return;
+ b.classList.remove("sai-click-wave");
+ void b.offsetWidth;
+ b.classList.add("sai-click-wave");
+ saiVoice();
+});
+})();
+</script>
 </head>
 <body><div style="width:110px;height:110px;margin:18px auto 10px;background:#111;border:2px solid #FFD700;border-radius:22px;display:flex;align-items:center;justify-content:center;overflow:hidden;"><img src="/assets/sasikumar-ai-logo.png?t=1" alt="SASIKUMAR AI" style="width:26px;height:26px;display:block;visibility:visible;opacity:1;"></div>
 
