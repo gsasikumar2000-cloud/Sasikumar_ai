@@ -17,14 +17,14 @@ body{
  radial-gradient(circle at 90% 15%,#ede9fe 0,transparent 28%),
  linear-gradient(135deg,#f8fbff,#eef4ff);
 }
-.container{max-width:26px;margin:auto;padding:18px}
+.container{max-width:1200px;margin:auto;padding:18px}
 .hero{
  padding:30px 20px;text-align:center;color:white;border-radius:28px;
  background:linear-gradient(135deg,#1d4ed8,#7c3aed,#0891b2);
  box-shadow:0 15px 40px #1e3a8a44;margin-bottom:20px
 }
 .hero h1{font-size:clamp(30px,6vw,54px);margin:5px 0;font-weight:900}
-.hero p{margin:8px auto;max-width:26px;font-size:17px}
+.hero p{margin:8px auto;max-width:850px;font-size:17px}
 .nav{
  display:flex;gap:10px;overflow:auto;padding:5px 0 15px;
  position:sticky;top:0;z-index:10;background:#f8fbffdd;backdrop-filter:blur(12px)
@@ -42,7 +42,7 @@ h3{margin:8px 0}
  background:#ffffffeb;border:1px solid #dbe4f2;border-radius:20px;
  padding:18px;box-shadow:0 8px 25px #0000000c
 }
-.card{cursor:pointer;transition:.2s;min-height:26px}
+.card{cursor:pointer;transition:.2s;min-height:150px}
 .card:hover{transform:translateY(-4px);box-shadow:0 14px 30px #0002}
 .icon{font-size:40px}
 .name{font-size:20px;font-weight:900;margin:6px 0}
@@ -55,7 +55,7 @@ h3{margin:8px 0}
  border:2px solid #ef4444;background:linear-gradient(135deg,#fff,#fff1f2)
 }
 .liveDot{
- display:inline-block;width:26px;height:26px;border-radius:50%;
+ display:inline-block;width:10px;height:10px;border-radius:50%;
  background:#ef4444;margin-right:7px;animation:pulse 1s infinite
 }
 @keyframes pulse{50%{opacity:.3;transform:scale(1.4)}}
@@ -80,9 +80,9 @@ summary{font-weight:900;cursor:pointer}
  border:1px solid #fde68a;color:#713f12
 }
 .footer{text-align:center;padding:30px 10px;color:#64748b}
-@media(max-width:26px){
+@media(max-width:600px){
  .container{padding:10px}.hero{padding:24px 14px}
- h2{font-size:24px}.card{min-height:26px}
+ h2{font-size:24px}.card{min-height:130px}
 }
 </style>
 </head>
@@ -355,7 +355,7 @@ setInterval(loadSportsData,60000);
 
 <style>
 #sportDetailModal{display:none;position:fixed;inset:0;z-index:99999;background:#000b;padding:18px;overflow:auto}
-#sportDetailBox{max-width:26px;margin:25px auto;background:#fff;color:#111827;border-radius:24px;padding:25px;box-shadow:0 15px 50px #0008}
+#sportDetailBox{max-width:850px;margin:25px auto;background:#fff;color:#111827;border-radius:24px;padding:25px;box-shadow:0 15px 50px #0008}
 #sportDetailBox h2{margin-top:0;font-size:30px}
 #sportDetailBox h3{color:#2563eb;margin-bottom:6px}
 #sportDetailBox p{line-height:1.7}
