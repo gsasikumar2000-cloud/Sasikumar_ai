@@ -5091,5 +5091,50 @@ aria-label="Open SASIKUMAR AI 3D Advertisement Hub">
     <a class="service-btn" href="https://pickmywork.page.link/DQACHUsCHy8wEC7C6" target="_blank" rel="noopener">💼 PickMyWork</a>
   </div>
 </section>
+
+<section id="sasikumarPay2AllWallet" style="margin:20px auto;max-width:720px;padding:20px;border-radius:22px;background:linear-gradient(135deg,#101827,#182b46);color:#fff;box-shadow:0 10px 30px rgba(0,0,0,.18);">
+  <div style="font-size:22px;font-weight:800;">💰 SASIKUMAR AI — Pay2All Wallet</div>
+  <div style="margin-top:10px;font-size:16px;">Wallet Balance: <b id="skWalletBalance">Checking...</b></div>
+  <div id="skWalletStatus" style="margin-top:6px;font-size:14px;">Checking Pay2All connection...</div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;">
+    <button type="button" onclick="skRefreshPay2AllWallet()" style="padding:11px 16px;border:0;border-radius:12px;font-weight:700;cursor:pointer;">🔄 Refresh Balance</button>
+    <button type="button" onclick="skPay2AllAddMoney()" style="padding:11px 16px;border:0;border-radius:12px;font-weight:700;cursor:pointer;">➕ Add Money</button>
+  </div>
+  <div id="skWalletAddMoney" style="display:none;margin-top:14px;padding:14px;border-radius:14px;background:rgba(255,255,255,.08);">
+    <b>Pay2All Wallet Add Money</b>
+    <p style="margin:8px 0;font-size:13px;">Use the official Pay2All wallet funding/deposit process. No payment is processed by this button.</p>
+    <a href="https://pay2all.in/" target="_blank" rel="noopener" style="display:inline-block;padding:10px 14px;border-radius:10px;background:#fff;color:#111;text-decoration:none;font-weight:700;">Open Pay2All</a>
+  </div>
+</section>
+<script>
+async function skRefreshPay2AllWallet(){
+  const balance=document.getElementById("skWalletBalance");
+  const status=document.getElementById("skWalletStatus");
+  if(!balance||!status)return;
+  balance.textContent="Checking...";
+  status.textContent="Checking Pay2All connection...";
+  try{
+    const r=await fetch("/api/recharge/balance",{cache:"no-store"});
+    const j=await r.json();
+    if(j.status_id===1 && j.data){
+      balance.textContent="₹"+Number(j.data.balance||0).toLocaleString("en-IN",{minimumFractionDigits:2});
+      status.textContent="🟢 Pay2All Wallet Connected";
+    }else{
+      balance.textContent="Unavailable";
+      status.textContent="🔴 "+(j.message||"Wallet unavailable");
+    }
+  }catch(e){
+    balance.textContent="Unavailable";
+    status.textContent="🔴 Wallet connection failed";
+  }
+}
+function skPay2AllAddMoney(){
+  const box=document.getElementById("skWalletAddMoney");
+  if(box)box.style.display=box.style.display==="none"?"block":"none";
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",skRefreshPay2AllWallet);
+else skRefreshPay2AllWallet();
+</script>
+
 </body>
 </html>
