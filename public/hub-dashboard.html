@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI HUB</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#080b12;color:#fff}
+header{text-align:center;padding:20px;background:#101522}
+header h1{margin:0;font-size:22px}
+header p{color:#aeb7ca;font-size:13px}
+.grid{max-width:650px;margin:auto;padding:16px;display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+button{border:1px solid #30384d;background:#121827;color:#fff;border-radius:16px;padding:18px 8px;min-height:105px}
+.icon{display:block;font-size:30px;margin-bottom:8px}
+small{color:#9fa9bc}
+#panel{max-width:650px;margin:auto;padding:0 16px 20px}
+.card{background:#111725;border:1px solid #30384d;border-radius:16px;padding:16px}
+input,select{width:100%;padding:12px;margin:7px 0;background:#080b12;color:#fff;border:1px solid #3a4358;border-radius:10px}
+.action{width:100%;min-height:auto;margin-top:8px;padding:12px;border-radius:10px}
+.preview{margin-top:12px;padding:12px;background:#080b12;border-radius:12px}
+img,video{max-width:100%;border-radius:12px}
+@keyframes zoom{from{transform:scale(1)}to{transform:scale(1.08)}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes slide{from{transform:translateY(25px);opacity:0}to{transform:translateY(0);opacity:1}}
+.zoom{animation:zoom 5s infinite alternate}
+.fade{animation:fade 1.5s}
+.slide{animation:slide 1s}
+</style>
+</head>
+<body>
+
+<header>
+<h1>🤖 SASIKUMAR AI HUB</h1>
+<p>Video & Poster AD Dashboard</p>
+</header>
+
+<div class="grid">
+<button onclick="openBox('video')"><span class="icon">🎬</span><b>Video</b><br><small>Minimum 2 minutes</small></button>
+<button onclick="openBox('poster')"><span class="icon">🖼️</span><b>Poster AD</b><br><small>Daily creative</small></button>
+<button onclick="openBox('creative')"><span class="icon">🎨</span><b>Creative</b><br><small>Font & Animation</small></button>
+<button onclick="openBox('link')"><span class="icon">🔗</span><b>Link</b><br><small>Copy / Open</small></button>
+<button onclick="openBox('share')"><span class="icon">📤</span><b>Share</b><br><small>Share link</small></button>
+<button onclick="openBox('daily')"><span class="icon">📅</span><b>Daily Auto</b><br><small>9:30 AM</small></button>
+</div>
+
+<div id="panel"></div>
+
+<script>
+function openBox(type){
+let p=document.getElementById("panel");
+
+if(type==="video"){
+p.innerHTML='<div class="card"><h2>🎬 Video</h2><input id="vf" type="file" accept="video/*" onchange="checkVideo(this)"><div id="vs">Minimum 02:00</div><div id="vp"></div></div>';
+}
+
+if(type==="poster"){
+p.innerHTML='<div class="card"><h2>🖼️ Poster AD</h2><input id="pf" type="file" accept="image/*" onchange="poster(this)"><div id="pp"></div></div>';
+}
+
+if(type==="creative"){
+p.innerHTML='<div class="card"><h2>🎨 Creative</h2><input id="txt" placeholder="Enter title"><select id="font"><option>Arial</option><option>Georgia</option><option>Impact</option><option>Verdana</option></select><select id="ani"><option value="fade">Fade</option><option value="slide">Slide</option><option value="zoom">Zoom</option></select><button class="action" onclick="makeCreative()">Preview</button><div id="cp"></div></div>';
+}
+
+if(type==="link"){
+p.innerHTML='<div class="card"><h2>🔗 Link</h2><input id="link" placeholder="Enter link"><button class="action" onclick="copyLink()">📋 Copy</button><button class="action" onclick="openLink()">↗️ Open</button></div>';
+}
+
+if(type==="share"){
+p.innerHTML='<div class="card"><h2>📤 Share</h2><input id="share" placeholder="Enter link"><button class="action" onclick="shareLink()">📤 Share</button></div>';
+}
+
+if(type==="daily"){
+p.innerHTML='<div class="card"><h2>📅 Daily Auto Post</h2><p>🕤 Release: 09:30 AM IST</p><p>🌙 Cleanup: 12:00 AM IST</p><p>Timezone: Asia/Kolkata</p></div>';
+}
+}
+
+function checkVideo(input){
+let file=input.files[0];
+if(!file)return;
+let v=document.createElement("video");
+v.preload="metadata";
+v.onloadedmetadata=function(){
+if(v.duration<120){
+document.getElementById("vs").innerText="❌ Rejected: minimum 02:00";
+}else{
+document.getElementById("vs").innerText="✅ Accepted: "+Math.floor(v.duration/60)+":"+String(Math.floor(v.duration%60)).padStart(2,"0");
+document.getElementById("vp").innerHTML='<video controls src="'+URL.createObjectURL(file)+'"></video>';
+}
+};
+v.src=URL.createObjectURL(file);
+}
+
+function poster(input){
+let f=input.files[0];
+if(!f)return;
+document.getElementById("pp").innerHTML='<div class="preview"><img class="zoom" src="'+URL.createObjectURL(f)+'"></div>';
+}
+
+function makeCreative(){
+let t=document.getElementById("txt").value||"SASIKUMAR AI";
+let font=document.getElementById("font").value;
+let ani=document.getElementById("ani").value;
+document.getElementById("cp").innerHTML='<div class="preview"><h2 class="'+ani+'" style="font-family:'+font+'">'+escapeHTML(t)+'</h2><small>SASIKUMAR AI</small></div>';
+}
+
+function copyLink(){
+let x=document.getElementById("link");
+if(!x.value)return;
+navigator.clipboard.writeText(x.value);
+alert("Link copied");
+}
+
+function openLink(){
+let x=document.getElementById("link").value.trim();
+if(x)window.open(x,"_blank");
+}
+
+async function shareLink(){
+let x=document.getElementById("share").value.trim();
+if(!x)return;
+if(navigator.share)await navigator.share({title:"SASIKUMAR AI HUB",url:x});
+else{await navigator.clipboard.writeText(x);alert("Link copied");}
+}
+
+function escapeHTML(x){
+return String(x).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+}
+</script>
+</body>
+</html>
