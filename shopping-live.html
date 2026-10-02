@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI — Shopping & Referral Commission</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;font-family:Arial,sans-serif;color:#fff;min-height:100vh;
+ background:linear-gradient(135deg,#07152e,#172554,#4c1d95,#0f766e);
+}
+.wrap{max-width:1050px;margin:auto;padding:18px}
+.header{text-align:center;padding:22px 8px}
+.logo{width:82px;height:82px;object-fit:contain}
+h1{margin:10px 0 5px;font-size:30px}
+.sub{opacity:.85;line-height:1.5}
+.card{
+ background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.2);
+ border-radius:22px;padding:20px;margin:16px 0;
+ box-shadow:0 12px 35px rgba(0,0,0,.25);backdrop-filter:blur(10px)
+}
+.card h2{margin:0 0 12px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.stat{text-align:center;padding:16px;border-radius:16px;background:rgba(0,0,0,.2)}
+.num{font-size:25px;font-weight:800;color:#ffd54a}
+.label{font-size:13px;opacity:.8;margin-top:5px}
+.refbox{display:grid;grid-template-columns:1fr auto;gap:10px}
+input{
+ width:100%;padding:13px;border:0;border-radius:12px;
+ font-size:14px;background:#fff;color:#111
+}
+button{
+ border:0;border-radius:12px;padding:12px 15px;
+ font-weight:800;cursor:pointer
+}
+.primary{background:#ffd54a;color:#111}
+.secondary{background:#fff;color:#172554}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.shop{
+ padding:20px;border-radius:20px;text-align:center;
+ background:rgba(255,255,255,.09);
+ border:1px solid rgba(255,255,255,.16)
+}
+.shop .icon{font-size:45px}
+.shop h3{margin:10px 0 5px}
+.shop p{font-size:13px;min-height:38px;opacity:.8}
+.badge{
+ display:inline-block;padding:6px 10px;border-radius:999px;
+ font-size:11px;font-weight:800;margin:5px
+}
+.pending{background:#facc15;color:#422006}
+.ready{background:#22c55e;color:#052e16}
+.store{
+ width:100%;margin-top:8px;background:#fff;color:#172554
+}
+.note{font-size:13px;line-height:1.6;opacity:.85}
+.status{
+ padding:14px;border-radius:14px;background:rgba(0,0,0,.2);
+ margin-top:12px
+}
+@media(max-width:700px){
+ .stats{grid-template-columns:1fr 1fr}
+ .refbox{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+<header class="header">
+<img class="logo" src="/assets/sasikumar-ai-logo.svg" alt="SASIKUMAR AI">
+<h1>🛒 Shopping & Referral Centre</h1>
+<div class="sub">
+SASIKUMAR AI — Retail Shopping • Affiliate Partners • Referral Commission
+</div>
+</header>
+
+<section class="card">
+<h2>💰 Referral Commission Dashboard</h2>
+
+<div class="stats">
+<div class="stat">
+<div class="num" id="refCount">0</div>
+<div class="label">👥 Referrals</div>
+</div>
+
+<div class="stat">
+<div class="num" id="shopClicks">0</div>
+<div class="label">🛒 Store Clicks</div>
+</div>
+
+<div class="stat">
+<div class="num">₹0</div>
+<div class="label">💰 Confirmed Commission</div>
+</div>
+
+<div class="stat">
+<div class="num">Pending</div>
+<div class="label">🏦 Payout Status</div>
+</div>
+</div>
+</section>
+
+<section class="card">
+<h2>🔗 Your Referral Link</h2>
+<div class="refbox">
+<input id="refLink" readonly>
+<button class="primary" onclick="copyReferral()">📋 COPY</button>
+</div>
+<br>
+<button class="secondary" style="width:100%" onclick="shareReferral()">📤 SHARE REFERRAL</button>
+
+<div class="status">
+<strong>Referral Code:</strong> <span id="refCode">SKAI-FREE</span><br>
+<span id="commissionStatus">
+Affiliate commission activates after the relevant provider/affiliate program is approved and tracking links are configured.
+</span>
+</div>
+</section>
+
+<section class="card">
+<h2>🏪 Shopping Partners</h2>
+<div class="grid">
+
+<div class="shop">
+<div class="icon">📦</div>
+<h3>Amazon</h3>
+<p>Online shopping and products</p>
+<span class="badge pending">AFFILIATE LINK PENDING</span>
+<button class="store" onclick="openStore('Amazon','https://www.amazon.in/')">OPEN AMAZON</button>
+</div>
+
+<div class="shop">
+<div class="icon">🛍️</div>
+<h3>Flipkart</h3>
+<p>Online shopping marketplace</p>
+<span class="badge pending">AFFILIATE LINK PENDING</span>
+<button class="store" onclick="openStore('Flipkart','https://www.flipkart.com/')">OPEN FLIPKART</button>
+</div>
+
+<div class="shop">
+<div class="icon">👗</div>
+<h3>Myntra</h3>
+<p>Fashion and lifestyle shopping</p>
+<span class="badge pending">AFFILIATE LINK PENDING</span>
+<button class="store" onclick="openStore('Myntra','https://www.myntra.com/')">OPEN MYNTRA</button>
+</div>
+
+<div class="shop">
+<div class="icon">🛒</div>
+<h3>AJIO</h3>
+<p>Fashion and lifestyle</p>
+<span class="badge pending">AFFILIATE LINK PENDING</span>
+<button class="store" onclick="openStore('AJIO','https://www.ajio.com/')">OPEN AJIO</button>
+</div>
+
+<div class="shop">
+<div class="icon">🏷️</div>
+<h3>Tata CLiQ</h3>
+<p>Shopping and electronics</p>
+<span class="badge pending">AFFILIATE LINK PENDING</span>
+<button class="store" onclick="openStore('Tata CLiQ','https://www.tatacliq.com/')">OPEN TATA CLiQ</button>
+</div>
+
+<div class="shop">
+<div class="icon">👶</div>
+<h3>FirstCry</h3>
+<p>Baby and kids products</p>
+<span class="badge pending">AFFILIATE LINK PENDING</span>
+<button class="store" onclick="openStore('FirstCry','https://www.firstcry.com/')">OPEN FIRSTCRY</button>
+</div>
+
+<div class="shop">
+<div class="icon">🏠</div>
+<h3>Pepperfry</h3>
+<p>Furniture and home products</p>
+<span class="badge pending">AFFILIATE LINK PENDING</span>
+<button class="store" onclick="openStore('Pepperfry','https://www.pepperfry.com/')">OPEN PEPPERFRY</button>
+</div>
+
+<div class="shop">
+<div class="icon">➕</div>
+<h3>More Companies</h3>
+<p>Additional affiliate partners can be added here</p>
+<span class="badge pending">PARTNER PLAN</span>
+<button class="store" onclick="comingSoon()">ADD PARTNER</button>
+</div>
+
+</div>
+</section>
+
+<section class="card">
+<h2>📊 Commission Information</h2>
+<div class="note">
+• Customer purchases must be tracked through an approved affiliate link.<br>
+• Commission rates are controlled by each company's affiliate program and can change.<br>
+• Only confirmed provider-reported commissions are shown as earnings.<br>
+• Refunds, cancellations and invalid transactions may affect commission eligibility.<br>
+• SASIKUMAR AI does not display estimated commission as confirmed income.
+</div>
+</section>
+
+</div>
+
+<script>
+const code="SKAI-FREE";
+const link=location.origin+"/?ref="+encodeURIComponent(code);
+
+document.getElementById("refLink").value=link;
+
+let clicks=Number(localStorage.getItem("sasikumar_shop_clicks")||0);
+document.getElementById("shopClicks").textContent=String(clicks);
+
+function openStore(name,url){
+ clicks++;
+ localStorage.setItem("sasikumar_shop_clicks",String(clicks));
+ document.getElementById("shopClicks").textContent=String(clicks);
+
+ const finalUrl=url;
+
+ alert("🛒 "+name+
+       "\\n\\nOpening official store.\\n\\nAffiliate tracking will apply only after the approved affiliate link is configured.");
+
+ window.open(finalUrl,"_blank","noopener");
+}
+
+function comingSoon(){
+ alert("➕ Additional shopping partners can be added after their affiliate program/link is configured.");
+}
+
+function copyReferral(){
+ navigator.clipboard.writeText(link)
+ .then(()=>alert("✅ Referral link copied"))
+ .catch(()=>alert("Copy failed"));
+}
+
+async function shareReferral(){
+ if(navigator.share){
+  await navigator.share({
+   title:"SASIKUMAR AI Shopping & Referral",
+   text:"Shop through SASIKUMAR AI",
+   url:link
+  });
+ }else{
+  copyReferral();
+ }
+}
+
+fetch("/api/referral/status?code="+encodeURIComponent(code))
+.then(r=>r.json())
+.then(data=>{
+ if(data.status_id===1 && data.data){
+  document.getElementById("refCount").textContent=
+   String(data.data.unique_referrals || 0);
+ }
+})
+.catch(()=>{});
+</script>
+
+</body>
+</html>

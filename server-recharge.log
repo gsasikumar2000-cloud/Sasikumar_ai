@@ -1,0 +1,104 @@
+◇ injected env (20) from .env // tip: ◈ secrets for agents [www.dotenvx.com]
+✅ Intelligent AI route loaded: POST /api/intelligent-ai
+🤖 SASIKUMAR AI
+✅ Server running on port 3000
+🟢 SASIKUMAR AI Gold + Silver Poster automation started
+⏰ Schedule: Every day at 10:00 AM IST
+✅ OroPocket Gold: 14886.12
+📈 24h change: -0.12
+===== GOLD RATE DEBUG =====
+24K: 14886
+22K: 13646
+20K: 12405
+19K: 11785
+18K: 11165
+Source: OroPocket • Gold • INR/gram • SASIKUMAR AI
+Fallback: false
+===========================
+===== SILVER OROPOCKET DEBUG =====
+HTTP: 200
+DATA: {
+  statusCode: 200,
+  message: 'Asset prices retrieved successfully',
+  data: {
+    gold: {
+      buy: 15343.49,
+      sell: 14886.12,
+      gst: 460.3,
+      currency: 'INR',
+      unit: 'gram',
+      change24h: [Object]
+    },
+    silver: {
+      buy: 232.34,
+      sell: 219.74,
+      gst: 6.97,
+      currency: 'INR',
+      unit: 'gram',
+      change24h: [Object]
+    },
+    timestamp: '2026-09-29T13:00:00.172Z'
+  }
+}
+===================================
+Gold API: {"ok":true,"state":"Tamil Nadu","district":"Thanjavur","date":"29/09/2026","rates":{"24K":14886,"22K":13646,"20K":12405,"19K":11785,"18K":11165},"rates8g":{"24K":119088,"22K":109168,"20K":99240,"19K":94280,"18K":89320},"buy":15343.49,"sell":14886.12,"gst":460.3,"change24h":-0.12,"source":"OroPocket • Gold • INR/gram • SASIKUMAR AI","fallbackUsed":false,"cached":false,"note":"Reference gold price. Thanjavur jewellery retail rate may differ.","updatedAt":"2026-09-29T13:02:31.246Z"}
+Silver API: {"ok":true,"state":"Tamil Nadu","district":"Thanjavur","date":"29/09/2026","silver":{"gram":219.74,"tenGram":2197.4,"eightGram":1757.92,"kg":219740},"price_gram_999":219.74,"price_10g_999":2197.4,"price_8g_999":1757.92,"price_kg_999":219740,"previousClose":0,"change":0,"changePercent":0,"source":"OroPocket • Silver • INR/gram • SASIKUMAR AI","fallbackUsed":false,"note":"Reference silver sell price. Local Thanjavur retail rate may differ."}
+✅ Gold + Silver Daily Poster generated: 2026-09-29T13:02:31.362Z
+📁 /data/data/com.termux/files/home/sasikumar-ai/public/daily-gold-poster.svg
+💎 Gold 24K: ₹14,886
+🪙 Gold 22K: ₹13,646
+🥈 Silver 1g: ₹220
+🥈 Silver 1kg: ₹2,19,740
+⚠️ DISCORD_WEBHOOK_URL not configured — Discord skipped
+[2026-09-29T13:20:51.186Z] [PID: 11660] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Tue Sep 29 2026 18:50:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-09-29T13:34:44.751Z] [PID: 11660] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Tue Sep 29 2026 19:00:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-09-29T13:50:11.168Z] [PID: 11660] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Tue Sep 29 2026 19:20:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-09-29T14:01:46.400Z] [PID: 11660] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Tue Sep 29 2026 19:30:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-09-29T14:19:31.991Z] [PID: 11660] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Tue Sep 29 2026 19:40:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-09-29T14:33:53.707Z] [PID: 11660] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Tue Sep 29 2026 20:00:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-09-29T14:51:05.299Z] [PID: 11660] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Tue Sep 29 2026 20:20:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+👤 Question: Recharge
+🟡 Gemini request START
+⚠️ Gemini failed → Groq fallback: 429 Rate limit exceeded for model gemini-3.6-flash (limit: 20 requests per day on Free Tier). Please retry in 8s or upgrade your tier at https://ai.dev/rate-limit.
+===== SILVER OROPOCKET DEBUG =====
+HTTP: 200
+DATA: {
+  statusCode: 200,
+  message: 'Asset prices retrieved successfully',
+  data: {
+    gold: {
+      buy: 15373.03,
+      sell: 14914.81,
+      gst: 461.19,
+      currency: 'INR',
+      unit: 'gram',
+      change24h: [Object]
+    },
+    silver: {
+      buy: 232.71,
+      sell: 220.09,
+      gst: 6.98,
+      currency: 'INR',
+      unit: 'gram',
+      change24h: [Object]
+    },
+    timestamp: '2026-09-29T15:21:04.370Z'
+  }
+}
+===================================
+✅ OroPocket Gold: 14914.81
+📈 24h change: 0.08
+===== GOLD RATE DEBUG =====
+24K: 14915
+22K: 13672
+20K: 12429
+19K: 11808
+18K: 11186
+Source: OroPocket • Gold • INR/gram • SASIKUMAR AI
+Fallback: false
+===========================
+[2026-09-29T15:51:58.449Z] [PID: 11660] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Tue Sep 29 2026 21:20:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-09-29T16:00:47.797Z] [PID: 11660] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Tue Sep 29 2026 21:30:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-09-29T16:20:11.710Z] [PID: 11660] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Tue Sep 29 2026 21:50:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-09-29T18:10:11.889Z] [PID: 11660] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Tue Sep 29 2026 23:40:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
+[2026-09-29T20:10:42.079Z] [PID: 11660] [32m[NODE-CRON][32m [33m[WARN][0m missed execution at Wed Sep 30 2026 01:40:00 GMT+0530 (India Standard Time)! Possible blocking IO or high CPU user at the same process used by node-cron.
