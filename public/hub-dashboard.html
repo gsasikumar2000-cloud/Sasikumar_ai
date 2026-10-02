@@ -25,7 +25,30 @@ video,img{max-width:100%;margin-top:12px;border-radius:12px}
 <body><div style="width:110px;height:110px;margin:18px auto 10px;background:#111;border:2px solid #FFD700;border-radius:22px;display:flex;align-items:center;justify-content:center;overflow:hidden;"><img src="/assets/sasikumar-ai-logo.png?t=1" alt="SASIKUMAR AI" style="width:26px;height:26px;display:block;visibility:visible;opacity:1;"></div>
 
 <h1>🤖 SASIKUMAR AI HUB</h1>
-<p>Video & Poster AD Dashboard</p>
+<p>Welcome to SASIKUMAR AI HUB</p>
+
+<div class="card" style="margin:12px 16px">
+<h2>👋 Welcome Board</h2>
+<p>🤖 Smart Services • Daily Updates • Business • Education • Gold • Sports</p>
+</div>
+
+<div class="grid">
+<button onclick="thirukkuralBox()"><span class="icon">📜</span>Daily Thirukkural</button>
+<button onclick="goldBox()"><span class="icon" style="font-size:26px">🪙</span>Gold Price</button>
+<button onclick="jobBox()"><span class="icon">💼</span>Jobs</button>
+<button onclick="settingsBox()"><span class="icon">⚙️</span>Settings</button>
+<button onclick="sportsBox()"><span class="icon">⚽</span>Sports & Games</button>
+<button onclick="hub3dBox()"><span class="icon">🎨</span>3D HUB</button>
+</div>
+
+<div id="box"></div>
+
+<div class="card" style="margin:12px 16px">
+<h2>🪙 Gold & Silver Extra Explain</h2>
+<p>24K Gold • 22K Gold • Silver • Daily Rate Update</p>
+<p>Use the Gold & Silver section for detailed price information.</p>
+</div>
+
 
 <div class="grid">
 <button onclick="videoBox()"><span class="icon">🎬</span>Video</button>
@@ -38,9 +61,32 @@ video,img{max-width:100%;margin-top:12px;border-radius:12px}
 <button onclick="statusBox()"><span class="icon">📊</span>Status</button>
 </div>
 
-<div id="box"></div>
-
 <script>
+
+function thirukkuralBox(){
+show('<div class="card"><h2>📜 Daily Thirukkural</h2><p>Daily Thirukkural will be displayed here.</p><p><b>திருக்குறள் தினசரி புதுப்பிப்பு</b></p></div>');
+}
+
+function goldBox(){
+show('<div class="card"><h2 style="font-size:26px">🪙 Gold & Silver Price</h2><p>24K Gold • 22K Gold • Silver</p><p>Live daily rate section</p><button class="action" onclick="window.location.href='/'">📊 Open Gold Price</button></div>');
+}
+
+function jobBox(){
+show('<div class="card"><h2>💼 Jobs</h2><p>Job opportunities and updates.</p><button class="action" onclick="window.open('/jobs.html','_blank')">Open Jobs</button></div>');
+}
+
+function settingsBox(){
+show('<div class="card"><h2>⚙️ Settings</h2><p>HUB settings and preferences.</p></div>');
+}
+
+function sportsBox(){
+show('<div class="card"><h2>⚽ Sports & Games</h2><p>Sports news, scores and games.</p><button class="action" onclick="window.open('/sports.html','_blank')">Open Sports</button></div>');
+}
+
+function hub3dBox(){
+show('<div class="card"><h2>🎨 3D SASIKUMAR AI HUB</h2><p>Interactive 3D HUB branding and promotional area.</p><div style="font-size:60px;padding:18px">🤖</div></div>');
+}
+
 function show(html){document.getElementById("box").innerHTML=html}
 
 function videoBox(){
