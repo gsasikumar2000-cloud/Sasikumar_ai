@@ -9,7 +9,10 @@ body{margin:0;background:#080b12;color:white;font-family:Arial;text-align:center
 h1{margin:20px 0 5px;font-size:24px}
 p{color:#aaa}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:16px;max-width:600px;margin:auto}
-button{border:1px solid #39445c;background:#141a28;color:white;border-radius:15px;padding:18px 8px;font-size:16px;min-height:90px}
+button{border:1px solid #39445c;background:linear-gradient(145deg,#1d2638,#0c111c);color:white;border-radius:15px;padding:18px 8px;font-size:16px;min-height:90px;box-shadow:0 7px 0 #070a10,0 12px 22px rgba(0,0,0,.45);transform:translateY(0) perspective(500px) rotateX(0deg);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+button:hover{transform:translateY(-5px) perspective(500px) rotateX(4deg);box-shadow:0 11px 0 #070a10,0 18px 28px rgba(0,0,0,.55);border-color:#ffd54a}
+button:active{transform:translateY(4px);box-shadow:0 3px 0 #070a10,0 6px 12px rgba(0,0,0,.4)}
+.icon{font-size:30px;display:block;margin-bottom:7px;filter:drop-shadow(0 4px 3px rgba(0,0,0,.5))}
 .icon{font-size:30px;display:block;margin-bottom:7px}
 #box{max-width:600px;margin:10px auto;padding:16px}
 .card{background:#111827;border:1px solid #39445c;border-radius:15px;padding:18px}
