@@ -11,5 +11,8 @@
     "pg": "^8.23.0",
     "twilio": "^6.1.1"
   },
-  "type": "commonjs"
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js"
+  }
 }
