@@ -4143,6 +4143,34 @@ ${String.fromCharCode(60)}/script>
 <p>📞 Login / Information Confirmation: <a href="tel:9894440400">98944 40400</a></p>
 </div>
 
+
+<script>
+/* SASIKUMAR AI — FINAL SERVICE CLICK ISOLATION */
+document.addEventListener("DOMContentLoaded", function(){
+
+  const hub = document.getElementById("sasikumar-ai-hub-dashboard-card");
+
+  if(!hub) return;
+
+  /* Service buttons must never bubble to the HUB */
+  hub.querySelectorAll("button, a").forEach(function(el){
+    el.addEventListener("click", function(e){
+      e.stopPropagation();
+    }, false);
+  });
+
+  /* Explicit HUB navigation button */
+  const hubButton = hub.querySelector(".sasikumar-hub-open");
+
+  if(hubButton){
+    hubButton.addEventListener("click", function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      window.location.href="/hub-dashboard.html";
+    });
+  }
+});
+</script>
 </body>
 </html>`);
   w.document.close();
