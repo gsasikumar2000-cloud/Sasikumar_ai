@@ -66,6 +66,25 @@ document.addEventListener("click",function(e){
 <p>🤖 Smart Services • Daily Updates • Business • Education • Gold • Sports</p>
 </div>
 
+<div id="hub-location-card" style="margin:18px 0;padding:16px;border-radius:22px;background:linear-gradient(135deg,rgba(255,255,255,.16),rgba(255,255,255,.05));border:1px solid rgba(255,255,255,.22);box-shadow:0 12px 28px rgba(0,0,0,.28);text-align:center;">
+<div style="font-size:28px;">📍</div>
+<div style="font-weight:800;font-size:18px;">SASIKUMAR AI — Current Location</div>
+<div id="hub-location-text" style="margin-top:6px;opacity:.85;">Detecting location...</div>
+</div>
+<script id="hub-location-script">
+(function(){
+ const el=document.getElementById("hub-location-text");
+ if(!navigator.geolocation){el.textContent="Location not supported";return;}
+ navigator.geolocation.getCurrentPosition(async function(pos){
+   const lat=pos.coords.latitude, lon=pos.coords.longitude;
+   try{
+     const r=await fetch("https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat="+lat+"&lon="+lon);
+     const d=await r.json(), a=d.address||{};
+     el.textContent=[a.village||a.town||a.city,a.district,a.state,a.country].filter(Boolean).join(", ");
+   }catch(e){el.textContent="GPS location detected";}
+ },function(){el.textContent="Location permission required";});
+})();
+</script>
 <div class="grid">
 <button onclick="thirukkuralBox()"><span class="icon">📜</span>Daily Thirukkural</button>
 <button onclick="goldBox()"><span class="icon" style="font-size:26px">🪙</span>Gold Price</button>
