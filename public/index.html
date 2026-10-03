@@ -2870,6 +2870,53 @@ function printAppraisalReport(btn){
 }
 </style>
 
+
+<style id="sasikumar-font-style">
+:root{
+  --font-main: Inter, "Noto Sans Tamil", "Noto Sans", Arial, sans-serif;
+}
+html,body{
+  font-family:var(--font-main)!important;
+  font-size:15px;
+  line-height:1.5;
+}
+h1{
+  font-size:clamp(26px,5vw,32px)!important;
+  font-weight:800!important;
+  line-height:1.2;
+}
+h2{
+  font-size:clamp(20px,4vw,24px)!important;
+  font-weight:750!important;
+  line-height:1.25;
+}
+h3{
+  font-size:clamp(17px,3.5vw,19px)!important;
+  font-weight:700!important;
+}
+button,.btn,a.button{
+  font-size:15px!important;
+  font-weight:650!important;
+}
+.card,.service-card,.dashboard-card{
+  font-size:14px;
+}
+.card strong,.service-card strong,.dashboard-card strong{
+  font-size:16px;
+  font-weight:700;
+}
+small,.small{
+  font-size:12px!important;
+}
+@media(max-width:600px){
+  html,body{font-size:14px;}
+  h1{font-size:26px!important;}
+  h2{font-size:21px!important;}
+  h3{font-size:17px!important;}
+  button,.btn,a.button{font-size:14px!important;}
+}
+</style>
+
 </head><body>
 
 " +
