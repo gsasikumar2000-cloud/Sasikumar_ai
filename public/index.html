@@ -2686,7 +2686,7 @@ function closeAdminControl(){
 })();
 </script>
 
-<div id="sasikumar-ai-hub-dashboard-card" class="service-card">
+<div id="sasikumar-ai-hub-dashboard-card" class="service-card" data-hub-card="true">
 
   <div class="dash-sub">Smart Assistant • Gold • News • Voice</div>
 
@@ -2695,7 +2695,7 @@ function closeAdminControl(){
       <div>
         <div class="sk-all-services-title">⚡ ALL SERVICES</div>
       </div>
-      <button type="button" onclick="window.location.href='/'">🏠 Main Home</button>
+      <button type="button" class="hub-main-home" onclick="event.stopPropagation(); window.location.href='/'">🏠 Main Home</button>
     </div>
 
     <div class="sk-service-zigzag">
