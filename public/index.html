@@ -421,14 +421,18 @@ document.addEventListener("DOMContentLoaded",function(){
 </script>
 
 
-<!-- SASIKUMAR AI GLOBAL SEARCH -->
-<div id="sasikumar-global-search" style="margin:12px 0 18px;padding:14px;border-radius:18px;background:linear-gradient(135deg,#111827,#1e3a8a);box-shadow:0 8px 24px rgba(0,0,0,.25);">
-  <input id="sasikumarGlobalSearchInput" type="search"
-    placeholder="🔎 Search SASIKUMAR AI..."
-    style="width:100%;box-sizing:border-box;padding:14px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.25);font-size:16px;outline:none;">
-  <div id="sasikumar-search-results" style="margin-top:8px;"></div>
+<!-- SASIKUMAR AI GLOBAL ALL CONTENT SEARCH -->
+<div id="sasikumar-global-search" style="position:relative;margin:12px 0 18px;padding:14px;border-radius:18px;background:linear-gradient(135deg,#111827,#1e3a8a);box-shadow:0 8px 24px rgba(0,0,0,.22);">
+  <input id="sasikumarGlobalSearchInput"
+    type="search"
+    autocomplete="off"
+    placeholder="🔎 Search ALL SASIKUMAR AI content..."
+    aria-label="Search all SASIKUMAR AI website content"
+    style="width:100%;box-sizing:border-box;padding:15px 17px;border:0;border-radius:14px;font-size:16px;font-family:inherit;outline:none;">
+  <div id="sasikumar-search-results"
+    style="position:absolute;z-index:9999;left:14px;right:14px;top:68px;max-height:360px;overflow:auto;background:#fff;border-radius:14px;box-shadow:0 8px 25px rgba(0,0,0,.2);display:none;"></div>
 </div>
-<!-- END SASIKUMAR AI GLOBAL SEARCH -->
+<!-- END SASIKUMAR AI GLOBAL ALL CONTENT SEARCH -->
 
 <!-- SASIKUMAR AI — NEW SMART HOME DASHBOARD -->
 <section id="smartHomeCard" class="skCard" style="margin:18px 0;padding:16px;border-radius:24px;background:linear-gradient(135deg,#e8f7ff,#f3edff,#fff3e8);box-shadow:0 8px 24px rgba(0,0,0,.12);">
@@ -2958,64 +2962,10 @@ h1.sasikumar-ai-title{
   margin:14px auto 20px;
   z-index:1000;
 }
-#sasikumar-global-search input{
-  width:100%;
-  box-sizing:border-box;
-  padding:15px 18px;
-  border:1px solid #ddd;
-  border-radius:16px;
-  font-size:16px;
-  font-family:inherit;
-  outline:none;
-  box-shadow:0 5px 18px rgba(0,0,0,.10);
-}
-#sasikumar-global-search input:focus{
-  box-shadow:0 6px 22px rgba(0,0,0,.16);
-}
-#sasikumar-search-results{
-  position:absolute;
-  left:0;
-  right:0;
-  top:58px;
-  max-height:360px;
-  overflow:auto;
-  background:#fff;
-  border-radius:14px;
-  box-shadow:0 8px 25px rgba(0,0,0,.16);
-}
-.sasikumar-search-item{
-  display:block;
-  width:100%;
-  padding:13px 16px;
-  border:0;
-  border-bottom:1px solid #eee;
-  background:#fff;
-  text-align:left;
-  font:inherit;
-  font-size:14px;
-  cursor:pointer;
-}
-.sasikumar-search-item:hover{
-  background:#f5f5f5;
-}
-.sasikumar-search-empty{
-  padding:15px;
-  font-size:14px;
-}
 </style>
 
 </head><body>
 
-<!-- SASIKUMAR AI GLOBAL WEBSITE SEARCH -->
-<div id="sasikumar-global-search">
-  <input
-    id="sasikumarGlobalSearchInput"
-    type="search"
-    autocomplete="off"
-    placeholder="🔎 Search SASIKUMAR AI — Gold, Education, Jobs, BookLife, Pay2All..."
-    aria-label="Search SASIKUMAR AI website"
-  >
-  <div id="sasikumar-search-results" hidden></div>
 </div>
 
 
@@ -3121,33 +3071,54 @@ function searchBookLife(){
   const results = document.getElementById("sasikumar-search-results");
   if(!input || !results) return;
 
-  function buildIndex(){
-    const nodes = document.querySelectorAll(
-      "section[id], article[id], main [id], .card, .service-card, .dashboard-card"
-    );
+  function clean(t){
+    return (t || "").replace(/\s+/g," ").trim();
+  }
 
+  function escapeHtml(t){
+    return String(t).replace(/[&<>"']/g,function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];
+    });
+  }
+
+  function buildIndex(){
+    const selectors = [
+      "section[id]",
+      "article[id]",
+      "main [id]",
+      ".card",
+      ".service-card",
+      ".dashboard-card",
+      "button",
+      "a",
+      "h1","h2","h3","h4",
+      "[data-search]"
+    ];
+
+    const nodes = document.querySelectorAll(selectors.join(","));
     const seen = new Set();
     const items = [];
 
-    nodes.forEach((el)=>{
-      if(el.id === "sasikumar-global-search") return;
+    nodes.forEach(function(el){
+      if(el.closest("#sasikumar-global-search")) return;
 
-      const text = (el.innerText || el.textContent || "")
-        .replace(/\s+/g," ")
-        .trim();
-
+      const text = clean(el.innerText || el.textContent);
       if(!text || text.length < 3) return;
 
-      const title =
-        el.querySelector("h1,h2,h3,h4,strong,.title")?.innerText?.trim()
-        || text.slice(0,90);
+      const titleEl = el.querySelector("h1,h2,h3,h4,strong,.title");
+      const title = clean(
+        titleEl ? titleEl.innerText :
+        el.getAttribute("aria-label") ||
+        el.getAttribute("title") ||
+        text.slice(0,100)
+      );
 
-      const key = (el.id || "") + "|" + title;
+      const key = title.toLowerCase() + "|" + text.slice(0,180).toLowerCase();
       if(seen.has(key)) return;
       seen.add(key);
 
       items.push({
-        id: el.id,
+        el: el,
         title: title.slice(0,100),
         text: text.toLowerCase()
       });
@@ -3156,75 +3127,58 @@ function searchBookLife(){
     return items;
   }
 
-  function showResults(query){
-    const q = query.trim().toLowerCase();
+  function showResults(q){
+    q = clean(q).toLowerCase();
 
     if(!q){
-      results.hidden = true;
       results.innerHTML = "";
+      results.style.display = "none";
       return;
     }
 
-    const items = buildIndex().filter(item =>
-      item.text.includes(q) || item.title.toLowerCase().includes(q)
-    ).slice(0,12);
+    const items = buildIndex().filter(function(item){
+      return item.title.toLowerCase().includes(q) ||
+             item.text.includes(q);
+    }).slice(0,20);
 
     if(!items.length){
       results.innerHTML =
-        '<div class="sasikumar-search-empty">🔎 No matching content found.</div>';
-      results.hidden = false;
+        '<div style="padding:15px;font-size:14px;">🔎 No matching content found.</div>';
+      results.style.display = "block";
       return;
     }
 
-    results.innerHTML = items.map((item,i)=>
-      '<button class="sasikumar-search-item" data-index="'+i+'">🔎 '+escapeHtml(item.title)+'</button>'
-    ).join("");
+    results.innerHTML = items.map(function(item,i){
+      return '<button type="button" class="sasikumar-search-item" data-index="'+i+'" style="display:block;width:100%;padding:13px 15px;border:0;border-bottom:1px solid #eee;background:#fff;text-align:left;font:inherit;font-size:14px;cursor:pointer;">🔎 '+escapeHtml(item.title)+'</button>';
+    }).join("");
 
-    results.querySelectorAll(".sasikumar-search-item").forEach((btn,i)=>{
-      btn.addEventListener("click",()=>{
-        const item = items[i];
-        const el = item.id ? document.getElementById(item.id) : null;
-
+    results.querySelectorAll(".sasikumar-search-item").forEach(function(btn,i){
+      btn.addEventListener("click",function(){
+        const el = items[i].el;
         if(el){
           el.scrollIntoView({behavior:"smooth",block:"center"});
-          el.style.outline="3px solid currentColor";
-          el.style.outlineOffset="4px";
-          setTimeout(()=>{
-            el.style.outline="";
-            el.style.outlineOffset="";
+          el.style.outline = "3px solid currentColor";
+          el.style.outlineOffset = "4px";
+          setTimeout(function(){
+            el.style.outline = "";
+            el.style.outlineOffset = "";
           },1800);
         }
-
-        results.hidden = true;
-        input.value = item.title;
+        results.style.display = "none";
+        input.blur();
       });
     });
 
-    results.hidden = false;
+    results.style.display = "block";
   }
 
-  function escapeHtml(value){
-    return value.replace(/[&<>"']/g,(c)=>({
-      "&":"&amp;",
-      "<":"&lt;",
-      ">":"&gt;",
-      '"':"&quot;",
-      "'":"&#039;"
-    }[c]));
-  }
-
-  input.addEventListener("input",()=>showResults(input.value));
-
-  document.addEventListener("click",(e)=>{
-    if(!document.getElementById("sasikumar-global-search")?.contains(e.target)){
-      results.hidden = true;
-    }
+  input.addEventListener("input",function(){
+    showResults(input.value);
   });
 
-  input.addEventListener("keydown",(e)=>{
-    if(e.key === "Escape"){
-      results.hidden = true;
-      input.blur();
+  document.addEventListener("click",function(e){
+    if(!e.target.closest("#sasikumar-global-search")){
+      results.style.display = "none";
     }
   });
 })();
