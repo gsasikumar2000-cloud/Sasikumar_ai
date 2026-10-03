@@ -4084,6 +4084,25 @@ function calculateGoldPractical(){
 }
 
 
+
+function shareAppraisalReport(btn){
+  const report = btn.closest(".report-box, .appraisal-report, .report-card") || btn.parentElement.parentElement;
+  const text = report ? report.innerText : "SASIKUMAR AI Appraiser Report";
+
+  if(navigator.share){
+    navigator.share({
+      title: "SASIKUMAR AI - Appraiser Report",
+      text: text
+    }).catch(()=>{});
+  }else if(navigator.clipboard){
+    navigator.clipboard.writeText(text).then(()=>{
+      alert("Report copied. You can paste it in WhatsApp or other apps.");
+    });
+  }else{
+    alert("Sharing is not supported on this device.");
+  }
+}
+
 function printAppraisalReport(btn){
   const report = btn && btn.closest ? btn.closest(".report-box") : null;
 
@@ -4228,7 +4247,9 @@ function goldReport(){
     <button onclick="saveAppraisalReport('${id}')">💾 Save Report</button>
     <button onclick="loadAppraisalReport('${id}')">📂 Load Saved</button>
     <button onclick="clearAppraisalReport('${id}')">🗑️ Clear</button>
-    <button onclick="printAppraisalReport(this)">🖨️ Print / PDF</button><button type="button" onclick="window.history.back()">↩️ Return</button>
+    <button type="button" onclick="printAppraisalReport(this)">🖨️ Print Preview</button>
+    <button type="button" onclick="shareAppraisalReport(this)">📤 Share</button>
+    <button type="button" onclick="window.history.back()">↩️ Return</button>
 
    </div>
  </div>`;
