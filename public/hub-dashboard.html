@@ -198,6 +198,40 @@ function statusBox(){
 </div>
 
 <div id="box"></div>
+<div class="card" id="pay2allBalanceCard" style="margin:16px auto;max-width:600px;">
+<h2>💳 Pay2All Wallet</h2>
+<p id="hubBalanceStatus">Checking wallet balance...</p>
+<div id="hubBalance" style="font-size:28px;font-weight:800;margin:12px 0;">₹0.00</div>
+<button class="action" type="button" onclick="hubRefreshBalance()">🔄 Refresh Balance</button>
+</div>
+<script id="hub-pay2all-balance">
+async function hubRefreshBalance(){
+  const balance=document.getElementById("hubBalance");
+  const status=document.getElementById("hubBalanceStatus");
+  if(!balance||!status)return;
+
+  balance.textContent="Checking...";
+  status.textContent="Connecting to Pay2All...";
+
+  try{
+    const r=await fetch("/api/recharge/balance",{cache:"no-store"});
+    const j=await r.json();
+
+    if(j && j.status_id===1 && j.data){
+      balance.textContent="₹"+Number(j.data.balance||0).toLocaleString("en-IN",{minimumFractionDigits:2});
+      status.textContent="✅ Wallet Balance • "+(j.data.organization||"Pay2All")+" • "+(j.data.currency||"INR");
+    }else{
+      balance.textContent="Unavailable";
+      status.textContent="❌ Balance unavailable";
+    }
+  }catch(e){
+    balance.textContent="Unavailable";
+    status.textContent="❌ Connection error";
+  }
+}
+
+document.addEventListener("DOMContentLoaded",hubRefreshBalance);
+</script>
 
 <div class="card" style="margin:12px 16px">
 <h2>🪙 Gold & Silver Extra Explain</h2>
