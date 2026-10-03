@@ -362,35 +362,11 @@ text-decoration:none !important;
 
 
 
-<!-- UPI HEAD DASHBOARD -->
-<section id="upi-head-dashboard" style="margin:18px 0;">
-  <div style="background:linear-gradient(135deg,#111827,#1f2937);
-              border-radius:18px;padding:18px;color:white;
-              box-shadow:0 8px 24px rgba(0,0,0,.22);">
-    <h2 style="margin:0 0 6px;text-align:center;">💳 UPI SERVICES</h2>
-    <p style="text-align:center;margin:0 0 15px;opacity:.85;">
-      UPI Login & Rewards
-    </p>
 
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
-      <button onclick="window.open('https://pay.google.com/','_blank')"
-        style="padding:14px 8px;border:0;border-radius:12px;font-weight:700;">
-        GPay
-      </button>
 
-      <button onclick="window.open('https://www.phonepe.com/','_blank')"
-        style="padding:14px 8px;border:0;border-radius:12px;font-weight:700;">
-        PhonePe
-      </button>
 
-      <button onclick="window.open('https://www.airtel.in/bank/','_blank')"
-        style="padding:14px 8px;border:0;border-radius:12px;font-weight:700;">
-        Airtel
-      </button>
-    </div>
-  </div>
-</section>
-<!-- END UPI HEAD DASHBOARD -->
+
+
 
 
 <!-- SASIKUMAR AI HUB TOP -->
@@ -409,13 +385,16 @@ text-decoration:none !important;
   <button class="skBtn" onclick="location.href='/customer-feedback.html'">
     ⭐ Give Feedback
   </button>
+  <button class="skBtn" onclick="localStorage.clear();sessionStorage.clear();location.href='/'">
+    🚪 Logout
+  </button>
 </div>
 
 <!-- SASIKUMAR AI LOGO 70PX 360 -->
 <div id="sasikumarTopLogo" style="text-align:center;margin:10px auto 16px;">
   <img src="/assets/sasikumar-ai-logo.png"
        alt="SASIKUMAR AI"
-       style="width:70px;height:70px;object-fit:contain;border-radius:50%;display:inline-block;cursor:pointer;animation:sasikumar360 8s linear infinite;" onclick="this.style.animation='sasikumar360 .5s linear 1';setTimeout(()=>this.style.animation='sasikumar360 8s linear infinite',550);">
+       style="width:50px;height:50px;object-fit:contain;border-radius:50%;display:inline-block;cursor:pointer;animation:sasikumar360 8s linear infinite;" onclick="this.style.animation='sasikumar360 .5s linear 1';setTimeout(()=>this.style.animation='sasikumar360 8s linear infinite',550);">
 </div>
 <style>
 @keyframes sasikumar360 {
@@ -428,6 +407,8 @@ text-decoration:none !important;
 <button type="button" onclick="skSetPreview('mobile')">📱 Mobile</button>
 <button type="button" onclick="skSetPreview('desktop')">🖥️ Desktop</button>
 </div>
+
+
 <script>
 function skSetPreview(mode){
  document.body.classList.remove("skMobilePreview","skDesktopPreview");
@@ -627,6 +608,8 @@ document.addEventListener("DOMContentLoaded",function(){
     <button onclick="location.href='/sports/index.html'">🏏 Sports</button>
     <button onclick="skShareHome()">📤 Share</button>
   </div>
+
+
 </div>
 
 <div class="skShare">
@@ -1107,9 +1090,7 @@ function closeAdminControl(){
   <button type="button" aria-label="Return to Main Dashboard"
     onclick="event.stopPropagation();window.location.href='/'"
     style="position:absolute;top:8px;right:8px;width:34px;height:34px;border:0;border-radius:50%;background:rgba(0,0,0,.08);font-size:18px;cursor:pointer;z-index:20;">↩️</button>
-  <div class="sk-all-content-logo">
-    <img src="/assets/sasikumar-ai-logo.svg" alt="SASIKUMAR AI">
-  </div>
+
 
   <div class="sk-all-content-title">⚡ ALL CONTENT</div>
   <div class="sk-all-content-sub">Live Mixed Content • Auto Update</div>
@@ -2839,7 +2820,66 @@ function printAppraisalReport(btn){
     "img{max-width:100%;height:auto;display:block;margin:10px auto;}" +
     "h3{margin-top:18px;border-bottom:1px solid #ccc;padding-bottom:5px;}" +
     "@media print{body{margin:10mm}.report-box{max-width:none}}" +
-    "</style></head><body>" +
+    "</style>
+<style id="sk-bottom-logo-final-fix">
+.sk-all-content-logo{
+  text-align:center!important;
+  overflow:hidden!important;
+  max-width:100%!important;
+}
+.sk-all-content-logo img{
+  width:50px!important;
+  height:50px!important;
+  max-width:50px!important;
+  max-height:50px!important;
+  object-fit:contain!important;
+  display:block!important;
+  margin:8px auto!important;
+}
+@media(max-width:600px){
+  .sk-all-content-logo img{
+    width:42px!important;
+    height:42px!important;
+    max-width:42px!important;
+    max-height:42px!important;
+  }
+}
+</style>
+
+
+<style id="sk-final-logo-hide">
+.sk-all-content-logo{
+  display:none!important;
+  width:0!important;
+  height:0!important;
+  max-width:0!important;
+  max-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+}
+.sk-all-content-logo img{
+  display:none!important;
+}
+</style>
+
+</head><body>
+<!-- UPI SERVICES - BOTTOM -->
+<section id="upi-bottom-dashboard" style="margin:20px 0;">
+  <div style="background:linear-gradient(135deg,#111827,#1f2937);border-radius:18px;padding:18px;color:white;box-shadow:0 8px 24px rgba(0,0,0,.22);">
+    <h2 style="margin:0 0 6px;text-align:center;">💳 UPI SERVICES</h2>
+    <p style="text-align:center;margin:0 0 15px;opacity:.85;">UPI Login & Rewards</p>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+      <button onclick="window.open('https://pay.google.com/','_blank')">GPay</button>
+      <button onclick="window.open('https://www.phonepe.com/','_blank')">PhonePe</button>
+      <button onclick="window.open('https://www.airtel.in/bank/','_blank')">Airtel</button>
+      <button onclick="window.open('https://paytm.com/','_blank')">Paytm</button>
+      <button onclick="window.open('https://www.bhimupi.org.in/','_blank')">BHIM</button>
+    </div>
+  </div>
+</section>
+<!-- END UPI SERVICES - BOTTOM -->
+" +
     clone.outerHTML +
     "</body></html>"
   );
@@ -4043,7 +4083,7 @@ function showReplyAttachment(file){
   if(file.type && file.type.startsWith("image/")){
     const url=URL.createObjectURL(file);
     box.innerHTML="<div style=\"display:flex;align-items:center;gap:10px\">"+
-      "<img src=\""+url+"\" style=\"width:70px;height:70px;object-fit:cover;border-radius:8px\">"+
+      "<img src=\""+url+"\" style=\"width:50px;height:50px;object-fit:cover;border-radius:8px\">"+
       "<b>📎 "+escapeHtml(file.name)+"</b>"+
       "<button type=\"button\" onclick=\"removeReplyAttachment()\">✕</button></div>";
   }else{
@@ -4182,18 +4222,7 @@ aria-label="Open SASIKUMAR AI 3D Advertisement Hub">
 })();
 </script>
 
-<!-- UPI_NEW_CUSTOMER_REWARDS -->
-<section class="service-card">
-  <div style="font-size:28px">📲</div>
-  <h3>UPI New Customer Only</h3>
-  <p>Confirm Rewards • New Customer Offers</p>
-  <div style="display:grid;gap:8px;margin-top:10px">
-    <a href="https://gpay.app.goo.gl/invite-q07gi3v" target="_blank" rel="noopener" class="service-btn">GPay — ₹21 Reward</a>
-    <a href="https://phon.pe/y5v6rso3" target="_blank" rel="noopener" class="service-btn">PhonePe — New Customer</a>
-    <a href="https://r.navi.com/MieRKB" target="_blank" rel="noopener" class="service-btn">Navi UPI — ₹5 Cashback</a>
-    <a href="https://i.airtel.in/refandearn90AWP4CKYC" target="_blank" rel="noopener" class="service-btn">Airtel Payments Bank — ₹100 Cashback</a>
-  </div>
-</section>
+
 
 <section class="dashboard-card" id="banking-products">
   <h2>🏦 Banking Products</h2>
@@ -4249,6 +4278,10 @@ function skPay2AllAddMoney(){
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",skRefreshPay2AllWallet);
 else skRefreshPay2AllWallet();
 </script>
+
+
+
+
 
 
 
