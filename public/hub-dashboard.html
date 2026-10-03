@@ -52,14 +52,6 @@ try{
  }
 }catch(e){}
 }
-document.addEventListener("click",function(e){
- var b=e.target.closest("button");
- if(!b)return;
- b.classList.remove("sai-click-wave");
- void b.offsetWidth;
- b.classList.add("sai-click-wave");
- saiVoice();
-});
 })();
 </script>
 <style id="saiLogo360">.saiLogo360{animation:saiLogoSpin 3s linear infinite;transform-style:preserve-3d}@keyframes saiLogoSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}</style>
