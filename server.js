@@ -1628,6 +1628,8 @@ const WHATSAPP_VERIFY_TOKEN =
 app.get("/api/whatsapp/webhook", (req, res) => {
   const mode = req.query["hub.mode"];
   const token = req.query["hub.verify_token"];
+i
+  console.log("🔐 WhatsApp verify check:", { mode, receivedLength: String(token || "").length, configuredLength: String(WHATSAPP_VERIFY_TOKEN || "").length, match: token === WHATSAPP_VERIFY_TOKEN });
   const challenge = req.query["hub.challenge"];
 
   if (mode === "subscribe" && token === WHATSAPP_VERIFY_TOKEN) {
