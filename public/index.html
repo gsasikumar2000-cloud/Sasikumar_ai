@@ -2941,7 +2941,74 @@ h1.sasikumar-ai-title{
 }
 </style>
 
+
+<style id="sasikumar-global-search-style">
+#sasikumar-global-search{
+  position:relative;
+  max-width:760px;
+  margin:14px auto 20px;
+  z-index:1000;
+}
+#sasikumar-global-search input{
+  width:100%;
+  box-sizing:border-box;
+  padding:15px 18px;
+  border:1px solid #ddd;
+  border-radius:16px;
+  font-size:16px;
+  font-family:inherit;
+  outline:none;
+  box-shadow:0 5px 18px rgba(0,0,0,.10);
+}
+#sasikumar-global-search input:focus{
+  box-shadow:0 6px 22px rgba(0,0,0,.16);
+}
+#sasikumar-search-results{
+  position:absolute;
+  left:0;
+  right:0;
+  top:58px;
+  max-height:360px;
+  overflow:auto;
+  background:#fff;
+  border-radius:14px;
+  box-shadow:0 8px 25px rgba(0,0,0,.16);
+}
+.sasikumar-search-item{
+  display:block;
+  width:100%;
+  padding:13px 16px;
+  border:0;
+  border-bottom:1px solid #eee;
+  background:#fff;
+  text-align:left;
+  font:inherit;
+  font-size:14px;
+  cursor:pointer;
+}
+.sasikumar-search-item:hover{
+  background:#f5f5f5;
+}
+.sasikumar-search-empty{
+  padding:15px;
+  font-size:14px;
+}
+</style>
+
 </head><body>
+
+<!-- SASIKUMAR AI GLOBAL WEBSITE SEARCH -->
+<div id="sasikumar-global-search">
+  <input
+    id="sasikumarGlobalSearchInput"
+    type="search"
+    autocomplete="off"
+    placeholder="🔎 Search SASIKUMAR AI — Gold, Education, Jobs, BookLife, Pay2All..."
+    aria-label="Search SASIKUMAR AI website"
+  >
+  <div id="sasikumar-search-results" hidden></div>
+</div>
+
 
 " +
     clone.outerHTML +
@@ -3004,6 +3071,155 @@ h1.sasikumar-ai-title{
         👑 History Leaders
       </button>
 <!-- END LIFESTYLE BOOKLIFE -->
+
+
+<script id="booklife-search-script">
+function searchBookLife(){
+  const input=document.getElementById("booklifeSearch");
+  const result=document.getElementById("booklifeSearchResult");
+  if(!input || !result) return;
+
+  const q=input.value.trim().toLowerCase();
+  if(!q){
+    result.innerHTML="";
+    return;
+  }
+
+  const items=[
+    ["📚 Books","Books Tamil English Business Education History Biography"],
+    ["📖 Novels","Novels Tamil English Mystery Adventure Short Stories"],
+    ["🔬 Science","Science Space Physics Chemistry Biology Nature"],
+    ["🌱 Lifestyle","Lifestyle Learning Time Management Communication Daily Life"],
+    ["✍️ கவிதை","Kavithai Tamil poetry nature life friendship motivation"],
+    ["💎 பொன்மொழி","Ponmozhi quotes life wisdom success knowledge"],
+    ["👑 History Leaders","World Leaders Indian Leaders Tamil Historical Leaders Kings Freedom Fighters Social Reformers"]
+  ];
+
+  const found=items.filter(x=>
+    (x[0]+" "+x[1]).toLowerCase().includes(q)
+  );
+
+  result.innerHTML=found.length
+    ? found.map(x=>`<div style="padding:10px 12px;margin:6px 0;border-radius:10px;background:#f5f5f5;font-weight:600;">${x[0]}</div>`).join("")
+    : '<div style="padding:10px;">No matching BookLife category found.</div>';
+}
+</script>
+
+
+<script id="sasikumar-global-search-script">
+(function(){
+  const input = document.getElementById("sasikumarGlobalSearchInput");
+  const results = document.getElementById("sasikumar-search-results");
+  if(!input || !results) return;
+
+  function buildIndex(){
+    const nodes = document.querySelectorAll(
+      "section[id], article[id], main [id], .card, .service-card, .dashboard-card"
+    );
+
+    const seen = new Set();
+    const items = [];
+
+    nodes.forEach((el)=>{
+      if(el.id === "sasikumar-global-search") return;
+
+      const text = (el.innerText || el.textContent || "")
+        .replace(/\s+/g," ")
+        .trim();
+
+      if(!text || text.length < 3) return;
+
+      const title =
+        el.querySelector("h1,h2,h3,h4,strong,.title")?.innerText?.trim()
+        || text.slice(0,90);
+
+      const key = (el.id || "") + "|" + title;
+      if(seen.has(key)) return;
+      seen.add(key);
+
+      items.push({
+        id: el.id,
+        title: title.slice(0,100),
+        text: text.toLowerCase()
+      });
+    });
+
+    return items;
+  }
+
+  function showResults(query){
+    const q = query.trim().toLowerCase();
+
+    if(!q){
+      results.hidden = true;
+      results.innerHTML = "";
+      return;
+    }
+
+    const items = buildIndex().filter(item =>
+      item.text.includes(q) || item.title.toLowerCase().includes(q)
+    ).slice(0,12);
+
+    if(!items.length){
+      results.innerHTML =
+        '<div class="sasikumar-search-empty">🔎 No matching content found.</div>';
+      results.hidden = false;
+      return;
+    }
+
+    results.innerHTML = items.map((item,i)=>
+      '<button class="sasikumar-search-item" data-index="'+i+'">🔎 '+escapeHtml(item.title)+'</button>'
+    ).join("");
+
+    results.querySelectorAll(".sasikumar-search-item").forEach((btn,i)=>{
+      btn.addEventListener("click",()=>{
+        const item = items[i];
+        const el = item.id ? document.getElementById(item.id) : null;
+
+        if(el){
+          el.scrollIntoView({behavior:"smooth",block:"center"});
+          el.style.outline="3px solid currentColor";
+          el.style.outlineOffset="4px";
+          setTimeout(()=>{
+            el.style.outline="";
+            el.style.outlineOffset="";
+          },1800);
+        }
+
+        results.hidden = true;
+        input.value = item.title;
+      });
+    });
+
+    results.hidden = false;
+  }
+
+  function escapeHtml(value){
+    return value.replace(/[&<>"']/g,(c)=>({
+      "&":"&amp;",
+      "<":"&lt;",
+      ">":"&gt;",
+      '"':"&quot;",
+      "'":"&#039;"
+    }[c]));
+  }
+
+  input.addEventListener("input",()=>showResults(input.value));
+
+  document.addEventListener("click",(e)=>{
+    if(!document.getElementById("sasikumar-global-search")?.contains(e.target)){
+      results.hidden = true;
+    }
+  });
+
+  input.addEventListener("keydown",(e)=>{
+    if(e.key === "Escape"){
+      results.hidden = true;
+      input.blur();
+    }
+  });
+})();
+</script>
 
 </body></html>"
   );
@@ -3224,7 +3440,18 @@ document.addEventListener("DOMContentLoaded",()=>{updateLiveDateTime();setInterv
 <div style="margin:20px 0;padding:16px;border-radius:16px;background:#111;color:#fff;">
   <h2 style="margin:0 0 14px;">⚙️ SETTINGS</h2>
 
-  <div style="display:grid;gap:10px;">
+
+    <div id="booklife-search-wrap" style="margin:0 0 18px;">
+      <input
+        id="booklifeSearch"
+        type="search"
+        placeholder="🔎 Search Books, Novels, Science, Kavithai, Ponmozhi, History Leaders..."
+        oninput="searchBookLife()"
+        style="width:100%;box-sizing:border-box;padding:14px 16px;border:1px solid #ddd;border-radius:14px;font-size:15px;outline:none;"
+      >
+      <div id="booklifeSearchResult" style="margin-top:10px;font-size:14px;"></div>
+    </div>
+<div style="display:grid;gap:10px;">
     <button type="button" onclick="window.location.href='/communication.html'">
       📞 Communication
     </button>
