@@ -2447,7 +2447,10 @@ function closeAdminControl(){
 </div>
 
 <!-- SASIKUMAR AI — ALL CONTENT LIVE MIX -->
-<div id="skAllContentLiveCard" class="service-card sk-all-content-live-card">
+<div id="skAllContentLiveCard" class="service-card sk-all-content-live-card" style="position:relative;">
+  <button type="button" aria-label="Return to Main Dashboard"
+    onclick="event.stopPropagation();window.location.href='/'"
+    style="position:absolute;top:8px;right:8px;width:34px;height:34px;border:0;border-radius:50%;background:rgba(0,0,0,.08);font-size:18px;cursor:pointer;z-index:20;">↩️</button>
   <div class="sk-all-content-logo">
     <img src="/assets/sasikumar-ai-logo.svg" alt="SASIKUMAR AI">
   </div>
