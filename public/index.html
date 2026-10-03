@@ -4082,100 +4082,106 @@ function calculateGoldPractical(){
 
 
 function printAppraisalReport(btn){
-  const report=btn.closest(".report-box");
+  const report = btn && btn.closest ? btn.closest(".report-box") : null;
+
   if(!report){
     alert("Appraisal Report not found.");
     return;
   }
 
-  const w=window.open("", "_blank");
+  const w = window.open("", "_blank");
+
   if(!w){
     alert("Please allow pop-ups for Print / PDF.");
     return;
   }
 
-  const reportHtml=report.outerHTML;
+  const reportHtml = report.outerHTML;
 
   w.document.open();
   w.document.write(`<!doctype html>
 <html>
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SASIKUMAR AI - Appraisal Report</title>
 <style>
-body{font-family:Arial,sans-serif;margin:20px;color:#111}
-.report-box{max-width:850px;margin:auto}
-.report-head{text-align:center;margin-bottom:20px}
-.report-head h2{margin:0 0 6px}
-table{width:100%;border-collapse:collapse}
-td,th{border:1px solid #999;padding:9px;text-align:left}
-td:first-child{font-weight:bold;width:32%}
-input,textarea{width:100%;box-sizing:border-box;border:0;font:inherit}
-img{max-width:100%;height:auto}
-button{display:none}
-@media print{body{margin:10mm}}
+body{
+  font-family:Arial,sans-serif;
+  margin:20px;
+  color:#111;
+  background:#fff;
+}
+.report-box{
+  max-width:850px;
+  margin:auto;
+}
+.report-head{
+  text-align:center;
+  margin-bottom:20px;
+}
+.report-head h2{
+  margin:0 0 6px;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+td,th{
+  border:1px solid #999;
+  padding:9px;
+  text-align:left;
+}
+td:first-child{
+  font-weight:bold;
+  width:32%;
+}
+input,textarea{
+  width:100%;
+  box-sizing:border-box;
+  border:0;
+  background:transparent;
+  font:inherit;
+  color:#111;
+}
+textarea{
+  resize:none;
+}
+button{
+  display:none !important;
+}
+img{
+  max-width:100%;
+  height:auto;
+}
+@media print{
+  body{margin:10mm;}
+  button{display:none !important;}
+}
 </style>
 </head>
 <body>
 ${reportHtml}
-${String.fromCharCode(60)}script>
-document.querySelectorAll("input,textarea").forEach(function(el){
-  const span=document.createElement("span");
-  span.textContent=el.value || "";
-  el.replaceWith(span);
-});
-window.onload=function(){
-  setTimeout(function(){window.print();},300);
-};
-${String.fromCharCode(60)}/script>
-<div class="service-card">
-<h3>🏦 Bank Products</h3>
-<p>💡 Strong product suggestions</p>
-<p>📄 Easy application process</p>
-<p>✔️ Personal guidance</p>
-<p>💰 ₹0 Consultation Fee</p>
-<a href="https://wee.bnking.in/c/MjVmNzQ3M" target="_blank" rel="noopener" class="service-btn">Register Now</a>
-</div>
-<div class="service-card">
-<h3>🏆 Crorepati Club</h3>
-<p>Member Dashboard &amp; Account</p>
-<a href="https://user.crorepaticlub.biz/user/dashboard.aspx" target="_blank" rel="noopener" class="service-btn">Login</a>
-<p>📞 Login / Information Confirmation: <a href="tel:9894440400">98944 40400</a></p>
-</div>
-
-
 <script>
-/* SASIKUMAR AI — FINAL SERVICE CLICK ISOLATION */
-document.addEventListener("DOMContentLoaded", function(){
-
-  const hub = document.getElementById("sasikumar-ai-hub-dashboard-card");
-
-  if(!hub) return;
-
-  /* Service buttons must never bubble to the HUB */
-  hub.querySelectorAll("button, a").forEach(function(el){
-    el.addEventListener("click", function(e){
-      e.stopPropagation();
-    }, false);
+(function(){
+  document.querySelectorAll("input, textarea").forEach(function(el){
+    const span = document.createElement("span");
+    span.textContent = el.value || "";
+    el.replaceWith(span);
   });
 
-  /* Explicit HUB navigation button */
-  const hubButton = hub.querySelector(".sasikumar-hub-open");
-
-  if(hubButton){
-    hubButton.addEventListener("click", function(e){
-      e.preventDefault();
-      e.stopPropagation();
-      window.location.href="/hub-dashboard.html";
-    });
-  }
-});
-</script>
+  window.onload = function(){
+    setTimeout(function(){
+      window.print();
+    },300);
+  };
+})();
+<\/script>
 </body>
 </html>`);
+
   w.document.close();
 }
-
 function goldReport(){
 
  const box=document.createElement("div");
