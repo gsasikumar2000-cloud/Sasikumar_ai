@@ -4221,8 +4221,8 @@ function goldReport(){
    <input id="arCamera${id}" type="file" accept="image/*" capture="environment" style="display:none">
    <input id="arUpload${id}" type="file" accept="image/*" style="display:none">
 
-   <button class="loan-calc" onclick="document.getElementById('arCamera${id}').click()">📷 Web Camera</button>
-   <button class="loan-calc" onclick="document.getElementById('arUpload${id}').click()">🖼️ Upload Image</button>
+   <button type="button" class="loan-calc" style="font-size:18px;padding:14px;" onclick="event.stopPropagation(); document.getElementById('arCamera${id}').click()">📷 OPEN CAMERA</button>
+   <button type="button" class="loan-calc" style="font-size:18px;padding:14px;" onclick="event.stopPropagation(); document.getElementById('arUpload${id}').click()">🖼️ UPLOAD IMAGE</button>
    <div id="arPreview${id}" style="margin-top:12px"></div>
 
    <h3>📞 Appraiser Contact</h3>
