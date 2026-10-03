@@ -4249,7 +4249,8 @@ function goldReport(){
     <button onclick="clearAppraisalReport('${id}')">🗑️ Clear</button>
     <button type="button" onclick="printAppraisalReport(this)">🖨️ Print Preview</button>
     <button type="button" onclick="shareAppraisalReport(this)">📤 Share</button>
-    <button type="button" onclick="window.history.back()">↩️ Return</button>
+    <button type="button" onclick="window.history.back()" title="Return">↩️</button>
+    <button type="button" onclick="document.querySelector('.report-actions').classList.toggle('show-menu')" title="Menu">⋮</button>
 
    </div>
  </div>`;
