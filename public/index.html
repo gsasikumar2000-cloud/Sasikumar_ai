@@ -4101,41 +4101,84 @@ function printAppraisalReport(btn){
 
   const clone = report.cloneNode(true);
 
+  /* Convert form fields to printable text */
   clone.querySelectorAll("input, textarea, select").forEach(function(el){
-    const value = el.value || "";
+    if(el.type === "file") {
+      el.remove();
+      return;
+    }
+
+    let value = "";
+
+    if(el.tagName === "SELECT"){
+      const opt = el.options[el.selectedIndex];
+      value = opt ? opt.textContent.trim() : "";
+    }else{
+      value = el.value || "";
+    }
+
     const span = document.createElement("span");
     span.textContent = value;
     span.style.whiteSpace = "pre-wrap";
+    span.style.display = "inline-block";
+    span.style.minHeight = "20px";
+
     el.replaceWith(span);
   });
 
+  /* Remove buttons and non-print controls */
   clone.querySelectorAll("button").forEach(function(el){
     el.remove();
   });
 
+  clone.querySelectorAll(".report-actions, .no-print").forEach(function(el){
+    el.remove();
+  });
+
+  /* Preserve image preview */
+  clone.querySelectorAll("img").forEach(function(img){
+    img.style.maxWidth = "100%";
+    img.style.height = "auto";
+    img.style.display = "block";
+    img.style.margin = "10px auto";
+  });
+
+  /* Print only the report */
   w.document.open();
+
   w.document.write(
     "<!doctype html>" +
     "<html><head>" +
     "<meta charset='utf-8'>" +
     "<meta name='viewport' content='width=device-width,initial-scale=1'>" +
     "<title>SASIKUMAR AI - Appraisal Report</title>" +
+
     "<style>" +
     "body{font-family:Arial,sans-serif;margin:20px;color:#111;background:#fff;}" +
-    ".report-box{max-width:850px;margin:auto;}" +
+    ".report-box{max-width:850px;margin:auto;background:#fff;}" +
     ".report-head{text-align:center;margin-bottom:20px;}" +
     ".report-head h2{margin:0 0 6px;}" +
-    "table{width:100%;border-collapse:collapse;}" +
-    "td,th{border:1px solid #999;padding:9px;text-align:left;}" +
+    ".report-head div{margin:3px 0;}" +
+    "table{width:100%;border-collapse:collapse;margin:10px 0 18px;}" +
+    "td,th{border:1px solid #999;padding:9px;text-align:left;vertical-align:top;}" +
     "td:first-child{font-weight:bold;width:32%;}" +
-    "img{max-width:100%;height:auto;}" +
-    ".report-actions{display:none!important;}" +
-    "@media print{body{margin:10mm;}}" +
+    "img{max-width:100%;height:auto;display:block;margin:10px auto;}" +
+    ".report-actions,.no-print{display:none!important;}" +
+    "h3{margin-top:18px;border-bottom:1px solid #ccc;padding-bottom:5px;}" +
+    "@media print{body{margin:10mm;} .report-box{max-width:none;}}" +
     "</style></head><body>" +
+
     clone.outerHTML +
-    "<script>window.onload=function(){setTimeout(function(){window.print();},500);};<\\/script>" +
+
+    "<script>" +
+    "window.onload=function(){" +
+    "setTimeout(function(){window.print();},700);" +
+    "};" +
+    "<\\/script>" +
+
     "</body></html>"
   );
+
   w.document.close();
 }
 
