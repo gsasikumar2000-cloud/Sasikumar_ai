@@ -3067,12 +3067,12 @@ function searchBookLife(){
 
 <script id="sasikumar-global-search-script">
 (function(){
-  const input = document.getElementById("sasikumarGlobalSearchInput");
-  const results = document.getElementById("sasikumar-search-results");
+  const input=document.getElementById("sasikumarGlobalSearchInput");
+  const results=document.getElementById("sasikumar-search-results");
   if(!input || !results) return;
 
   function clean(t){
-    return (t || "").replace(/\s+/g," ").trim();
+    return (t||"").replace(/\s+/g," ").trim();
   }
 
   function escapeHtml(t){
@@ -3082,103 +3082,129 @@ function searchBookLife(){
   }
 
   function buildIndex(){
-    const selectors = [
-      "section[id]",
-      "article[id]",
-      "main [id]",
-      ".card",
-      ".service-card",
-      ".dashboard-card",
+    const selectors=[
+      "section",
+      "article",
+      "main",
+      "div.card",
+      "div.service-card",
+      "div.dashboard-card",
+      "[class*='card']",
+      "[class*='service']",
+      "[class*='dashboard']",
       "button",
       "a",
-      "h1","h2","h3","h4",
+      "h1","h2","h3","h4","h5","h6",
       "[data-search]"
     ];
 
-    const nodes = document.querySelectorAll(selectors.join(","));
-    const seen = new Set();
-    const items = [];
+    const nodes=document.querySelectorAll(selectors.join(","));
+    const seen=new Set();
+    const items=[];
 
     nodes.forEach(function(el){
       if(el.closest("#sasikumar-global-search")) return;
+      if(el.closest("script,style,noscript")) return;
 
-      const text = clean(el.innerText || el.textContent);
-      if(!text || text.length < 3) return;
+      const text=clean(el.innerText||el.textContent);
+      if(text.length<2) return;
 
-      const titleEl = el.querySelector("h1,h2,h3,h4,strong,.title");
-      const title = clean(
+      const titleEl=el.querySelector("h1,h2,h3,h4,h5,h6,strong,.title");
+      const title=clean(
         titleEl ? titleEl.innerText :
         el.getAttribute("aria-label") ||
         el.getAttribute("title") ||
-        text.slice(0,100)
+        el.innerText ||
+        el.textContent
       );
 
-      const key = title.toLowerCase() + "|" + text.slice(0,180).toLowerCase();
+      if(!title) return;
+
+      const key=title.toLowerCase()+"|"+text.slice(0,250).toLowerCase();
       if(seen.has(key)) return;
       seen.add(key);
 
       items.push({
-        el: el,
-        title: title.slice(0,100),
-        text: text.toLowerCase()
+        el:el,
+        title:title.slice(0,120),
+        text:text.toLowerCase()
       });
     });
 
     return items;
   }
 
-  function showResults(q){
-    q = clean(q).toLowerCase();
+  function showResults(query){
+    const q=clean(query).toLowerCase();
 
     if(!q){
-      results.innerHTML = "";
-      results.style.display = "none";
+      results.innerHTML="";
+      results.style.display="none";
       return;
     }
 
-    const items = buildIndex().filter(function(item){
-      return item.title.toLowerCase().includes(q) ||
-             item.text.includes(q);
-    }).slice(0,20);
+    const words=q.split(/\s+/).filter(Boolean);
+
+    const items=buildIndex().filter(function(item){
+      const haystack=item.title.toLowerCase()+" "+item.text;
+
+      return words.every(function(word){
+        return haystack.includes(word);
+      });
+    }).slice(0,25);
 
     if(!items.length){
-      results.innerHTML =
-        '<div style="padding:15px;font-size:14px;">🔎 No matching content found.</div>';
-      results.style.display = "block";
+      results.innerHTML=
+        '<div style="padding:15px;font-size:14px;">🔎 No matching SASIKUMAR AI content found.</div>';
+      results.style.display="block";
       return;
     }
 
-    results.innerHTML = items.map(function(item,i){
+    results.innerHTML=items.map(function(item,i){
       return '<button type="button" class="sasikumar-search-item" data-index="'+i+'" style="display:block;width:100%;padding:13px 15px;border:0;border-bottom:1px solid #eee;background:#fff;text-align:left;font:inherit;font-size:14px;cursor:pointer;">🔎 '+escapeHtml(item.title)+'</button>';
     }).join("");
 
     results.querySelectorAll(".sasikumar-search-item").forEach(function(btn,i){
       btn.addEventListener("click",function(){
-        const el = items[i].el;
+        const el=items[i].el;
+
         if(el){
-          el.scrollIntoView({behavior:"smooth",block:"center"});
-          el.style.outline = "3px solid currentColor";
-          el.style.outlineOffset = "4px";
+          el.scrollIntoView({
+            behavior:"smooth",
+            block:"center"
+          });
+
+          el.style.outline="3px solid currentColor";
+          el.style.outlineOffset="4px";
+
           setTimeout(function(){
-            el.style.outline = "";
-            el.style.outlineOffset = "";
+            el.style.outline="";
+            el.style.outlineOffset="";
           },1800);
         }
-        results.style.display = "none";
+
+        results.style.display="none";
         input.blur();
       });
     });
 
-    results.style.display = "block";
+    results.style.display="block";
   }
 
   input.addEventListener("input",function(){
     showResults(input.value);
   });
 
+  input.addEventListener("keydown",function(e){
+    if(e.key==="Escape"){
+      results.style.display="none";
+      input.blur();
+    }
+  });
+
   document.addEventListener("click",function(e){
     if(!e.target.closest("#sasikumar-global-search")){
-      results.style.display = "none";
+      results.style.display="none";
     }
   });
 })();
