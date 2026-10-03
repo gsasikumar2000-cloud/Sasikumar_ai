@@ -2445,6 +2445,247 @@ function closeAdminControl(){
   <div style="font-size:clamp(32px,8vw,64px);font-weight:900;letter-spacing:1px;">WELCOME TO</div>
   <div style="font-size:clamp(38px,10vw,78px);font-weight:1000;letter-spacing:2px;">SASIKUMAR AI</div>
 </div>
+
+<!-- SASIKUMAR AI — ALL CONTENT LIVE MIX -->
+<div id="skAllContentLiveCard" class="service-card sk-all-content-live-card">
+  <div class="sk-all-content-logo">
+    <img src="/assets/sasikumar-ai-logo.svg" alt="SASIKUMAR AI">
+  </div>
+
+  <div class="sk-all-content-title">⚡ ALL CONTENT</div>
+  <div class="sk-all-content-sub">Live Mixed Content • Auto Update</div>
+
+  <div id="skAllContentLiveBox" class="sk-all-content-live-box">
+    <div class="sk-live-icon">🪙</div>
+    <div class="sk-live-title">LIVE GOLD & SILVER</div>
+    <div class="sk-live-text">Today's Gold & Silver Poster</div>
+    <button type="button" onclick="window.open('/daily-gold-poster.svg','_blank')">
+      Open Live Poster
+    </button>
+  </div>
+
+  <div class="sk-all-content-dots">
+    <span class="sk-live-dot active"></span>
+    <span class="sk-live-dot"></span>
+    <span class="sk-live-dot"></span>
+    <span class="sk-live-dot"></span>
+    <span class="sk-live-dot"></span>
+    <span class="sk-live-dot"></span>
+  </div>
+
+  <div class="sk-all-content-time">
+    🔄 Mixed content changes every <b>2 minutes</b>
+  </div>
+</div>
+
+<style>
+.sk-all-content-live-card{
+  position:relative;
+  overflow:hidden;
+  text-align:center;
+  padding:20px 14px;
+  margin:10px 0 16px;
+  cursor:pointer;
+  border-radius:24px;
+  transition:transform .25s ease,box-shadow .25s ease;
+}
+
+.sk-all-content-live-card:hover{
+  transform:translateY(-4px) scale(1.01);
+}
+
+.sk-all-content-live-card:active{
+  transform:scale(.97);
+}
+
+.sk-all-content-logo img{
+  width:60px;
+  height:60px;
+  object-fit:contain;
+  animation:skLogo360 5s linear infinite;
+  transform-style:preserve-3d;
+}
+
+@keyframes skLogo360{
+  from{transform:rotateY(0deg)}
+  to{transform:rotateY(360deg)}
+}
+
+.sk-all-content-title{
+  font-size:clamp(28px,7vw,46px);
+  font-weight:1000;
+  margin-top:6px;
+}
+
+.sk-all-content-sub{
+  font-size:14px;
+  opacity:.8;
+  margin-bottom:14px;
+}
+
+.sk-all-content-live-box{
+  min-height:145px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:5px;
+  border-radius:20px;
+  padding:16px;
+  animation:skContentIn .5s ease;
+}
+
+@keyframes skContentIn{
+  from{opacity:0;transform:scale(.94)}
+  to{opacity:1;transform:scale(1)}
+}
+
+.sk-live-icon{
+  font-size:42px;
+}
+
+.sk-live-title{
+  font-size:21px;
+  font-weight:900;
+}
+
+.sk-live-text{
+  font-size:14px;
+  opacity:.85;
+}
+
+.sk-all-content-live-box button{
+  margin-top:9px;
+  border:0;
+  border-radius:14px;
+  padding:10px 18px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.sk-all-content-dots{
+  display:flex;
+  justify-content:center;
+  gap:7px;
+  margin:12px 0 7px;
+}
+
+.sk-live-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  display:block;
+  opacity:.35;
+}
+
+.sk-live-dot.active{
+  opacity:1;
+  transform:scale(1.35);
+}
+
+.sk-all-content-time{
+  font-size:12px;
+  opacity:.7;
+}
+
+@media(max-width:600px){
+  .sk-all-content-live-card{
+    margin:8px 0 14px;
+    padding:16px 10px;
+  }
+}
+</style>
+
+<script>
+(function(){
+  const items = [
+    {
+      icon:"🪙",
+      title:"LIVE GOLD & SILVER",
+      text:"Today's Gold & Silver Poster",
+      url:"/daily-gold-poster.svg",
+      button:"Open Live Poster"
+    },
+    {
+      icon:"💼",
+      title:"LIVE JOBS",
+      text:"Latest Jobs & Career Opportunities",
+      url:"/jobs/",
+      button:"Open Jobs"
+    },
+    {
+      icon:"⚽",
+      title:"LIVE SPORTS",
+      text:"Sports & Games Updates",
+      url:"/sports/",
+      button:"Open Sports"
+    },
+    {
+      icon:"📜",
+      title:"DAILY THIRUKKURAL",
+      text:"Daily Thirukkural & Meaning",
+      url:"/hub-dashboard.html",
+      button:"Open Thirukkural"
+    },
+    {
+      icon:"🎬",
+      title:"LIVE VIDEO",
+      text:"SASIKUMAR AI Video Content",
+      url:"/daily-video.html",
+      button:"Open Video"
+    },
+    {
+      icon:"🛠️",
+      title:"SASIKUMAR AI SERVICES",
+      text:"All Services • Tools • Smart Features",
+      url:"/hub-dashboard.html",
+      button:"Open Services"
+    }
+  ];
+
+  let index = 0;
+
+  function renderAllContent(){
+    const box = document.getElementById("skAllContentLiveBox");
+    const dots = document.querySelectorAll(".sk-live-dot");
+
+    if(!box) return;
+
+    const item = items[index];
+
+    box.innerHTML =
+      '<div class="sk-live-icon">'+item.icon+'</div>'+
+      '<div class="sk-live-title">'+item.title+'</div>'+
+      '<div class="sk-live-text">'+item.text+'</div>'+
+      '<button type="button" id="skAllContentOpen">'+item.button+'</button>';
+
+    box.style.animation="none";
+    void box.offsetWidth;
+    box.style.animation="skContentIn .5s ease";
+
+    const openBtn = document.getElementById("skAllContentOpen");
+
+    if(openBtn){
+      openBtn.addEventListener("click",function(e){
+        e.stopPropagation();
+        window.open(item.url,"_blank");
+      });
+    }
+
+    dots.forEach(function(dot,i){
+      dot.classList.toggle("active",i===index);
+    });
+  }
+
+  renderAllContent();
+
+  setInterval(function(){
+    index = (index + 1) % items.length;
+    renderAllContent();
+  },120000);
+})();
+</script>
+
 <div id="sasikumar-ai-hub-dashboard-card" class="service-card" style="cursor:pointer;" onclick="window.location.href='/hub-dashboard.html'">
 
   <div class="dash-sub">Smart Assistant • Gold • News • Voice</div>
