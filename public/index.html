@@ -2917,6 +2917,30 @@ small,.small{
 }
 </style>
 
+
+<style id="sasikumar-title-animation">
+.sasikumar-title,
+h1.sasikumar-ai-title{
+  animation:sasikumarTitleIn 1.2s ease-out both,
+            sasikumarGlow 3s ease-in-out 1.2s infinite;
+  transform-origin:center;
+}
+@keyframes sasikumarTitleIn{
+  0%{opacity:0;transform:translateY(-18px) scale(.96);}
+  100%{opacity:1;transform:translateY(0) scale(1);}
+}
+@keyframes sasikumarGlow{
+  0%,100%{text-shadow:0 0 4px rgba(255,215,0,.25);}
+  50%{text-shadow:0 0 14px rgba(255,215,0,.65);}
+}
+@media(prefers-reduced-motion:reduce){
+  .sasikumar-title,
+  h1.sasikumar-ai-title{
+    animation:none!important;
+  }
+}
+</style>
+
 </head><body>
 
 " +
