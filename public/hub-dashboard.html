@@ -103,18 +103,30 @@ document.addEventListener("click",function(e){
 </div>
 
 
+<section class="hub-section">
+<h2>🚀 SASIKUMAR AI HUB</h2>
+<p>Smart Content & Business Dashboard</p>
+</section>
+
 <div class="grid">
-<button onclick="videoBox()"><span class="icon">🎬</span>Video</button>
-<button onclick="posterBox()"><span class="icon">🖼️</span>Poster AD</button>
-<button onclick="creativeBox()"><span class="icon">🎨</span>Creative</button>
-<button onclick="linkBox()"><span class="icon">🔗</span>Link Manager</button>
-<button onclick="shareBox()"><span class="icon">📤</span>Share</button>
-<button onclick="dailyBox()"><span class="icon">📅</span>Daily Auto</button>
-<button onclick="metaBox()"><span class="icon">▶️</span>Meta Video</button>
-<button onclick="statusBox()"><span class="icon">📊</span>Status</button>
+<button onclick="videoBox()"><span class="icon">🎬</span><b>Video</b><small>Create & Manage</small></button>
+<button onclick="posterBox()"><span class="icon">🖼️</span><b>Poster AD</b><small>Poster Maker</small></button>
+<button onclick="creativeBox()"><span class="icon">🎨</span><b>Creative</b><small>AI Creative</small></button>
+<button onclick="linkBox()"><span class="icon">🔗</span><b>Link Manager</b><small>Manage Links</small></button>
+<button onclick="shareBox()"><span class="icon">📤</span><b>Share</b><small>Quick Share</small></button>
+<button onclick="dailyBox()"><span class="icon">📅</span><b>Daily Auto</b><small>Automation</small></button>
+<button onclick="metaBox()"><span class="icon">▶️</span><b>Meta Video</b><small>Video Library</small></button>
+<button onclick="statusBox()"><span class="icon">📊</span><b>Status</b><small>System Status</small></button>
 </div>
 
 
+<style id="hub-section-style">
+.hub-section{text-align:center;margin:14px 0 20px;padding:16px;border-radius:24px;background:rgba(255,255,255,.08);box-shadow:0 12px 28px rgba(0,0,0,.25)}
+.hub-section h2{margin:0;font-size:24px}
+.hub-section p{margin:6px 0 0;opacity:.75}
+.grid button b,.grid button small{display:block}
+.grid button small{font-size:11px;opacity:.72;margin-top:4px}
+</style>
 <style id="hub-3d-style">
 .grid{
   perspective:1200px;
