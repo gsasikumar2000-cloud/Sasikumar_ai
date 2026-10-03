@@ -4101,9 +4101,8 @@ function printAppraisalReport(btn){
 
   const clone = report.cloneNode(true);
 
-  /* Convert form fields to printable text */
   clone.querySelectorAll("input, textarea, select").forEach(function(el){
-    if(el.type === "file") {
+    if(el.type === "file"){
       el.remove();
       return;
     }
@@ -4122,11 +4121,9 @@ function printAppraisalReport(btn){
     span.style.whiteSpace = "pre-wrap";
     span.style.display = "inline-block";
     span.style.minHeight = "20px";
-
     el.replaceWith(span);
   });
 
-  /* Remove buttons and non-print controls */
   clone.querySelectorAll("button").forEach(function(el){
     el.remove();
   });
@@ -4135,7 +4132,6 @@ function printAppraisalReport(btn){
     el.remove();
   });
 
-  /* Preserve image preview */
   clone.querySelectorAll("img").forEach(function(img){
     img.style.maxWidth = "100%";
     img.style.height = "auto";
@@ -4143,16 +4139,13 @@ function printAppraisalReport(btn){
     img.style.margin = "10px auto";
   });
 
-  /* Print only the report */
   w.document.open();
-
   w.document.write(
     "<!doctype html>" +
     "<html><head>" +
     "<meta charset='utf-8'>" +
     "<meta name='viewport' content='width=device-width,initial-scale=1'>" +
     "<title>SASIKUMAR AI - Appraisal Report</title>" +
-
     "<style>" +
     "body{font-family:Arial,sans-serif;margin:20px;color:#111;background:#fff;}" +
     ".report-box{max-width:850px;margin:auto;background:#fff;}" +
@@ -4163,25 +4156,23 @@ function printAppraisalReport(btn){
     "td,th{border:1px solid #999;padding:9px;text-align:left;vertical-align:top;}" +
     "td:first-child{font-weight:bold;width:32%;}" +
     "img{max-width:100%;height:auto;display:block;margin:10px auto;}" +
-    ".report-actions,.no-print{display:none!important;}" +
     "h3{margin-top:18px;border-bottom:1px solid #ccc;padding-bottom:5px;}" +
-    "@media print{body{margin:10mm;} .report-box{max-width:none;}}" +
+    "@media print{body{margin:10mm}.report-box{max-width:none}}" +
     "</style></head><body>" +
-
     clone.outerHTML +
-
-    "<script>" +
-    "window.onload=function(){" +
-    "setTimeout(function(){window.print();},700);" +
-    "};" +
-    "<\\/script>" +
-
     "</body></html>"
   );
-
   w.document.close();
-}
+  w.focus();
 
+  setTimeout(function(){
+    try{
+      w.print();
+    }catch(e){
+      alert("Print failed. Please try again.");
+    }
+  },700);
+}
 function goldReport(){
 
  const box=document.createElement("div");
