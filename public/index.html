@@ -4096,115 +4096,46 @@ function printAppraisalReport(btn){
     return;
   }
 
-  const reportHtml = report.outerHTML;
+  const clone = report.cloneNode(true);
 
-  w.document.open();
-  w.document.write(`<!doctype html>
-<html>
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SASIKUMAR AI - Appraisal Report</title>
-<style>
-.sk-report-nav{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  justify-content:center;
-  margin:12px auto;
-}
-.sk-report-nav button{
-  border:0;
-  border-radius:12px;
-  padding:11px 16px;
-  font-weight:700;
-  cursor:pointer;
-  font-size:15px;
-}
-.sk-return-btn{background:#222;color:#fff;}
-.sk-all-content-btn{background:#f59e0b;color:#111;}
-</style>
-<div class="sk-report-nav">
-  <button type="button" class="sk-return-btn" onclick="history.back()">↩️ RETURN</button>
-  <button type="button" class="sk-all-content-btn" onclick="window.location.href='/#skAllContentCard'">⚡ ALL CONTENT</button>
-</div>
-<style>
-body{
-  font-family:Arial,sans-serif;
-  margin:20px;
-  color:#111;
-  background:#fff;
-}
-.report-box{
-  max-width:850px;
-  margin:auto;
-}
-.report-head{
-  text-align:center;
-  margin-bottom:20px;
-}
-.report-head h2{
-  margin:0 0 6px;
-}
-table{
-  width:100%;
-  border-collapse:collapse;
-}
-td,th{
-  border:1px solid #999;
-  padding:9px;
-  text-align:left;
-}
-td:first-child{
-  font-weight:bold;
-  width:32%;
-}
-input,textarea{
-  width:100%;
-  box-sizing:border-box;
-  border:0;
-  background:transparent;
-  font:inherit;
-  color:#111;
-}
-textarea{
-  resize:none;
-}
-button{
-  display:none !important;
-}
-img{
-  max-width:100%;
-  height:auto;
-}
-@media print{
-  body{margin:10mm;}
-  button{display:none !important;}
-}
-</style>
-</head>
-<body>
-${reportHtml}
-<script>
-(function(){
-  document.querySelectorAll("input, textarea").forEach(function(el){
+  clone.querySelectorAll("input, textarea, select").forEach(function(el){
+    const value = el.value || "";
     const span = document.createElement("span");
-    span.textContent = el.value || "";
+    span.textContent = value;
+    span.style.whiteSpace = "pre-wrap";
     el.replaceWith(span);
   });
 
-  window.onload = function(){
-    setTimeout(function(){
-      window.print();
-    },300);
-  };
-})();
-<\/script>
-</body>
-</html>`);
+  clone.querySelectorAll("button").forEach(function(el){
+    el.remove();
+  });
 
+  w.document.open();
+  w.document.write(
+    "<!doctype html>" +
+    "<html><head>" +
+    "<meta charset='utf-8'>" +
+    "<meta name='viewport' content='width=device-width,initial-scale=1'>" +
+    "<title>SASIKUMAR AI - Appraisal Report</title>" +
+    "<style>" +
+    "body{font-family:Arial,sans-serif;margin:20px;color:#111;background:#fff;}" +
+    ".report-box{max-width:850px;margin:auto;}" +
+    ".report-head{text-align:center;margin-bottom:20px;}" +
+    ".report-head h2{margin:0 0 6px;}" +
+    "table{width:100%;border-collapse:collapse;}" +
+    "td,th{border:1px solid #999;padding:9px;text-align:left;}" +
+    "td:first-child{font-weight:bold;width:32%;}" +
+    "img{max-width:100%;height:auto;}" +
+    ".report-actions{display:none!important;}" +
+    "@media print{body{margin:10mm;}}" +
+    "</style></head><body>" +
+    clone.outerHTML +
+    "<script>window.onload=function(){setTimeout(function(){window.print();},500);};<\\/script>" +
+    "</body></html>"
+  );
   w.document.close();
 }
+
 function goldReport(){
 
  const box=document.createElement("div");
