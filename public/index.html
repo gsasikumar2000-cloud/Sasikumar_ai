@@ -485,7 +485,8 @@ document.addEventListener("DOMContentLoaded",function(){
   padding:24px 18px;
   border-radius:24px;
   background:linear-gradient(135deg,#fff7d6,#e7f5ff,#f5e7ff);
-  box-shadow:0 10px 30px rgba(0,0,0,.12);
+  box-shadow:0 12px 32px rgba(20,60,120,.14);
+  border:1px solid rgba(30,90,180,.10);
   text-align:center;
   margin-bottom:18px;
 }
@@ -514,7 +515,12 @@ document.addEventListener("DOMContentLoaded",function(){
   cursor:pointer;
   font-weight:700;
   background:#fff;
-  box-shadow:0 5px 14px rgba(0,0,0,.10);
+  box-shadow:0 6px 16px rgba(20,50,100,.12);
+  transition:transform .18s ease,box-shadow .18s ease;
+}
+.skBtn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 9px 20px rgba(20,50,100,.16);
 }
 .skGrid{
   display:grid;
@@ -525,9 +531,9 @@ document.addEventListener("DOMContentLoaded",function(){
 .skCard{
   padding:18px;
   border-radius:20px;
-  background:rgba(255,255,255,.94);
-  box-shadow:0 8px 24px rgba(0,0,0,.10);
-  border:1px solid rgba(0,0,0,.06);
+  background:rgba(255,255,255,.96);
+  box-shadow:0 10px 28px rgba(20,50,100,.10);
+  border:1px solid rgba(30,90,180,.08);
 }
 .skCard h3{margin:0 0 9px;font-size:19px}
 .skCard p{margin:5px 0;line-height:1.5}
