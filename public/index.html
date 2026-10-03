@@ -358,11 +358,7 @@ text-decoration:none !important;
 </style>
 
 <!-- SASIKUMAR AI EXTRA OPENINGS + DETAILS PREVIEW -->
-<section id="sasikumarAIHubCard" style="margin:16px 0;padding:16px;border-radius:20px;background:linear-gradient(135deg,#111827,#1f2937);color:#fff;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.18);">
-<h2 style="margin:0 0 6px;">🎬 SASIKUMAR AI HUB</h2>
-<p style="margin:0 0 12px;color:#cbd5e1;">Video • Poster • Creative • Links • Daily Auto</p>
-<button class="skBtn" style="width:100%;font-size:14px;padding:8px;" onclick="window.location.href='/hub-dashboard.html'">🚀 Open HUB Dashboard</button>
-</section>
+
 <section id="skExtraOpenings" style="margin:20px 0;padding:18px;border-radius:24px;background:linear-gradient(135deg,#eef6ff,#fff7e8);box-shadow:0 12px 35px rgba(0,0,0,.12);">
   <h2 style="margin:0 0 6px;">✨ Extra Openings</h2>
   <p style="margin:0 0 15px;">Open a quick preview before entering the full SASIKUMAR AI page.</p>
@@ -376,7 +372,7 @@ text-decoration:none !important;
     <button class="skBtn" onclick="skPreview('appraiser')">📋 Appraiser</button>
     <button class="skBtn" onclick="skPreview('poster')">🖼️ Gold Poster</button>
     <button class="skBtn" onclick="skPreview('equations')">📐 Equations</button>
-    <button class="skBtn" onclick="skShareHome()">📤 Share</button><button class="skBtn" onclick="window.location.href='/hub-dashboard.html'">🎬 SASIKUMAR AI HUB</button>
+    <button class="skBtn" onclick="skShareHome()">📤 Share</button>
   </div>
 </section>
 
@@ -1411,7 +1407,7 @@ section.skCard {
 <style id="sasikumar-preview-mode">
 /* SASIKUMAR AI Responsive Preview */
 #skPreviewBar{
- position:fixed;
+ position:relative;
  top:10px;
  left:50%;
  transform:translateX(-50%);
@@ -1636,14 +1632,11 @@ input,input *,select,select *,textarea,textarea *{font-size:11px!important;min-h
 
 <body>
 <!-- SASIKUMAR AI HUB TOP -->
-<div class="service-card sasikumar-hub-card" onclick="location.href='/hub-dashboard.html'">
+<div class="service-card sasikumar-hub-card" onclick="location.href='/hub-dashboard.html'" style="margin:12px auto;max-width:900px;text-align:center;">
   <div style="font-size:32px">🤖</div>
-  <h2>SASIKUMAR AI HUB</h2>
-  <p>All AI Services • Business • Education • Gold • Jobs</p>
+  <h2 style="margin:6px 0;">SASIKUMAR AI HUB</h2>
+  <p style="margin:0;">Welcome 🙏 Sasikumar AI</p>
 </div>
-
-
-
 <!-- SASIKUMAR AI WELCOME BOARD -->
 <section id="sasikumarWelcomeBoard" style="
 margin:18px auto;
