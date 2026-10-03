@@ -1908,7 +1908,7 @@ document.addEventListener("DOMContentLoaded",function(){
   <p>Fast access to your main services</p>
 
   <div class="skQuick">
-    <button class="skBtn" onclick="location.href='/gold.html'">🪙 Gold & Silver</button>
+    <button class="skBtn" onclick="liveGoldRate()">🪙 Gold & Silver</button>
     <button class="skBtn" onclick="location.href='/education/'">📚 Education</button>
     <button class="skBtn" onclick="location.href='/jobs/'">💼 Jobs</button>
     <button class="skBtn" onclick="location.href='/sports/index.html'">🏏 Sports</button>
@@ -1959,7 +1959,7 @@ function skHomeSearch(q){
   const x=q.toLowerCase();
 
   if(x.includes('gold') || x.includes('silver')){
-    location.href='/gold.html';
+    liveGoldRate();
   }else if(x.includes('education') || x.includes('math') || x.includes('equation') || x.includes('study')){
     location.href='/education/';
   }else if(x.includes('job') || x.includes('career')){
@@ -3311,10 +3311,6 @@ function skShowPoster(state,district){
   `;
 }
 
-// SASIKUMAR AI - Automatic Gold Rate Refresh
-setInterval(() => {
-  liveGoldRate();
-}, 30 * 60 * 1000);
 
 function bankingServices(){
  const chat=document.getElementById("chat");
