@@ -284,7 +284,11 @@ show('<div class="card"><h2>▶️ Meta Video</h2><input id="metaUrl" placeholde
 function metaPreview(){
 var x=document.getElementById("metaUrl").value.trim();
 if(!x)return;
-document.getElementById("metaResult").innerHTML='<p class="ok">✅ URL ready</p><button class="action" onclick="window.open(\''+x.replace(/'/g,"")+'\',\'_blank\')">↗️ Open Video</button>';
+var result=document.getElementById("metaResult");
+result.innerHTML='<p class="ok">✅ URL ready</p><button class="action" id="openMetaVideo">↗️ Open Video</button>';
+document.getElementById("openMetaVideo").addEventListener("click",function(){
+window.open(x,"_blank");
+});
 }
 
 function statusBox(){
