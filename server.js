@@ -1651,6 +1651,188 @@ app.post("/api/whatsapp/webhook", (req, res) => {
   }
 });
 
+
+// ============================================================
+// SASIKUMAR AI GLOBAL SEARCH API
+// Website content is searched in the browser first.
+// This API handles Web Search + AI fallback.
+// ============================================================
+app.get("/api/global-search", async (req, res) => {
+  try {
+    const q = String(req.query.q || "").trim();
+
+    if (!q) {
+      return res.status(400).json({
+        success: false,
+        error: "Search query required"
+      });
+    }
+
+    console.log("🔎 Global Search:", q);
+
+    let webResults = [];
+    let liveRate = null;
+
+    // ========================================================
+    // LIVE GOLD / SILVER PRIORITY
+    // Use SASIKUMAR AI's existing live rate APIs first.
+    // ========================================================
+    const lowerQ = q.toLowerCase();
+
+    const isGold = /gold|தங்க|தங்கம்|22k|24k|916|தங்க விலை/.test(lowerQ);
+    const isSilver = /silver|வெள்ளி|வெள்ளி விலை/.test(lowerQ);
+
+    if (isGold || isSilver) {
+      try {
+        const ratePath = isSilver ? "/api/silver-rate" : "/api/gold-rate";
+        const rateResponse = await fetch(
+          "http://127.0.0.1:" +
+          (process.env.PORT || 3000) +
+          ratePath
+        );
+
+        if (rateResponse.ok) {
+          liveRate = await rateResponse.json();
+        }
+      } catch (rateError) {
+        console.error("Global Search live rate error:", rateError.message);
+      }
+    }
+
+    // Tavily Web Search
+    if (!liveRate && process.env.TAVILY_API_KEY) {
+      try {
+        const tavilyResponse = await fetch("https://api.tavily.com/search", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            api_key: process.env.TAVILY_API_KEY,
+            query: q,
+            search_depth: "basic",
+            topic: "general",
+            max_results: 5,
+            include_answer: true
+          })
+        });
+
+        const tavilyData = await tavilyResponse.json();
+
+        webResults = Array.isArray(tavilyData.results)
+          ? tavilyData.results.map(item => ({
+              title: item.title || "",
+              url: item.url || "",
+              content: item.content || ""
+            }))
+          : [];
+
+        // Tavily answer can be useful directly
+        if (tavilyData.answer) {
+          webResults.unshift({
+            title: "Tavily Answer",
+            url: "",
+            content: tavilyData.answer
+          });
+        }
+      } catch (webError) {
+        console.error("Global Search Tavily error:", webError.message);
+      }
+    }
+
+    // Ask existing SASIKUMAR AI core to summarize the web search
+    let aiReply = "";
+
+    // Live rate answer takes priority over generic web results.
+    if (liveRate) {
+      const r = liveRate.rates || {};
+
+      if (isSilver) {
+        aiReply =
+          "🪙 இன்றைய வெள்ளி விலை — SASIKUMAR AI\n" +
+          "📍 " + (liveRate.district || "Thanjavur") + ", " +
+          (liveRate.state || "Tamil Nadu") + "\n" +
+          "1 கிராம்: ₹" + (r["1g"] ?? r["gram"] ?? "-") + "\n" +
+          "1 கிலோ: ₹" + (r["1kg"] ?? r["kg"] ?? "-") + "\n" +
+          "📅 " + (liveRate.date || "-");
+      } else {
+        aiReply =
+          "🪙 இன்றைய தங்க விலை — SASIKUMAR AI\n" +
+          "📍 " + (liveRate.district || "Thanjavur") + ", " +
+          (liveRate.state || "Tamil Nadu") + "\n" +
+          "24K: ₹" + (r["24K"] ?? "-") + " / gram\n" +
+          "22K: ₹" + (r["22K"] ?? "-") + " / gram\n" +
+          "20K: ₹" + (r["20K"] ?? "-") + " / gram\n" +
+          "19K: ₹" + (r["19K"] ?? "-") + " / gram\n" +
+          "18K: ₹" + (r["18K"] ?? "-") + " / gram\n" +
+          "📅 " + (liveRate.date || "-") + "\n" +
+          "ℹ️ Jewellery retail rate may differ.";
+      }
+    }
+
+    if (!liveRate && webResults.length > 0) {
+      try {
+        const context = webResults
+          .slice(0, 5)
+          .map((r, i) =>
+            `${i + 1}. ${r.title}\n${r.content}\n${r.url}`
+          )
+          .join("\n\n");
+
+        const aiResponse = await fetch(
+          "http://127.0.0.1:" + (process.env.PORT || 3000) + "/api/chat",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              message:
+                `Answer the user's question clearly using the following web search results. ` +
+                `Prefer current information when available. Reply in Tamil first and English second ` +
+                `when appropriate.\n\nUser question: ${q}\n\nWeb results:\n${context}`
+            })
+          }
+        );
+
+        const aiData = await aiResponse.json();
+        aiReply = aiData.reply || "";
+      } catch (aiError) {
+        console.error("Global Search AI error:", aiError.message);
+      }
+    }
+
+    res.json({
+      success: true,
+      app: "SASIKUMAR AI",
+      query: q,
+      source: liveRate
+        ? "live-rate"
+        : (webResults.length ? "web+tavily" : "ai"),
+      answer: aiReply || (
+        webResults.length
+          ? webResults[0].content
+          : "தேடல் முடிவு கிடைக்கவில்லை."
+      ),
+      liveRate,
+      results: webResults.slice(0, 5),
+      timestamp: new Date().toISOString()
+    });
+
+  } catch (error) {
+    console.error("Global Search error:", error);
+
+    res.status(500).json({
+      success: false,
+      error: "Global search failed"
+    });
+  }
+});
+
+// ============================================================
+// END GLOBAL SEARCH API
+// ============================================================
+
 app.listen(PORT,()=>{
   console.log("🤖 SASIKUMAR AI");
   console.log("✅ Server running on port " + PORT);
