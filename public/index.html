@@ -3155,8 +3155,48 @@ function searchBookLife(){
 
     if(!items.length){
       results.innerHTML=
-        '<div style="padding:15px;font-size:14px;">🔎 No matching SASIKUMAR AI content found.</div>';
+        '<div style="padding:15px;font-size:14px;">⏳ Searching web with SASIKUMAR AI...</div>';
       results.style.display="block";
+
+      fetch("/api/global-search?q=" + encodeURIComponent(query))
+        .then(function(response){ return response.json(); })
+        .then(function(data){
+          if(!data || !data.success){
+            throw new Error("Global search failed");
+          }
+
+          var html = "";
+
+          if(data.answer){
+            html +=
+              '<div style="padding:15px;background:#f7f9fc;border-bottom:1px solid #ddd;white-space:pre-line;font-size:14px;line-height:1.6;">' +
+              escapeHtml(data.answer) +
+              '</div>';
+          }
+
+          if(data.results && data.results.length){
+            html += data.results.slice(0,5).map(function(item){
+              return '<a href="' + escapeHtml(item.url || "#") +
+                '" target="_blank" rel="noopener noreferrer" style="display:block;padding:12px 15px;border-bottom:1px solid #eee;text-decoration:none;color:#111;">' +
+                '🌐 ' + escapeHtml(item.title || "Web Result") +
+                '</a>';
+            }).join("");
+          }
+
+          if(!html){
+            html =
+              '<div style="padding:15px;font-size:14px;">🔎 No result found.</div>';
+          }
+
+          results.innerHTML = html;
+          results.style.display="block";
+        })
+        .catch(function(){
+          results.innerHTML=
+            '<div style="padding:15px;font-size:14px;">⚠️ Global Search temporarily unavailable.</div>';
+          results.style.display="block";
+        });
+
       return;
     }
 
