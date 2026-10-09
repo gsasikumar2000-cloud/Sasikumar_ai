@@ -1,51 +1,72 @@
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
-dotenv.config();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
+require('dotenv').config();
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+console.log("GEMINI Key loaded:", !!process.env.GEMINI_API_KEY);
+
+// WORKING MODELS LIST - tried and tested
+const WORKING_MODELS = [
+  "gemini-1.5-flash-001",
+  "gemini-1.5-flash",
+  "gemini-1.5-pro",
+  "gemini-pro"
+];
+
+async function askGemini(prompt, type="growth") {
+  for (const modelName of WORKING_MODELS) {
+    try {
+      console.log(`Trying model: ${modelName}`);
+      const model = genAI.getGenerativeModel({ model: modelName });
+      const result = await model.generateContent(prompt);
+      const text = result.response.text();
+      console.log(`Success with ${modelName}`);
+      return text;
+    } catch (e) {
+      console.log(`Failed ${modelName}: ${e.message.slice(0,100)}`);
+      continue;
+    }
+  }
+  throw new Error("All Gemini models failed - check API key quota");
+}
+
 app.get('/health', (req,res)=>{
   res.json({
-    status: 'OK',
-    tavily: process.env.TAVILY_API_KEY ? '✅ ADDED' : '❌ Add in Render',
-    gemini: process.env.GEMINI_API_KEY ? '✅ ADDED' : '❌ Add in Render',
-    time: new Date().toLocaleString('en-IN')
+    status:"OK",
+    time:new Date().toLocaleString("en-IN",{timeZone:"Asia/Kolkata"}),
+    tavily: process.env.TAVILY_API_KEY ? "✅ ADDED" : "❌ MISSING",
+    gemini: process.env.GEMINI_API_KEY ? "✅ ADDED" : "❌ MISSING"
   });
 });
 
-app.get('/api/gold', async (req,res)=>{
-  if(!process.env.TAVILY_API_KEY) return res.json({mode:'DEMO', gold:'₹6,245/g'});
-  try{
-    const r = await fetch('https://api.tavily.com/search',{method:'POST',headers:{'Content-Type':'application/json'},body: JSON.stringify({api_key: process.env.TAVILY_API_KEY, query:'Chennai gold price today', max_results:3, include_answer:true})});
-    res.json(await r.json());
-  }catch(e){res.json({error:e.message});}
-});
-
-app.post('/api/growth', async (req,res)=>{
-  const q = req.body.query || 'growth';
-  let gText = 'Growth plan for: '+q;
-  if(process.env.GEMINI_API_KEY){
-    try{
-      const { GoogleGenerativeAI } = await import('@google/generative-ai');
-      const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-      const result = await model.generateContent('Give 3 growth tips for: '+q+' in Tanglish');
-      gText = result.response.text();
-    }catch(e){gText = 'Error: '+e.message;}
+app.post('/api/chat', async (req,res)=>{
+  try {
+    const { message, category } = req.body;
+    let prompt = message;
+    
+    if(category === 'growth') prompt = `You are Sasikumar AI, Tamil Nadu startup growth expert. Answer in Tanglish, give 3 actionable tips. User: ${message}`;
+    if(category === 'kavithai') prompt = `You are Tamil poet. Write beautiful Tamil kavithai about: ${message}. In Tamil script.`;
+    if(category === 'kural') prompt = `Give Thirukkural related to: ${message} with meaning in Tanglish.`;
+    if(category === 'ponmozhi') prompt = `Give Tamil ponmozhi/motivational quote about: ${message} in Tamil + Tanglish.`;
+    
+    const reply = await askGemini(prompt, category);
+    res.json({ reply, model: "working" });
+  } catch(e){
+    console.error("CHAT ERROR:", e.message);
+    res.json({ reply: `Error: ${e.message}`, error:true });
   }
-  res.json({gemini: gText});
 });
 
-app.get('*', (req,res)=> res.sendFile(path.join(__dirname, 'public', 'index.html')));
+app.get('*', (req,res)=>{
+  res.sendFile(path.join(__dirname,'public','index.html'));
+});
 
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, '0.0.0.0', ()=> console.log('Running '+PORT));
+app.listen(PORT, ()=> console.log(`Running ${PORT} ✅`));
