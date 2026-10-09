@@ -1,8 +1,13 @@
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
-require('dotenv').config();
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+import express from 'express';
+import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(cors());
@@ -10,9 +15,8 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-console.log("GEMINI Key loaded:", !!process.env.GEMINI_API_KEY);
+console.log("GEMINI Key:", !!process.env.GEMINI_API_KEY);
 
-// WORKING MODELS LIST - tried and tested
 const WORKING_MODELS = [
   "gemini-1.5-flash-001",
   "gemini-1.5-flash",
@@ -20,29 +24,27 @@ const WORKING_MODELS = [
   "gemini-pro"
 ];
 
-async function askGemini(prompt, type="growth") {
+async function askGemini(prompt) {
   for (const modelName of WORKING_MODELS) {
     try {
-      console.log(`Trying model: ${modelName}`);
+      console.log(`Trying ${modelName}`);
       const model = genAI.getGenerativeModel({ model: modelName });
       const result = await model.generateContent(prompt);
-      const text = result.response.text();
-      console.log(`Success with ${modelName}`);
-      return text;
+      console.log(`Success ${modelName}`);
+      return result.response.text();
     } catch (e) {
-      console.log(`Failed ${modelName}: ${e.message.slice(0,100)}`);
-      continue;
+      console.log(`Fail ${modelName}: ${e.message.slice(0,120)}`);
     }
   }
-  throw new Error("All Gemini models failed - check API key quota");
+  throw new Error("All models failed");
 }
 
 app.get('/health', (req,res)=>{
   res.json({
     status:"OK",
     time:new Date().toLocaleString("en-IN",{timeZone:"Asia/Kolkata"}),
-    tavily: process.env.TAVILY_API_KEY ? "✅ ADDED" : "❌ MISSING",
-    gemini: process.env.GEMINI_API_KEY ? "✅ ADDED" : "❌ MISSING"
+    tavily: process.env.TAVILY_API_KEY ? "✅ ADDED" : "❌",
+    gemini: process.env.GEMINI_API_KEY ? "✅ ADDED" : "❌"
   });
 });
 
@@ -50,17 +52,14 @@ app.post('/api/chat', async (req,res)=>{
   try {
     const { message, category } = req.body;
     let prompt = message;
-    
-    if(category === 'growth') prompt = `You are Sasikumar AI, Tamil Nadu startup growth expert. Answer in Tanglish, give 3 actionable tips. User: ${message}`;
-    if(category === 'kavithai') prompt = `You are Tamil poet. Write beautiful Tamil kavithai about: ${message}. In Tamil script.`;
-    if(category === 'kural') prompt = `Give Thirukkural related to: ${message} with meaning in Tanglish.`;
-    if(category === 'ponmozhi') prompt = `Give Tamil ponmozhi/motivational quote about: ${message} in Tamil + Tanglish.`;
-    
-    const reply = await askGemini(prompt, category);
-    res.json({ reply, model: "working" });
+    if(category==='growth') prompt=`You are Sasikumar AI, TN startup expert. Tanglish 3 tips. User: ${message}`;
+    if(category==='kavithai') prompt=`Tamil kavi. Write Tamil kavithai about ${message} in Tamil script.`;
+    if(category==='kural') prompt=`Thirukkural for ${message} with Tanglish meaning.`;
+    if(category==='ponmozhi') prompt=`Tamil motivational ponmozhi about ${message} Tamil+ Tanglish.`;
+    const reply = await askGemini(prompt);
+    res.json({ reply });
   } catch(e){
-    console.error("CHAT ERROR:", e.message);
-    res.json({ reply: `Error: ${e.message}`, error:true });
+    res.json({ reply:`Error: ${e.message}`, error:true });
   }
 });
 
