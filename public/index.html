@@ -1,220 +1,86 @@
 <!DOCTYPE html>
-<html>
+<html lang="ta">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Sasikumar AI - Reply Bottom</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI - VARUM AI Tools</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#000;color:#fff;font-family:system-ui;padding-bottom:140px}
-.main{max-width:800px;margin:0 auto;padding:10px}
-.top-bar{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
-.top-card{flex:1;min-width:90px;background:#111;border:1px solid #222;border-radius:10px;padding:6px;text-align:center;font-size:10px}
-.top-card b{font-size:9px;color:#ffd452;display:block}
-.h{background:linear-gradient(135deg,#00d4ff,#a855f7,#ffd452);padding:14px;border-radius:16px;text-align:center;margin-bottom:10px}
-.big{font-size:22px;font-weight:900;margin:0}
-.live-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:12px}
-.small-card{background:#111;border:1px solid #333;border-radius:12px;padding:10px;cursor:pointer;min-height:90px}
-.small-card:hover{border-color:#00d4ff}
-.card-title{font-size:10px;font-weight:800;color:#ffd452}
-.card-content{font-size:11px;margin-top:6px;line-height:1.3}
-.chat-area{background:#0a0a0a;border:1px solid #222;border-radius:12px;padding:12px;min-height:300px;max-height:60vh;overflow:auto;margin-bottom:10px}
-.msg{margin:8px 0;padding:10px;border-radius:10px;max-width:85%;line-height:1.4;font-size:13px}
-.msg.you{background:#0f1a2a;border:1px solid #1e3a5f;margin-left:auto;text-align:right}
-.msg.bot{background:#1a1a1a;border:1px solid #333}
-.msg.growth{background:linear-gradient(135deg,#0a1a0a,#1a0f1f);border:1px solid #22c55e55}
-
-/* BOTTOM REPLY BOX - FIXED */
-.reply-bottom{position:fixed;bottom:0;left:0;right:0;background:#0a0a0a;border-top:2px solid #00d4ff;box-shadow:0 -5px 20px #000;padding:10px;z-index:999}
-.reply-inner{max-width:800px;margin:0 auto}
-.tools-row{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
-.tool-btn{padding:5px 9px;border-radius:16px;border:1px solid #333;background:#1a1a1a;color:#fff;font-size:10px;cursor:pointer}
-.tool-btn:hover{background:#fff;color:#000}
-.tool-btn.cam{background:#ff6b00;color:#fff}.tool-btn.up{background:#00d4ff;color:#000}.tool-btn.tav{background:#22c55e;color:#fff}.tool-btn.gem{background:#a855f7;color:#fff}
-.input-row{display:flex;gap:6px;align-items:flex-end}
-.input-row textarea{flex:1;padding:10px 12px;border-radius:20px;border:1px solid #333;background:#111;color:#fff;resize:none;min-height:44px;max-height:100px;font-size:13px}
-.input-row textarea:focus{border-color:#00d4ff;outline:none}
-.send-btn{width:44px;height:44px;border-radius:50%;border:0;background:linear-gradient(135deg,#00d4ff,#a855f7);color:#fff;font-size:18px;cursor:pointer;flex-shrink:0}
-.send-btn:active{transform:scale(0.9)}
-.preview-bottom{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
-video{width:100%;border-radius:10px;display:none;max-height:200px;background:#000;margin-bottom:6px}
-.status{font-size:9px;color:#22c55e;margin-top:4px}
+*{margin:0;padding:0;box-sizing:border-box}body{background:#0a0a0a;color:#fff;font-family:'Segoe UI',sans-serif;min-height:100vh;display:flex;flex-direction:column}
+.header{background:linear-gradient(90deg,#00ff88,#00d4ff);padding:15px;text-align:center;color:#000;font-weight:900;font-size:22px;position:sticky;top:0;z-index:10}
+.main{flex:1;padding:15px;padding-bottom:220px;max-width:900px;margin:0 auto;width:100%}
+.card{background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:15px;margin:10px 0}
+.tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:15px 0}
+.tool-btn{background:#222;border:2px solid #444;border-radius:10px;padding:12px;text-align:center;cursor:pointer;transition:.2s}
+.tool-btn.active{border-color:#00ff88;background:#00ff8820}
+.tool-btn h3{font-size:14px;margin:5px 0}
+.reply-box{position:fixed;bottom:0;left:0;right:0;background:#111;border-top:2px solid #00ff88;padding:12px;z-index:100}
+.input-row{display:flex;gap:8px;max-width:900px;margin:0 auto}
+#userInput{flex:1;background:#222;border:1px solid #444;color:#fff;border-radius:25px;padding:12px 18px;font-size:15px;outline:none}
+#sendBtn{background:#00ff88;color:#000;border:none;border-radius:25px;padding:12px 22px;font-weight:900;cursor:pointer}
+.log{white-space:pre-wrap;background:#000;padding:10px;border-radius:8px;margin:8px 0;font-size:13px;border-left:3px solid #00ff88}
+.status-ok{color:#00ff88}.status-demo{color:#ffaa00}
 </style>
 </head>
 <body>
+<div class="header">🚀 SASIKUMAR AI | VARUM AI - All Tools Bottom Reply</div>
 <div class="main">
-
-<div class="top-bar">
-<div class="top-card"><b>📅 DATE</b><span id="date">--</span></div>
-<div class="top-card"><b>⏰ TIME</b><span id="time">--</span></div>
-<div class="top-card"><b>📍 LOCATION</b><span id="loc">Chennai</span></div>
-<div class="top-card"><b>🔗 DOMAIN</b><span style="color:#22c55e;font-size:8px">9wdq.onrender.com</span></div>
+<div class="card"><b>💰 Live Gold</b><div id="goldBox">Loading...</div></div>
+<div class="tool-grid">
+<div class="tool-btn active" data-tool="growth" onclick="setTool('growth')"><h3>📈 Growth</h3><small>Varum Advice</small></div>
+<div class="tool-btn" data-tool="gold" onclick="setTool('gold')"><h3>💰 Gold</h3><small>Chennai Rate</small></div>
+<div class="tool-btn" data-tool="finance" onclick="setTool('finance')"><h3>💳 Finance</h3><small>Money Plan</small></div>
+<div class="tool-btn" data-tool="tamil" onclick="setTool('tamil')"><h3>🗣️ Tamil AI</h3><small>Tanglish Chat</small></div>
 </div>
-
-<div class="h">
-<h1 class="big">✨ SASIKUMAR AI ✨</h1>
-<div style="font-size:10px;background:#0008;padding:3px 10px;border-radius:12px;display:inline-block;margin-top:4px">Reply Box Bottom - Fixed + Camera Upload</div>
+<div id="chatLogs"></div>
+<div class="card" id="healthBox">Checking health...</div>
 </div>
-
-<div class="live-cards">
-<div class="small-card" onclick="quickAsk('Chennai gold price today')"><div class="card-title">💰 GOLD LIVE</div><div class="card-content" id="gold-card">Loading...</div></div>
-<div class="small-card" onclick="quickAsk('Latest news today')"><div class="card-title">📰 NEWS</div><div class="card-content">Click for latest news</div></div>
-<div class="small-card" onclick="quickAsk('Kavithai sollu')"><div class="card-title">💝 KAVITHAI</div><div class="card-content">Kadhal kavithai</div></div>
-<div class="small-card" onclick="quickAsk('Ponmozhi sollu')"><div class="card-title">✨ PONMOZHI</div><div class="card-content">Thiruvalluvar</div></div>
-</div>
-
-<div class="chat-area" id="chat">
-<div class="msg bot">Bot: Vanakkam Sir! 🙏 Reply box <b>bottom fixed</b> la irukku paathinga la? Scroll pannalum bottom la than irukkum!<br><br>📷 Camera | 📁 Upload | 🔍 Tavily | 🤖 Gemini | 📈 Growth - Ellam bottom la!<br><br>Website: <b>sasikumar-ai-9wdq.onrender.com</b> ✅ LIVE!</div>
-</div>
-
-</div>
-
-<!-- FIXED BOTTOM REPLY BOX -->
-<div class="reply-bottom">
-<div class="reply-inner">
-<video id="cam" autoplay playsinline></video>
-<canvas id="canvas" style="display:none"></canvas>
-<div class="preview-bottom" id="preview"></div>
-
-<div class="tools-row">
-<button class="tool-btn cam" onclick="openCamera()">📷 Camera</button>
-<button class="tool-btn cam" onclick="takePhoto()" id="snapBtn" style="display:none">📸 Snap</button>
-<button class="tool-btn up" onclick="document.getElementById('fileUpload').click()">📁 Upload</button>
-<button class="tool-btn up" onclick="document.getElementById('camInput').click()">📎 Gallery</button>
-<button class="tool-btn tav" onclick="tavilySearch()">🔍 Tavily</button>
-<button class="tool-btn gem" onclick="geminiSearch()">🤖 Gemini</button>
-<button class="tool-btn" onclick="cutText()">✂️ Cut</button>
-<button class="tool-btn" onclick="copyText()">📋 Copy</button>
-<button class="tool-btn" onclick="pasteText()">📄 Paste</button>
-<button class="tool-btn" onclick="startVoice()" id="micBtn">🎤 Voice</button>
-<button class="tool-btn" style="background:#ffd452;color:#000" onclick="saveChat()">💾 Save</button>
-<button class="tool-btn" style="background:#ff3333;color:#fff" onclick="clearChat()">🗑️ Clear</button>
-</div>
-
+<div class="reply-box">
 <div class="input-row">
-<textarea id="q" rows="1" placeholder="Type here Sir... Bottom fixed reply box..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();ask();}"></textarea>
-<button class="send-btn" onclick="ask()">🚀</button>
+<input id="userInput" placeholder="Varum! Enna help venum? Growth / Gold / Finance... Type pannunga!" onkeypress="if(event.key==='Enter')send()">
+<button id="sendBtn" onclick="send()">SEND 🚀</button>
 </div>
-
-<input type="file" id="fileUpload" accept="image/*,video/*,.pdf" multiple style="display:none" onchange="handleFiles(this.files)">
-<input type="file" id="camInput" accept="image/*" capture="environment" style="display:none" onchange="handleFiles(this.files)">
-
-<div class="status" id="status">💬 Reply box bottom fixed - Scroll pannalum inga than irukkum Sir!</div>
+<div style="text-align:center;font-size:11px;margin-top:6px;color:#666" id="toolLabel">Active Tool: 📈 Growth | All replies keela order la varum</div>
 </div>
-</div>
-
 <script>
-let attachedFiles=[],camStream=null;
-function updateDT(){let n=new Date();document.getElementById('date').innerText=n.toLocaleDateString('en-IN',{day:'numeric',month:'short'});document.getElementById('time').innerText=n.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});document.getElementById('gold-card').innerText='Gold: ₹'+(6200+Math.floor(Math.random()*100))+'/g - Click';}
-setInterval(updateDT,1000);updateDT();
-
-function addMsg(text, who){
-let chat=document.getElementById('chat');
-let div=document.createElement('div');
-div.className='msg '+(who==='you'?'you':'bot');
-div.innerHTML=(who==='you'?'<b>You:</b> ':'<b>Bot:</b> ')+text;
-chat.appendChild(div);
-chat.scrollTop=chat.scrollHeight;
+let curTool='growth';
+function setTool(t){
+curTool=t;
+document.querySelectorAll('.tool-btn').forEach(b=>b.classList.remove('active'));
+document.querySelector(`[data-tool="${t}"]`).classList.add('active');
+document.getElementById('toolLabel').innerText='Active Tool: '+t.toUpperCase()+' | Bottom reply box ready';
+document.getElementById('userInput').placeholder=t+' pathi ketkalam! Type pannunga...';
 }
-
-async function ask(){
-let input=document.getElementById('q');
-let text=input.value.trim();
-if(!text && attachedFiles.length==0) return;
-
-let attachInfo = attachedFiles.length? ` <br><small style="color:#00d4ff">📎 ${attachedFiles.length} files attached</small>` : '';
-addMsg(text+attachInfo, 'you');
-
-if(attachedFiles.length){
-let imgFile=attachedFiles.find(f=>f.type.startsWith('image/'));
-if(imgFile){
-let r=new FileReader();
-r.onload=e=>{
-let chat=document.getElementById('chat');
-let div=document.createElement('div');
-div.className='msg bot';
-div.innerHTML=`<img src="${e.target.result}" style="width:120px;border-radius:8px"><br><small style="color:#22c55e">✅ Image received Sir! 📷</small>`;
-chat.appendChild(div);
-chat.scrollTop=chat.scrollHeight;
-};
-r.readAsDataURL(imgFile);
-}
-}
-
-// Growth API call
-if(text.toLowerCase().includes('gold') || text.toLowerCase().includes('news') || text.toLowerCase().includes('search') || text.length>5){
-addMsg('🔍 Tavily searching + 🤖 Gemini growth analyzing...', 'bot');
+async function loadHealth(){
 try{
-let res=await fetch('/api/growth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:text})});
-let data=await res.json();
-let chat=document.getElementById('chat');
-let div=document.createElement('div');
-div.className='msg growth';
-div.innerHTML=`<b style="color:#ffd452">📈 Growth Answer:</b><br>${data.gemini||data.growth||'Growth plan ready Sir!'}`;
-chat.appendChild(div);
-chat.scrollTop=chat.scrollHeight;
-}catch(e){
-addMsg('Bot: '+text+' purinjikiten Sir! Tavily+Gemini keys add panna real live data varum! 🚀', 'bot');
+let r=await fetch('/health');let j=await r.json();
+document.getElementById('healthBox').innerHTML=`<b>Health:</b> <span class="status-ok">${j.status}</span> | Tavily: ${j.tavily} | Gemini: ${j.gemini}<br><small>${j.time}</small>`;
+document.getElementById('goldBox').innerHTML='System OK - '+j.tavily;
+}catch(e){document.getElementById('healthBox').innerHTML='Health check fail - Refresh pannunga';}
 }
+function addLog(title,txt){
+let div=document.createElement('div');div.className='log';
+div.innerHTML=`<b>[${new Date().toLocaleTimeString()}] ${title}</b>\n${txt}`;
+document.getElementById('chatLogs').appendChild(div);
+window.scrollTo(0,document.body.scrollHeight);
+}
+async function send(){
+let q=document.getElementById('userInput').value.trim();if(!q)return;
+let input=document.getElementById('userInput');input.value='';
+addLog('YOU ['+curTool+']',q);
+addLog('VARUM AI...','Yosikiren Sir... '+curTool+' tool work pannuthu...');
+try{
+if(curTool==='gold'){
+let r=await fetch('/api/gold');let j=await r.json();
+addLog('💰 GOLD TOOL REPLY [Bottom Order #1]',JSON.stringify(j,null,2).slice(0,800));
 }else{
-addMsg('Bot: '+text+' super Sir! Bottom reply box la type pannitinga! 💬', 'bot');
+let r=await fetch('/api/growth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({query:q,tool:curTool})});
+let j=await r.json();
+addLog('📈 '+curTool.toUpperCase()+' TOOL REPLY [Bottom Order]',j.gemini||JSON.stringify(j).slice(0,800));
 }
-
-attachedFiles=[];
-document.getElementById('preview').innerHTML='';
-input.value='';
-input.style.height='44px';
-document.getElementById('status').innerText='✅ Sent!';
-setTimeout(()=>document.getElementById('status').innerText='💬 Bottom fixed - Always here Sir!',2000);
+addLog('✅ Tool Order','1.Growth 2.Gold 3.Finance 4.Tamil - All bottom la reply vanthirukku Sir!');
+}catch(e){addLog('Error',e.message);}
 }
-
-function quickAsk(q){document.getElementById('q').value=q;ask();}
-
-async function openCamera(){
-let v=document.getElementById('cam'),b=document.getElementById('snapBtn');
-try{
-if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null;v.style.display='none';b.style.display='none';document.getElementById('status').innerText='📷 Camera OFF';return;}
-let s=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
-camStream=s;v.srcObject=s;v.style.display='block';b.style.display='inline-block';
-document.getElementById('status').innerText='📷 Camera ON Sir!';
-}catch(e){document.getElementById('camInput').click();}
-}
-
-function takePhoto(){
-let v=document.getElementById('cam'),c=document.getElementById('canvas');
-c.width=v.videoWidth;c.height=v.videoHeight;c.getContext('2d').drawImage(v,0,0);
-let file=dataURLtoFile(c.toDataURL('image/png'),'cam_'+Date.now()+'.png');
-handleFiles([file]);
-camStream.getTracks().forEach(t=>t.stop());camStream=null;
-document.getElementById('cam').style.display='none';document.getElementById('snapBtn').style.display='none';
-}
-
-function dataURLtoFile(d,f){let a=d.split(','),m=a[0].match(/:(.*?);/)[1],b=atob(a[1]),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return new File([u],f,{type:m});}
-
-function handleFiles(files){
-let p=document.getElementById('preview');
-for(let file of files){
-attachedFiles.push(file);
-let div=document.createElement('div');
-div.style.position='relative';
-if(file.type.startsWith('image/')){
-let r=new FileReader();
-r.onload=e=>{div.innerHTML=`<img src="${e.target.result}" style="width:60px;height:60px;border-radius:8px;object-fit:cover;border:1px solid #333"><div style="position:absolute;top:-6px;right:-6px;background:#f33;color:#fff;width:18px;height:18px;border-radius:50%;text-align:center;font-size:11px;cursor:pointer" onclick="this.parentElement.remove()">×</div>`;};
-r.readAsDataURL(file);
-}else{div.innerHTML=`<div style="width:60px;height:60px;background:#222;border:1px solid #333;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:9px">${file.name.substring(0,8)}</div><div style="position:absolute;top:-6px;right:-6px;background:#f33;color:#fff;width:18px;height:18px;border-radius:50%;text-align:center;font-size:11px;cursor:pointer" onclick="this.parentElement.remove()">×</div>`;}
-p.appendChild(div);
-}
-document.getElementById('status').innerText=`📎 ${files.length} files attached! Total: ${attachedFiles.length}`;
-}
-
-function cutText(){let e=document.getElementById('q');e.select();document.execCommand('cut');}
-function copyText(){let e=document.getElementById('q');if(e.value){e.select();document.execCommand('copy');}else{navigator.clipboard.writeText(document.getElementById('chat').innerText);}document.getElementById('status').innerText='📋 Copied!';}
-async function pasteText(){try{let t=await navigator.clipboard.readText();document.getElementById('q').value+=t;}catch{document.getElementById('status').innerText='Ctrl+V pannunga Sir!';}}
-function clearChat(){document.getElementById('chat').innerHTML='<div class="msg bot">Bot: Cleared Sir! ✨ Bottom reply box ready!</div>';}
-function saveChat(){let b=new Blob([document.getElementById('chat').innerText],{type:'text/plain'});let a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='chat_'+Date.now()+'.txt';a.click();}
-function startVoice(){let b=document.getElementById('micBtn');if('webkitSpeechRecognition' in window||'SpeechRecognition' in window){let SR=window.SpeechRecognition||window.webkitSpeechRecognition;let r=new SR();r.lang='ta-IN';r.onstart=()=>{b.innerText='🔴 Listening';b.style.background='#f33';};r.onresult=e=>{document.getElementById('q').value+=e.results[0][0].transcript+' ';};r.onend=()=>{b.innerText='🎤 Voice';b.style.background='#1a1a1a';};r.start();}}
-function tavilySearch(){let q=document.getElementById('q').value||'latest news';quickAsk('Tavily search: '+q);}
-function geminiSearch(){let q=document.getElementById('q').value||'growth tips';quickAsk('Gemini AI: '+q);}
-document.getElementById('q').addEventListener('input',function(){this.style.height='44px';this.style.height=Math.min(this.scrollHeight,100)+'px';});
+loadHealth();
+setInterval(loadHealth,15000);
 </script>
 </body>
 </html>
