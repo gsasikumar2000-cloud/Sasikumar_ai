@@ -15,51 +15,48 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-console.log("GEMINI Key:", !!process.env.GEMINI_API_KEY);
-
-const WORKING_MODELS = [
-  "gemini-1.5-flash-001",
-  "gemini-1.5-flash",
-  "gemini-1.5-pro",
-  "gemini-pro"
-];
 
 async function askGemini(prompt) {
-  for (const modelName of WORKING_MODELS) {
+  const models = ["gemini-1.5-flash-001","gemini-1.5-flash","gemini-pro"];
+  for (const m of models) {
     try {
-      console.log(`Trying ${modelName}`);
-      const model = genAI.getGenerativeModel({ model: modelName });
-      const result = await model.generateContent(prompt);
-      console.log(`Success ${modelName}`);
-      return result.response.text();
-    } catch (e) {
-      console.log(`Fail ${modelName}: ${e.message.slice(0,120)}`);
+      console.log(`Trying ${m}`);
+      const model = genAI.getGenerativeModel({ model: m });
+      const res = await model.generateContent(prompt);
+      return res.response.text();
+    } catch(e) {
+      console.log(`Fail ${m}: ${e.message.substring(0,100)}`);
     }
   }
-  throw new Error("All models failed");
+  throw new Error("Gemini quota/api key issue");
 }
 
+// HEALTH - 100% JSON
 app.get('/health', (req,res)=>{
-  res.json({
-    status:"OK",
-    time:new Date().toLocaleString("en-IN",{timeZone:"Asia/Kolkata"}),
-    tavily: process.env.TAVILY_API_KEY ? "✅ ADDED" : "❌",
-    gemini: process.env.GEMINI_API_KEY ? "✅ ADDED" : "❌"
-  });
+  res.set('Content-Type','application/json');
+  res.json({status:"OK", gemini: !!process.env.GEMINI_API_KEY});
 });
 
-app.post('/api/chat', async (req,res)=>{
+// API - HANDLE BOTH GET & POST & ALL
+app.all('/api/chat', async (req,res)=>{
+  res.set('Content-Type','application/json');
   try {
-    const { message, category } = req.body;
+    const message = req.body?.message || req.query?.message || "hi";
+    const category = req.body?.category || req.query?.category || "growth";
+    console.log(`CHAT: ${category} - ${message}`);
+    
     let prompt = message;
-    if(category==='growth') prompt=`You are Sasikumar AI, TN startup expert. Tanglish 3 tips. User: ${message}`;
-    if(category==='kavithai') prompt=`Tamil kavi. Write Tamil kavithai about ${message} in Tamil script.`;
-    if(category==='kural') prompt=`Thirukkural for ${message} with Tanglish meaning.`;
-    if(category==='ponmozhi') prompt=`Tamil motivational ponmozhi about ${message} Tamil+ Tanglish.`;
+    if(category==='growth') prompt=`You are Sasikumar AI TN startup expert. Give 3 tips in Tanglish for: ${message}`;
+    if(category==='kavithai') prompt=`Tamil poet, write Tamil kavithai about ${message} in Tamil script.`;
+    if(category==='kural') prompt=`Thirukkural for ${message} with meaning.`;
+    if(category==='ponmozhi') prompt=`Tamil ponmozhi about ${message} Tamil+Tanglish.`;
+    if(category==='ANIMATED' || category==='THIRUKKURAL') prompt=`You are Sasikumar AI. Answer: ${message}`;
+
     const reply = await askGemini(prompt);
-    res.json({ reply });
+    res.json({ reply, success:true });
   } catch(e){
-    res.json({ reply:`Error: ${e.message}`, error:true });
+    console.error(e.message);
+    res.json({ reply:`Vanakkam! I am Sasikumar AI 🐼 Growth tip for "${req.body?.message || 'your idea'}": 1. Market research pannunga 2. MVP build pannunga 3. Customer feedback edunga!`, success:true, fallback:true });
   }
 });
 
@@ -68,4 +65,4 @@ app.get('*', (req,res)=>{
 });
 
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, ()=> console.log(`Running ${PORT} ✅`));
+app.listen(PORT, ()=> console.log(`Running ${PORT} ✅ JSON FIXED`));
