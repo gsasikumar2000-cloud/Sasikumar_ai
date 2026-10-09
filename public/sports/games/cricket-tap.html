@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🏏 Cricket Tap | SASIKUMAR AI</title>
+<style>
+body{font-family:Arial,sans-serif;margin:0;background:linear-gradient(135deg,#061b12,#126e43);color:white;text-align:center}
+.card{max-width:650px;margin:30px auto;padding:25px;background:#ffffff15;border-radius:24px}
+button{font-size:22px;padding:18px 30px;margin:10px;border:0;border-radius:15px;cursor:pointer}
+.ball{font-size:80px;margin:20px}
+.info{background:#0004;padding:15px;border-radius:15px;text-align:left}
+</style></head><body><div class="card">
+<h1>🏏 Cricket Tap</h1><p>Tap the bat to score runs!</p>
+<h2>Score: <span id="score">0</span> | Balls: <span id="balls">0</span>/10</h2>
+<div class="ball">🏏</div>
+<button onclick="hit()">🏏 HIT!</button><br>
+<button onclick="location.reload()">🔄 Play Again</button>
+<div class="info"><h2>📚 Cricket Knowledge</h2>
+<p>• One over normally contains 6 legal deliveries.</p>
+<p>• A boundary over the ground scores 4 runs.</p>
+<p>• A shot over the boundary without bouncing scores 6 runs.</p>
+<p>• Runs are used to determine the batting team's score.</p></div>
+</div>
+<script>
+let score=0,balls=0;
+function hit(){if(balls>=10)return;balls++;let r=[0,1,2,3,4,6][Math.floor(Math.random()*6)];score+=r;document.getElementById('score').textContent=score;document.getElementById('balls').textContent=balls;if(balls===10)setTimeout(()=>alert('🏏 Game Over! Score: '+score),100);}
+</script></body></html>

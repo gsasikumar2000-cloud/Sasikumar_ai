@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI - Referral</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#07111f,#12345a,#07111f);color:#fff;min-height:100vh}
+.wrap{max-width:650px;margin:auto;padding:20px}
+.card{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:22px;padding:22px;margin:15px 0;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.logo{width:26px;height:26px;display:block;margin:auto}
+h1{text-align:center;margin:10px 0;color:#ffd54a}
+.sub{text-align:center;color:#d7e5f5}
+.code{font-size:28px;font-weight:800;text-align:center;letter-spacing:3px;color:#ffd54a;padding:18px}
+input{width:100%;padding:14px;border:0;border-radius:12px;margin:8px 0;font-size:15px}
+button{width:100%;padding:14px;border:0;border-radius:12px;margin-top:8px;font-weight:700;font-size:15px;cursor:pointer}
+.primary{background:#ffd54a;color:#111}
+.secondary{background:#fff;color:#12345a}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stat{text-align:center;padding:18px;background:rgba(255,255,255,.08);border-radius:16px}
+.num{font-size:25px;font-weight:800;color:#ffd54a}
+.note{text-align:center;font-size:13px;color:#b9c9d9;line-height:1.5}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="card">
+<img class="logo" src="/assets/sasikumar-ai-logo.png?v=20261002">
+<h1>🔗 Referral Centre</h1>
+<div class="sub">SASIKUMAR AI — Free Service</div>
+</div>
+
+<div class="card">
+<div class="sub">Your Referral Code</div>
+<div class="code" id="refCode">SKAI-FREE</div>
+<input id="refLink" readonly>
+<button class="primary" onclick="copyReferral()">📋 Copy Referral Link</button>
+<button class="secondary" onclick="shareReferral()">📤 Share Referral</button>
+</div>
+
+<div class="card">
+<div class="stats">
+<div class="stat"><div class="num" id="refCount">0</div><div>👥 Referrals</div></div>
+<div class="stat"><div class="num">₹0</div><div>💰 Commission</div></div>
+</div>
+</div>
+
+<div class="card">
+<div class="note">
+🆓 SASIKUMAR AI services are free.<br>
+💰 Referral commission is available only for eligible services and confirmed provider commission.<br>
+⏳ Commission/payout features will activate after provider verification.
+</div>
+</div>
+</div>
+
+<script>
+const params=new URLSearchParams(location.search);
+const incomingRef=(params.get("ref")||"").trim().toUpperCase();
+const code="SKAI-FREE";
+const savedRef=localStorage.getItem("sasikumar_referrer");
+
+if(incomingRef && incomingRef !== code && /^[A-Z0-9-]{3,40}$/.test(incomingRef)){
+  if(!savedRef){
+    localStorage.setItem("sasikumar_referrer",incomingRef);
+    localStorage.setItem("sasikumar_referral_saved_at",new Date().toISOString());
+  }
+}
+
+const link=location.origin+"/?ref="+encodeURIComponent(code);
+document.getElementById("refLink").value=link;
+
+const activeRef=localStorage.getItem("sasikumar_referrer");
+
+if(activeRef){
+  let visitorId=localStorage.getItem("sasikumar_visitor_id");
+  if(!visitorId){
+    visitorId="v-"+crypto.randomUUID();
+    localStorage.setItem("sasikumar_visitor_id",visitorId);
+  }
+
+  fetch("/api/referral/track",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      code:activeRef,
+      visitor_id:visitorId
+    })
+  }).then(r=>r.json()).then(data=>{
+    if(data.status_id===1 && data.data){
+      document.getElementById("refCount").textContent=
+        String(data.data.unique_referrals || 0);
+    }
+  }).catch(()=>{});
+}
+
+fetch("/api/referral/status?code="+encodeURIComponent(code))
+  .then(r=>r.json())
+  .then(data=>{
+    if(data.status_id===1 && data.data){
+      document.getElementById("refCount").textContent=
+        String(data.data.unique_referrals || 0);
+    }
+  })
+  .catch(()=>{});
+
+function copyReferral(){
+ navigator.clipboard.writeText(link).then(()=>alert("✅ Referral link copied"));
+}
+async function shareReferral(){
+ if(navigator.share){
+   await navigator.share({
+     title:"SASIKUMAR AI",
+     text:"Try SASIKUMAR AI Free Service",
+     url:link
+   });
+ }else{
+   copyReferral();
+ }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+'use strict';
+
+/*
+ * SASIKUMAR AI — Any Content Reply + Poster
+ * Safe standalone module.
+ * This file is NOT connected to server.js yet.
+ */
+
+function detectContentLanguage(text) {
+  const s = String(text || '');
+
+  const tamil = (s.match(/[\u0B80-\u0BFF]/g) || []).length;
+  const latin = (s.match(/[A-Za-z]/g) || []).length;
+
+  if (tamil > 0 && latin > 0) return 'Tamil-English mixed';
+  if (tamil > 0) return 'Tamil';
+  return 'English';
+}
+
+function cleanText(text, max = 4000) {
+  return String(text || '').trim().slice(0, max);
+}
+
+function buildPosterPrompt(content, reply, language) {
+  return `
+Create a clean professional social-media poster for SASIKUMAR AI.
+
+Content:
+${content}
+
+AI Reply:
+${reply}
+
+Language:
+${language}
+
+Poster requirements:
+- Clear readable headline
+- Modern professional design
+- Suitable for WhatsApp/social media sharing
+- Include "SASIKUMAR AI"
+- Do not invent prices, dates, statistics, names, phone numbers, or claims
+- Do not add unrelated information
+- Use the same language style as the content when practical
+- Keep text short and visually readable
+- No watermark other than SASIKUMAR AI
+`.trim();
+}
+
+async function createAnyContentResult({
+  content,
+  askAI,
+  generateAIImage
+}) {
+  const text = cleanText(content);
+
+  if (!text) {
+    throw new Error('Content is required');
+  }
+
+  if (typeof askAI !== 'function') {
+    throw new Error('AI reply function is unavailable');
+  }
+
+  if (typeof generateAIImage !== 'function') {
+    throw new Error('AI image function is unavailable');
+  }
+
+  const language = detectContentLanguage(text);
+
+  const replyPrompt = `
+You are SASIKUMAR AI.
+
+Reply to the user's content clearly and naturally.
+
+Language rules:
+- Tamil → reply in Tamil
+- English → reply in English
+- Tamil-English mixed → natural Tamil-English mixed reply
+- Do not unnecessarily change the user's language
+- Do not invent facts
+- Keep the reply useful and concise
+
+User content:
+${text}
+`.trim();
+
+  const reply = await askAI(replyPrompt, language);
+
+  const imagePrompt = buildPosterPrompt(text, reply, language);
+  const imageUrl = await generateAIImage(imagePrompt);
+
+  return {
+    ok: true,
+    type: 'any-content',
+    language,
+    content: text,
+    reply,
+    imageUrl
+  };
+}
+
+module.exports = {
+  detectContentLanguage,
+  buildPosterPrompt,
+  createAnyContentResult
+};

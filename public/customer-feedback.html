@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI - Customer Feedback</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#eef6ff,#fff7e8);padding:20px;color:#172033}
+.card{max-width:600px;margin:30px auto;background:#fff;padding:24px;border-radius:24px;box-shadow:0 12px 35px rgba(0,0,0,.12)}
+.logo{width:70px;height:70px;object-fit:contain;border-radius:50%;display:block;margin:auto}
+h1{text-align:center;margin:12px 0 4px}
+.sub{text-align:center;color:#667085;margin-bottom:22px}
+label{display:block;font-weight:700;margin:14px 0 6px}
+input,textarea,select{width:100%;padding:12px;border:1px solid #d0d5dd;border-radius:12px;font-size:16px}
+textarea{min-height:120px;resize:vertical}
+.rating{display:flex;gap:8px;justify-content:center;font-size:32px;margin:8px 0}
+.rating button{border:0;background:none;cursor:pointer;font-size:32px}
+.actions{display:flex;gap:10px;margin-top:18px}
+button.action{flex:1;padding:13px;border:0;border-radius:12px;font-weight:700;cursor:pointer}
+.submit{background:#166534;color:white}
+.clear{background:#e5e7eb;color:#111827}
+.status{text-align:center;margin-top:15px;font-weight:700}
+.back{text-align:center;margin-top:18px}
+.back a{color:#2563eb;text-decoration:none;font-weight:700}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <img class="logo" src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI">
+  <h1>Customer Feedback</h1>
+  <div class="sub">We value your feedback 🙏</div>
+
+  <form id="feedbackForm">
+    <label for="name">Customer Name</label>
+    <input id="name" required maxlength="80" placeholder="Enter your name">
+
+    <label for="mobile">Mobile Number</label>
+    <input id="mobile" type="tel" maxlength="15" placeholder="Enter mobile number">
+
+    <label>Rating</label>
+    <div class="rating" id="rating">
+      <button type="button" data-rate="1">☆</button>
+      <button type="button" data-rate="2">☆</button>
+      <button type="button" data-rate="3">☆</button>
+      <button type="button" data-rate="4">☆</button>
+      <button type="button" data-rate="5">☆</button>
+    </div>
+
+    <label for="feedback">Your Feedback</label>
+    <textarea id="feedback" required maxlength="1000" placeholder="Write your feedback..."></textarea>
+
+    <div class="actions">
+      <button class="action submit" type="submit">📤 Submit Feedback</button>
+      <button class="action clear" type="reset">🗑️ Clear</button>
+    </div>
+
+    <div class="status" id="status"></div>
+  </form>
+
+  <div class="back">
+    <a href="/">← Back to SASIKUMAR AI</a>
+  </div>
+</div>
+
+<script>
+let selectedRating=0;
+
+document.querySelectorAll('#rating button').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    selectedRating=Number(btn.dataset.rate);
+    document.querySelectorAll('#rating button').forEach((b,i)=>{
+      b.textContent=i<selectedRating?'★':'☆';
+    });
+  });
+});
+
+document.getElementById('feedbackForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+
+  const status=document.getElementById('status');
+
+  if(!selectedRating){
+    status.textContent='Please select a rating ⭐';
+    return;
+  }
+
+  const item={
+    name:document.getElementById('name').value.trim(),
+    mobile:document.getElementById('mobile').value.trim(),
+    rating:selectedRating,
+    feedback:document.getElementById('feedback').value.trim()
+  };
+
+  if(!item.name || !item.feedback){
+    status.textContent='Please fill in the required fields.';
+    return;
+  }
+
+  status.textContent='⏳ Submitting feedback...';
+
+  try{
+    const response=await fetch('/api/customer-feedback',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(item)
+    });
+
+    const data=await response.json();
+
+    if(!response.ok || !data.ok){
+      throw new Error(data.message || 'Feedback submission failed');
+    }
+
+    status.textContent='✅ Thank you for your feedback!';
+    document.getElementById('feedbackForm').reset();
+    selectedRating=0;
+    document.querySelectorAll('#rating button').forEach(b=>b.textContent='☆');
+
+  }catch(error){
+    console.error('Customer Feedback:',error);
+    status.textContent='❌ '+error.message;
+  }
+});
+</script>
+
+</body>
+</html>

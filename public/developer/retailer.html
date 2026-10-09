@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI — Retailer Business</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#e8f7ff,#fff3e8,#f3edff);color:#172033}
+.wrap{max-width:700px;margin:auto;padding:20px}
+.card{background:#fff;border-radius:24px;padding:24px;margin:18px 0;box-shadow:0 10px 30px #0002}
+h1{text-align:center;color:#1769aa}
+input,button{width:100%;box-sizing:border-box;padding:14px;margin:8px 0;border-radius:12px;font-size:16px}
+input{border:1px solid #ccd6e0}
+button{border:0;background:#1769aa;color:white;font-weight:bold}
+.id{font-size:24px;font-weight:bold;text-align:center;padding:18px;background:#eef8ff;border-radius:16px}
+.small{text-align:center;color:#667085}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="card">
+<h1>🏪 SASIKUMAR AI</h1>
+<h2>Retailer Business Registration</h2>
+<p class="small">Register your retail business and get a Retailer ID.</p>
+
+<input id="name" placeholder="Retailer Name">
+<input id="shop" placeholder="Shop / Business Name">
+<input id="mobile" placeholder="Mobile Number" inputmode="numeric">
+<input id="city" placeholder="City / Area">
+
+<button onclick="registerRetailer()">🆔 Generate Retailer ID</button>
+</div>
+
+<div class="card" id="result" style="display:none">
+<h2>✅ Registration Created</h2>
+<div class="id" id="retailerId"></div>
+<p id="details"></p>
+<button onclick="shareRetailer()">📤 Share Retailer ID</button>
+</div>
+</div>
+
+<script>
+function registerRetailer(){
+ const name=document.getElementById('name').value.trim();
+ const shop=document.getElementById('shop').value.trim();
+ const mobile=document.getElementById('mobile').value.trim();
+ const city=document.getElementById('city').value.trim();
+
+ if(!name||!shop||!mobile){
+   alert('Please enter Retailer Name, Shop Name and Mobile Number.');
+   return;
+ }
+
+ const id='SKAI-RTL-'+Date.now().toString().slice(-6);
+ document.getElementById('retailerId').textContent=id;
+ document.getElementById('details').innerHTML=
+   '<b>Retailer:</b> '+name+
+   '<br><b>Business:</b> '+shop+
+   '<br><b>Mobile:</b> '+mobile+
+   '<br><b>Location:</b> '+(city||'Not provided');
+
+ document.getElementById('result').style.display='block';
+
+ localStorage.setItem('sasikumarRetailer',JSON.stringify({
+   retailerId:id,name,shop,mobile,city
+ }));
+}
+
+function shareRetailer(){
+ const id=document.getElementById('retailerId').textContent;
+ const text='SASIKUMAR AI Retailer ID: '+id;
+ if(navigator.share){
+   navigator.share({title:'SASIKUMAR AI Retailer',text});
+ }else{
+   navigator.clipboard.writeText(text);
+   alert('Retailer ID copied.');
+ }
+}
+</script>
+</body>
+</html>

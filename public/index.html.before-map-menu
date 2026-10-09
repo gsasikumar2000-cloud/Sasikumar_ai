@@ -1,0 +1,5171 @@
+
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI</title>
+<meta name="description" content="SASIKUMAR AI - Smart AI Search, Gold Appraiser Tools, Gold Rate, Gold Testing and Appraisal Report.">
+<meta name="keywords" content="SASIKUMAR AI, Sasikumar AI Search, Gold Appraiser, Gold Rate, Gold Testing, Appraisal Report, Tamil Nadu">
+<meta name="robots" content="index, follow">
+<meta name="author" content="G Sasikumar">
+
+
+<style>
+*{box-sizing:border-box}
+
+html,body{
+ margin:0;
+ height:100%;
+ font-family:"Noto Sans Tamil","Nirmala UI",Arial,sans-serif;
+ background:#f5f5f5;
+}
+
+body{
+ 
+ 
+ overflow-y:auto; overflow-x:hidden;
+}
+
+.header{
+ background:#111;
+ color:white;
+ text-align:center;
+ padding:12px;
+ font-size:21px;
+ font-weight:bold;
+}
+
+.status{
+ text-align:center;
+ padding:5px;
+ background:#eaf7ea;
+ font-size:13px;
+}
+
+.toolbar{
+ display:flex;
+ gap:6px;
+ padding:7px;
+ overflow-x:auto;
+ background:white;
+ border-bottom:1px solid #ddd;
+}
+
+.toolbar button{
+ white-space:nowrap;
+ padding:8px 10px;
+ border:1px solid #ccc;
+ border-radius:9px;
+ background:white;
+ font-size:14px;
+}
+
+#chat{
+ flex:1;
+ overflow-y:visible;
+ padding:12px;
+ scroll-behavior:smooth;
+}
+
+.msg{
+ max-width:95%;
+ margin:8px 0;
+ padding:10px 12px;
+ border-radius:12px;
+ font-size:18px;
+ line-height:1.6;
+ white-space:pre-wrap;
+ overflow-wrap:anywhere;
+}
+
+.msg.user{
+ margin-left:auto;
+ background:#e8f0ff;
+}
+
+.msg.ai{
+ margin-right:auto;
+ background:white;
+ border:1px solid #ddd;
+}
+
+.input-area{
+ background:white;
+ border-top:1px solid #ddd;
+ padding:8px;
+}
+
+.input-row{
+ display:flex;
+ gap:7px;
+}
+
+#q{
+ flex:1;
+ min-height:58px;
+ max-height:120px;
+ resize:none;
+ padding:10px;
+ border:1px solid #aaa;
+ border-radius:12px;
+ font-family:inherit;
+ font-size:18px;
+ line-height:1.5;
+}
+
+#sendBtn{
+ min-width:70px;
+ border:0;
+ border-radius:12px;
+ background:#111;
+ color:white;
+ font-size:17px;
+ font-weight:bold;
+}
+
+@media(max-width:600px){
+ .msg,#q{font-size:17px}
+ .toolbar button{font-size:13px}
+}
+
+/* ===== SASIKUMAR AI CREATIVE GOLD RATE ===== */
+.gold-dashboard{padding:2px;}
+.gold-card{position:relative;overflow:hidden;background:linear-gradient(135deg,#fffdf2,#fff7c7,#f5df82);border:1px solid #d6b84c;border-radius:16px;box-shadow:0 5px 15px rgba(120,90,0,.16);transition:transform .2s ease;}
+.gold-card::before{content:"";position:absolute;top:-35px;right:-35px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.45);}
+.gold-card .title{position:relative;color:#5c4300;}
+.gold-card .rate{position:relative;color:#8a5a00;font-weight:900;}
+.gold-card .sub{position:relative;color:#705d28;}
+.gold-dashboard + div{background:#fff8cf;border:1px solid #e1c85b;border-radius:10px;padding:7px 9px;text-align:center;font-weight:700;color:#765500;}
+body.dark .gold-card{background:linear-gradient(135deg,#30280d,#4a3b12,#66531b);border-color:#b99a32;}
+body.dark .gold-card .title{color:#ffe89a;}
+body.dark .gold-card .rate{color:#ffd75a;}
+body.dark .gold-card .sub{color:#e8d89b;}
+
+@media(max-width:420px){
+  .gold-card{border-radius:14px;}
+}
+body.dark .msg.ai{
+  background:#1d1d1d;
+  border-color:#444;
+  color:#eee;
+}
+
+body.dark .msg.user{
+  background:#292512;
+  color:#fff;
+}
+
+body.dark #q{
+  background:#222;
+  color:#fff;
+}
+
+body.dark #historyPanel{
+  background:#181818 !important;
+  border-color:#333 !important;
+}
+
+body.dark #historySearch{
+  background:#222;
+  color:#fff;
+}
+
+.luxury-toggle{
+  font-weight:bold;
+}
+
+.dashboard{
+  padding:12px;
+  background:linear-gradient(135deg,#fffdf5,#f4ead0);
+  border-bottom:1px solid #ddd;
+}
+.dash-title{
+  font-size:22px;
+  font-weight:800;
+  letter-spacing:.5px;
+}
+.dash-sub{
+  font-size:12px;
+  color:#666;
+  margin:2px 0 10px;
+}
+.dash-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+.dash-grid button{
+  min-height:78px;
+  border:1px solid #d6c27a;
+  border-radius:14px;
+  background:white;
+  padding:8px;
+  font-family:inherit;
+  cursor:pointer;
+  box-shadow:0 2px 7px rgba(0,0,0,.08);
+}
+.dash-grid button:first-line{
+  font-size:24px;
+}
+.dash-grid span{
+  display:block;
+  font-size:13px;
+  font-weight:700;
+  margin-top:3px;
+}
+.dash-grid small{
+  display:block;
+  font-size:10px;
+  color:#777;
+  margin-top:2px;
+}
+body.dark .dashboard{
+  background:linear-gradient(135deg,#171717,#25210f);
+  border-color:#444;
+}
+body.dark .dash-title{
+  color:#f5c542;
+}
+body.dark .dash-sub{
+  color:#aaa;
+}
+body.dark .dash-grid button{
+  background:#202020;
+  color:#f5c542;
+  border-color:#66551d;
+}
+body.dark .dash-grid small{
+  color:#aaa;
+}
+@media(max-width:600px){
+  .dash-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+.loan-box{
+  background:linear-gradient(135deg,#fffdf5,#f7edc8);
+  border:1px solid #d6c27a;
+  border-radius:16px;
+  padding:14px;
+}
+.loan-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:9px;
+}
+.loan-grid label{
+  font-size:13px;
+  font-weight:bold;
+}
+.loan-grid input,.loan-grid select{
+  width:100%;
+  margin-top:4px;
+  padding:10px;
+  border:1px solid #aaa;
+  border-radius:9px;
+  font-size:16px;
+  background:white;
+}
+.loan-calc{
+  width:100%;
+  margin-top:12px;
+  padding:11px;
+  border:0;
+  border-radius:10px;
+  background:#111;
+  color:white;
+  font-size:16px;
+  font-weight:bold;
+}
+.loan-result{
+  margin-top:12px;
+  padding:12px;
+  background:white;
+  border-radius:12px;
+  line-height:1.8;
+}
+body.dark .loan-box{
+  background:linear-gradient(135deg,#171717,#29230d);
+}
+body.dark .loan-grid input,
+body.dark .loan-grid select,
+body.dark .loan-result{
+  background:#222;
+  color:#fff;
+}
+@media(max-width:600px){
+  .loan-grid{grid-template-columns:1fr}
+}
+
+.report-box{
+  background:white;
+  color:#111;
+  border:2px solid #c9a227;
+  border-radius:14px;
+  padding:16px;
+  margin-top:10px;
+}
+.report-head{
+  text-align:center;
+  border-bottom:1px solid #c9a227;
+  padding-bottom:10px;
+  margin-bottom:12px;
+}
+.report-head h2{
+  margin:0;
+  font-size:20px;
+}
+.report-head div{
+  font-size:12px;
+  color:#666;
+}
+.report-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:14px;
+}
+.report-table td{
+  padding:7px;
+  border-bottom:1px solid #eee;
+}
+.report-table td:first-child{
+  font-weight:bold;
+}
+.report-actions{
+  display:flex;
+  gap:7px;
+  margin-top:12px;
+}
+.report-actions button{
+  flex:1;
+  padding:10px;
+  border:0;
+  border-radius:9px;
+  background:#111;
+  color:white;
+  font-weight:bold;
+}
+.ai-reply{white-space:pre-wrap;line-height:1.6}
+.ai-note{color:inherit;text-decoration:none !important;font-weight:600}
+/* Tamil Font Fix */
+html,body,button,input,textarea,select,.chat,.chat *{
+font-family:"Noto Sans Tamil","Nirmala UI","Latha",Arial,sans-serif !important;
+}
+.ai-note,a{
+text-decoration:none !important;
+}
+</style>
+
+<!-- SASIKUMAR AI EXTRA OPENINGS + DETAILS PREVIEW -->
+<section id="skExtraOpenings" style="margin:20px 0;padding:18px;border-radius:24px;background:linear-gradient(135deg,#eef6ff,#fff7e8);box-shadow:0 12px 35px rgba(0,0,0,.12);">
+  <h2 style="margin:0 0 6px;">✨ Extra Openings</h2>
+  <p style="margin:0 0 15px;">Open a quick preview before entering the full SASIKUMAR AI page.</p>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;">
+    <button class="skBtn" onclick="skPreview('gold')">🪙 Gold Details</button>
+    <button class="skBtn" onclick="skPreview('education')">📚 Education</button>
+    <button class="skBtn" onclick="skPreview('jobs')">💼 Jobs</button>
+    <button class="skBtn" onclick="skPreview('sports')">🏆 Sports</button>
+    <button class="skBtn" onclick="skPreview('ai')">🤖 AI Assistant</button>
+    <button class="skBtn" onclick="skPreview('appraiser')">📋 Appraiser</button>
+    <button class="skBtn" onclick="skPreview('poster')">🖼️ Gold Poster</button>
+    <button class="skBtn" onclick="skPreview('equations')">📐 Equations</button>
+    <button class="skBtn" onclick="skShareHome()">📤 Share</button>
+  </div>
+</section>
+
+<div id="skPreviewPanel" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.65);padding:18px;overflow:auto;">
+  <div id="skPreviewCard" style="max-width:620px;margin:35px auto;background:#fff;border-radius:26px;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.35);">
+    <div id="skPreviewContent"></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;">
+      <button class="skBtn" onclick="skOpenPreview()">🚀 Open Full Page</button>
+      <button class="skBtn" onclick="document.getElementById('skPreviewPanel').style.display='none'">✖ Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const data = {
+    gold:{
+      icon:"🪙", title:"Gold & Silver",
+      detail:"Live Gold Rate, Silver Rate and useful gold calculation tools.",
+      url:"/"
+    },
+    education:{
+      icon:"📚", title:"Education Hub",
+      detail:"Class 1–12 learning, equations, subjects, Q&A and learning tools.",
+      url:"/education/equations.html"
+    },
+    jobs:{
+      icon:"💼", title:"Jobs Hub",
+      detail:"Central Government, State Government, Bank Jobs and job application tools.",
+      url:"/jobs/"
+    },
+    sports:{
+      icon:"🏆", title:"Sports Hub",
+      detail:"Sports information and useful sports sections in SASIKUMAR AI.",
+      url:"/sports/"
+    },
+    ai:{
+      icon:"🤖", title:"Ask SASIKUMAR AI",
+      detail:"Ask questions and get AI-powered assistance from the dashboard.",
+      url:"/"
+    },
+    appraiser:{
+      icon:"📋", title:"Gold Appraiser Report",
+      detail:"Customer details, weight, purity, rate, value, remarks, image, Save, Load, Clear and Print/PDF.",
+      url:"/"
+    },
+    poster:{
+      icon:"🖼️", title:"Daily Gold Poster",
+      detail:"Daily SASIKUMAR AI gold poster with current rate information.",
+      url:"/daily-gold-poster.svg"
+    },
+    equations:{
+      icon:"📐", title:"Mathematics & Equations",
+      detail:"Class 1–12 mathematics equations, calculators and learning tools.",
+      url:"/education/equations.html"
+    }
+  };
+
+  let current = "gold";
+
+  window.skPreview = function(type){
+    current = data[type] ? type : "gold";
+    const x = data[current];
+
+    document.getElementById("skPreviewContent").innerHTML = `
+      <div style="font-size:48px">${x.icon}</div>
+      <h2 style="margin:8px 0">${x.title}</h2>
+      <p style="font-size:17px;line-height:1.6">${x.detail}</p>
+      <div style="padding:12px;border-radius:14px;background:#f5f7fb;">
+        <b>SASIKUMAR AI Preview</b><br>
+        Select “Open Full Page” to continue.
+      </div>
+    `;
+
+    document.getElementById("skPreviewPanel").style.display = "block";
+  };
+
+  window.skOpenPreview = function(){
+    const x = data[current];
+
+    if(current === "gold" && typeof liveGoldRate === "function"){
+      document.getElementById("skPreviewPanel").style.display = "none";
+      liveGoldRate();
+      return;
+    }
+
+    if(current === "appraiser" && typeof goldReport === "function"){
+      document.getElementById("skPreviewPanel").style.display = "none";
+      goldReport();
+      return;
+    }
+
+    if(current === "ai"){
+      document.getElementById("skPreviewPanel").style.display = "none";
+      const chat = document.getElementById("chatInput") ||
+                   document.querySelector('textarea') ||
+                   document.querySelector('input[type="text"]');
+      if(chat){
+        chat.scrollIntoView({behavior:"smooth",block:"center"});
+        chat.focus();
+      } else {
+        window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"});
+      }
+      return;
+    }
+
+    window.location.href = x.url;
+  };
+
+  document.addEventListener("click", function(e){
+    const panel = document.getElementById("skPreviewPanel");
+    if(e.target === panel) panel.style.display = "none";
+  });
+})();
+</script>
+<!-- END SASIKUMAR AI EXTRA OPENINGS -->
+
+<script>
+function openDailyPoster(){
+  const url="https://www.sasikumarai.com/daily-gold-poster.svg";
+  const text="இன்றைய SASIKUMAR AI Daily Gold & Silver Poster";
+
+  const old=document.getElementById("dailyPosterSharePanel");
+  if(old) old.remove();
+
+  const panel=document.createElement("div");
+  panel.id="dailyPosterSharePanel";
+  panel.style.cssText=
+    "position:fixed;inset:0;background:rgba(0,0,0,.72);"+
+    "z-index:99999;display:flex;align-items:center;justify-content:center;"+
+    "padding:12px;box-sizing:border-box;";
+
+  panel.innerHTML=
+    '<div style="width:min(94vw,420px);max-height:94vh;overflow:auto;'+
+    'background:#fff;border-radius:20px;padding:14px;box-sizing:border-box;'+
+    'box-shadow:0 10px 50px rgba(0,0,0,.45);text-align:center">'+
+    '<h3 style="margin:4px 0 12px">🖼️ Daily Gold & Silver Poster</h3>'+
+    '<div style="background:#f5f5f5;border-radius:14px;padding:8px">'+
+    '<img id="dpPosterImage" src="'+url+'" alt="SASIKUMAR AI Daily Gold and Silver Poster" '+
+    'style="width:100%;height:auto;display:block;border-radius:10px">'+
+    '</div>'+
+    '<button id="dpCopyImage" style="width:100%;padding:13px;margin:6px 0;border:0;border-radius:10px">📋 Copy Image</button>'+
+    '<button id="dpSave" style="width:100%;padding:13px;margin:6px 0;border:0;border-radius:10px">💾 Save Poster</button>'+
+    '<button id="dpShare" style="width:100%;padding:13px;margin:6px 0;border:0;border-radius:10px">📤 Share</button>'+
+    '<button id="dpWhatsApp" style="width:100%;padding:13px;margin:6px 0;border:0;border-radius:10px">🟢 WhatsApp</button>'+
+    '<button id="dpCopy" style="width:100%;padding:13px;margin:6px 0;border:0;border-radius:10px">🔗 Copy Link</button>'+
+    '<button id="dpOpen" style="width:100%;padding:13px;margin:6px 0;border:0;border-radius:10px">👁️ Open Full Poster</button>'+
+    '<button id="dpClose" style="width:100%;padding:11px;margin-top:8px;border:0;border-radius:10px">✕ Close</button>'+
+    '</div>';
+
+  document.body.appendChild(panel);
+
+  document.getElementById("dpSave").onclick=()=>{
+    const a=document.createElement("a");
+    a.href=url;
+    a.download="SASIKUMAR-AI-Daily-Gold-Silver-Poster.svg";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  };
+
+  document.getElementById("dpCopyImage").onclick=async()=>{
+    try{
+      const response=await fetch(url);
+      const blob=await response.blob();
+      if(navigator.clipboard && window.ClipboardItem){
+        await navigator.clipboard.write([
+          new ClipboardItem({[blob.type]:blob})
+        ]);
+        alert("✅ Poster image copied!");
+      }else{
+        alert("📋 Image copy is not supported. Use Save or Share.");
+      }
+    }catch(e){
+      alert("📋 Image copy failed. Use Save or Share.");
+    }
+  };
+
+  document.getElementById("dpShare").onclick=async()=>{
+    if(navigator.share){
+      try{
+        await navigator.share({
+          title:"SASIKUMAR AI - Daily Gold & Silver Poster",
+          text,
+          url
+        });
+      }catch(e){}
+    }else{
+      alert("📤 Share is not supported. Use WhatsApp or Copy Link.");
+    }
+  };
+
+  document.getElementById("dpWhatsApp").onclick=()=>{
+    window.open(
+      "https://wa.me/?text="+encodeURIComponent(text+""+url),
+      "_blank"
+    );
+  };
+
+  document.getElementById("dpCopy").onclick=async()=>{
+    try{
+      await navigator.clipboard.writeText(url);
+      alert("✅ Poster link copied!");
+    }catch(e){
+      prompt("Copy this poster link:",url);
+    }
+  };
+
+  document.getElementById("dpOpen").onclick=()=>{
+    window.open(url,"_blank");
+  };
+
+  document.getElementById("dpClose").onclick=()=>{
+    panel.remove();
+  };
+}
+window.makeClickableLinks=function(text){return String(text).replace(/(https?:\/\/[^\s<]+)/g,"<a class=\"ai-link\" href=\"$1\" target=\"_blank\" rel=\"noopener noreferrer\">$1</a>");};</script>
+<script>
+function openEquations() {
+  window.location.href = "/education/equations.html";
+}
+</script>
+
+<style id="sasikumar-gold-visible-fix">
+.gold-india-page{
+  background:#ffffff !important;
+  color:#111111 !important;
+  max-width:900px;
+  margin:0 auto;
+  padding:20px 14px 40px;
+  border-radius:20px;
+}
+
+.gold-india-page *{
+  color:inherit;
+}
+
+.gold-page-header{
+  background:#fff8dc !important;
+  color:#111111 !important;
+  border:2px solid #e5c65a !important;
+  box-shadow:0 4px 14px rgba(0,0,0,.12) !important;
+}
+
+.gold-page-header h2,
+.gold-page-header p{
+  color:#111111 !important;
+}
+
+.location-card{
+  background:#ffffff !important;
+  color:#111111 !important;
+  border:2px solid #e5e5e5 !important;
+  box-shadow:0 4px 14px rgba(0,0,0,.12) !important;
+}
+
+.select-group label{
+  color:#111111 !important;
+}
+
+.select-group select{
+  background:#ffffff !important;
+  color:#111111 !important;
+  border:2px solid #cccccc !important;
+}
+
+.live-rate-btn{
+  background:#111111 !important;
+  color:#ffffff !important;
+}
+
+.location-result{
+  background:#f5f7fa !important;
+  color:#111111 !important;
+  border:2px solid #dddddd !important;
+}
+
+.location-result small{
+  color:#666666 !important;
+}
+
+.location-result strong{
+  color:#111111 !important;
+}
+
+.rate-section{
+  background:transparent !important;
+}
+
+.section-title{
+  color:#111111 !important;
+}
+
+.gold-title{
+  color:#8a6200 !important;
+}
+
+.silver-title{
+  color:#555555 !important;
+}
+
+.rate-grid{
+  background:transparent !important;
+}
+
+.rate-card{
+  background:#ffffff !important;
+  color:#111111 !important;
+  border:2px solid #dddddd !important;
+  box-shadow:0 4px 14px rgba(0,0,0,.12) !important;
+}
+
+.rate-card small{
+  color:#555555 !important;
+}
+
+.rate-card strong{
+  color:#111111 !important;
+}
+
+.rate-card em{
+  color:#777777 !important;
+}
+
+.live-status{
+  background:#eef9f0 !important;
+  color:#176b2c !important;
+  border:2px solid #b9dfc0 !important;
+}
+
+.poster-btn{
+  background:#ffffff !important;
+  color:#111111 !important;
+  border:2px solid #cccccc !important;
+}
+
+.poster-card{
+  background:#ffffff !important;
+  color:#111111 !important;
+  border:2px solid #dddddd !important;
+}
+
+.poster-title,
+.poster-location{
+  color:#111111 !important;
+}
+
+.loading-card,
+.error-card{
+  background:#ffffff !important;
+  color:#111111 !important;
+  border:2px solid #dddddd !important;
+}
+
+@media(max-width:650px){
+  .gold-india-page{
+    padding:14px 10px 30px;
+  }
+}
+</style>
+
+
+<style id="sasikumar-final-gold-ui">
+
+#skGoldApp{
+  width:100%;
+  max-width:900px;
+  margin:0 auto;
+  padding:16px;
+  box-sizing:border-box;
+  background:#ffffff !important;
+  color:#111111 !important;
+  border-radius:20px;
+}
+
+#skGoldApp,
+#skGoldApp *{
+  box-sizing:border-box;
+}
+
+.skHeader{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:20px;
+  margin-bottom:16px;
+  background:#fff8df !important;
+  color:#111111 !important;
+  border:2px solid #e6c75a;
+  border-radius:18px;
+}
+
+.skLogo{
+  font-size:36px;
+}
+
+.skHeader h2{
+  margin:0;
+  color:#111111 !important;
+  font-size:24px;
+}
+
+.skHeader p{
+  margin:5px 0 0;
+  color:#555555 !important;
+}
+
+.skLocation{
+  padding:18px;
+  background:#ffffff !important;
+  color:#111111 !important;
+  border:2px solid #dddddd;
+  border-radius:18px;
+  box-shadow:0 4px 14px rgba(0,0,0,.10);
+}
+
+.skField{
+  margin-bottom:15px;
+}
+
+.skField label{
+  display:block;
+  margin-bottom:7px;
+  font-size:15px;
+  font-weight:800;
+  color:#111111 !important;
+}
+
+.skField select{
+  width:100%;
+  height:50px;
+  padding:0 12px;
+  background:#ffffff !important;
+  color:#111111 !important;
+  border:2px solid #bdbdbd;
+  border-radius:12px;
+  font-size:16px;
+}
+
+#skRateButton{
+  width:100%;
+  height:52px;
+  border:0;
+  border-radius:13px;
+  background:#111111 !important;
+  color:#ffffff !important;
+  font-weight:900;
+  font-size:15px;
+}
+
+.skHint,
+.skLoading,
+.skError{
+  margin-top:18px;
+  padding:24px;
+  text-align:center;
+  background:#ffffff !important;
+  color:#111111 !important;
+  border:2px solid #dddddd;
+  border-radius:18px;
+}
+
+.skLoading small,
+.skError small{
+  display:block;
+  margin-top:7px;
+  color:#666666 !important;
+}
+
+.skSelected{
+  margin-top:18px;
+  padding:15px;
+  text-align:center;
+  background:#f3f5f7 !important;
+  color:#111111 !important;
+  border:2px solid #dddddd;
+  border-radius:14px;
+  font-size:16px;
+}
+
+.skSelected span{
+  margin:0 7px;
+  color:#777777 !important;
+}
+
+.skTitle{
+  margin:20px 2px 10px;
+  font-size:19px;
+  font-weight:900;
+}
+
+.skTitle.gold{
+  color:#8a6200 !important;
+}
+
+.skTitle.silver{
+  color:#444444 !important;
+}
+
+.skGrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+
+.skCard{
+  padding:18px 12px;
+  text-align:center;
+  background:#ffffff !important;
+  color:#111111 !important;
+  border-radius:17px;
+  border:2px solid #dddddd;
+  box-shadow:0 4px 14px rgba(0,0,0,.08);
+}
+
+.goldCard{
+  border-top:4px solid #e3bd3f;
+}
+
+.silverCard{
+  border-top:4px solid #aeb5bd;
+}
+
+.skCard div{
+  font-size:27px;
+}
+
+.skCard small{
+  display:block;
+  margin-top:5px;
+  color:#555555 !important;
+  font-weight:800;
+}
+
+.skCard strong{
+  display:block;
+  margin:8px 0;
+  color:#111111 !important;
+  font-size:21px;
+}
+
+.skCard span{
+  display:block;
+  color:#777777 !important;
+  font-size:12px;
+}
+
+.skLive{
+  margin-top:20px;
+  padding:13px;
+  text-align:center;
+  background:#edf9ef !important;
+  color:#176b2c !important;
+  border:2px solid #b9dfc0;
+  border-radius:14px;
+  font-weight:800;
+}
+
+.skPosterButton{
+  width:100%;
+  margin-top:12px;
+  height:50px;
+  border:2px solid #cccccc;
+  border-radius:13px;
+  background:#ffffff !important;
+  color:#111111 !important;
+  font-weight:900;
+}
+
+.skPosterCard{
+  margin-top:16px;
+  padding:15px;
+  background:#ffffff !important;
+  color:#111111 !important;
+  border:2px solid #dddddd;
+  border-radius:18px;
+}
+
+.skPosterCard h3{
+  margin:0;
+  color:#111111 !important;
+}
+
+.skPosterCard p{
+  color:#555555 !important;
+}
+
+.skPosterCard img{
+  width:100%;
+  display:block;
+  margin-top:10px;
+  border-radius:14px;
+  border:1px solid #ddd;
+}
+
+@media(max-width:650px){
+
+  #skGoldApp{
+    padding:10px;
+  }
+
+  .skHeader h2{
+    font-size:20px;
+  }
+
+  .skGrid{
+    grid-template-columns:1fr;
+  }
+
+  .skCard{
+    display:grid;
+    grid-template-columns:45px 1fr;
+    text-align:left;
+    align-items:center;
+  }
+
+  .skCard div{
+    grid-row:1 / 4;
+    text-align:center;
+  }
+
+  .skCard small,
+  .skCard strong,
+  .skCard span{
+    grid-column:2;
+  }
+
+}
+
+</style>
+
+
+<style id="sasikumar-colorful-design">
+:root{
+  --sa1:#6c2bd9;
+  --sa2:#00b8d9;
+  --sa3:#ffb300;
+  --sa4:#ff4f81;
+}
+body{
+  background:
+    radial-gradient(circle at 10% 10%,rgba(108,43,217,.18),transparent 28%),
+    radial-gradient(circle at 90% 15%,rgba(0,184,217,.18),transparent 28%),
+    radial-gradient(circle at 50% 100%,rgba(255,179,0,.15),transparent 30%),
+    linear-gradient(135deg,#f8fbff,#fff7fb,#f7f5ff) !important;
+}
+.dash-title{
+  background:linear-gradient(90deg,var(--sa1),var(--sa2),var(--sa4),var(--sa3));
+  background-size:300% 300%;
+  animation:saGradient 8s ease infinite;
+  color:#fff !important;
+  border-radius:18px;
+  padding:14px 16px !important;
+  box-shadow:0 8px 25px rgba(108,43,217,.25);
+}
+.dash-grid{
+  gap:12px !important;
+}
+.dash-grid button{
+  border:1px solid rgba(108,43,217,.12) !important;
+  background:rgba(255,255,255,.88) !important;
+  backdrop-filter:blur(10px);
+  box-shadow:0 5px 18px rgba(45,35,80,.10) !important;
+  transition:transform .2s ease,box-shadow .2s ease !important;
+}
+.dash-grid button:hover{
+  transform:translateY(-3px);
+  box-shadow:0 10px 25px rgba(108,43,217,.20) !important;
+}
+.dash-grid button:nth-child(4n+1){border-top:4px solid var(--sa1) !important;}
+.dash-grid button:nth-child(4n+2){border-top:4px solid var(--sa2) !important;}
+.dash-grid button:nth-child(4n+3){border-top:4px solid var(--sa3) !important;}
+.dash-grid button:nth-child(4n){border-top:4px solid var(--sa4) !important;}
+.gold-card{
+  background:linear-gradient(135deg,#fff7d6,#fff,#fff0b3) !important;
+  border:2px solid #e7b83c !important;
+  box-shadow:0 8px 24px rgba(190,145,20,.18) !important;
+}
+button{
+  transition:transform .15s ease,box-shadow .15s ease;
+}
+button:active{
+  transform:scale(.97);
+}
+@keyframes saGradient{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+body.dark{
+  background:linear-gradient(135deg,#101426,#17102a,#111c2b) !important;
+}
+body.dark .dash-grid button{
+  background:rgba(30,32,52,.92) !important;
+  border-color:rgba(255,255,255,.10) !important;
+}
+</style>
+
+
+<style id="sasikumar-bg-animation">
+body{
+  position:relative;
+  overflow-x:hidden;
+  background:
+    radial-gradient(circle at 5% 15%,rgba(124,58,237,.28),transparent 24%),
+    radial-gradient(circle at 95% 20%,rgba(6,182,212,.25),transparent 24%),
+    radial-gradient(circle at 15% 85%,rgba(236,72,153,.20),transparent 25%),
+    radial-gradient(circle at 85% 90%,rgba(245,158,11,.22),transparent 25%),
+    linear-gradient(135deg,#f8fbff,#fff7fb,#f5f3ff,#ecfeff);
+  background-size:180% 180%;
+  animation:saBackgroundMove 14s ease-in-out infinite alternate;
+}
+
+body::before,
+body::after{
+  content:"";
+  position:fixed;
+  width:260px;
+  height:260px;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:-1;
+  filter:blur(5px);
+  opacity:.28;
+}
+
+body::before{
+  top:12%;
+  left:-100px;
+  background:linear-gradient(135deg,#7c3aed,#06b6d4);
+  animation:saFloatOne 10s ease-in-out infinite;
+}
+
+body::after{
+  right:-100px;
+  bottom:8%;
+  background:linear-gradient(135deg,#ec4899,#f59e0b);
+  animation:saFloatTwo 12s ease-in-out infinite;
+}
+
+@keyframes saBackgroundMove{
+  0%{background-position:0% 0%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 100%}
+}
+
+@keyframes saFloatOne{
+  0%,100%{transform:translate(0,0) scale(1)}
+  50%{transform:translate(55px,35px) scale(1.15)}
+}
+
+@keyframes saFloatTwo{
+  0%,100%{transform:translate(0,0) scale(1)}
+  50%{transform:translate(-45px,-30px) scale(1.12)}
+}
+
+body.dark{
+  background:
+    radial-gradient(circle at 10% 10%,rgba(124,58,237,.25),transparent 25%),
+    radial-gradient(circle at 90% 20%,rgba(6,182,212,.20),transparent 25%),
+    linear-gradient(135deg,#090d1a,#15102b,#0b1b27) !important;
+}
+</style>
+
+
+<style id="smart-home-perfect-grid">
+#skSmartDashboard .smart-grid,
+#skSmartDashboard .smart-home-grid,
+#skSmartDashboard .smartCards,
+#skSmartDashboard .smart-grid-container{
+  display:grid !important;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr)) !important;
+  gap:16px !important;
+  align-items:stretch !important;
+  width:100% !important;
+  box-sizing:border-box !important;
+}
+#skSmartDashboard .smart-card,
+#skSmartDashboard .smartCard,
+#skSmartDashboard .smart-item,
+#skSmartDashboard .smart-grid > *,
+#skSmartDashboard .smart-home-grid > *{
+  width:100% !important;
+  min-width:0 !important;
+  height:100% !important;
+  min-height:120px !important;
+  box-sizing:border-box !important;
+  margin:0 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:center !important;
+  align-items:center !important;
+  text-align:center !important;
+}
+@media(max-width:600px){
+  #skSmartDashboard .smart-grid,
+  #skSmartDashboard .smart-home-grid,
+  #skSmartDashboard .smartCards,
+  #skSmartDashboard .smart-grid-container{
+    grid-template-columns:1fr !important;
+    gap:12px !important;
+  }
+}
+@media(min-width:601px) and (max-width:900px){
+  #skSmartDashboard .smart-grid,
+  #skSmartDashboard .smart-home-grid,
+  #skSmartDashboard .smartCards,
+  #skSmartDashboard .smart-grid-container{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+}
+</style>
+
+
+<style id="sk-all-services-style">
+.sk-all-services-card{
+  margin:16px 0 20px;
+  padding:18px;
+  border-radius:26px;
+  background:linear-gradient(135deg,#fff8df,#eef7ff,#f5edff);
+  border:2px solid rgba(120,90,220,.18);
+  box-shadow:0 12px 30px rgba(0,0,0,.10);
+}
+.sk-all-services-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:15px;
+}
+.sk-all-services-title{
+  font-size:22px;
+  font-weight:900;
+}
+.sk-all-services-sub{
+  margin-top:4px;
+  font-size:13px;
+  opacity:.75;
+}
+.sk-all-services-head button,
+.sk-extra-details button{
+  border:0;
+  border-radius:14px;
+  padding:9px 13px;
+  font-weight:800;
+  cursor:pointer;
+}
+.sk-service-zigzag{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+.sk-service-zigzag button{
+  min-height:92px;
+  padding:13px;
+  border:0;
+  border-radius:20px;
+  background:rgba(255,255,255,.82);
+  box-shadow:0 7px 18px rgba(0,0,0,.08);
+  cursor:pointer;
+  text-align:left;
+  transition:.2s ease;
+}
+.sk-service-zigzag button:nth-child(even){
+  transform:translateY(12px);
+}
+.sk-service-zigzag button:hover{
+  transform:translateY(-3px) scale(1.015);
+}
+.sk-service-zigzag button:nth-child(even):hover{
+  transform:translateY(8px) scale(1.015);
+}
+.sk-service-zigzag button:first-letter{
+  font-size:25px;
+}
+.sk-service-zigzag span{
+  display:block;
+  margin-top:5px;
+  font-weight:900;
+}
+.sk-service-zigzag small{
+  display:block;
+  margin-top:4px;
+  font-size:11px;
+  opacity:.7;
+}
+.sk-extra-details{
+  margin-top:22px;
+  padding:13px;
+  border-radius:18px;
+  background:rgba(255,255,255,.7);
+}
+.sk-extra-details summary{
+  cursor:pointer;
+  font-weight:900;
+}
+.sk-extra-details div{
+  padding-top:10px;
+  font-size:13px;
+}
+@media(max-width:600px){
+  .sk-all-services-head{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+  .sk-service-zigzag{
+    grid-template-columns:1fr;
+  }
+  .sk-service-zigzag button:nth-child(even){
+    transform:translateY(0);
+  }
+  .sk-service-zigzag button:nth-child(even):hover{
+    transform:translateY(-3px) scale(1.015);
+  }
+}
+</style>
+
+
+<style id="sasikumar-3d-luxury">
+.skCard,
+.skServiceBtn,
+a.skServiceBtn,
+section.skCard {
+  position:relative;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.55);
+  border-radius:24px;
+  background:linear-gradient(135deg,rgba(255,255,255,.96),rgba(245,247,255,.88),rgba(255,248,235,.92));
+  box-shadow:
+    0 14px 30px rgba(40,40,90,.16),
+    inset 0 1px 0 rgba(255,255,255,.9);
+  transform:translateZ(0);
+  transition:transform .25s ease,box-shadow .25s ease;
+}
+
+.skCard:hover,
+.skServiceBtn:hover {
+  transform:translateY(-4px);
+  box-shadow:
+    0 20px 40px rgba(55,45,120,.22),
+    inset 0 1px 0 rgba(255,255,255,1);
+}
+
+.skCard::before {
+  content:"";
+  position:absolute;
+  width:180px;
+  height:180px;
+  right:-70px;
+  top:-80px;
+  border-radius:50%;
+  background:linear-gradient(135deg,rgba(255,215,0,.28),rgba(120,80,255,.10));
+  filter:blur(3px);
+  pointer-events:none;
+}
+
+.skCard h2,
+.skCard h3 {
+  text-shadow:0 2px 8px rgba(60,40,100,.15);
+}
+
+.skServiceBtn {
+  display:flex !important;
+  align-items:center;
+  justify-content:center;
+  min-height:58px;
+  padding:12px 14px;
+  text-decoration:none !important;
+  color:#202040 !important;
+  font-weight:700;
+  background:linear-gradient(145deg,#ffffff,#eef1ff);
+}
+
+.skServiceBtn:active {
+  transform:scale(.97);
+}
+
+#smartHomeCard {
+  background:
+    radial-gradient(circle at 15% 20%,rgba(0,210,255,.20),transparent 32%),
+    radial-gradient(circle at 85% 20%,rgba(150,80,255,.20),transparent 32%),
+    linear-gradient(135deg,#f9fbff,#f3efff,#fff8ec) !important;
+}
+
+#smartHomeCard h2 {
+  font-size:clamp(22px,5vw,32px);
+  font-weight:900;
+}
+
+@media(max-width:600px) {
+  .skCard {
+    margin:14px 0 !important;
+    padding:16px !important;
+    border-radius:20px !important;
+  }
+  .skServiceBtn {
+    min-height:52px;
+    font-size:14px;
+    border-radius:16px !important;
+  }
+}
+</style>
+
+
+<style id="sasikumar-preview-mode">
+/* SASIKUMAR AI Responsive Preview */
+#skPreviewBar{
+ position:fixed;
+ top:10px;
+ left:50%;
+ transform:translateX(-50%);
+ z-index:99999;
+ display:flex;
+ gap:6px;
+ padding:6px;
+ border-radius:18px;
+ background:rgba(20,20,30,.92);
+ box-shadow:0 8px 28px rgba(0,0,0,.28);
+}
+#skPreviewBar button{
+ border:0;
+ border-radius:12px;
+ padding:8px 13px;
+ font-weight:700;
+ cursor:pointer;
+}
+body.skMobilePreview{
+ max-width:430px;
+ margin-left:auto;
+ margin-right:auto;
+ overflow-x:hidden;
+}
+body.skMobilePreview *{
+ max-width:100%;
+ box-sizing:border-box;
+}
+body.skDesktopPreview{
+ max-width:1400px;
+ margin-left:auto;
+ margin-right:auto;
+}
+@media(max-width:600px){
+ #skPreviewBar{top:6px}
+ #skPreviewBar button{font-size:12px;padding:7px 10px}
+}
+</style>
+<style id="sasikumar-logo-fix">
+.skLogo{display:flex!important;align-items:center!important;justify-content:center!important;width:100%!important;min-height:70px!important;overflow:visible!important}
+.skLogo img{display:block!important;width:72px!important;height:72px!important;max-width:72px!important;max-height:72px!important;object-fit:contain!important;visibility:visible!important;opacity:1!important}
+@media(max-width:600px){.skLogo{min-height:64px!important}.skLogo img{width:62px!important;height:62px!important;max-width:62px!important;max-height:62px!important}}
+</style><style id="sasikumar-mobile-clean">
+html,body{max-width:100%;overflow-x:hidden}
+*,*::before,*::after{box-sizing:border-box}
+img,svg,video{max-width:100%;height:auto}
+button,input,select,textarea{max-width:100%;font-size:16px}
+.skCard{max-width:100%;overflow:hidden}
+.skBtn{min-height:44px;white-space:normal;word-break:break-word}
+.sk-all-services-title{max-width:100%;overflow-wrap:anywhere}
+@media(max-width:600px){
+  body{width:100%;padding-left:8px;padding-right:8px}
+  .skCard{margin:12px 0!important;padding:14px!important;border-radius:18px!important}
+  button.skBtn,.skBtn{width:100%;min-height:46px;padding:12px!important}
+  input,select,textarea{width:100%!important;min-width:0!important}
+  [style*="grid-template-columns"]{grid-template-columns:1fr!important}
+  [style*="display:flex"]{max-width:100%}
+}
+</style></head>
+
+
+<body>
+<div id="skPreviewBar">
+<button type="button" onclick="skSetPreview('mobile')">📱 Mobile</button>
+<button type="button" onclick="skSetPreview('desktop')">🖥️ Desktop</button>
+</div>
+<script>
+function skSetPreview(mode){
+ document.body.classList.remove("skMobilePreview","skDesktopPreview");
+ document.body.classList.add(mode==="mobile" ? "skMobilePreview" : "skDesktopPreview");
+ localStorage.setItem("sasikumarPreviewMode",mode);
+}
+document.addEventListener("DOMContentLoaded",function(){
+ skSetPreview(localStorage.getItem("sasikumarPreviewMode")||"mobile");
+});
+</script>
+
+
+<!-- SASIKUMAR AI — NEW SMART HOME DASHBOARD -->
+<section id="smartHomeCard" class="skCard" style="margin:18px 0;padding:20px;border-radius:24px;background:linear-gradient(135deg,#e8f7ff,#f3edff,#fff3e8);box-shadow:0 8px 24px rgba(0,0,0,.12);">
+<h2>🏠 Smart Home</h2>
+<p>Smart Home services — அனைத்தும் ஒரே இடத்தில்</p>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">
+<a href="#" class="skServiceBtn">💡 Smart Lights</a>
+<a href="#" class="skServiceBtn">📺 TV & Entertainment</a>
+<a href="#" class="skServiceBtn">❄️ AC / Fan</a>
+<a href="#" class="skServiceBtn">🔒 Home Security</a>
+<a href="#" class="skServiceBtn">📹 CCTV</a>
+<a href="#" class="skServiceBtn">🔌 Smart Devices</a>
+</div>
+</section>
+<section id="meeshoReferralCard" class="skCard" style="margin:18px 0;padding:22px;border-radius:26px;background:linear-gradient(135deg,#fff4f8,#f3edff,#fff8e8);box-shadow:0 18px 45px rgba(80,40,120,.20);">
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+    <div style="font-size:42px;">🛍️</div>
+    <div>
+      <h2 style="margin:0;font-weight:900;">Meesho Referral</h2>
+      <p style="margin:5px 0;color:#555;">Shopping • Referral • Creator Business</p>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:12px;margin-top:18px;">
+    <div class="skServiceBtn">🛒 Shop</div>
+    <div class="skServiceBtn">🔗 Referral</div>
+    <div class="skServiceBtn">📊 Tracking</div>
+    <div class="skServiceBtn">💰 Earning Status</div>
+  </div>
+
+  <a href="https://affiliate.meesho.com/influencer-home"
+     target="_blank"
+     rel="noopener noreferrer"
+     class="skServiceBtn"
+     style="margin-top:16px;text-align:center;">
+     🛍️ Open Meesho Creator / Affiliate →
+  </a>
+
+  <p style="font-size:12px;color:#777;margin:12px 0 0;">
+    Commission is subject to Meesho's applicable program terms and approved tracking.
+  </p>
+</section>
+
+<section id="skSmartDashboard" aria-label="SASIKUMAR AI Smart Dashboard">
+<style>
+#skSmartDashboard{
+  padding:18px 12px;
+  max-width:1100px;
+  margin:auto;
+  font-family:inherit;
+}
+.skHero{
+  padding:24px 18px;
+  border-radius:24px;
+  background:linear-gradient(135deg,#fff7d6,#e7f5ff,#f5e7ff);
+  box-shadow:0 10px 30px rgba(0,0,0,.12);
+  text-align:center;
+  margin-bottom:18px;
+}
+.skHero h2{margin:4px 0 8px;font-size:28px}
+.skHero p{margin:0 0 16px;font-size:15px}
+.skQuick{
+  display:flex;
+  gap:9px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+@media (max-width:600px){
+  .skBtn{
+    width:100%;
+    min-height:46px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-sizing:border-box;
+  }
+}
+.skBtn{
+  border:0;
+  border-radius:14px;
+  padding:11px 15px;
+  cursor:pointer;
+  font-weight:700;
+  background:#fff;
+  box-shadow:0 5px 14px rgba(0,0,0,.10);
+}
+.skGrid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:14px;
+  margin-bottom:18px;
+}
+.skCard{
+  padding:18px;
+  border-radius:20px;
+  background:rgba(255,255,255,.94);
+  box-shadow:0 8px 24px rgba(0,0,0,.10);
+  border:1px solid rgba(0,0,0,.06);
+}
+.skCard h3{margin:0 0 9px;font-size:19px}
+.skCard p{margin:5px 0;line-height:1.5}
+.skSearch{
+  width:100%;
+  box-sizing:border-box;
+  padding:14px 16px;
+  border-radius:14px;
+  border:1px solid #ccc;
+  font-size:16px;
+  outline:none;
+}
+.skSearch:focus{box-shadow:0 0 0 3px rgba(0,120,255,.12)}
+.skLinks{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+.skLinks button{
+  border:0;
+  border-radius:11px;
+  padding:9px 11px;
+  cursor:pointer;
+  background:#f1f4f8;
+}
+.skUpdate{
+  padding:10px 0;
+  border-bottom:1px solid #eee;
+}
+.skUpdate:last-child{border-bottom:0}
+.skShare{
+  text-align:center;
+  padding:22px 15px;
+  border-radius:22px;
+  background:linear-gradient(135deg,#eafff0,#eaf3ff,#fff0f8);
+}
+</style>
+
+<div id="skTodaySmart" class="skCard" style="margin:18px 0;padding:18px;border-radius:22px;background:linear-gradient(135deg,#e8f7ff,#fff3e8,#f3edff);"><h3>📅 Today Smart Info</h3><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;"><div class="skCard">📅 <b>Date</b><br><span id="skTodayDate">Loading...</span></div><div class="skCard">⏰ <b>Live Time</b><br><span id="skLiveTime">Loading...</span></div><div class="skCard">📍 <b>Location</b><br><span id="skUserLocation">Detecting...</span></div><div class="skCard">🌤️ <b>Weather</b><br><span id="skWeatherInfo">Loading weather...</span></div></div><div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;"><button class="skBtn" onclick="alert(&quot;Daily alerts: Check important announcements, jobs, education and safety updates.&quot;)">🔔 Daily Alerts</button><button class="skBtn" onclick="if(&quot;speechSynthesis&quot; in window){speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(&quot;Vanakkam! Welcome to SASIKUMAR AI.&quot;))}else{alert(&quot;Voice is not supported in this browser.&quot;)}">🎙️ Voice</button><button class="skBtn" onclick="location.reload()">🔄 Refresh</button></div></div><script>(function(){function u(){var d=new Date(),w=[&quot;Sunday&quot;,&quot;Monday&quot;,&quot;Tuesday&quot;,&quot;Wednesday&quot;,&quot;Thursday&quot;,&quot;Friday&quot;,&quot;Saturday&quot;],a=document.getElementById(&quot;skTodayDate&quot;),t=document.getElementById(&quot;skLiveTime&quot;);if(a)a.textContent=d.toLocaleDateString(&quot;en-IN&quot;,{day:&quot;2-digit&quot;,month:&quot;long&quot;,year:&quot;numeric&quot;})+&quot; • &quot;+w[d.getDay()];if(t)t.textContent=d.toLocaleTimeString(&quot;en-IN&quot;,{hour:&quot;2-digit&quot;,minute:&quot;2-digit&quot;,second:&quot;2-digit&quot;,hour12:true})}u();setInterval(u,1000)})();</script><div id="skDailyLifeHub" class="skCard" style="margin:18px 0;padding:18px;border-radius:22px;background:linear-gradient(135deg,#fff7e6,#eef7ff,#f7efff);"><h3>🌟 SASIKUMAR AI — Daily Life & Utility Hub</h3><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;"><button class="skBtn" onclick="location.href='/sports/'">🏏 Sports</button><button class="skBtn" onclick="location.href='/education/'">📚 Education</button><button class="skBtn" onclick="location.href='/jobs/'">💼 Jobs</button><button class="skBtn" onclick="location.href='/gold.html'">🪙 Gold & Silver</button><button class="skBtn" onclick="document.getElementById('skAskAI')?.scrollIntoView({behavior:'smooth'})">🤖 Ask AI</button><button class="skBtn" onclick="alert('🛡️ Never share OTP, PIN or passwords.')">🛡️ Safety</button><button class="skBtn" onclick="alert('💰 Plan a budget and track expenses.')">💰 Money</button><button class="skBtn" onclick="alert('🍲 Food safety: keep food clean and cook thoroughly.')">🍲 Food</button></div></div>
+<div class="skHero">
+  <h2>🧠 SASIKUMAR AI</h2>
+  <p>Your Daily Smart Information Hub<br>
+  AI • Gold • Education • Jobs • Sports • Business</p>
+
+  <div class="skQuick">
+    <button class="skBtn" onclick="document.getElementById('skQuickSearch').focus()">🔎 Quick Search</button>
+    <button class="skBtn" onclick="document.getElementById('skAskAI').scrollIntoView({behavior:'smooth'})">🤖 Ask AI</button>
+    <button class="skBtn" onclick="liveGoldRate()">🪙 Gold Rate</button>
+    <button class="skBtn" onclick="location.href='/education/'">📚 Education</button>
+    <button class="skBtn" onclick="location.href='/jobs/'">💼 Jobs</button>
+  </div>
+</div>
+
+<div class="skGrid">
+
+  <div class="skCard">
+    <h3>⭐ Today's Highlights</h3>
+    <p>🪙 Gold & Silver — Daily rates</p>
+    <p>📚 Education — Class 1–12</p>
+    <p>💼 Jobs — Latest opportunities</p>
+    <p>🏏 Sports — Latest information</p>
+    <div class="skLinks">
+      <button onclick="liveGoldRate()">Gold →</button>
+      <button onclick="location.href='/education/'">Education →</button>
+      <button onclick="location.href='/jobs/'">Jobs →</button>
+    </div>
+  </div>
+
+  <div class="skCard">
+    <h3>🔎 Quick Search</h3>
+    <input id="skQuickSearch" class="skSearch"
+      placeholder="Search Gold, Education, Jobs, Sports..."
+      onkeydown="if(event.key==='Enter')skHomeSearch(this.value)">
+    <div class="skLinks">
+      <button onclick="skHomeSearch('Gold Rate')">🪙 Gold</button>
+      <button onclick="skHomeSearch('Education')">📚 Education</button>
+      <button onclick="skHomeSearch('Jobs')">💼 Jobs</button>
+      <button onclick="skHomeSearch('Sports')">🏏 Sports</button>
+    </div>
+  </div>
+
+  <div class="skCard">
+    <h3><div id="mainMobileRecharge" style="margin:16px 0;padding:18px;border-radius:20px;background:linear-gradient(135deg,#00c853,#00695c);text-align:center;box-shadow:0 8px 25px rgba(0,0,0,.2);">
+<div style="font-size:30px;">📱</div>
+<div style="font-size:21px;font-weight:900;color:#fff;">Mobile Recharge</div>
+<div style="color:#eafff3;margin:5px 0 12px;">Airtel • Jio • Vi • BSNL</div>
+<a href="/developer/recharge.html" style="display:inline-block;padding:11px 24px;border-radius:25px;background:#fff;color:#008f45;text-decoration:none;font-weight:900;">RECHARGE NOW →</a>
+</div>🛠️ Popular Tools</h3>
+    <p>🪙 Gold Calculator</p>
+    <p>📐 Mathematics & Equations</p>
+    <p>💰 Business Calculators</p>
+    <p>📊 Useful AI Tools</p>
+    <div class="skLinks">
+      <button onclick="location.href='/education/equations.html'">📐 Equations</button>
+      <button onclick="location.href='/education/qa.html'">📚 Q&A</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="skCard" style="margin-bottom:18px">
+  <h3>🔥 Latest Updates</h3>
+  <div class="skUpdate">🪙 <b>Gold & Silver</b> — Check today's latest rates.</div>
+  <div class="skUpdate">📚 <b>Education</b> — Explore Class 1–12 learning tools.</div>
+  <div class="skUpdate">💼 <b>Jobs</b> — Explore government and bank job information.</div>
+  <div class="skUpdate">🏏 <b>Sports</b> — Follow sports information and updates.</div>
+</div>
+
+<div id="skAskAI" class="skCard" style="margin-bottom:18px">
+  <h3>🤖 Ask SASIKUMAR AI</h3>
+  <p>தமிழ் அல்லது English-ல் உங்கள் கேள்வியை கேளுங்கள்.</p>
+  <div class="skLinks">
+    <button class="skBtn" onclick="location.href='/education/qa.html'">🤖 Ask AI →</button>
+    <button class="skBtn" onclick="alert('Use the SASIKUMAR AI chat feature to ask your question.')">💬 Start Chat</button>
+  </div>
+</div>
+
+<div id="skMoreDetails" class="skCard" style="margin-bottom:18px">
+  <h3>📋 More Details</h3>
+  <p>🪙 <b>Gold & Silver:</b> View latest rates and gold-related tools.</p>
+  <p>📚 <b>Education:</b> Class 1–12 learning, equations and Q&A.</p>
+  <p>💼 <b>Jobs:</b> Government, bank and state job information.</p>
+  <p>🏏 <b>Sports:</b> Sports information and latest updates.</p>
+  <p>🤖 <b>AI:</b> Ask SASIKUMAR AI in Tamil or English.</p>
+</div>
+
+<div id="skExtraOptions" class="skCard" style="margin-bottom:18px">
+  <h3>⚙️ Extra Options</h3>
+  <div class="skLinks">
+    <button onclick="document.getElementById('skMoreDetails').scrollIntoView({behavior:'smooth'})">📋 More Details</button>
+    <button onclick="liveGoldRate()">🪙 Live Gold</button>
+    <button onclick="location.href='/education/equations.html'">📐 Equations</button>
+    <button onclick="location.href='/education/qa.html'">🤖 Education AI</button>
+    <button onclick="location.href='/sports/index.html'">🏏 Sports</button>
+    <button onclick="skShareHome()">📤 Share</button>
+  </div>
+</div>
+
+<div class="skShare">
+  <h3>📢 Share SASIKUMAR AI</h3>
+  <p>AI • Gold • Education • Jobs • Sports • Business</p>
+  <button class="skBtn" onclick="skShareHome()">📤 Share SASIKUMAR AI</button>
+</div>
+
+<script>
+function skHomeSearch(q){
+  q=(q||'').trim();
+  if(!q)return;
+  const x=q.toLowerCase();
+
+  if(x.includes('gold') || x.includes('silver')){
+    location.href='/gold.html';
+  }else if(x.includes('education') || x.includes('math') || x.includes('equation') || x.includes('study')){
+    location.href='/education/';
+  }else if(x.includes('job') || x.includes('career')){
+    location.href='/jobs/';
+  }else if(x.includes('sport') || x.includes('cricket') || x.includes('football')){
+    location.href='/sports/';
+  }else{
+    const target=document.getElementById('searchInput');
+    if(target){
+      target.value=q;
+      target.dispatchEvent(new Event('input',{bubbles:true}));
+      target.focus();
+    }else{
+      alert('Search: '+q);
+    }
+  }
+}
+
+async function skShareHome(){
+  const data={
+    title:'SASIKUMAR AI',
+    text:'SASIKUMAR AI — AI • Gold • Education • Jobs • Sports • Business',
+    url:location.origin
+  };
+  try{
+    if(navigator.share) await navigator.share(data);
+    else if(navigator.clipboard){
+      await navigator.clipboard.writeText(location.href);
+      alert('🔗 SASIKUMAR AI link copied!');
+    }else{
+      alert('🔗 Copy this page link: '+location.href);
+    }
+  }catch(e){}
+}
+</script>
+</section>
+<!-- END SASIKUMAR AI — NEW SMART HOME DASHBOARD -->
+
+
+<div id="dailyScrollingMessage" class="daily-ticker">
+  <span id="dailyMessageText"></span>
+</div>
+
+<style>
+.daily-ticker {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 11px 0;
+  border-radius: 12px;
+  margin: 10px 0;
+  color: white;
+  font-weight: 600;
+  background: linear-gradient(90deg,#1565c0,#42a5f5);
+}
+.daily-ticker span {
+  display: inline-block;
+  padding-left: 100%;
+  animation: dailyScroll 20s linear infinite;
+}
+@keyframes dailyScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
+}
+</style>
+
+<script>
+const dailyMessages = [
+  "📢 இன்று SASIKUMAR AI-யை பயன்படுத்துங்கள் — கல்வி, கணக்கீடு, AI உதவி மற்றும் பல பயனுள்ள கருவிகள் ஒரே இடத்தில்!",
+  "🪙 தங்கம் & வெள்ளி தொடர்பான கணக்கீடுகள் மற்றும் தகவல்களுக்கு SASIKUMAR AI-யைப் பயன்படுத்துங்கள்.",
+  "📚 மாணவர்களுக்கான Q&A, Learning மற்றும் Education AI சேவைகள் SASIKUMAR AI-ல் கிடைக்கின்றன.",
+  "💰 EMI, வட்டி, Loan மற்றும் Finance கணக்கீடுகளை எளிதாக செய்ய SASIKUMAR AI Tool Kit-ஐ பயன்படுத்துங்கள்.",
+  "🤖 உங்கள் கேள்விகளை Tamil அல்லது English-ல் கேளுங்கள் — SASIKUMAR AI உதவ தயாராக உள்ளது.",
+  "🧰 Calculation, Finance, Gold, Business, Study, AI மற்றும் பல Smart Tools — SASIKUMAR AI Tool Kit-ல்!",
+  "🌟 SASIKUMAR AI — தினசரி தகவல்கள், Learning, Finance, Gold மற்றும் Smart AI Tools அனைத்தும் ஒரே website-ல்!"
+];
+
+const dailyColors = [
+  ["#1565c0","#42a5f5"],
+  ["#6a1b9a","#ab47bc"],
+  ["#00695c","#26a69a"],
+  ["#ef6c00","#ffa726"],
+  ["#283593","#5c6bc0"],
+  ["#2e7d32","#66bb6a"],
+  ["#ad1457","#ec407a"]
+];
+
+const today = new Date();
+const start = new Date(today.getFullYear(),0,1);
+const dayIndex = Math.floor((today-start)/86400000) % 7;
+
+document.getElementById("dailyMessageText").textContent =
+  dailyMessages[dayIndex];
+
+const colors = dailyColors[dayIndex];
+document.getElementById("dailyScrollingMessage").style.background =
+  `linear-gradient(90deg,${colors[0]},${colors[1]})`;
+</script>
+
+
+<!-- SASIKUMAR_LOGIN_SCREEN -->
+<div id="sasikumarLoginScreen" style="
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  box-sizing:border-box;
+  background:linear-gradient(135deg,#111827,#3b2f12);
+">
+  <div style="
+    width:100%;
+    max-width:420px;
+    background:#fff;
+    border-radius:22px;
+    padding:28px 22px;
+    box-sizing:border-box;
+    box-shadow:0 15px 45px rgba(0,0,0,.35);
+    text-align:center;
+  ">
+    <div style="font-size:48px;">🤖</div>
+    <h1 style="margin:8px 0;color:#b8860b;">SASIKUMAR AI</h1>
+    <p style="margin:0 0 22px;color:#555;">
+      Tamil + English • Gold • General Q&A
+    </p>
+
+    <input id="loginUsername"
+      type="text"
+      autocomplete="username"
+      placeholder="Username"
+      style="
+        width:100%;
+        padding:14px;
+        margin:7px 0;
+        box-sizing:border-box;
+        border:1px solid #ccc;
+        border-radius:12px;
+        font-size:16px;
+      ">
+
+    <input id="loginPassword"
+      type="password"
+      autocomplete="current-password"
+      placeholder="Password"
+      style="
+        width:100%;
+        padding:14px;
+        margin:7px 0;
+        box-sizing:border-box;
+        border:1px solid #ccc;
+        border-radius:12px;
+        font-size:16px;
+      ">
+
+    <button onclick="sasikumarLogin()" style="
+      width:100%;
+      padding:14px;
+      margin-top:12px;
+      border:0;
+      border-radius:12px;
+      background:#b8860b;
+      color:white;
+      font-size:17px;
+      font-weight:bold;
+      cursor:pointer;
+    ">
+
+    <button type="button" onclick="showSignupForm()" style="width:100%;margin-top:14px;padding:12px;border:0;border-radius:10px;background:#2563eb;color:#fff;font-weight:bold;cursor:pointer;">
+      🆕 USER SIGN UP
+    </button>
+
+    <div id="signupBox" style="display:none;margin-top:16px;text-align:left;">
+      <h3 style="text-align:center;color:#b8860b;">Create User Account</h3>
+      <input id="signupUsername" type="text" autocomplete="username" placeholder="New Username" style="width:100%;box-sizing:border-box;padding:12px;margin:6px 0;border:1px solid #ccc;border-radius:8px;">
+      <input id="signupPassword" type="password" autocomplete="new-password" placeholder="Password (minimum 6 characters)" style="width:100%;box-sizing:border-box;padding:12px;margin:6px 0;border:1px solid #ccc;border-radius:8px;">
+      <input id="signupConfirm" type="password" autocomplete="new-password" placeholder="Confirm Password" style="width:100%;box-sizing:border-box;padding:12px;margin:6px 0;border:1px solid #ccc;border-radius:8px;">
+      <button type="button" onclick="sasikumarSignup()" style="width:100%;margin-top:8px;padding:12px;border:0;border-radius:10px;background:#16a34a;color:#fff;font-weight:bold;cursor:pointer;">✅ CREATE ACCOUNT</button>
+      <button type="button" onclick="hideSignupForm()" style="width:100%;margin-top:8px;padding:10px;border:1px solid #aaa;border-radius:10px;background:#fff;color:#555;cursor:pointer;">↩ Back to Login</button>
+      <div id="signupMessage" style="margin-top:10px;min-height:22px;font-weight:bold;text-align:center;"></div>
+    </div>
+
+
+      🔐 LOGIN
+    </button>
+
+    <div id="loginMessage"
+      style="margin-top:14px;min-height:22px;font-weight:bold;">
+    </div>
+
+    <div style="
+      margin-top:20px;
+      padding-top:15px;
+      border-top:1px solid #eee;
+      color:#777;
+      font-size:13px;
+    ">
+      🔒 SASIKUMAR AI Login
+    </div>
+  </div>
+</div>
+
+<script>
+
+async function sasikumarLogin() {
+  const username = document.getElementById("loginUsername").value.trim();
+  const password = document.getElementById("loginPassword").value;
+  const msg = document.getElementById("loginMessage");
+
+  if (!username || !password) {
+    msg.textContent = "⚠️ Username மற்றும் Password உள்ளிடுங்கள்.";
+    msg.style.color = "#c00";
+    return;
+  }
+
+  msg.textContent = "⏳ Login checking...";
+  msg.style.color = "#555";
+
+  try {
+    const response = await fetch("/api/login", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({username, password})
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.ok) {
+      msg.textContent = "❌ Invalid username or password";
+      msg.style.color = "#c00";
+      return;
+    }
+
+    sessionStorage.setItem("sasikumar_logged_in", "true");
+    sessionStorage.setItem("sasikumar_role", data.role);
+    sessionStorage.setItem("sasikumar_username", data.username);
+
+    document.getElementById("sasikumarLoginScreen").style.display = "none";
+
+    msg.textContent = "";
+  } catch (error) {
+    console.error(error);
+    msg.textContent = "❌ Server connection error";
+    msg.style.color = "#c00";
+  }
+}
+
+function showSignupForm() {
+  document.getElementById("signupBox").style.display = "block";
+  document.getElementById("signupMessage").textContent = "";
+}
+
+function hideSignupForm() {
+  document.getElementById("signupBox").style.display = "none";
+  document.getElementById("signupMessage").textContent = "";
+}
+
+async function sasikumarSignup() {
+  const username = document.getElementById("signupUsername").value.trim();
+  const password = document.getElementById("signupPassword").value;
+  const confirm = document.getElementById("signupConfirm").value;
+  const msg = document.getElementById("signupMessage");
+
+  if (!username || !password || !confirm) {
+    msg.textContent = "⚠️ All fields are required.";
+    msg.style.color = "#c00";
+    return;
+  }
+
+  if (username.length < 3 || username.length > 30) {
+    msg.textContent = "⚠️ Username must be 3-30 characters.";
+    msg.style.color = "#c00";
+    return;
+  }
+
+  if (password.length < 6) {
+    msg.textContent = "⚠️ Password must be at least 6 characters.";
+    msg.style.color = "#c00";
+    return;
+  }
+
+  if (password !== confirm) {
+    msg.textContent = "⚠️ Passwords do not match.";
+    msg.style.color = "#c00";
+    return;
+  }
+
+  msg.textContent = "⏳ Creating account...";
+  msg.style.color = "#555";
+
+  try {
+    const response = await fetch("/api/signup", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({username, password})
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.ok) {
+      msg.textContent = "❌ " + (data.message || "Signup failed");
+      msg.style.color = "#c00";
+      return;
+    }
+
+    msg.textContent = "✅ Account created! Please login.";
+    msg.style.color = "#15803d";
+
+    document.getElementById("loginUsername").value = username;
+    document.getElementById("loginPassword").value = "";
+    document.getElementById("signupPassword").value = "";
+    document.getElementById("signupConfirm").value = "";
+
+    setTimeout(() => {
+      hideSignupForm();
+      document.getElementById("loginMessage").textContent = "✅ Account created. Please login.";
+      document.getElementById("loginMessage").style.color = "#15803d";
+    }, 800);
+
+  } catch (error) {
+    console.error(error);
+    msg.textContent = "❌ Server connection error";
+    msg.style.color = "#c00";
+  }
+}
+
+(function() {
+  const loggedIn = sessionStorage.getItem("sasikumar_logged_in");
+
+  if (loggedIn === "true") {
+    document.getElementById("sasikumarLoginScreen").style.display = "none";
+  }
+})();
+function technologyMenu(){
+  const chatBox=document.getElementById("chat");
+  if(!chatBox) return;
+
+  const loading=document.createElement("div");
+  loading.className="msg ai";
+
+  const box=document.createElement("div");
+  box.style.whiteSpace="pre-wrap";
+  box.textContent=[
+    "💻 TECHNOLOGY",
+    "",
+    "🤖 AI & ChatGPT",
+    "📱 Mobile / Android",
+    "💻 Computer / Software",
+    "🌐 Internet / Websites",
+    "🔐 Cyber Safety",
+    "🆕 Technology News",
+    "🛠️ Tech Troubleshooting"
+  ].join("");
+
+  loading.appendChild(box);
+  chatBox.appendChild(loading);
+  chatBox.scrollTop=chatBox.scrollHeight;
+}
+</script>
+<div id="adminControlPanel" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.75);padding:20px;overflow:auto;">
+<div style="max-width:500px;margin:30px auto;background:#fff;border-radius:18px;padding:20px;color:#111;">
+<h2>⚙️ Admin Control</h2>
+<p id="adminControlStatus">Admin settings</p>
+<div id="adminButtonsList"></div>
+<button onclick="closeAdminControl()" style="margin-top:15px;padding:10px 18px;border:0;border-radius:10px;background:#222;color:#fff;">✖ Close</button>
+</div></div>
+<!-- SASIKUMAR_LOGIN_SCREEN_END -->
+<script>
+
+const adminButtonSettings = [
+  ["liveGoldRate","🪙 Gold Rate"],
+  ["goldLoanDashboard","💰 Gold Loan"],
+  ["bankingServices","🏦 Banking Services"],
+  ["goldExpert","🔬 Gold Expert"],
+  ["goldPractical","⚖️ Practical Test"],
+  ["goldReport","📋 Appraisal Report"],
+  ["education","📚 Education"],
+  ["startVoice","🎤 Voice Input"],
+  ["technologyMenu","💻 Technology"],
+  ["copyChat","📋 Copy"],
+  ["shareChat","📤 Share"],
+  ["stopAI","⏹ Stop"],
+  ["toggleDark","🌙 Dark"],
+  ["clearChat","🧹 Clear"],
+  ["topChat","⬆️ Up"],
+  ["bottomChat","⬇️ Down"],
+  ["autoVoiceBtn","🎙️ Auto Voice"],
+  ["voiceBtn","🔊 AI Voice"],
+  ["allJobs","💼 ALL JOBS"]
+];
+
+function openAdminControl(){
+  if(sessionStorage.getItem("sasikumar_role") !== "admin"){
+    const username = prompt("Admin Username:");
+    const password = prompt("Admin Password:");
+    if(!username || !password) return;
+    fetch("/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username,password})})
+    .then(r=>r.json()).then(data=>{
+      if(data.ok && data.role==="admin"){
+        sessionStorage.setItem("sasikumar_logged_in","true");
+        sessionStorage.setItem("sasikumar_role","admin");
+        sessionStorage.setItem("sasikumar_username",data.username);
+        showAdminPanel();
+      }else alert("❌ Admin login failed");
+    }).catch(()=>alert("❌ Login connection error"));
+    return;
+  }
+  showAdminPanel();
+}
+
+function showAdminPanel(){
+  const list=document.getElementById("adminButtonsList");
+  list.innerHTML="";
+  adminButtonSettings.forEach(([fn,label])=>{
+    const key="admin_btn_"+fn;
+    const enabled=localStorage.getItem(key)!=="off";
+    const row=document.createElement("div");
+    row.style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #ddd";
+    row.innerHTML = "<b>"+label+"</b><button class=\"adminToggleBtn\" style=\"padding:7px 12px;border:0;border-radius:8px;cursor:pointer\">"+(enabled?"ON":"OFF")+"</button>";
+    const toggleBtn = row.querySelector(".adminToggleBtn");
+    toggleBtn.onclick = function(){ toggleAdminButton(fn,this); };
+    list.appendChild(row);
+    applyAdminButton(fn,enabled);
+  });
+  document.getElementById("adminControlPanel").style.display="block";
+}
+
+function toggleAdminButton(fn,btn){
+  const enabled=localStorage.getItem("admin_btn_"+fn)==="off";
+  localStorage.setItem("admin_btn_"+fn,enabled?"on":"off");
+  btn.textContent=enabled?"ON":"OFF";
+  applyAdminButton(fn,enabled);
+}
+
+function applyAdminButton(fn,enabled){
+  if(fn==="allJobs"){const el=document.getElementById("allJobs");if(el)el.style.display=enabled?"":"none";return;}if(fn==="autoVoiceBtn" || fn==="voiceBtn"){
+    const el=document.getElementById(fn);
+    if(el) el.style.display=enabled?"":"none";
+    return;
+  }
+  document.querySelectorAll("button[onclick^=\""+fn+"(\"]").forEach(el=>el.style.display=enabled?"":"none");
+}
+
+function closeAdminControl(){
+  document.getElementById("adminControlPanel").style.display="none";
+}
+
+</script>
+
+
+<div class="header">🤖 SASIKUMAR AI</div>
+
+<div class="status">🟢 Server Connected • AI Active</div>
+<div id="liveDateTime" class="status" style="display:block!important;font-weight:700;font-size:16px;">📅 Date & Time Loading...</div>
+<div id="dashboard" class="dashboard">
+  <div class="dash-title">✨ SASIKUMAR AI <button id="adminSettingsBtn" onclick="openAdminControl()" title="Admin Control" style="margin-left:8px;border:0;background:transparent;font-size:18px;cursor:pointer;padding:2px 5px;">⚙️</button></div>
+  <div class="dash-sub">Smart Assistant • Gold • News • Voice</div>
+
+  <div id="skAllServicesCard" class="sk-all-services-card">
+    <div class="sk-all-services-head">
+      <div>
+        <div class="sk-all-services-title">⚡ ALL SERVICES</div>
+      </div>
+      <button type="button" onclick="window.location.href='/'">🏠 Main Home</button>
+    </div>
+
+    <div class="sk-service-zigzag">
+      <button onclick="openEquations()">📚<span>Education</span><small>School • Q&A • Equations</small></button>
+      <button onclick="liveGoldRate()">💰<span>Gold & Silver</span><small>Rates • Gold Tools</small></button>
+      <button onclick="window.location.href='/jobs/index.html'">💼<span>Jobs</span><small>Career • Opportunities</small></button>
+      <button onclick="window.location.href='/developer/booking.html'">🎫<span>Booking</span><small>Bus • Train • Flight • Hotel</small></button>
+      <button onclick="window.location.href='/developer/referral.html'">🔗<span>Referral Centre</span><small>Referral • Commission</small></button>
+      <button onclick="window.location.href='/lifestyle.html'">📘<span>Lifestyle Book</span><small>Life • Money • Learning</small></button>
+      <button onclick="window.location.href='/toolkit.html'">🧰<span>Tool Kit</span><small>Smart Tools • Finance • AI</small></button>
+      <button onclick="window.location.href='/daily-video.html'">🎬<span>SASIKUMAR AI Video</span><small>Daily AI Show • Tamil Voice</small></button>
+    </div>
+
+    <details class="sk-extra-details">
+      <summary>➕ Extra Details</summary>
+      <div>
+        <p>All SASIKUMAR AI services are organized here for quick access.</p>
+        <p>Each service opens its dedicated page or existing service function.</p>
+        <button type="button" onclick="history.back()">← Back</button>
+        <button type="button" onclick="window.location.href='/'">🏠 Main Home</button>
+      </div>
+    </details>
+  </div>
+
+  <div class="dash-grid">
+    <button onclick="openEquations()">📐📚<span>Equations & Education</span><small>Math • School • Q&A • Learning</small></button>
+    <button onclick="liveGoldRate()">💰<span>Gold Price</span><small>Rate Change • Thanjavur</small></button>
+    <button onclick="window.location.href='/daily-video.html'">🎬<span>SASIKUMAR AI Video</span><small>Daily AI Show • Tamil Voice</small></button>
+
+<button id="bankingServicesBtn" type="button" onclick="bankingServices()">🏦<span>Banking Services</span><small>Loan • Customer • Status</small></button>
+
+    <button onclick="goldExpert()">🔬<span>Gold Expert</span><small>Appraiser Tools</small></button>
+    <button onclick="loanCalculations()">🧮<span>Loan Calculations</span><small>RD • FD • GL • HP • EMI</small></button>
+    <button onclick="goldPractical()">⚖️<span>Practical Test</span><small>Density Test</small></button><button onclick="goldReport()">📋<span>Appraisal Report</span><small>Print / PDF</small></button>
+    <button onclick="startVoice()">🎤<span>Voice Input</span><small>Tamil Voice</small></button>
+    <button onclick="technologyMenu()">💻<span>Technology</span><small>AI • Android • Internet</small></button>
+
+    <button onclick="window.location.href='/lifestyle.html'">📘<span>Lifestyle Book</span><small>Life • Money • Learning • Technology</small></button>
+    <button onclick="window.location.href='/toolkit.html'">🧰<span>Tool Kit</span><small>Smart Tools • Finance • Gold • AI</small></button>
+    <button onclick="window.location.href='/developer/booking.html'">📚<span>All Booking Centre</span><small>Bus • Train • Flight • Hotel • Recharge</small></button>
+    <button onclick="window.location.href='/developer/referral.html'">🔗<span>Referral Centre</span><small>Free Service • Referral • Commission</small></button>
+    <button onclick="window.location.href='/jobs/index.html'">💼<span>Jobs</span><small>Jobs • Career • Opportunities</small></button>
+    <button onclick="window.location.href='/sports/games/'">🎮<span>Sports & Games</span><small>Sports • Games • Fun</small></button>
+    <button onclick="window.location.href='/games/hard-game.html'">🔥<span>Hard Game</span><small>Target • Challenge • High Score</small></button>
+  </div>
+  <div id="loanCalculationResult" style="margin:15px 0;padding:15px;border-radius:14px;background:#151515;"></div>
+  </div>
+</div>
+
+
+<div class="toolbar">
+<button onclick="startVoice()">🎤 Voice</button>
+<button id="autoVoiceBtn" onclick="toggleAutoVoice()">🎙️ Auto Voice</button>
+<button id="voiceBtn" onclick="toggleVoice()">🔊 AI Voice</button>
+<button onclick="stopAI()">⏹ Stop</button>
+
+<button onclick="noteCamera()">📷 Camera</button>
+<button onclick="noteUpload()">📁 Upload</button>
+<button onclick="location.reload()">🔄 Refresh</button>
+
+<button onclick="document.execCommand('cut')">✂️ Cut</button>
+<button onclick="copyChat()">📋 Copy</button>
+<button onclick="document.execCommand('paste')">📌 Paste</button>
+<button onclick="selectAllNotes()">☑️ Select All</button>
+
+<button onclick="undoNotes()">↩️ Undo</button>
+<button onclick="redoNotes()">↪️ Redo</button>
+<button onclick="findNotes()">🔍 Find</button>
+<button onclick="editNotes()">📝 Edit</button>
+
+<button onclick="saveNotes()">💾 Save</button>
+<button onclick="printNotes()">🖨️ Print</button>
+<button onclick="pdfNotes()">📄 PDF</button>
+<button onclick="shareChat()">📤 Share</button>
+
+
+<button class="luxury-toggle" onclick="toggleDark()">🌙 Dark</button>
+<button onclick="clearChat()">🧹 Clear</button>
+<button onclick="topChat()">⬆️ Up</button>
+<button onclick="bottomChat()">⬇️ Down</button>
+</div>
+
+<div id="skAIQuickQuestions" style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;">
+  <button type="button" class="skBtn" onclick="skAIQuick('இன்றைய தங்க விலை என்ன?')">🪙 Gold Rate</button>
+  <button type="button" class="skBtn" onclick="skAIQuick('இன்றைய வானிலை எப்படி?')">🌦️ Weather</button>
+  <button type="button" class="skBtn" onclick="skAIQuick('இன்றைய முக்கிய செய்திகள் என்ன?')">📰 News</button>
+  <button type="button" class="skBtn" onclick="skAIQuick('GST எப்படி கணக்கிடுவது?')">📊 GST</button>
+  <button type="button" class="skBtn" onclick="skAIQuick('Class 10 mathematics பற்றி உதவி வேண்டும்')">📚 Education</button>
+</div>
+<div id="chat">
+<div class="msg ai">🤖 வணக்கம்! நான் SASIKUMAR AI.
+
+எதையும் கேளுங்கள்.
+Tamil + English • Gold • General Q&A • Web Search</div>
+</div>
+
+<div class="input-area">
+<div class="input-row">
+<textarea id="q" rows="2" placeholder="உங்கள் கேள்வியை எழுதுங்கள்..."></textarea>
+<button id="sendBtn" onclick="send()">Send</button>
+<input id="replyFileInput" type="file" accept="image/*,.pdf,.txt,.doc,.docx" style="display:none">
+</div>
+</div>
+
+<script>
+
+const q=document.getElementById("q");
+const chat=document.getElementById("chat");
+const sendBtn=document.getElementById("sendBtn");
+
+let recognition=null;
+let voiceEnabled=false;
+let autoVoice=false;
+let darkMode=localStorage.getItem("sasikumar_ai_dark")==="1";
+
+function escapeHtml(text){
+  const d=document.createElement("div");
+  d.textContent=text;
+  return d.innerHTML;
+}
+
+
+function goldExpert(){
+  const box=document.createElement("div");
+  box.className="msg ai";
+
+  box.innerHTML=`
+  <div class="report-box">
+    <div class="report-head">
+      <h2>🔬 GOLD EXPERT PRO</h2>
+      <div>SASIKUMAR AI • Gold Appraiser Tools</div>
+    </div>
+
+    <h3>⚖️ Professional Gold Testing</h3>
+
+    <button class="loan-calc" onclick="goldPractical()">
+      ⚖️ Density / Specific Gravity Test
+    </button>
+
+    <button class="loan-calc" onclick="goldKaratTool()">
+      🥇 Karat / Purity Calculator
+    </button>
+
+    <button class="loan-calc" onclick="goldStoneTest()">
+      🧪 Touch Stone + Acid Guide
+    </button>
+
+    <button class="loan-calc" onclick="goldRiskTool()">
+      ⚠️ Gold Risk Assessment
+    </button>
+
+    <div style="margin-top:15px;padding:12px">
+      🔍 <b>Appraiser Note</b><br>
+      Screening results மட்டும் அடிப்படையாக வைத்து final purity முடிவு செய்ய வேண்டாம்.<br>
+      XRF / assay confirmation பயன்படுத்தவும்.
+    </div>
+  </div>
+  `;
+
+  const chat=document.querySelector(".chat") || document.querySelector("#chat") || document.body;
+  chat.appendChild(box);
+  box.scrollIntoView({behavior:"smooth",block:"end"});
+}
+
+function skAIQuick(message){
+  const input=document.getElementById("q");
+  if(!input)return;
+  input.value=message;
+  input.focus();
+  send();
+}
+
+async function send(){
+  const message=q.value.trim();
+
+  if(!message && !replyAttachment)return;
+
+  let attachment=null;
+
+  if(replyAttachment){
+    if(replyAttachment.size > 10 * 1024 * 1024){
+      alert("📎 File size 10 MB-க்கு மேல் இருக்கக்கூடாது.");
+      return;
+    }
+
+    attachment=await new Promise((resolve,reject)=>{
+      const reader=new FileReader();
+
+      reader.onload=()=>{
+        const result=String(reader.result||"");
+        const comma=result.indexOf(",");
+
+        resolve({
+          data:comma>=0 ? result.slice(comma+1) : result,
+          type:replyAttachment.type || "application/octet-stream",
+          name:replyAttachment.name
+        });
+      };
+
+      reader.onerror=()=>reject(new Error("File read failed"));
+      reader.readAsDataURL(replyAttachment);
+    });
+  }
+
+  const userText=message
+    ? "👤 "+escapeHtml(message)
+    : "👤 📎 "+escapeHtml(replyAttachment.name);
+
+  chat.innerHTML+='<div class="msg user">'+userText+'</div>';
+
+  q.value="";
+
+  const loading=document.createElement("div");
+  loading.className="msg ai";
+  loading.innerText="🤖 பதில் எழுதுகிறது...";
+  chat.appendChild(loading);
+
+  bottomChat();
+
+  sendBtn.disabled=true;
+  sendBtn.innerText="…";
+
+  try{
+    const r=await fetch("/api/chat",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        message,
+        attachment
+      })
+    });
+
+    if(!r.ok)throw new Error("HTTP "+r.status);
+
+    const d=await r.json();
+
+    loading.innerText=d.reply
+      ?"🤖 "+d.reply
+      :"❌ பதில் கிடைக்கவில்லை.";
+
+    if(d.reply && voiceEnabled && typeof speakTamil==="function"){
+      speakTamil(String(d.reply).replace(/^🤖\s*/,""));
+    }
+
+    if(replyAttachment){
+      removeReplyAttachment();
+    }
+
+  }catch(e){
+    console.error(e);
+    loading.innerText=
+      "❌ Server connection error.\\"+
+      "Server இயங்குகிறதா என்று பார்க்கவும்.";
+  }finally{
+    sendBtn.disabled=false;
+    sendBtn.innerText="Send";
+    bottomChat();
+  }
+}
+q.addEventListener("keydown",e=>{
+ if(e.key==="Enter"&&!e.shiftKey){
+   e.preventDefault();
+   send();
+ }
+});
+
+function bottomChat(){
+ chat.scrollTo({
+   top:chat.scrollHeight,
+   behavior:"smooth"
+ });
+}
+
+function topChat(){
+ chat.scrollTo({
+   top:0,
+   behavior:"smooth"
+ });
+}
+
+function toggleAutoVoice(){
+  autoVoice=!autoVoice;
+  const btn=document.getElementById("autoVoiceBtn");
+
+  if(autoVoice){
+    btn.innerText="🎙️ Auto ON";
+    voiceEnabled=true;
+    const vb=document.getElementById("voiceBtn");
+    if(vb) vb.innerText="🔊 Voice ON";
+    startVoice();
+  }else{
+    btn.innerText="🎙️ Auto Voice";
+    stopAI();
+  }
+}
+
+function startVoice(){
+
+ const SR=window.SpeechRecognition||
+          window.webkitSpeechRecognition;
+
+ if(!SR){
+   alert("🎤 இந்த browser-ல் voice recognition இல்லை.");
+   return;
+ }
+
+ if(recognition){
+   try{recognition.stop()}catch(e){}
+ }
+
+ recognition=new SR();
+ recognition.lang="ta-IN";
+ recognition.continuous=false;
+ recognition.interimResults=false;
+
+ recognition.onresult=e=>{
+   q.value=e.results[0][0].transcript;
+   q.focus();
+
+   if(autoVoice)
+     setTimeout(()=>send(),300);
+ };
+
+ recognition.start();
+}
+
+function toggleVoice(){
+  voiceEnabled=!voiceEnabled;
+
+  const btn=document.getElementById("voiceBtn");
+
+  if(voiceEnabled){
+    btn.innerText="🔊 Voice ON";
+    speakTamil("AI Voice இயக்கப்பட்டது.");
+  }else{
+    btn.innerText="🔇 Voice OFF";
+    if("speechSynthesis" in window)
+      speechSynthesis.cancel();
+  }
+}
+
+function speakTamil(text){
+
+  if(!voiceEnabled || !("speechSynthesis" in window))
+    return;
+
+  speechSynthesis.cancel();
+
+  const clean=String(text||"")
+    .replace(/https?:\/\/\S+/g,"")
+    .replace(/[🌐🤖👤🪙📰⚠️❌🔬📐💧⚖️]/g,"")
+    .trim();
+
+  if(!clean)return;
+
+  const u=new SpeechSynthesisUtterance(clean);
+  u.lang="ta-IN";
+  u.rate=0.95;
+  u.pitch=1;
+  u.volume=1;
+
+  speechSynthesis.speak(u);
+}
+
+function stopAI(){
+
+ if("speechSynthesis" in window)
+   speechSynthesis.cancel();
+
+ if(recognition){
+   try{recognition.stop()}catch(e){}
+   recognition=null;
+ }
+}
+
+async function copyChat(){
+
+ try{
+   await navigator.clipboard.writeText(chat.innerText);
+   alert("📋 Chat நகலெடுக்கப்பட்டது ✅");
+ }catch(e){
+   alert("❌ Copy செய்ய முடியவில்லை.");
+ }
+}
+
+async function shareChat(){
+
+ const text=chat.innerText;
+
+ if(navigator.share){
+   try{
+     await navigator.share({
+       title:"SASIKUMAR AI",
+       text:text
+     });
+   }catch(e){}
+ }else{
+   await copyChat();
+ }
+}
+
+function clearChat(){
+
+ if(!confirm("🧹 உரையாடலை அழிக்க வேண்டுமா?"))
+   return;
+
+ chat.innerHTML=
+ '<div class="msg ai">🤖 வணக்கம்! நான் SASIKUMAR AI.<br><br>எதையும் கேளுங்கள்.</div>';
+}
+
+
+
+
+async function nationalNews(){
+
+  const loading=document.createElement("div");
+  loading.className="msg ai";
+
+  const box=document.createElement("div");
+
+  box.innerHTML=
+    "📰 <b>District News Live</b><br><br>"+
+    "🌐 State: "+
+    '<select id="newsState" onchange="loadNewsDistricts()" style="padding:8px;border-radius:8px;">'+
+    '<option value="TN">Tamil Nadu</option>'+
+    '<option value="KL">Kerala</option>'+
+    '<option value="KA">Karnataka</option>'+
+    '<option value="AP">Andhra Pradesh</option>'+
+    '<option value="TS">Telangana</option>'+
+    '<option value="MH">Maharashtra</option>'+
+    '<option value="GJ">Gujarat</option>'+
+    '<option value="RJ">Rajasthan</option>'+
+    '<option value="WB">West Bengal</option>'+
+    '<option value="UP">Uttar Pradesh</option>'+
+    '</select><br><br>'+
+    "📍 District: "+
+    '<select id="newsDistrict" style="padding:8px;border-radius:8px;"></select><br><br>'+
+    '<button onclick="searchStateNews()" style="padding:9px 16px;border-radius:8px;">🔎 Search District News</button>'+
+    '<div id="newsResult" style="margin-top:15px;white-space:pre-wrap;line-height:1.6;"></div>';
+
+  loading.appendChild(box);
+  chat.appendChild(loading);
+  bottomChat();
+
+  window.loadNewsDistricts=function(){
+
+    const state=document.getElementById("newsState").value;
+    const select=document.getElementById("newsDistrict");
+
+    const districts={
+      TN:["All Districts","Ariyalur","Chengalpattu","Chennai","Coimbatore","Cuddalore","Dharmapuri","Dindigul","Erode","Kallakurichi","Kancheepuram","Karur","Krishnagiri","Madurai","Mayiladuthurai","Nagapattinam","Namakkal","Perambalur","Pudukkottai","Ramanathapuram","Ranipet","Salem","Sivaganga","Tenkasi","Thanjavur","Theni","Thoothukudi","Tiruchirappalli","Tirunelveli","Tirupathur","Tiruppur","Tiruvallur","Tiruvannamalai","Tiruvarur","Vellore","Viluppuram","Virudhunagar"],
+      KL:["All Districts","Alappuzha","Ernakulam","Idukki","Kannur","Kasaragod","Kollam","Kottayam","Kozhikode","Malappuram","Palakkad","Pathanamthitta","Thiruvananthapuram","Thrissur","Wayanad"],
+      KA:["All Districts","Bagalkot","Ballari","Bengaluru Rural","Bengaluru Urban","Belagavi","Bidar","Chamarajanagar","Chikkaballapur","Chikkamagaluru","Chitradurga","Dakshina Kannada","Davanagere","Dharwad","Gadag","Hassan","Haveri","Kalaburagi","Kodagu","Kolar","Koppal","Mandya","Mysuru","Raichur","Ramanagara","Shivamogga","Tumakuru","Udupi","Uttara Kannada","Vijayapura","Yadgir"],
+      AP:["All Districts","Anakapalli","Anantapur","Bapatla","Chittoor","East Godavari","Eluru","Guntur","Kakinada","Krishna","Kurnool","Nandyal","NTR","Palnadu","Prakasam","Srikakulam","Tirupati","Visakhapatnam","Vizianagaram","West Godavari","YSR Kadapa"],
+      TS:["All Districts","Adilabad","Hyderabad","Karimnagar","Khammam","Nalgonda","Nizamabad","Rangareddy","Sangareddy","Warangal"],
+      MH:["All Districts","Ahmednagar","Akola","Amravati","Aurangabad","Beed","Bhandara","Buldhana","Chandrapur","Dhule","Gadchiroli","Gondia","Jalgaon","Jalna","Kolhapur","Latur","Mumbai City","Mumbai Suburban","Nagpur","Nanded","Nashik","Palghar","Parbhani","Pune","Raigad","Ratnagiri","Sangli","Satara","Solapur","Thane","Wardha","Washim","Yavatmal"],
+      GJ:["All Districts","Ahmedabad","Amreli","Anand","Banaskantha","Bharuch","Bhavnagar","Gandhinagar","Jamnagar","Junagadh","Kheda","Kutch","Mehsana","Navsari","Patan","Rajkot","Surat","Surendranagar","Vadodara","Valsad"],
+      RJ:["All Districts","Ajmer","Alwar","Banswara","Barmer","Bharatpur","Bhilwara","Bikaner","Chittorgarh","Churu","Dausa","Dungarpur","Jaipur","Jaisalmer","Jalore","Jhalawar","Jhunjhunu","Jodhpur","Kota","Nagaur","Pali","Rajsamand","Sawai Madhopur","Sikar","Sirohi","Tonk","Udaipur"],
+      WB:["All Districts","Alipurduar","Bankura","Birbhum","Cooch Behar","Darjeeling","Hooghly","Howrah","Jalpaiguri","Jhargram","Kolkata","Maldah","Murshidabad","Nadia","North 24 Parganas","South 24 Parganas","Paschim Medinipur","Purba Medinipur"],
+      UP:["All Districts","Agra","Aligarh","Ayodhya","Azamgarh","Bareilly","Bijnor","Bulandshahr","Etawah","Farrukhabad","Fatehpur","Ghaziabad","Gorakhpur","Jhansi","Kanpur Nagar","Lucknow","Mathura","Meerut","Moradabad","Muzaffarnagar","Prayagraj","Rampur","Saharanpur","Sitapur","Varanasi"]
+    };
+
+    const list=districts[state]||["All Districts"];
+
+    select.innerHTML=list.map(x=>'<option value="'+x+'">'+x+'</option>').join("");
+  };
+
+  window.searchStateNews=async function(){
+
+    const state=document.getElementById("newsState").value;
+    const district=document.getElementById("newsDistrict").value;
+    const result=document.getElementById("newsResult");
+
+    result.innerText="📰 "+district+" news தேடுகிறது...";
+
+    try{
+      const r=await fetch(
+        "/api/state-news?state="+
+        encodeURIComponent(state)+
+        "&district="+
+        encodeURIComponent(district)
+      );
+
+      const d=await r.json();
+
+      if(!r.ok || !d.ok)
+        throw new Error(d.reply||"News unavailable");
+
+      const lines=String(d.reply)
+        .split(/\r?/)
+        .filter(Boolean)
+        .slice(0,10);
+
+      result.innerText=
+        "🤖 📰 "+d.state+" - "+d.district+" News"+
+        lines.join("");
+
+    }catch(e){
+      console.error(e);
+      result.innerText=
+        "❌ News தற்போது கிடைக்கவில்லை."+
+        "சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.";
+    }
+
+    bottomChat();
+  };
+
+  loadNewsDistricts();
+}
+
+
+async function liveGoldRate(){
+
+  const content =
+    document.getElementById("content") ||
+    document.getElementById("mainContent") ||
+    document.body;
+
+  content.innerHTML = `
+    <div id="skGoldApp">
+
+      <div style="margin-bottom:12px;">
+        <button type="button" onclick="location.reload()" style="padding:10px 16px;border:0;border-radius:10px;cursor:pointer;font-weight:700;">
+          ← Back to SASIKUMAR AI
+        </button>
+      </div>
+
+      <div class="skHeader">
+        <div class="skLogo"><img src="/assets/sasikumar-ai-logo.svg" alt="SASIKUMAR AI"></div>
+        <div>
+          <h2>Gold & Silver Price</h2>
+          <p>🇮🇳 India • Live Market Rate</p>
+        </div>
+      </div>
+
+      <div class="skLocation">
+
+        <div class="skField">
+          <label>🇮🇳 Select State</label>
+          <select id="skState"></select>
+        </div>
+
+        <div class="skField">
+          <label>📍 Select District</label>
+          <select id="skDistrict"></select>
+        </div>
+
+        <button id="skRateButton" onclick="skLoadRates()">
+          📊 GET LIVE GOLD + SILVER RATE
+        </button>
+
+      </div>
+
+      <div id="skResult">
+        <div class="skHint">
+          🇮🇳 Select State and District<br>
+          then tap <b>GET LIVE GOLD + SILVER RATE</b>
+        </div>
+      </div>
+
+    </div>
+  `;
+
+  const states = {
+    "Tamil Nadu":[
+      "Thanjavur","Chennai","Madurai","Coimbatore",
+      "Tiruchirappalli","Salem","Tirunelveli","Vellore",
+      "Erode","Tiruppur","Dindigul","Cuddalore",
+      "Nagapattinam","Mayiladuthurai","Pudukkottai",
+      "Kanchipuram","Thiruvallur","Virudhunagar"
+    ],
+    "Kerala":[
+      "Thiruvananthapuram","Kollam","Pathanamthitta",
+      "Alappuzha","Kottayam","Idukki","Ernakulam",
+      "Thrissur","Palakkad","Malappuram","Kozhikode",
+      "Wayanad","Kannur","Kasaragod"
+    ],
+    "Karnataka":[
+      "Bengaluru Urban","Mysuru","Mangaluru","Belagavi",
+      "Kalaburagi","Ballari","Tumakuru","Shivamogga"
+    ],
+    "Andhra Pradesh":[
+      "Visakhapatnam","Vijayawada","Guntur","Tirupati",
+      "Nellore","Kurnool","Kadapa","Rajahmundry"
+    ],
+    "Telangana":[
+      "Hyderabad","Warangal","Nizamabad","Karimnagar",
+      "Khammam","Nalgonda","Adilabad"
+    ],
+    "Maharashtra":[
+      "Mumbai","Pune","Nagpur","Nashik","Thane",
+      "Kolhapur","Solapur"
+    ],
+    "Gujarat":[
+      "Ahmedabad","Surat","Vadodara","Rajkot",
+      "Bhavnagar","Jamnagar"
+    ],
+    "Rajasthan":[
+      "Jaipur","Jodhpur","Udaipur","Kota","Ajmer","Bikaner"
+    ],
+    "Delhi":[
+      "New Delhi","North Delhi","South Delhi",
+      "East Delhi","West Delhi"
+    ],
+    "West Bengal":[
+      "Kolkata","Howrah","Darjeeling","Siliguri",
+      "Durgapur","Asansol"
+    ],
+    "Uttar Pradesh":[
+      "Lucknow","Kanpur","Agra","Varanasi",
+      "Prayagraj","Ghaziabad","Noida","Meerut"
+    ],
+    "Madhya Pradesh":[
+      "Bhopal","Indore","Gwalior","Jabalpur","Ujjain"
+    ],
+    "Bihar":[
+      "Patna","Gaya","Muzaffarpur","Bhagalpur"
+    ],
+    "Odisha":[
+      "Bhubaneswar","Cuttack","Puri","Rourkela","Sambalpur"
+    ],
+    "Punjab":[
+      "Amritsar","Ludhiana","Jalandhar","Patiala","Bathinda"
+    ],
+    "Haryana":[
+      "Gurugram","Faridabad","Panipat","Ambala","Hisar"
+    ],
+    "Jharkhand":[
+      "Ranchi","Jamshedpur","Dhanbad","Bokaro"
+    ],
+    "Chhattisgarh":[
+      "Raipur","Bhilai","Bilaspur","Korba"
+    ],
+    "Assam":[
+      "Guwahati","Dibrugarh","Silchar","Jorhat"
+    ],
+    "Goa":[
+      "North Goa","South Goa"
+    ]
+  };
+
+  const stateBox = document.getElementById("skState");
+  const districtBox = document.getElementById("skDistrict");
+
+  stateBox.innerHTML =
+    `<option value="">-- Select State --</option>` +
+    Object.keys(states)
+      .map(x => `<option value="${x}">${x}</option>`)
+      .join("");
+
+  function fillDistricts(){
+
+    const state = stateBox.value;
+
+    districtBox.innerHTML =
+      `<option value="">-- Select District --</option>` +
+      (states[state] || [])
+        .map(x => `<option value="${x}">${x}</option>`)
+        .join("");
+
+    if(state === "Tamil Nadu"){
+      districtBox.value = "Thanjavur";
+    }
+  }
+
+  stateBox.onchange = fillDistricts;
+
+  stateBox.value = "Tamil Nadu";
+  fillDistricts();
+  districtBox.value = "Thanjavur";
+}
+
+
+async function skLoadRates(){
+
+  const state =
+    document.getElementById("skState").value;
+
+  const district =
+    document.getElementById("skDistrict").value;
+
+  const result =
+    document.getElementById("skResult");
+
+  if(!state){
+    result.innerHTML =
+      `<div class="skError">⚠️ Please select a State</div>`;
+    return;
+  }
+
+  if(!district){
+    result.innerHTML =
+      `<div class="skError">⚠️ Please select a District</div>`;
+    return;
+  }
+
+  result.innerHTML = `
+    <div class="skLoading">
+      ⏳ Loading live Gold + Silver rate...
+      <small>${state} → ${district}</small>
+    </div>
+  `;
+
+  try{
+
+    const goldURL =
+      "/api/gold-rate?state=" +
+      encodeURIComponent(state) +
+      "&district=" +
+      encodeURIComponent(district);
+
+    const silverURL =
+      "/api/silver-rate?state=" +
+      encodeURIComponent(state) +
+      "&district=" +
+      encodeURIComponent(district);
+
+    const [gr,sr] =
+      await Promise.all([
+        fetch(goldURL),
+        fetch(silverURL)
+      ]);
+
+    const gold = await gr.json();
+    const silver = await sr.json();
+
+    if(!gold.ok)
+      throw new Error("Gold API error");
+
+    if(!silver.ok)
+      throw new Error("Silver API error");
+
+    const money = n =>
+      Number(n || 0).toLocaleString("en-IN");
+
+    const money2 = n =>
+      Number(n || 0).toLocaleString("en-IN",{
+        minimumFractionDigits:2,
+        maximumFractionDigits:2
+      });
+
+    result.innerHTML = `
+
+      <div class="skSelected">
+        📍 <b>${state}</b>
+        <span>→</span>
+        <b>${district}</b>
+      </div>
+
+      <div class="skTitle gold">🟨 GOLD</div>
+
+      <div class="skGrid">
+
+        <div class="skCard goldCard">
+          <div>💎</div>
+          <small>24K GOLD</small>
+          <strong>₹${money(gold.rates["24K"])}</strong>
+          <span>1 gram</span>
+        </div>
+
+        <div class="skCard goldCard">
+          <div>🪙</div>
+          <small>22K / 916</small>
+          <strong>₹${money(gold.rates["22K"])}</strong>
+          <span>1 gram</span>
+        </div>
+
+        <div class="skCard goldCard">
+          <div>⚖️</div>
+          <small>22K / 916</small>
+          <strong>₹${money(gold.rates8g["22K"])}</strong>
+          <span>8 gram / 1 சவரன்</span>
+        </div>
+
+      </div>
+
+      <div class="skTitle silver">⚪ SILVER 999</div>
+
+      <div class="skGrid">
+
+        <div class="skCard silverCard">
+          <div>⚪</div>
+          <small>1 GRAM</small>
+          <strong>₹${money2(
+            silver.price_gram_999 ||
+            silver.silver?.gram
+          )}</strong>
+          <span>999 Silver</span>
+        </div>
+
+        <div class="skCard silverCard">
+          <div>⚪</div>
+          <small>10 GRAMS</small>
+          <strong>₹${money2(
+            silver.price_10g_999 ||
+            silver.silver?.tenGram
+          )}</strong>
+          <span>999 Silver</span>
+        </div>
+
+        <div class="skCard silverCard">
+          <div>⚪</div>
+          <small>1 KG</small>
+          <strong>₹${money(
+            silver.price_kg_999 ||
+            silver.silver?.kg
+          )}</strong>
+          <span>999 Silver</span>
+        </div>
+
+      </div>
+
+      <div class="skLive">
+        🟢 LIVE RATE • ${state} • ${district}
+      </div>
+
+      <button
+        class="skPosterButton"
+        onclick="skShowPoster('${state.replace(/'/g,"\\'")}','${district.replace(/'/g,"\\'")}')">
+        🖼️ VIEW LIVE DAILY POSTER
+      </button>
+
+      <div id="skPoster"></div>
+    `;
+
+  }catch(error){
+
+    console.error(error);
+
+    result.innerHTML = `
+      <div class="skError">
+        ❌ Live Gold + Silver rate unavailable
+        <small>${error.message}</small>
+      </div>
+    `;
+  }
+}
+
+
+function skShowPoster(state,district){
+
+  const box =
+    document.getElementById("skPoster");
+
+  if(!box) return;
+
+  box.innerHTML = `
+    <div class="skPosterCard">
+
+      <h3>🖼️ Daily Live Poster</h3>
+
+      <p>🇮🇳 ${state} → ${district}</p>
+
+      <img
+        src="/daily-gold-poster.svg?t=${Date.now()}"
+        alt="SASIKUMAR AI Daily Gold Silver Poster"
+      >
+
+    </div>
+  `;
+}
+
+// SASIKUMAR AI - Automatic Gold Rate Refresh
+setInterval(() => {
+  liveGoldRate();
+}, 30 * 60 * 1000);
+
+function bankingServices(){
+ const chat=document.getElementById("chat");
+ if(!chat){
+  alert("⚠️ Chat area not found");
+  return;
+ }
+
+ const old=document.getElementById("bankingServiceMessage");
+ if(old) old.remove();
+
+ const box=document.createElement("div");
+ box.id="bankingServiceMessage";
+ box.className="msg ai";
+
+ box.innerHTML=`
+ <div class="loan-box">
+  <h3>🏦 BANKING SERVICES</h3>
+
+  <div class="loan-grid">
+
+   <label>🏦 Bank / Nidhi Type
+    <select id="bankType">
+     <option value="">Select</option>
+     <option>Bank</option>
+     <option>Small Finance Bank</option>
+     <option>Co-operative Bank</option>
+     <option>Nidhi</option>
+     <option>NBFC</option>
+    </select>
+   </label>
+
+   <label>💳 Type of Loan
+    <select id="bankLoanType">
+     <option value="">Select</option>
+     <option>Gold Loan</option>
+     <option>Personal Loan</option>
+     <option>Business Loan</option>
+     <option>Vehicle Loan</option>
+     <option>Other</option>
+    </select>
+   </label>
+
+   <label>👤 Customer Name
+    <input id="bankCustomerName" type="text" placeholder="Customer Name">
+   </label>
+
+   <label>📱 Mobile Number
+    <input id="bankMobile" type="tel" maxlength="10" inputmode="numeric" placeholder="10 digit mobile">
+   </label>
+
+   <label>🌐 State
+    <select id="bankState">
+     <option>Tamil Nadu</option>
+     <option>Other State</option>
+    </select>
+   </label>
+
+   <label>📍 District
+    <input id="bankDistrict" type="text" placeholder="District">
+   </label>
+
+   <label>📍 Taluk
+    <input id="bankTaluk" type="text" placeholder="Taluk">
+   </label>
+
+   <label>✅ Responsibilities
+    <select id="bankResponsibility">
+     <option value="">Select</option>
+     <option>YES</option>
+     <option>NO</option>
+    </select>
+   </label>
+
+   <label>💰 Loan Amount
+    <input id="bankLoanAmount" type="number" min="0" placeholder="Loan Amount">
+   </label>
+
+  </div>
+
+  <button class="loan-calc" type="button" onclick="submitBankingService()">
+   📤 SUBMIT / FORWARD
+  </button>
+
+  <div id="bankingResult" class="loan-result">
+   Customer details உள்ளிட்டு Submit செய்யுங்கள்.
+  </div>
+ </div>`;
+
+ chat.appendChild(box);
+ bottomChat();
+}
+
+async function submitBankingService(){
+ const result=document.getElementById("bankingResult");
+
+ const name=document.getElementById("bankCustomerName").value.trim();
+ const mobile=document.getElementById("bankMobile").value.trim();
+ const bankType=document.getElementById("bankType").value;
+ const loanType=document.getElementById("bankLoanType").value;
+ const state=document.getElementById("bankState").value;
+ const district=document.getElementById("bankDistrict").value.trim();
+ const taluk=document.getElementById("bankTaluk").value.trim();
+ const responsibility=document.getElementById("bankResponsibility").value;
+ const loanAmount=document.getElementById("bankLoanAmount").value.trim();
+
+ if(!name){
+  alert("⚠️ Customer Name உள்ளிடுங்கள்.");
+  return;
+ }
+
+ if(!/^[0-9]{10}$/.test(mobile)){
+  alert("⚠️ சரியான 10 digit Mobile Number உள்ளிடுங்கள்.");
+  return;
+ }
+
+ if(!bankType){
+  alert("⚠️ Bank / Nidhi Type தேர்வு செய்யுங்கள்.");
+  return;
+ }
+
+ if(!loanType){
+  alert("⚠️ Loan Type தேர்வு செய்யுங்கள்.");
+  return;
+ }
+
+ result.innerHTML="⏳ <b>Banking request அனுப்பப்படுகிறது...</b>";
+
+ const application={
+  id:"BANK-"+Date.now(),
+  bankType,
+  loanType,
+  customerName:name,
+  name,
+  mobile,
+  state,
+  district,
+  taluk,
+  responsibility,
+  loanAmount,
+  submittedAt:Date.now(),
+  status:"SUBMITTED"
+ };
+
+ try{
+  const response=await fetch("/api/banking-test",{
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({
+    bankType,
+    loanType,
+    customerName:name,
+    mobile,
+    loanAmount
+   })
+  });
+
+  const data=await response.json();
+
+  if(!response.ok || !data.ok){
+   throw new Error(data.reply || "Banking API failed");
+  }
+
+  localStorage.setItem(
+   "bankingServiceApplication",
+   JSON.stringify(application)
+  );
+
+  result.innerHTML=
+   "✅ <b>Banking Application Submitted</b><br><br>"+
+   "🆔 Application ID: <b>"+application.id+"</b><br>"+
+   "👤 Customer: <b>"+name+"</b><br>"+
+   "📱 Mobile: <b>"+mobile+"</b><br>"+
+   "🏦 Bank: <b>"+bankType+"</b><br>"+
+   "💳 Loan: <b>"+loanType+"</b><br>"+
+   "💰 Amount: <b>₹"+(loanAmount || "Not specified")+"</b><br>"+
+   "📍 Location: <b>"+district+" / "+taluk+"</b><br>"+
+   "📌 Status: <b>SUBMITTED</b><br><br>"+
+   "⏱️ 72-Hour Tracking Started<br><br>"+
+   "📲 WhatsApp service available.";
+
+ }catch(error){
+  console.error("Banking Submit Error:",error);
+
+  result.innerHTML=
+   "❌ <b>Banking submission failed</b><br><br>"+
+   "Reason: "+error.message+"<br><br>"+
+   "Please try again.";
+ }
+}
+
+function loanCalculations(){
+  const old=document.getElementById("loanCalculationMessage");
+  if(old) old.remove();
+
+  const box=document.createElement("div");
+  box.id="loanCalculationMessage";
+  box.className="msg ai";
+
+  box.innerHTML=`
+    <div class="loan-box">
+      <h3>🧮 LOAN CALCULATIONS</h3>
+
+      <label>📌 Calculator Type
+        <select id="loanCalcType">
+          <option value="emi">EMI Loan</option>
+          <option value="gold">Gold Loan</option>
+          <option value="personal">Personal Loan</option>
+          <option value="home">Home Loan</option>
+          <option value="interest">Simple Interest</option>
+          <option value="fd">FD Estimate</option>
+          <option value="rd">RD Estimate</option>
+        </select>
+      </label>
+
+      <label>💰 Amount / Principal
+        <input id="loanAmount" type="number" min="0" placeholder="Enter amount">
+      </label>
+
+      <label>📈 Annual Interest %
+        <input id="loanRate" type="number" min="0" step="0.01" placeholder="Interest rate">
+      </label>
+
+      <label>📅 Tenure (months)
+        <input id="loanMonths" type="number" min="1" placeholder="Months">
+      </label>
+
+      <button type="button" onclick="calculateLoan()">🧮 Calculate</button>
+
+      <div id="loanCalcResult" class="loan-result" style="margin-top:12px"></div>
+
+      <div style="margin-top:10px">
+        <small>ℹ️ Illustrative calculation only. Actual lender rates, fees and terms may differ.</small>
+      </div>
+    </div>
+  `;
+
+  const chat=document.getElementById("chat");
+  if(chat){
+    chat.appendChild(box);
+    setTimeout(bottomChat,300);
+  }
+}
+
+function calculateLoan(){
+  const amount=Number(document.getElementById("loanAmount").value);
+  const rate=Number(document.getElementById("loanRate").value);
+  const months=Number(document.getElementById("loanMonths").value);
+  const result=document.getElementById("loanCalcResult");
+
+  if(!amount || amount<=0 || rate<0 || !months || months<=0){
+    result.innerHTML="⚠️ Please enter valid Amount, Interest and Tenure.";
+    return;
+  }
+
+  const monthlyRate=rate/100/12;
+  let emi;
+
+  if(monthlyRate===0){
+    emi=amount/months;
+  }else{
+    emi=amount*monthlyRate*Math.pow(1+monthlyRate,months)/
+      (Math.pow(1+monthlyRate,months)-1);
+  }
+
+  const total=emi*months;
+  const interest=total-amount;
+
+  result.innerHTML=
+    "✅ <b>Calculation Result</b><br><br>"+
+    "💰 Principal: ₹"+amount.toFixed(2)+"<br>"+
+    "📈 Interest: "+rate.toFixed(2)+"%<br>"+
+    "📅 Tenure: "+months+" months<br><br>"+
+    "💳 <b>Monthly EMI: ₹"+emi.toFixed(2)+"</b><br>"+
+    "💵 Total Interest: ₹"+interest.toFixed(2)+"<br>"+
+    "💵 Total Payment: ₹"+total.toFixed(2);
+}
+function goldKaratTool(){
+ const box=document.createElement("div");
+ box.className="msg ai";
+ box.innerHTML=`
+ <div class="report-box">
+  <div class="report-head">
+   <h2>🥇 KARAT / PURITY CALCULATOR</h2>
+   <div>SASIKUMAR AI • Gold Appraiser</div>
+  </div>
+  <div style="margin:14px 0;padding:15px;border-radius:16px;background:rgba(255,193,7,.10);border:1px solid rgba(255,193,7,.35)">
+   <h3>👨‍💼 Professional Gold Appraiser</h3>
+   <p>A Gold Appraiser evaluates the authenticity, purity, weight and estimated value of gold items such as jewellery, coins and bullion.</p>
+   <ul>
+    <li>⚖️ Accurate weight recording</li>
+    <li>🥇 Karat and purity assessment</li>
+    <li>🔎 Hallmark and authenticity review</li>
+    <li>💰 Reference-rate based valuation</li>
+    <li>📋 Appraisal report preparation</li>
+   </ul>
+   <small>Final purity and valuation should be confirmed using appropriate professional testing and applicable institutional requirements.</small>
+  </div>
+  <table class="report-table">
+   <tr><td>Gold Weight (g)</td><td><input id="gkWeight" type="number" step="0.001" placeholder="Example: 10"></td></tr>
+   <tr><td>Karat</td><td>
+    <select id="gkKarat">
+     <option value="24">24K</option>
+     <option value="23">23K</option>
+     <option value="22">22K / 916</option>
+     <option value="21">21K</option>
+     <option value="20">20K</option>
+     <option value="18">18K / 750</option>
+     <option value="14">14K / 585</option>
+     <option value="9">9K / 375</option>
+    </select>
+   </td></tr>
+  </table>
+  <button class="loan-calc" onclick="calculateGoldKarat()">🥇 Calculate Purity</button>
+  <div id="goldKaratResult" style="margin-top:15px"></div>
+ </div>`;
+ const chat=document.querySelector(".chat") || document.querySelector("#chat") || document.body;
+ chat.appendChild(box);
+ box.scrollIntoView({behavior:"smooth",block:"end"});
+}
+
+function calculateGoldKarat(){
+ const weight=parseFloat(document.getElementById("gkWeight").value);
+ const karat=parseFloat(document.getElementById("gkKarat").value);
+ const result=document.getElementById("goldKaratResult");
+ if(!Number.isFinite(weight) || weight<=0){
+  result.innerHTML="❌ Gold Weight உள்ளிடவும்.";
+  return;
+ }
+ const purity=karat/24;
+ const fineGold=weight*purity;
+ result.innerHTML="🥇 <b>Karat:</b> "+karat+"K<br><br>"+
+  "📊 <b>Purity:</b> "+(purity*100).toFixed(2)+"%<br><br>"+
+  "⚖️ <b>Weight:</b> "+weight.toFixed(3)+" g<br><br>"+
+  "✨ <b>Fine Gold:</b> "+fineGold.toFixed(3)+" g";
+}
+
+function goldStoneTest(){
+ const box=document.createElement("div");
+ box.className="msg ai";
+ box.innerHTML=`
+ <div class="report-box">
+  <div class="report-head">
+   <h2>🧪 TOUCH STONE + ACID GUIDE</h2>
+   <div>SASIKUMAR AI • Gold Appraiser</div>
+  </div>
+  <h3>🔬 Practical Screening Guide</h3>
+  <table class="report-table">
+   <tr><th>Observation</th><th>Possible Indication</th></tr>
+   <tr><td>Yellow streak remains strong</td><td>Higher gold content may be indicated</td></tr>
+   <tr><td>Streak fades after comparison</td><td>Lower karat may be indicated</td></tr>
+   <tr><td>Strong reaction / streak disappears</td><td>Further testing required</td></tr>
+  </table>
+  <div style="margin-top:15px;padding:12px">
+   ⚠️ <b>Safety & Appraiser Note</b><br>
+   Acid testing should be performed only with appropriate professional procedures and protective equipment.<br><br>
+   Touch-stone testing is a screening method only; it does not by itself prove exact purity.<br>
+   Final confirmation: XRF / certified assay.
+  </div>
+ </div>`;
+ const chat=document.querySelector(".chat") || document.querySelector("#chat") || document.body;
+ chat.appendChild(box);
+ box.scrollIntoView({behavior:"smooth",block:"end"});
+}
+
+function goldRiskTool(){
+ const box=document.createElement("div");
+ box.className="msg ai";
+ box.innerHTML=`
+ <div class="report-box">
+  <div class="report-head">
+   <h2>⚠️ GOLD RISK ASSESSMENT</h2>
+   <div>SASIKUMAR AI • Gold Appraiser</div>
+  </div>
+  <h3>📊 Practical Screening Checklist</h3>
+  <table class="report-table">
+   <tr><td>Purity / hallmark concern</td><td><select id="riskPurity"><option value="0">Low</option><option value="25">Concern</option><option value="50">High</option></select></td></tr>
+   <tr><td>Stone / non-gold material concern</td><td><select id="riskStone"><option value="0">Low</option><option value="20">Concern</option><option value="40">High</option></select></td></tr>
+   <tr><td>Weight / density mismatch</td><td><select id="riskDensity"><option value="0">Low</option><option value="20">Concern</option><option value="40">High</option></select></td></tr>
+  </table>
+  <button class="loan-calc" onclick="calculateGoldRisk()">⚠️ Calculate Risk</button>
+  <div id="goldRiskResult" style="margin-top:15px"></div>
+ </div>`;
+ const chat=document.querySelector(".chat") || document.querySelector("#chat") || document.body;
+ chat.appendChild(box);
+ box.scrollIntoView({behavior:"smooth",block:"end"});
+}
+
+function calculateGoldRisk(){
+ const p=Number(document.getElementById("riskPurity").value);
+ const s=Number(document.getElementById("riskStone").value);
+ const d=Number(document.getElementById("riskDensity").value);
+ const score=Math.min(100,p+s+d);
+ let level="🟢 LOW RISK";
+ if(score>=60) level="🔴 HIGH RISK";
+ else if(score>=30) level="🟠 MEDIUM RISK";
+ document.getElementById("goldRiskResult").innerHTML=
+  "⚠️ <b>Risk Score:</b> "+score+"%<br><br>"+
+  "<b>Assessment:</b> "+level+"<br><br>"+
+  "⚠️ Screening assessment மட்டும். Final lending / purity decisionக்கு physical verification மற்றும் applicable internal policy பயன்படுத்தவும்.";
+}
+
+function goldPractical(){
+
+ const box=document.createElement("div");
+ box.className="msg ai";
+
+ box.innerHTML=`
+ <div class="report-box">
+
+   <div class="report-head">
+     <h2>⚖️ GOLD EXPERT PRACTICAL TEST</h2>
+     <div>SASIKUMAR AI • Gold Appraiser</div>
+   </div>
+
+   <h3>🔬 Density / Specific Gravity Test</h3>
+
+   <table class="report-table">
+     <tr>
+       <td>Air Weight (g)</td>
+       <td><input id="gpAir" type="number" step="0.001" placeholder="Example: 10.000"></td>
+     </tr>
+
+     <tr>
+       <td>Water Weight (g)</td>
+       <td><input id="gpWater" type="number" step="0.001" placeholder="Example: 9.480"></td>
+     </tr>
+   </table>
+
+   <button class="loan-calc" onclick="calculateGoldPractical()">
+     🔬 Calculate Density
+   </button>
+
+   <div id="goldPracticalResult" style="margin-top:15px"></div>
+
+ </div>
+ `;
+
+ const chat=document.querySelector(".chat") ||
+            document.querySelector("#chat") ||
+            document.body;
+
+ chat.appendChild(box);
+
+ box.scrollIntoView({behavior:"smooth",block:"end"});
+}
+
+
+function calculateGoldPractical(){
+
+ const air=parseFloat(document.getElementById("gpAir").value);
+ const water=parseFloat(document.getElementById("gpWater").value);
+ const result=document.getElementById("goldPracticalResult");
+
+ if(!Number.isFinite(air) || !Number.isFinite(water)){
+   result.innerHTML="❌ Air Weight மற்றும் Water Weight உள்ளிடவும்.";
+   return;
+ }
+
+ if(air<=0 || water<=0 || water>=air){
+   result.innerHTML="❌ Weight values சரிபார்க்கவும். Water reading, Air weight-ஐ விட குறைவாக இருக்க வேண்டும்.";
+   return;
+ }
+
+ const density=air/(air-water);
+
+ let estimate="";
+
+ if(density>=19.0){
+   estimate="🟢 24K அருகிலான density range";
+ }else if(density>=17.3){
+   estimate="🟡 22K அருகிலான range";
+ }else if(density>=16.5){
+   estimate="🟡 21K அருகிலான range";
+ }else if(density>=15.0){
+   estimate="🟠 18K–20K range இருக்கலாம்";
+ }else{
+   estimate="🔴 Low density — மேலும் testing தேவை";
+ }
+
+ result.innerHTML=
+   "⚖️ <b>Specific Gravity / Density:</b> "+
+   density.toFixed(3)+"<br><br>"+
+   "<b>Practical indication:</b> "+estimate+
+   "<br><br>"+
+   "⚠️ இது ஒரு screening/practical indication மட்டும். "+
+   "Alloy composition, stones, cavities மற்றும் test conditions காரணமாக result மாறலாம். "+
+   "Final purity confirmationக்கு XRF/assay testing பயன்படுத்தவும்.";
+}
+
+
+function printAppraisalReport(btn){
+  const report=btn.closest(".report-box");
+  if(!report){
+    alert("Appraisal Report not found.");
+    return;
+  }
+
+  const w=window.open("", "_blank");
+  if(!w){
+    alert("Please allow pop-ups for Print / PDF.");
+    return;
+  }
+
+  w.document.write(`
+    <!doctype html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>SASIKUMAR AI - Appraisal Report</title>
+      <style>
+        body{font-family:Arial,sans-serif;margin:20px;color:#111}
+        .report-box{max-width:850px;margin:auto}
+        .report-head{text-align:center;margin-bottom:20px}
+        .report-head h2{margin:0 0 6px}
+        table{width:100%;border-collapse:collapse}
+        td,th{border:1px solid #999;padding:9px;text-align:left}
+        td:first-child{font-weight:bold;width:32%}
+        input,textarea{width:100%;box-sizing:border-box;border:0;font:inherit}
+        img{max-width:100%;height:auto}
+        button{display:none}
+        @media print{body{margin:10mm}}
+      </style>
+    </head>
+    <body>
+      ${report.outerHTML}
+      <div id="printScriptPlaceholder"></div>
+      ${String.fromCharCode(60)}script>
+        document.querySelectorAll("input,textarea").forEach(function(el){
+          const span=document.createElement("span");
+          span.textContent=el.value || "";
+          el.replaceWith(span);
+        });
+        window.onload=function(){
+          setTimeout(function(){window.print();},300);
+        };
+      ${String.fromCharCode(60)}/script>
+    <a href="/developer/recharge.html" class="recharge-btn" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:14px;text-decoration:none;font-weight:700;background:linear-gradient(135deg,#00c853,#00a844);color:#fff;box-shadow:0 6px 18px rgba(0,200,83,.25);">📱 Mobile Recharge</a>
+
+<script>
+(function(){
+  const loc=document.getElementById("skUserLocation");
+  const weather=document.getElementById("skWeatherInfo");
+  if(loc) loc.textContent="Detecting location...";
+  if(!navigator.geolocation){
+    if(loc) loc.textContent="Location unavailable";
+    if(weather) weather.textContent="Weather unavailable";
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(async function(pos){
+    const lat=pos.coords.latitude, lon=pos.coords.longitude;
+    try{
+      const r=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lon+"&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&timezone=auto");
+      const d=await r.json();
+      if(loc) loc.textContent=lat.toFixed(2)+", "+lon.toFixed(2);
+      if(weather && d.current){
+        weather.textContent=d.current.temperature_2m+"°C • Humidity "+d.current.relative_humidity_2m+"% • Wind "+d.current.wind_speed_10m+" km/h";
+      }
+    }catch(e){
+      if(weather) weather.textContent="Weather temporarily unavailable";
+    }
+  },function(){
+    if(loc) loc.textContent="Location permission needed";
+    if(weather) weather.textContent="Weather unavailable";
+  },{enableHighAccuracy:false,timeout:10000,maximumAge:300000});
+})();
+${String.fromCharCode(60)}/script>
+
+<!-- SASIKUMAR AI RETAIL -->
+<button id="sasikumarRetailDashboardBtn" type="button" onclick="document.getElementById('sasikumarRetailCard')?.scrollIntoView({behavior:'smooth',block:'start'})" style="display:block;width:100%;margin:12px 0;padding:16px;border:0;border-radius:18px;background:linear-gradient(135deg,#fff3b0,#ffd6a5,#d8f3dc);font-size:17px;font-weight:800;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.12);">🛍️ SASIKUMAR AI RETAIL</button><section id="sasikumarRetailCard" class="skCard" style="margin:18px 0;padding:20px;border-radius:24px;background:linear-gradient(135deg,#fff7e6,#eef7ff,#f4edff);box-shadow:0 10px 30px rgba(0,0,0,.12);">
+  <h2 style="margin:0 0 8px;">🛍️ SASIKUMAR AI Retail</h2>
+  <p style="margin:0 0 14px;">Shop products from trusted company links</p>
+
+  <button type="button" onclick="document.getElementById('skRetailShop').scrollIntoView({behavior:'smooth'})"
+    style="width:100%;padding:14px;border:0;border-radius:16px;font-weight:700;cursor:pointer;">
+    🛒 SHOP
+  </button>
+
+  <div id="skRetailShop" style="margin-top:16px;display:grid;gap:12px;">
+    <div style="padding:15px;border-radius:18px;background:#fff;">
+      <b>1️⃣ Meesho</b><br>
+      <input id="skMeeshoSearch" type="search" placeholder="Search Meesho products"
+        style="width:100%;box-sizing:border-box;margin:10px 0;padding:12px;border-radius:12px;border:1px solid #ccc;">
+      <button type="button" onclick="skRetailSearch('meesho')">🔎 Search / Open</button>
+    </div>
+
+    <div style="padding:15px;border-radius:18px;background:#fff;">
+      <b>2️⃣ Flipkart</b><br>
+      <input id="skFlipkartSearch" type="search" placeholder="Search Flipkart products"
+        style="width:100%;box-sizing:border-box;margin:10px 0;padding:12px;border-radius:12px;border:1px solid #ccc;">
+      <button type="button" onclick="skRetailSearch('flipkart')">🔎 Search / Open</button>
+    </div>
+
+    <div style="padding:15px;border-radius:18px;background:#fff;">
+      <b>3️⃣ All Companies</b><br>
+      <button type="button" onclick="skRetailAllCompanies()">🏢 View Companies</button>
+    </div>
+
+    <div style="padding:15px;border-radius:18px;background:#fff;">
+      <b>4️⃣ Other Company</b><br>
+      <button type="button" onclick="alert('Company link can be added from Retail Admin.')">🔗 Open</button>
+    </div>
+
+    <div style="padding:15px;border-radius:18px;background:#fff;">
+      <b>6️⃣ Custom Company</b><br>
+      <button type="button" onclick="alert('Custom company link can be added from Retail Admin.')">🔗 Open</button>
+    </div>
+  </div>
+
+  <!-- Referral Business intentionally hidden from customer view -->
+  <div id="skRetailReferralBusiness" style="display:none!important;"></div>
+</section>
+
+<script>
+function skRetailSearch(company){
+  const id = company === 'meesho' ? 'skMeeshoSearch' : 'skFlipkartSearch';
+  const q = (document.getElementById(id)?.value || '').trim();
+  if(!q){ alert('Please enter a product to search.'); return; }
+
+  const base = company === 'meesho'
+    ? 'https://www.meesho.com/search?q='
+    : 'https://www.flipkart.com/search?q=';
+
+  window.open(base + encodeURIComponent(q), '_blank', 'noopener');
+}
+
+function skRetailAllCompanies(){
+  alert('Shop: Meesho • Flipkart • Other Companies');
+}
+</script>
+<!-- SASIKUMAR AI PAY2ALL -->
+<section id="sasikumarPay2AllCard" class="skCard" style="margin:18px 0;padding:20px;border-radius:24px;background:linear-gradient(135deg,#e8f7ff,#f4edff,#fff3df);box-shadow:0 10px 30px rgba(0,0,0,.12);">
+<h2 style="margin:0 0 8px;">💳 SASIKUMAR AI Pay2All</h2>
+<p>All Services</p>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">
+<button type="button" onclick="skPay2AllOpen('Recharge')">📱 1. Recharge</button>
+<button type="button" onclick="skPay2AllOpen('Booking')">📅 2. Booking</button>
+<button type="button" onclick="skPay2AllOpen('AEPS')">🏦 3. AEPS</button>
+<button type="button" onclick="skPay2AllOpen('PAN')">🪪 4. PAN</button>
+<button type="button" onclick="skPay2AllOpen('Ticket')">🎫 5. Ticket</button>
+<button type="button" onclick="skPay2AllOpen('Bill Payment')">💡 6. Bill Payment</button>
+<button type="button" onclick="skPay2AllOpen('Money Transfer')">💸 7. Money Transfer</button>
+<button type="button" onclick="skPay2AllOpen('Insurance')">🛡️ 8. Insurance</button>
+<button type="button" onclick="skPay2AllOpen('Other Services')">📋 9. Other Services</button>
+</div>
+</section>
+<script>
+function skPay2AllOpen(service){
+alert('SASIKUMAR AI Pay2AllSelected Service: '+service);
+}
+<\/script>
+<!-- SASIKUMAR_AI_BUSINESS_SHOP_DASHBOARD -->
+<style>
+.sasikumarBusinessShop{
+  margin:18px 0;
+  padding:20px;
+  border-radius:24px;
+  background:linear-gradient(135deg,#071b36,#123b68,#081426);
+  color:#fff;
+  box-shadow:0 12px 35px rgba(0,0,0,.28);
+  border:1px solid rgba(255,255,255,.16);
+}
+.sasikumarBusinessShop h2{
+  margin:0 0 6px;
+  font-size:25px;
+}
+.sasikumarBusinessShop .shopSub{
+  opacity:.82;
+  margin-bottom:16px;
+}
+.sasikumarShopSearch{
+  width:100%;
+  box-sizing:border-box;
+  padding:13px 15px;
+  border:0;
+  border-radius:14px;
+  margin-bottom:14px;
+  font-size:15px;
+}
+.sasikumarShopGrid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+.sasikumarShopBtn{
+  border:0;
+  border-radius:17px;
+  padding:16px 10px;
+  min-height:82px;
+  cursor:pointer;
+  font-weight:700;
+  font-size:14px;
+  color:#fff;
+  background:linear-gradient(135deg,#1769aa,#263b80);
+  box-shadow:0 7px 18px rgba(0,0,0,.25);
+}
+.sasikumarShopBtn:active{
+  transform:scale(.97);
+}
+.sasikumarShopResult{
+  margin-top:14px;
+  padding:13px;
+  border-radius:14px;
+  background:rgba(255,255,255,.08);
+  display:none;
+}
+@media(max-width:600px){
+  .sasikumarShopGrid{grid-template-columns:1fr 1fr}
+  .sasikumarBusinessShop{padding:16px}
+}
+</style>
+
+<section class="sasikumarBusinessShop" id="sasikumarBusinessShop">
+  <h2>🏪 SASIKUMAR AI BUSINESS SHOP</h2>
+  <div class="shopSub">Business Shopping & Affiliate Marketing Hub</div>
+
+  <input
+    id="sasikumarShopSearch"
+    class="sasikumarShopSearch"
+    type="search"
+    placeholder="🔎 Search company / product..."
+    oninput="sasikumarShopSearch()"
+  >
+
+  <div class="sasikumarShopGrid">
+    <button class="sasikumarShopBtn" onclick="sasikumarOpenShop('Meesho')">
+      🛍️<br>Meesho
+    </button>
+
+    <button class="sasikumarShopBtn" onclick="sasikumarOpenShop('Flipkart')">
+      🛒<br>Flipkart
+    </button>
+
+    <button class="sasikumarShopBtn" onclick="sasikumarOpenShop('All Companies')">
+      🏢<br>All Companies
+    </button>
+
+    <button class="sasikumarShopBtn" onclick="sasikumarOpenShop('Other Company')">
+      ➕<br>Other Company
+    </button>
+
+    <button class="sasikumarShopBtn" onclick="sasikumarOpenShop('Custom Company')">
+      ⚙️<br>Custom Company
+    </button>
+
+    <button class="sasikumarShopBtn" onclick="sasikumarAffiliate()">
+      🔗<br>Affiliate Marketing
+    </button>
+
+    <button class="sasikumarShopBtn" onclick="sasikumarCommission()">
+      📊<br>Sales & Commission
+    </button>
+
+    <button class="sasikumarShopBtn" onclick="sasikumarReferral()">
+      👥<br>Referral
+    </button>
+  </div>
+
+  <div id="sasikumarShopResult" class="sasikumarShopResult"></div>
+</section>
+
+<script>
+(function(){
+  window.sasikumarShopSearch = function(){
+    const q = (document.getElementById("sasikumarShopSearch")?.value || "").trim();
+    const box = document.getElementById("sasikumarShopResult");
+    if(!box) return;
+
+    if(!q){
+      box.style.display = "none";
+      box.innerHTML = "";
+      return;
+    }
+
+    box.style.display = "block";
+    box.innerHTML =
+      "<b>🔎 Shop Search</b><br>" +
+      "Searching for: <strong>" +
+      q.replace(/[&<>"']/g, function(x){
+        return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[x];
+      }) +
+      "</strong><br><small>Select a company above to continue.</small>";
+  };
+
+  window.sasikumarOpenShop = function(company){
+    const box = document.getElementById("sasikumarShopResult");
+    if(!box) return;
+
+    box.style.display = "block";
+    box.innerHTML =
+      "<b>🏪 " + company + "</b><br>" +
+      "<small>Company / affiliate destination can be configured here.</small>";
+  };
+
+  window.sasikumarAffiliate = function(){
+    const box = document.getElementById("sasikumarShopResult");
+    if(!box) return;
+    box.style.display = "block";
+    box.innerHTML =
+      "<b>🔗 Affiliate Marketing</b><br>" +
+      "<small>Referral links, clicks, sales and commission tracking.</small>";
+  };
+
+  window.sasikumarCommission = function(){
+    const box = document.getElementById("sasikumarShopResult");
+    if(!box) return;
+    box.style.display = "block";
+    box.innerHTML =
+      "<b>📊 Sales & Commission</b><br>" +
+      "<small>Track affiliate sales and commission history.</small>";
+  };
+
+  window.sasikumarReferral = function(){
+    const box = document.getElementById("sasikumarShopResult");
+    if(!box) return;
+    box.style.display = "block";
+    box.innerHTML =
+      "<b>👥 Referral</b><br>" +
+      "<small>Referral code and customer referral tracking.</small>";
+  };
+})();
+</script>
+<!-- /SASIKUMAR_AI_BUSINESS_SHOP_DASHBOARD -->
+
+</body>
+    </html>
+  `);
+
+  w.document.close();
+}
+
+function goldReport(){
+
+ const box=document.createElement("div");
+ box.className="msg ai";
+ const id=Date.now();
+ const saved=JSON.parse(localStorage.getItem("sasikumarAppraisalReport")||"null");
+
+ box.innerHTML=`
+ <div class="report-box" id="appraisalReport${id}">
+   <div class="report-head">
+     <h2>📋 APPRAISER REPORT</h2>
+     <div>SASIKUMAR AI • Gold Appraiser</div>
+   </div>
+
+   <table class="report-table">
+    <tr><td>Customer Name</td><td><input id="arName${id}" type="text" placeholder="Customer Name"></td></tr>
+    <tr><td>Phone</td><td><input id="arPhone${id}" type="tel" placeholder="Phone Number"></td></tr>
+    <tr><td>Gross Weight (g)</td><td><input id="arGross${id}" type="number" step="0.001" placeholder="Example: 10.000"></td></tr>
+    <tr><td>Stone Weight (g)</td><td><input id="arStone${id}" type="number" step="0.001" value="0"></td></tr>
+    <tr><td>Net Gold Weight (g)</td><td><input id="arNet${id}" type="number" step="0.001" readonly></td></tr>
+    <tr><td>Purity / Karat</td>
+      <td><select id="arKarat${id}">
+       <option value="24">24K</option>
+       <option value="22" selected>22K</option>
+       <option value="18">18K</option>
+       <option value="14">14K</option>
+       <option value="916">916</option>
+      </select></td>
+    </tr>
+    <tr><td>Gold Rate / g</td><td><input id="arRate${id}" type="number" step="0.01" placeholder="Rate per gram"></td></tr>
+    <tr><td>Estimated Gold Value</td><td><input id="arValue${id}" type="number" step="0.01" readonly></td></tr>
+    <tr><td>Remarks</td><td><textarea id="arRemarks${id}" rows="3" placeholder="Appraisal remarks"></textarea></td></tr>
+   </table>
+
+   <h3>📷 Gold Image</h3>
+   <input id="arCamera${id}" type="file" accept="image/*" capture="environment" style="display:none">
+   <input id="arUpload${id}" type="file" accept="image/*" style="display:none">
+
+   <button class="loan-calc" onclick="document.getElementById('arCamera${id}').click()">📷 Web Camera</button>
+   <button class="loan-calc" onclick="document.getElementById('arUpload${id}').click()">🖼️ Upload Image</button>
+   <div id="arPreview${id}" style="margin-top:12px"></div>
+
+   <h3>📞 Appraiser Contact</h3>
+   <div style="line-height:1.8">
+    📱 Cell: <b>98944 40400</b><br>
+    💬 WhatsApp: <b>95850 80842</b><br>
+    📧 Email: <b>gsasikumar2000@gmail.com</b><br>
+    📍 PIN Code: <b>614202</b>
+   </div>
+
+   <div class="report-actions">
+    <button onclick="saveAppraisalReport('${id}')">💾 Save Report</button>
+    <button onclick="loadAppraisalReport('${id}')">📂 Load Saved</button>
+    <button onclick="clearAppraisalReport('${id}')">🗑️ Clear</button>
+    <button onclick="printAppraisalReport(this)">🖨️ Print / PDF</button>
+   </div>
+ </div>`;
+
+ const chat=document.querySelector("#chat") || document.body;
+ chat.appendChild(box);
+
+ function calc(){
+   const gross=parseFloat(document.getElementById("arGross"+id).value)||0;
+   const stone=parseFloat(document.getElementById("arStone"+id).value)||0;
+   const net=Math.max(0,gross-stone);
+   const rate=parseFloat(document.getElementById("arRate"+id).value)||0;
+   document.getElementById("arNet"+id).value=net.toFixed(3);
+   document.getElementById("arValue"+id).value=(net*rate).toFixed(2);
+ }
+
+ document.getElementById("arGross"+id).oninput=calc;
+ document.getElementById("arStone"+id).oninput=calc;
+ document.getElementById("arRate"+id).oninput=calc;
+
+ function preview(file){
+   if(!file) return;
+   const reader=new FileReader();
+   reader.onload=function(e){
+    document.getElementById("arPreview"+id).innerHTML=
+     '<img src="'+e.target.result+'" style="max-width:100%;max-height:300px;border-radius:10px;border:1px solid #ccc">';
+   };
+   reader.readAsDataURL(file);
+ }
+
+ document.getElementById("arCamera"+id).onchange=function(){preview(this.files[0]);};
+ document.getElementById("arUpload"+id).onchange=function(){preview(this.files[0]);};
+
+ if(saved){
+   document.getElementById("arName"+id).value=saved.name||"";
+   document.getElementById("arPhone"+id).value=saved.phone||"";
+   document.getElementById("arGross"+id).value=saved.gross||"";
+   document.getElementById("arStone"+id).value=saved.stone||0;
+   document.getElementById("arKarat"+id).value=saved.karat||"22";
+   document.getElementById("arRate"+id).value=saved.rate||"";
+   document.getElementById("arRemarks"+id).value=saved.remarks||"";
+   calc();
+ }
+}
+
+function saveAppraisalReport(id){
+ const get=(key)=>{
+   const el=document.getElementById(key+id);
+   return el ? el.value : "";
+ };
+
+ const data={
+  name:get("arName"),
+  phone:get("arPhone"),
+  gross:get("arGross"),
+  stone:get("arStone"),
+  net:get("arNet"),
+  karat:get("arKarat"),
+  rate:get("arRate"),
+  value:get("arValue"),
+  remarks:get("arRemarks"),
+  savedAt:new Date().toLocaleString("en-IN")
+ };
+
+ localStorage.setItem("sasikumarAppraisalReport",JSON.stringify(data));
+ alert("✅ Appraisal Report saved successfully.");
+}
+
+function loadAppraisalReport(id){
+ const data=JSON.parse(localStorage.getItem("sasikumarAppraisalReport")||"null");
+ if(!data){alert("No saved Appraisal Report found.");return;}
+
+ const set=(key,value)=>{
+   const el=document.getElementById(key+id);
+   if(el) el.value=value ?? "";
+ };
+
+ set("arName",data.name);
+ set("arPhone",data.phone);
+ set("arGross",data.gross);
+ set("arStone",data.stone);
+ set("arNet",data.net);
+ set("arKarat",data.karat || "22");
+ set("arRate",data.rate);
+ set("arValue",data.value);
+ set("arRemarks",data.remarks);
+
+ const gross=document.getElementById("arGross"+id);
+ if(gross) gross.dispatchEvent(new Event("input",{bubbles:true}));
+
+ alert("📂 Saved Appraisal Report loaded successfully.");
+}
+
+function clearAppraisalReport(id){
+ ["arName","arPhone","arGross","arStone","arRate","arRemarks"].forEach(x=>{
+  const el=document.getElementById(x+id);
+  if(el) el.value="";
+ });
+ document.getElementById("arStone"+id).value="0";
+ document.getElementById("arNet"+id).value="";
+ document.getElementById("arValue"+id).value="";
+ alert("🗑️ Current report cleared.");
+}
+
+
+function updateLiveDateTime(){
+ const now=new Date();
+ const date=now.toLocaleDateString("en-IN",{day:"2-digit",month:"2-digit",year:"numeric"});
+ const time=now.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",second:"2-digit",hour12:true});
+ const el=document.getElementById("liveDateTime");
+ if(el) el.textContent="📅 "+date+"  |  🕐 "+time;
+}
+document.addEventListener("DOMContentLoaded",()=>{updateLiveDateTime();setInterval(updateLiveDateTime,1000);});
+</script>
+
+
+<!-- SASIKUMAR_AI_ALL_JOBS_START -->
+
+<!-- SASIKUMAR_AI_FOLDER_BUTTONS -->
+<style>
+.sasikumar-folder-buttons{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin:10px 0;
+}
+.sasikumar-folder-btn{
+  border:1px solid #c9a227;
+  border-radius:10px;
+  padding:7px 11px;
+  background:#fff;
+  color:#222;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+}
+.sasikumar-folder-btn:active{
+  transform:scale(.97);
+}
+</style>
+
+
+<!-- SASIKUMAR AI SETTINGS -->
+<div style="margin:20px 0;padding:16px;border-radius:16px;background:#111;color:#fff;">
+  <h2 style="margin:0 0 14px;">⚙️ SETTINGS</h2>
+
+  <div style="display:grid;gap:10px;">
+    <button type="button" onclick="window.location.href='/communication.html'">
+      📞 Communication
+    </button>
+
+    <button type="button" onclick="window.location.href='/privacy-policy.html'">
+      🔒 Privacy Policy
+    </button>
+
+    <button type="button" onclick="window.location.href='/disclaimer.html'">
+      ⚠️ Disclaimer
+    </button>
+
+    <button type="button" onclick="window.location.href='/mission.html'">
+      🎯 Mission
+    </button>
+
+    <button type="button" onclick="window.location.href='/vision.html'">
+      🔭 Vision
+    </button>
+
+    <button type="button" onclick="window.location.href='/social-media.html'">
+      📢 Follow & Share
+    </button>
+  </div>
+</div>
+
+<script>
+
+function openEducationFolder(){
+  const oldBox = document.getElementById("sasikumarEducationPanel");
+  if(oldBox){
+    oldBox.scrollIntoView({behavior:"smooth"});
+    return;
+  }
+
+  const box = document.createElement("section");
+  box.id = "sasikumarEducationPanel";
+  box.style.cssText =
+    "margin:20px 0;padding:16px;border-radius:16px;background:#111;color:#fff;";
+
+  box.innerHTML = `
+    <h2>📚 EDUCATION DETAILS</h2>
+
+    <h3>🏫 School Education</h3>
+    <p>Class 1 • Class 2 • Class 3 • Class 4 • Class 5 • Class 6 • Class 7 • Class 8 • Class 9 • Class 10 • Class 11 • Class 12</p>
+
+    <h3>📖 Main Subjects</h3>
+    <p>Tamil • English • Mathematics • Physics • Chemistry • Biology • Science • Social Science • History • Geography • Civics • Economics • Computer Science</p>
+
+    <h3>🧮 Mathematics & Equations</h3>
+    <p>Arithmetic • Fractions • Decimals • Algebra • Geometry • Mensuration • Trigonometry • Statistics • Probability • Important Formulas • Old Equations</p>
+
+    <h3>🔬 Science</h3>
+    <p>Physics Concepts • Chemistry Basics • Biology • Human Body • Plants & Animals • Environment • Practical Science</p>
+
+    <h3>💻 Computer & Technology</h3>
+    <p>Computer Basics • Internet Basics • Programming Fundamentals • AI Basics • Cyber Safety • Digital Skills</p>
+
+    <h3>📝 Study & Exam Preparation</h3>
+    <p>Chapter Notes • Important Questions • Previous Questions • Practice Tests • Revision • Quick Notes • Exam Preparation • Doubt Clarification</p>
+
+    <h3>🎓 Higher Education</h3>
+    <p>Diploma • ITI • Polytechnic • Undergraduate Courses • Postgraduate Courses • Skill Development • Career Guidance</p>
+
+    <button type="button" onclick="window.open('/education/equations.html','_blank')">
+      🧮 Open Equations
+    </button>
+
+    <button type="button" onclick="alert('Ask SASIKUMAR AI in Tamil or English for step-by-step education help.')">
+      🤖 Ask SASIKUMAR AI
+    </button>
+  `;
+
+  const target = document.getElementById("allJobs");
+  if(target) target.parentNode.insertBefore(box, target);
+  else document.body.appendChild(box);
+
+  box.scrollIntoView({behavior:"smooth"});
+}
+</script>
+<section id="allJobs" style="margin:20px 0;padding:16px;border-radius:16px;background:#111;color:#fff;">
+
+  <h2>💼 ALL JOBS</h2>
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;">
+    <span style="background:#2563eb;padding:9px 12px;border-radius:22px;font-weight:600;">👔 Employer Registration</span>
+    <span style="background:#f59e0b;padding:9px 12px;border-radius:22px;font-weight:600;">🟡 Screening</span>
+    <span style="background:#16a34a;padding:9px 12px;border-radius:22px;font-weight:600;">🟢 LIVE JOB</span>
+    <span style="background:#dc2626;padding:9px 12px;border-radius:22px;font-weight:600;">🔴 Expired</span>
+  </div>
+
+  <div style="padding:12px;border:1px solid #777;border-radius:12px;margin:12px 0;background:#181818;">
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <button type="button" onclick="showEmployerJobForm()">👔 1. Register</button>
+    <button type="button" onclick="showJobCamera()">📷 2. Camera</button>
+    <button type="button" onclick="showJobUpload()">📤 3. Upload</button>
+    <button type="button" onclick="showJobMessage()">💬 4. Message</button>
+    <button type="button" onclick="showLiveJobSearch()">🔴 Live Job</button>
+  </div>
+
+  <!-- EMPLOYER REGISTER -->
+  <div id="sjEmployerForm" style="display:none;margin-top:15px;">
+
+    <h3>👔 Employer Registration</h3>
+
+    <input id="sjCompany" placeholder="Company / Shop Name"
+      style="width:100%;margin:5px 0;padding:10px;">
+
+    <input id="sjTitle" placeholder="Job Title"
+      style="width:100%;margin:5px 0;padding:10px;">
+
+    <select id="sjType"
+      style="width:100%;margin:5px 0;padding:10px;">
+      <option value="">Job Type</option>
+      <option>Full Time</option>
+      <option>Part Time</option>
+      <option>Contract</option>
+      <option>Work From Home</option>
+    </select>
+
+    <input id="sjQualification" placeholder="Qualification"
+      style="width:100%;margin:5px 0;padding:10px;">
+
+    <input id="sjExperience" placeholder="Experience"
+      style="width:100%;margin:5px 0;padding:10px;">
+
+    <input id="sjVacancies" type="number" min="1" placeholder="Vacancies"
+      style="width:100%;margin:5px 0;padding:10px;">
+
+    <input id="sjSalary" placeholder="Salary"
+      style="width:100%;margin:5px 0;padding:10px;">
+
+    <input id="sjLocation" placeholder="District / Taluk / Location"
+      style="width:100%;margin:5px 0;padding:10px;">
+
+    <input id="sjHours" placeholder="Working Hours"
+      style="width:100%;margin:5px 0;padding:10px;">
+
+    <input id="sjWhatsapp" type="tel"
+      placeholder="WhatsApp Number"
+      style="width:100%;margin:5px 0;padding:10px;">
+
+    <textarea id="sjDescription"
+      placeholder="Job Details"
+      rows="4"
+      style="width:100%;margin:5px 0;padding:10px;"></textarea>
+
+    <textarea id="sjRequirements"
+      placeholder="📋 New Job Requirements"
+      rows="4"
+      style="width:100%;margin:5px 0;padding:10px;"></textarea>
+
+    <label style="display:block;margin-top:10px;">
+      📅 Job Closing Date
+    </label>
+
+    <input id="sjClosingDate" type="date"
+      style="width:100%;margin:5px 0;padding:10px;">
+
+    <label style="display:block;margin-top:10px;">
+      📷 Camera / Poster Image
+    </label>
+
+    <input id="sjCameraFile"
+      type="file"
+      accept="image/*"
+      capture="environment"
+      style="width:100%;margin:5px 0;padding:10px;">
+
+    <label style="display:block;margin-top:10px;">
+      📤 Upload Job Poster
+    </label>
+
+    <input id="sjUploadFile"
+      type="file"
+      accept="image/*"
+      style="width:100%;margin:5px 0;padding:10px;">
+
+    <img id="sjPosterPreview"
+      style="display:none;width:100%;max-width:420px;margin:10px auto;border-radius:12px;"
+      alt="Job Poster Preview">
+
+    <textarea id="sjMessage"
+      placeholder="📰 Extra message / Job advertisement"
+      rows="3"
+      style="width:100%;margin:5px 0;padding:10px;"></textarea>
+
+    <button type="button" onclick="submitSasikumarJob()">
+      📤 Submit Post
+    </button>
+
+    <div id="sjSubmitResult" style="margin-top:10px;"></div>
+  </div>
+
+  <!-- CAMERA -->
+  <div id="sjCamera" style="display:none;margin-top:15px;">
+
+    <h3>📷 Camera</h3>
+
+    <input id="sjCameraStandalone"
+      type="file"
+      accept="image/*"
+      capture="environment"
+      style="width:100%;padding:10px;">
+
+    <button type="button" onclick="submitCameraJob()">
+      📤 Submit Camera Post
+    </button>
+
+    <div id="sjCameraResult" style="margin-top:10px;"></div>
+  </div>
+
+  <!-- UPLOAD -->
+  <div id="sjUpload" style="display:none;margin-top:15px;">
+
+    <h3>📤 Upload</h3>
+
+    <input id="sjUploadStandalone"
+      type="file"
+      accept="image/*,.pdf"
+      style="width:100%;padding:10px;">
+
+    <button type="button" onclick="submitUploadJob()">
+      📤 Submit Upload Post
+    </button>
+
+    <div id="sjUploadResult" style="margin-top:10px;"></div>
+  </div>
+
+  <!-- MESSAGE -->
+  <div id="sjMessageBox" style="display:none;margin-top:15px;">
+
+    <h3>💬 Message</h3>
+
+    <textarea id="sjMessageText"
+      placeholder="Type employer / job registration details..."
+      rows="7"
+      style="width:100%;padding:10px;"></textarea>
+
+    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:8px;">
+      <button type="button" onclick="copySasikumarJobMessage()">📋 Copy</button>
+      <button type="button" onclick="submitSasikumarJobMessage()">📤 Submit Post</button>
+    </div>
+
+    <div id="sjMessageResult" style="margin-top:10px;"></div>
+  </div>
+
+  <!-- LIVE JOB SEARCH -->
+  <div id="sjLiveSearch" style="display:block;margin-top:20px;">
+
+    <h3>🔴 LIVE JOB SEARCH</h3>
+
+    <input id="sjSearch"
+      placeholder="Search company / job / location..."
+      oninput="renderSasikumarJobs()"
+      style="width:100%;padding:10px;">
+
+    <div id="sjLiveResults" style="margin-top:12px;"></div>
+
+  </div>
+
+</section>
+
+<script>
+
+(function(){
+
+  const KEY = 'sasikumarEmployerJobs';
+
+  function jobs(){
+    try {
+      const raw = JSON.parse(localStorage.getItem(KEY) || '[]');
+
+      if(!Array.isArray(raw)) return [];
+
+      const valid = raw.filter(j =>
+        j &&
+        typeof j === 'object' &&
+        String(j.id || '').trim() &&
+        String(j.company || '').trim() &&
+        String(j.title || '').trim()
+      );
+
+      if(valid.length !== raw.length){
+        localStorage.setItem(KEY, JSON.stringify(valid));
+      }
+
+      return valid;
+    } catch(e) {
+      console.error('Job storage read error:', e);
+      return [];
+    }
+  }
+
+  function save(list){
+    try{
+      localStorage.setItem(KEY, JSON.stringify(list));
+      console.log('✅ Jobs saved. Poster images:',
+        Array.isArray(list) ? list.filter(j => j && j.posterImage).length : 0
+      );
+      return true;
+    }catch(e){
+      console.error('Job storage save failed:', e);
+      alert('⚠️ Job could not be saved because browser storage is full. Please use a smaller poster image.');
+      return false;
+    }
+  }
+
+  function esc(value){
+    return String(value || '')
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;')
+      .replace(/'/g,'&#039;');
+  }
+
+  function hideAll(){
+    [
+      'sjEmployerForm',
+      'sjCamera',
+      'sjUpload',
+      'sjMessageBox',
+      'sjLiveSearch'
+    ].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.style.display='none';
+    });
+  }
+
+  function openBox(id){
+    hideAll();
+    const el=document.getElementById(id);
+    if(el){
+      el.style.display='block';
+      el.scrollIntoView({behavior:'smooth',block:'start'});
+    }
+  }
+
+  window.showEmployerJobForm=function(){
+    openBox('sjEmployerForm');
+  };
+
+  window.showJobCamera=function(){
+    openBox('sjCamera');
+  };
+
+  window.showJobUpload=function(){
+    openBox('sjUpload');
+  };
+
+  window.showJobMessage=function(){
+    openBox('sjMessageBox');
+  };
+
+  window.showLiveJobSearch=function(){
+    openBox('sjLiveSearch');
+    renderSasikumarJobs();
+  };
+
+  function makeId(){
+    return 'JOB-' + Date.now() + '-' +
+      Math.random().toString(36).slice(2,7).toUpperCase();
+  }
+
+  function readImage(file, callback){
+    if(!file){
+      callback('');
+      return;
+    }
+
+    if(!file.type.startsWith('image/')){
+      callback('');
+      return;
+    }
+
+    const reader=new FileReader();
+
+    reader.onload=function(e){
+      callback(e.target.result || '');
+    };
+
+    reader.onerror=function(){
+      callback('');
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  function normalizeWhatsApp(value){
+    let n=String(value || '').replace(/\D/g,'');
+
+    if(n.length===10){
+      n='91'+n;
+    }
+
+    return n;
+  }
+
+  function expireJobs(){
+    const list=jobs();
+    const today=new Date();
+    today.setHours(0,0,0,0);
+
+    let changed=false;
+
+    list.forEach(job=>{
+      if(job.status==='LIVE' && job.closingDate){
+        const close=new Date(job.closingDate+'T23:59:59');
+
+        if(close.getTime() < Date.now()){
+          job.status='EXPIRED';
+          changed=true;
+        }
+      }
+    });
+
+    if(changed) save(list);
+
+    return list;
+  }
+
+  function compressJobPoster(file, callback){
+    if(!file || !file.type.startsWith('image/')){
+      callback('');
+      return;
+    }
+
+    const reader=new FileReader();
+
+    reader.onload=function(e){
+      const img=new Image();
+
+      img.onload=function(){
+        const maxW=1000;
+        const scale=Math.min(1,maxW/img.width);
+
+        const canvas=document.createElement('canvas');
+        canvas.width=Math.max(1,Math.round(img.width*scale));
+        canvas.height=Math.max(1,Math.round(img.height*scale));
+
+        const ctx=canvas.getContext('2d');
+        ctx.drawImage(img,0,0,canvas.width,canvas.height);
+
+        const data=canvas.toDataURL('image/jpeg',0.78);
+        callback(data);
+      };
+
+      img.onerror=function(){
+        console.error('Job poster image decode failed.');
+        callback('');
+      };
+
+      img.src=e.target.result;
+    };
+
+    reader.onerror=function(){
+      console.error('Job poster FileReader failed.');
+      callback('');
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  window.submitSasikumarJob=function(){
+
+    const company=document.getElementById('sjCompany').value.trim();
+    const title=document.getElementById('sjTitle').value.trim();
+    const type=document.getElementById('sjType').value;
+    const location=document.getElementById('sjLocation').value.trim();
+    const whatsapp=document.getElementById('sjWhatsapp').value.trim();
+    const closingDate=document.getElementById('sjClosingDate').value;
+
+    if(!company || !title || !type || !location || !whatsapp){
+      alert('Company, Job Title, Job Type, Location and WhatsApp are required.');
+      return;
+    }
+
+    if(!closingDate){
+      alert('Please select Job Closing Date.');
+      return;
+    }
+
+    const closeTime=new Date(closingDate+'T23:59:59').getTime();
+
+    if(closeTime < Date.now()){
+      alert('Closing Date must be today or a future date.');
+      return;
+    }
+
+    const cameraFile=document.getElementById('sjCameraFile')?.files?.[0];
+    const uploadFile=document.getElementById('sjUploadFile')?.files?.[0];
+    const posterFile=uploadFile || cameraFile;
+
+    const job={
+      id:makeId(),
+      company,
+      title,
+      type,
+      qualification:document.getElementById('sjQualification').value.trim(),
+      experience:document.getElementById('sjExperience').value.trim(),
+      vacancies:document.getElementById('sjVacancies').value.trim(),
+      salary:document.getElementById('sjSalary').value.trim(),
+      location,
+      hours:document.getElementById('sjHours').value.trim(),
+      whatsapp:normalizeWhatsApp(whatsapp),
+      description:document.getElementById('sjDescription').value.trim(),
+      requirements:document.getElementById('sjRequirements').value.trim(),
+      message:document.getElementById('sjMessage').value.trim(),
+      closingDate,
+      posterImage:'',
+      status:'LIVE',
+      createdAt:new Date().toISOString()
+    };
+
+    const finish=function(){
+      const list=jobs();
+      list.push(job);
+      save(list);
+
+      document.getElementById('sjSubmitResult').innerHTML=
+        '<div style="padding:12px;border-radius:10px;background:#222;">' +
+        '✅ <b>Job Post Submitted</b><br>' +
+        '🟢 Status: LIVE<br>' +
+        '🆔 Job ID: '+esc(job.id)+'<br>' +
+        '📅 Closing Date: '+esc(job.closingDate) +
+        '</div>';
+
+      renderSasikumarJobs();
+    };
+
+    if(posterFile){
+      compressJobPoster(posterFile,function(data){
+        job.posterImage=data || '';
+
+        console.log('JOB POSTER DEBUG:', {
+          hasImage: !!job.posterImage,
+          imageLength: job.posterImage.length,
+          imageType: job.posterImage.slice(0,30)
+        });
+
+        finish();
+      });
+    }else{
+      finish();
+    }
+  };
+
+  window.submitCameraJob=function(){
+
+    const file=document.getElementById('sjCameraStandalone')?.files?.[0];
+
+    if(!file){
+      alert('Please capture/select a camera image first.');
+      return;
+    }
+
+    const preview=document.getElementById('sjPosterPreview');
+
+    readImage(file,function(data){
+
+      if(preview && data){
+        preview.src=data;
+        preview.style.display='block';
+      }
+
+      document.getElementById('sjCameraResult').innerHTML=
+        '📷 Camera image ready. You can use Employer Register → Submit Post to publish it.';
+    });
+  };
+
+  window.submitUploadJob=function(){
+
+    const file=document.getElementById('sjUploadStandalone')?.files?.[0];
+
+    if(!file){
+      alert('Please select an image or PDF first.');
+      return;
+    }
+
+    if(file.type==='application/pdf'){
+      document.getElementById('sjUploadResult').innerHTML=
+        '📄 PDF selected: '+esc(file.name)+'<br>' +
+        'Use Employer Register → Submit Post for the job details.';
+      return;
+    }
+
+    readImage(file,function(data){
+
+      const preview=document.getElementById('sjPosterPreview');
+
+      if(preview && data){
+        preview.src=data;
+        preview.style.display='block';
+      }
+
+      document.getElementById('sjUploadResult').innerHTML=
+        '✅ Image uploaded and preview ready.';
+    });
+  };
+
+  window.copySasikumarJobMessage=function(){
+
+    const el=document.getElementById('sjMessageText');
+
+    if(!el || !el.value.trim()){
+      alert('Please enter a message first.');
+      return;
+    }
+
+    if(navigator.clipboard){
+      navigator.clipboard.writeText(el.value);
+    }else{
+      el.select();
+      document.execCommand('copy');
+    }
+
+    alert('📋 Message copied.');
+  };
+
+  window.submitSasikumarJobMessage=function(){
+
+    const text=document.getElementById('sjMessageText').value.trim();
+
+    if(!text){
+      alert('Please enter job details.');
+      return;
+    }
+
+    const data={
+      id:makeId(),
+      source:'MESSAGE',
+      message:text,
+      status:'PENDING',
+      createdAt:new Date().toISOString()
+    };
+
+    const list=jobs();
+    list.push(data);
+    save(list);
+
+    document.getElementById('sjMessageResult').innerHTML=
+      '🟡 Message submitted for screening.<br>' +
+      '🆔 '+esc(data.id);
+  };
+
+  
+// Clean invalid/blank saved jobs before rendering
+window.cleanSasikumarJobs=function(){
+  try{
+    const raw=localStorage.getItem('sasikumarEmployerJobs') || '[]';
+    const list=JSON.parse(raw);
+
+    const clean=Array.isArray(list)
+      ? list.filter(j =>
+          j &&
+          typeof j === 'object' &&
+          String(j.company || '').trim() &&
+          String(j.title || '').trim() &&
+          String(j.location || '').trim()
+        )
+      : [];
+
+    localStorage.setItem('sasikumarEmployerJobs',JSON.stringify(clean));
+    return clean;
+  }catch(e){
+    console.error('Job storage cleanup failed:',e);
+    return [];
+  }
+};
+
+window.renderSasikumarJobs=function(){
+
+  const box=document.getElementById('sjLiveResults');
+  if(!box) return;
+
+  const search=(document.getElementById('sjSearch')?.value || '')
+    .trim().toLowerCase();
+
+  const list=expireJobs();
+
+  const matches=(job)=>{
+    const text=[
+      job.company,
+      job.title,
+      job.location,
+      job.qualification,
+      job.experience,
+      job.type,
+      job.description,
+      job.requirements
+    ].join(' ').toLowerCase();
+
+    return !search || text.includes(search);
+  };
+
+  const live=list.filter(j => j.status==='LIVE' && matches(j));
+
+  const screening=list.filter(j =>
+    j.status==='PENDING' &&
+    matches(j)
+  );
+
+  const expired=list.filter(j =>
+    j.status==='EXPIRED' &&
+    matches(j)
+  );
+
+  const countAll=list.length;
+
+  let html=
+    '<div style="margin-bottom:12px;padding:12px;border-radius:12px;background:#181818;">' +
+    '<b>📊 JOB STATUS</b><br>' +
+    '🟢 LIVE: '+list.filter(j=>j.status==='LIVE').length+
+    ' &nbsp; 🟡 SCREENING: '+list.filter(j=>j.status==='PENDING').length+
+    ' &nbsp; 🔴 EXPIRED: '+list.filter(j=>j.status==='EXPIRED').length+
+    ' &nbsp; 📋 TOTAL: '+countAll+
+    '</div>';
+
+  if(live.length){
+
+    html +=
+      '<h3 style="margin:14px 0 8px;">🟢 LIVE JOB CONTENT</h3>';
+
+    html += live.map(job=>{
+
+      const wa=normalizeWhatsApp(job.whatsapp);
+
+      const waButton=wa
+        ? '<button type="button" onclick="connectJobWhatsApp(\''+
+          esc(job.id)+
+          '\')" style="margin-top:10px;">📱 Connect WhatsApp</button>'
+        : '';
+
+      return '<article style="margin:12px 0;padding:16px;border-radius:14px;background:#222;border:1px solid #444;">' +
+
+        (job.posterImage
+          ? '<img src="'+job.posterImage+
+            '" style="width:100%;max-width:500px;border-radius:12px;margin-bottom:12px;" alt="Job Poster">'
+          : '') +
+
+        '<div style="font-size:12px;margin-bottom:6px;">' +
+        '🟢 <b>LIVE JOB</b>' +
+        '</div>' +
+
+        '<h3 style="margin:6px 0 12px;">💼 '+esc(job.title)+'</h3>' +
+
+        '<b>🏢 Company:</b> '+esc(job.company)+'<br>' +
+        '<b>📍 Location:</b> '+esc(job.location)+'<br>' +
+        '<b>💼 Job Type:</b> '+esc(job.type || '-')+'<br>' +
+        '<b>🎓 Qualification:</b> '+esc(job.qualification || '-')+'<br>' +
+        '<b>🧑‍💼 Experience:</b> '+esc(job.experience || '-')+'<br>' +
+        '<b>👥 Vacancies:</b> '+esc(job.vacancies || '-')+'<br>' +
+        '<b>💰 Salary:</b> '+esc(job.salary || '-')+'<br>' +
+        '<b>🕐 Working Hours:</b> '+esc(job.hours || '-')+'<br>' +
+        '<b>📅 Closing Date:</b> '+esc(job.closingDate || '-')+'<br>' +
+
+        (job.description
+          ? '<div style="margin-top:10px;padding:10px;border-radius:10px;background:#303030;">' +
+            '<b>📝 JOB DETAILS</b><br>'+esc(job.description)+
+            '</div>'
+          : '') +
+
+        (job.requirements
+          ? '<div style="margin-top:10px;padding:10px;border-radius:10px;background:#303030;">' +
+            '<b>📋 REQUIREMENTS</b><br>'+esc(job.requirements)+
+            '</div>'
+          : '') +
+
+        (job.message
+          ? '<div style="margin-top:10px;padding:10px;border-radius:10px;background:#303030;">' +
+            '<b>📰 MESSAGE</b><br>'+esc(job.message)+
+            '</div>'
+          : '') +
+
+        '<div style="margin-top:10px;font-size:12px;opacity:.8;">' +
+        '🆔 Job ID: '+esc(job.id)+
+        '</div>' +
+
+        waButton +
+
+        '</article>';
+
+    }).join('');
+
+  }else{
+
+    html +=
+      '<div style="padding:15px;border-radius:10px;background:#222;">' +
+      '🔎 No LIVE jobs found.' +
+      '</div>';
+
+  }
+
+  if(screening.length){
+
+    html +=
+      '<h3 style="margin:18px 0 8px;">🟡 SCREENING</h3>';
+
+    html += screening.map(job=>
+      '<div style="margin:10px 0;padding:14px;border-radius:12px;background:#332b10;">' +
+      '🟡 <b>Employer Post Under Screening</b><br>' +
+      '🆔 '+esc(job.id)+'<br>' +
+      '📝 '+esc(job.message || 'Job information submitted for screening.') +
+      '</div>'
+    ).join('');
+
+  }
+
+  if(expired.length){
+
+    html +=
+      '<h3 style="margin:18px 0 8px;">🔴 EXPIRED JOBS</h3>';
+
+    html += expired.map(job=>
+      '<div style="margin:10px 0;padding:14px;border-radius:12px;background:#2b1818;">' +
+      '🔴 <b>'+esc(job.title)+'</b><br>' +
+      '🏢 '+esc(job.company)+'<br>' +
+      '📍 '+esc(job.location)+'<br>' +
+      '📅 Closed: '+esc(job.closingDate || '-') +
+      '</div>'
+    ).join('');
+
+  }
+
+  box.innerHTML=html;
+};
+
+window.connectJobWhatsApp=function(id){
+
+    const job=jobs().find(j=>j.id===id);
+
+    if(!job){
+      alert('Job not found.');
+      return;
+    }
+
+    const wa=normalizeWhatsApp(job.whatsapp);
+
+    if(!wa){
+      alert('WhatsApp number is not available.');
+      return;
+    }
+
+    window.open(
+      'https://wa.me/'+wa,
+      '_blank',
+      'noopener,noreferrer'
+    );
+  };
+
+  const camera=document.getElementById('sjCameraFile');
+  const upload=document.getElementById('sjUploadFile');
+
+  function previewFile(file){
+
+    const preview=document.getElementById('sjPosterPreview');
+
+    if(!preview || !file || !file.type.startsWith('image/')) return;
+
+    readImage(file,function(data){
+
+      if(data){
+        preview.src=data;
+        preview.style.display='block';
+      }
+
+    });
+  }
+
+  if(camera){
+    camera.addEventListener('change',function(){
+      previewFile(this.files?.[0]);
+    });
+  }
+
+  if(upload){
+    upload.addEventListener('change',function(){
+      previewFile(this.files?.[0]);
+    });
+  }
+
+  setInterval(function(){
+    if(document.getElementById('sjLiveSearch')?.style.display!=='none'){
+      renderSasikumarJobs();
+    }else{
+      expireJobs();
+    }
+  },60000);
+
+  window.addEventListener('load',function(){
+    expireJobs();
+  });
+
+})();
+</script>
+<!-- SASIKUMAR_AI_ALL_JOBS_END -->
+
+
+<script>
+
+window.showJobFolder=function(){
+  const el=document.getElementById('allJobs');
+  if(el){
+    el.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  if(typeof showLiveJobSearch==='function'){
+    setTimeout(function(){
+      showLiveJobSearch();
+    },300);
+  }
+};
+
+window.showEducationFolder=function(){
+  const el=document.getElementById('educationContent') ||
+           document.getElementById('education') ||
+           document.getElementById('educationFolder');
+
+  if(el){
+    el.style.display='';
+    el.scrollIntoView({behavior:'smooth',block:'start'});
+  }else{
+    alert('📚 EDUCATION FOLDEREducation content will be available here.');
+  }
+};
+
+let replyAttachment = null;
+
+function openReplyFilePicker(camera){
+  const input=document.getElementById("replyFileInput");
+  if(!input)return;
+  input.value="";
+  if(camera){
+    input.accept="image/*";
+    input.setAttribute("capture","environment");
+  }else{
+    input.accept="image/*,.pdf,.txt,.doc,.docx";
+    input.removeAttribute("capture");
+  }
+  input.click();
+}
+
+function noteCamera(){openReplyFilePicker(true);}
+function noteUpload(){openReplyFilePicker(false);}
+
+function showReplyAttachment(file){
+  replyAttachment=file;
+  let box=document.getElementById("replyAttachmentPreview");
+  if(!box){
+    box=document.createElement("div");
+    box.id="replyAttachmentPreview";
+    box.style="margin:6px 0;padding:8px;border:1px solid #ccc;border-radius:10px;background:#f7f7f7;";
+    document.querySelector(".input-area").insertBefore(box,document.querySelector(".input-row"));
+  }
+  box.style.display="block";
+  if(file.type && file.type.startsWith("image/")){
+    const url=URL.createObjectURL(file);
+    box.innerHTML="<div style=\"display:flex;align-items:center;gap:10px\">"+
+      "<img src=\""+url+"\" style=\"width:70px;height:70px;object-fit:cover;border-radius:8px\">"+
+      "<b>📎 "+escapeHtml(file.name)+"</b>"+
+      "<button type=\"button\" onclick=\"removeReplyAttachment()\">✕</button></div>";
+  }else{
+    box.innerHTML="📎 <b>"+escapeHtml(file.name)+"</b> <button type=\"button\" onclick=\"removeReplyAttachment()\">✕</button>";
+  }
+}
+
+function removeReplyAttachment(){
+  replyAttachment=null;
+  const input=document.getElementById("replyFileInput");
+  if(input)input.value="";
+  const box=document.getElementById("replyAttachmentPreview");
+  if(box){box.innerHTML="";box.style.display="none";}
+}
+document.addEventListener("DOMContentLoaded",function(){
+  const input=document.getElementById("replyFileInput");
+  if(input){
+    input.addEventListener("change",function(e){
+      const file=e.target.files && e.target.files[0];
+      if(file)showReplyAttachment(file);
+    });
+  }
+});
+
+function selectAllNotes(){
+  const el = document.activeElement;
+  if(el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA")){
+    el.select();
+  } else {
+    window.getSelection().selectAllChildren(document.body);
+  }
+}
+
+function undoNotes(){
+  document.execCommand("undo");
+}
+
+function redoNotes(){
+  document.execCommand("redo");
+}
+
+function findNotes(){
+  const q = prompt("Find:");
+  if(q) window.find(q);
+}
+
+function editNotes(){
+  document.body.contentEditable =
+    document.body.contentEditable === "true" ? "false" : "true";
+  alert(document.body.contentEditable === "true"
+    ? "Edit mode ON"
+    : "Edit mode OFF");
+}
+
+function saveNotes(){
+  const text = document.body.innerText;
+  const blob = new Blob([text], {type:"text/plain;charset=utf-8"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "SASIKUMAR-AI-Notes.txt";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function printNotes(){
+  window.print();
+}
+
+function pdfNotes(){
+  window.print();
+}
+
+
+
+
+
+
+
+
+
+</script>
+
+<style id="sk3DAdButtonStyle">
+#sk3DAdButton{
+position:fixed;right:16px;bottom:18px;z-index:9999;
+border:0;border-radius:22px;padding:13px 18px;
+font-weight:900;font-size:14px;color:#fff;cursor:pointer;
+background:linear-gradient(135deg,#ff2bd6,#713cff,#00cfff);
+box-shadow:0 10px 30px rgba(0,0,0,.35);
+animation:sk3dFloat 2.8s ease-in-out infinite;
+}
+#sk3DAdButton:hover{transform:scale(1.06)}
+@keyframes sk3dFloat{
+0%,100%{transform:translateY(0) rotateX(0)}
+50%{transform:translateY(-8px) rotateX(8deg)}
+}
+</style>
+
+<button id="sk3DAdButton"
+onclick="location.href='/ads3d/'"
+aria-label="Open SASIKUMAR AI 3D Advertisement Hub">
+✨ 3D AD HUB
+</button>
+
+
+<script id="sasikumar_referral_capture">
+(function(){
+  try{
+    const params=new URLSearchParams(window.location.search);
+    const ref=(params.get("ref")||"").trim().toUpperCase();
+
+    if(!ref || !/^[A-Z0-9-]{3,40}$/.test(ref)) return;
+
+    let visitorId=localStorage.getItem("sasikumar_visitor_id");
+
+    if(!visitorId){
+      if(window.crypto && crypto.randomUUID){
+        visitorId="v-"+crypto.randomUUID();
+      }else{
+        visitorId="v-"+Date.now()+"-"+Math.random().toString(36).slice(2);
+      }
+      localStorage.setItem("sasikumar_visitor_id",visitorId);
+    }
+
+    localStorage.setItem("sasikumar_referrer",ref);
+
+    fetch("/api/referral/track",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        code:ref,
+        visitor_id:visitorId
+      })
+    }).catch(function(){});
+  }catch(e){}
+})();
+</script>
+</body>
+</html>

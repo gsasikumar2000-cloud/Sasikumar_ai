@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI - Business Hub Map</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#06152b,#123b68);color:#fff}
+.wrap{max-width:900px;margin:auto;padding:18px}
+.card{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:24px;padding:18px;box-shadow:0 15px 40px rgba(0,0,0,.3)}
+h1{margin:0 0 6px;font-size:25px}
+.sub{opacity:.8;margin-bottom:15px}
+button{border:0;border-radius:14px;padding:13px 16px;margin:5px;cursor:pointer;font-weight:700}
+.live{background:#20c997;color:#fff}
+.refresh{background:#ffc107;color:#111}
+.map{margin-top:15px;height:430px;border-radius:20px;overflow:hidden;background:#dfe8ef;position:relative}
+.map iframe{width:100%;height:100%;border:0}
+.status{margin-top:12px;padding:12px;border-radius:14px;background:rgba(0,0,0,.22)}
+.coords{font-size:14px;line-height:1.7}
+.actions{margin-top:10px}
+a{color:#fff;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="card">
+<h1>🗺️ SASIKUMAR AI BUSINESS HUB</h1>
+<div class="sub">Map & Live Location</div>
+
+<button class="live" onclick="getLocation()">📍 My Live Location</button>
+<button class="refresh" onclick="getLocation()">🔄 Refresh Location</button>
+
+<div id="status" class="status">Location permission required to show your live position.</div>
+
+<div class="map">
+<iframe id="mapFrame" title="Business Hub Map"
+src="https://www.openstreetmap.org/export/embed.html?bbox=79.05%2C10.70%2C79.15%2C10.85&layer=mapnik">
+</iframe>
+</div>
+
+<div class="actions">
+<button onclick="nearby('shop')">🏪 Nearby Shops</button>
+<button onclick="nearby('service')">🔧 Nearby Services</button>
+<button onclick="nearby('offers')">📢 Nearby Offers</button>
+</div>
+</div>
+</div>
+
+<script>
+let lat=null,lon=null;
+
+function getLocation(){
+ const status=document.getElementById("status");
+ if(!navigator.geolocation){
+   status.innerHTML="❌ Geolocation is not supported by this browser.";
+   return;
+ }
+ status.innerHTML="📍 Requesting live location permission...";
+ navigator.geolocation.getCurrentPosition(
+  function(pos){
+   lat=pos.coords.latitude;
+   lon=pos.coords.longitude;
+   const acc=Math.round(pos.coords.accuracy);
+   status.innerHTML=
+    "✅ Live Location Ready<br>"+
+    "<span class='coords'>Latitude: "+lat.toFixed(6)+
+    "<br>Longitude: "+lon.toFixed(6)+
+    "<br>Accuracy: approximately "+acc+" metres</span>";
+
+   const d=0.015;
+   const bbox=(lon-d)+","+(lat-d)+","+(lon+d)+","+(lat+d);
+   document.getElementById("mapFrame").src=
+    "https://www.openstreetmap.org/export/embed.html?bbox="+
+    encodeURIComponent(bbox)+"&layer=mapnik&marker="+lat+","+lon;
+  },
+  function(err){
+   let msg="❌ Location unavailable.";
+   if(err.code===1) msg="❌ Location permission was denied. Please allow location access.";
+   if(err.code===2) msg="❌ Location could not be determined.";
+   if(err.code===3) msg="❌ Location request timed out.";
+   status.innerHTML=msg;
+  },
+  {enableHighAccuracy:true,timeout:15000,maximumAge:0}
+ );
+}
+
+function nearby(type){
+ if(lat===null || lon===null){
+   getLocation();
+   return;
+ }
+ const q=type==="shop"?"shops":type==="service"?"services":"offers";
+ const url="https://www.openstreetmap.org/search?query="+
+   encodeURIComponent(q+" near "+lat+","+lon);
+ window.open(url,"_blank");
+}
+</script>
+</body>
+</html>

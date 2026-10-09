@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Job Apply Details - SASIKUMAR AI</title>
+<style>
+body{font-family:Arial;margin:0;background:#f5f5f5;color:#222}
+header{background:#111;color:#fff;padding:20px;text-align:center}
+main{max-width:700px;margin:auto;padding:16px}
+.card{background:#fff;padding:18px;margin:14px 0;border-radius:16px;box-shadow:0 2px 8px #ccc}
+li{margin:10px 0}
+</style></head>
+<body>
+<header><h1>📝 Job Apply Details</h1><p>SASIKUMAR AI</p></header>
+<main>
+<div class="card">
+<h2>📋 Before Applying</h2>
+<ul>
+<li>Job Title and Department</li>
+<li>Educational Qualification</li>
+<li>Age and Eligibility</li>
+<li>Vacancies</li>
+<li>Salary / Pay Level</li>
+<li>Application Start Date</li>
+<li>Last Date</li>
+<li>Required Documents</li>
+<li>Application Fee, if applicable</li>
+<li>Official Application Link</li>
+</ul>
+</div>
+<div class="card">
+<h2>⚠️ Important</h2>
+<p>Verify every vacancy from the official recruitment notification before applying. SASIKUMAR AI does not guarantee selection, employment or the authenticity of employer-submitted information.</p>
+</div>
+</main>
+</body></html>

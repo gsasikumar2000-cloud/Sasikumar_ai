@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI — Sports & Games</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#07152e,#123d68,#172554);color:#fff;min-height:100vh}
+.wrap{max-width:1100px;margin:auto;padding:20px}
+header{padding:24px 10px;text-align:center}
+h1{font-size:clamp(28px,6vw,48px);margin:8px 0}
+.sub{opacity:.85}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px}
+.card{border:1px solid #ffffff30;border-radius:22px;padding:22px 14px;text-align:center;background:#ffffff12;box-shadow:0 12px 30px #0005;transition:.2s;cursor:pointer}
+.card:hover{transform:translateY(-5px) scale(1.02);background:#ffffff20}
+.icon{font-size:48px}
+.name{font-weight:700;font-size:18px;margin-top:10px}
+h2{margin-top:34px}
+button{border:0;border-radius:14px;padding:12px 18px;font-weight:700;cursor:pointer}
+.home{margin-top:24px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<div style="font-size:58px">🏆🎮</div>
+<h1>SASIKUMAR AI — Sports & Games</h1>
+<div class="sub">Sports information + easy games for everyone</div>
+</header>
+
+<h2>🏆 Sports</h2>
+<div class="grid">
+<div class="card"><div class="icon">🏏</div><div class="name">Cricket</div></div>
+<div class="card"><div class="icon">⚽</div><div class="name">Football</div></div>
+<div class="card"><div class="icon">🏀</div><div class="name">Basketball</div></div>
+<div class="card"><div class="icon">🎾</div><div class="name">Tennis</div></div>
+<div class="card"><div class="icon">🏸</div><div class="name">Badminton</div></div>
+<div class="card"><div class="icon">🏐</div><div class="name">Volleyball</div></div>
+<div class="card"><div class="icon">🏓</div><div class="name">Table Tennis</div></div>
+<div class="card"><div class="icon">♟️</div><div class="name">Chess</div></div>
+</div>
+
+<h2>🎮 Easy Games</h2>
+<div class="grid">
+<div class="card" onclick="location.href='games/number-guess.html'"><div class="icon">🔢</div><div class="name">Number Guess</div></div>
+<div class="card"><div class="icon">🧠</div><div class="name">Memory Match</div></div>
+<div class="card"><div class="icon">➕</div><div class="name">Math Challenge</div></div>
+<div class="card"><div class="icon">🧩</div><div class="name">Word Puzzle</div></div>
+<div class="card"><div class="icon">🎯</div><div class="name">Target Click</div></div>
+<div class="card"><div class="icon">✊</div><div class="name">Rock Paper Scissors</div></div>
+<div class="card"><div class="icon">❓</div><div class="name">Quick Quiz</div></div>
+<div class="card"><div class="icon">🔤</div><div class="name">Word Scramble</div></div>
+</div>
+
+
+
+<h2>🎮 Sports Games</h2>
+<div class="grid">
+<div class="card" onclick="location.href='games/cricket-tap.html'"><div class="icon">🏏</div><div class="name">Cricket Tap</div></div>
+<div class="card" onclick="location.href='games/football-goal.html'"><div class="icon">⚽</div><div class="name">Football Goal</div></div>
+<div class="card" onclick="location.href='games/basketball-shot.html'"><div class="icon">🏀</div><div class="name">Basketball Shot</div></div>
+<div class="card" onclick="location.href='games/badminton-tap.html'"><div class="icon">🏸</div><div class="name">Badminton Tap</div></div>
+<div class="card" onclick="location.href='games/tennis-serve.html'"><div class="icon">🎾</div><div class="name">Tennis Serve</div></div>
+<div class="card" onclick="location.href='games/table-tennis.html'"><div class="icon">🏓</div><div class="name">Table Tennis</div></div>
+<div class="card" onclick="location.href='games/volleyball-tap.html'"><div class="icon">🏐</div><div class="name">Volleyball Tap</div></div>
+<div class="card" onclick="location.href='games/bowling.html'"><div class="icon">🎳</div><div class="name">Bowling</div></div>
+<div class="card" onclick="location.href='games/target-hit.html'"><div class="icon">🎯</div><div class="name">Target Hit</div></div>
+<div class="card" onclick="location.href='games/sports-quiz.html'"><div class="icon">🧠</div><div class="name">Sports Quiz</div></div>
+</div>
+
+<div class="home">
+<button onclick="location.href='/'">🏠 Dashboard</button>
+</div>
+</div>
+
+<div style="margin:24px 0;text-align:center">
+  <a href="/sports/games/index.html"
+     style="display:inline-block;padding:16px 28px;border-radius:18px;
+            background:linear-gradient(135deg,#7c3aed,#2563eb);
+            color:#fff;text-decoration:none;font-size:20px;font-weight:800;
+            box-shadow:0 8px 25px #0005">
+    🎮 Sports Games
+  </a>
+</div>
+
+</body>
+</html>

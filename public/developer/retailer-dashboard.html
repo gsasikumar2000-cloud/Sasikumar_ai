@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI — Retailer Dashboard</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#e8f7ff,#fff3e8,#f3edff);color:#172033}
+.wrap{max-width:900px;margin:auto;padding:18px}
+.header,.card{background:#fff;border-radius:24px;padding:22px;margin:14px 0;box-shadow:0 10px 30px #0002}
+.header{text-align:center}
+.logo{font-size:30px;font-weight:800}
+.sub{color:#667085}
+.idbox{font-size:22px;font-weight:800;background:#eef8ff;border-radius:16px;padding:16px;text-align:center}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.stat{padding:18px;border-radius:18px;background:#f8fafc}
+.value{font-size:25px;font-weight:800;margin-top:7px}
+input,button{width:100%;padding:14px;margin-top:9px;border-radius:12px;font-size:16px}
+input{border:1px solid #ccd6e0}
+button{border:0;background:#1769aa;color:white;font-weight:bold}
+.ref{background:#fff7e8;padding:15px;border-radius:14px;word-break:break-all}
+table{width:100%;border-collapse:collapse;margin-top:12px}
+td,th{padding:10px;border-bottom:1px solid #eee;text-align:left}
+@media(max-width:600px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="header">
+  <div class="logo">🏪 SASIKUMAR AI</div>
+  <h2>Retailer Business Dashboard</h2>
+  <div class="sub">Retailer • Referral • Commission</div>
+</div>
+
+<div class="card">
+  <h3>🆔 Retailer Profile</h3>
+  <div id="retailerId" class="idbox">SKAI-RTL-DEMO</div>
+  <p id="retailerName">Retailer: Demo Retailer</p>
+  <p id="retailerShop">Business: SASIKUMAR AI Retail</p>
+</div>
+
+<div class="grid">
+  <div class="stat">👥 Total Referrals<div class="value" id="referrals">0</div></div>
+  <div class="stat">💰 Confirmed Commission<div class="value" id="commission">₹0</div></div>
+  <div class="stat">⏳ Pending Commission<div class="value" id="pending">₹0</div></div>
+  <div class="stat">📊 Transactions<div class="value" id="transactions">0</div></div>
+</div>
+
+<div class="card">
+  <h3>🤝 Your Referral Link</h3>
+  <div class="ref" id="refLink"></div>
+  <button onclick="copyReferral()">📋 Copy Referral Link</button>
+  <button onclick="shareReferral()">📤 Share Referral</button>
+</div>
+
+<div class="card">
+  <h3>💰 Commission Status</h3>
+  <p>Commission is calculated only after the relevant service provider confirms the eligible transaction/referral.</p>
+  <table>
+    <tr><th>Type</th><th>Status</th><th>Amount</th></tr>
+    <tr><td>Referral</td><td>Pending</td><td>₹0</td></tr>
+    <tr><td>Service Transaction</td><td>Pending</td><td>₹0</td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <h3>📱 Retail Services</h3>
+  <button onclick="location.href='/developer/recharge.html'">📱 Recharge</button>
+  <button onclick="location.href='/developer/booking.html'">🎫 Booking</button>
+  <button onclick="location.href='/developer/shopping.html'">🛒 Shopping</button>
+</div>
+
+</div>
+
+<script>
+const saved=localStorage.getItem('sasikumarRetailer');
+let retailer={};
+
+try{retailer=JSON.parse(saved)||{}}catch(e){retailer={}}
+
+const id=retailer.retailerId||'SKAI-RTL-DEMO';
+document.getElementById('retailerId').textContent=id;
+
+if(retailer.name)
+  document.getElementById('retailerName').textContent='Retailer: '+retailer.name;
+
+if(retailer.shop)
+  document.getElementById('retailerShop').textContent='Business: '+retailer.shop;
+
+const base=location.origin;
+const referral=base+'/?ref='+encodeURIComponent(id);
+document.getElementById('refLink').textContent=referral;
+
+function copyReferral(){
+ navigator.clipboard.writeText(referral)
+ .then(()=>alert('Referral link copied.'));
+}
+
+function shareReferral(){
+ const data={
+   title:'SASIKUMAR AI Retailer',
+   text:'Join through my SASIKUMAR AI referral link: '+referral,
+   url:referral
+ };
+ if(navigator.share) navigator.share(data);
+ else copyReferral();
+}
+</script>
+</body>
+</html>

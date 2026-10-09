@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🏐 Volleyball Tap | SASIKUMAR AI</title>
+<style>
+body{font-family:Arial;margin:0;background:linear-gradient(135deg,#312e81,#7c3aed);color:#fff;text-align:center}
+.card{max-width:650px;margin:25px auto;padding:25px;background:#ffffff18;border-radius:24px}
+button{font-size:22px;padding:17px 28px;margin:10px;border:0;border-radius:15px;cursor:pointer}
+.ball{font-size:80px;margin:20px}.info{background:#0004;padding:15px;border-radius:15px;text-align:left}
+</style></head><body><div class="card">
+<h1>🏐 Volleyball Tap</h1><p>Tap to keep the rally going!</p>
+<h2>Rally: <span id="score">0</span> | Attempts: <span id="n">0</span>/10</h2>
+<div class="ball">🏐</div><button onclick="tap()">🏐 TAP</button>
+<div id="result"></div><button onclick="location.reload()">🔄 Play Again</button>
+<div class="info"><h2>📚 Volleyball Knowledge</h2>
+<p>• Volleyball is played by two teams separated by a net.</p>
+<p>• A team normally has up to three contacts before returning the ball.</p>
+<p>• Serve, pass, set and attack are basic volleyball skills.</p>
+<p>• Communication and positioning are important during rallies.</p></div>
+</div>
+<script>
+let score=0,n=0;
+function tap(){if(n>=10)return;n++;if(Math.random()<.8){score++;document.getElementById('result').textContent='🏐 Rally continues!'}else document.getElementById('result').textContent='❌ Rally ended!';document.getElementById('score').textContent=score;document.getElementById('n').textContent=n;if(n===10)setTimeout(()=>alert('🏐 Game Over! Rally score: '+score),100);}
+</script></body></html>

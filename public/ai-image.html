@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI - Image Maker</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#020617,#111827,#312e81);color:white;min-height:100vh}
+.wrap{max-width:700px;margin:auto;padding:24px 16px}
+.card{background:rgba(15,23,42,.95);border-radius:22px;padding:22px}
+h1{text-align:center}
+textarea{width:100%;min-height:130px;box-sizing:border-box;padding:14px;border-radius:14px;background:#020617;color:white;border:1px solid #475569;font-size:16px}
+.tool-title{text-align:center;margin-top:18px;font-size:18px;font-weight:bold}
+.tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.tool-grid button{margin-top:0;background:#1e293b;color:white;border:1px solid #475569}
+.hidden-file{display:none}
+button{width:100%;margin-top:14px;padding:14px;border:0;border-radius:14px;font-size:16px;font-weight:bold}
+.generate{background:#6366f1;color:white}
+.back{background:#334155;color:white}
+#status{margin-top:16px;padding:12px;border-radius:12px;background:#1e293b;white-space:pre-wrap}
+#result{margin-top:18px;padding:10px;min-height:140px;text-align:center;background:#020617;border:1px solid #334155;border-radius:18px;overflow:hidden}
+#result img{display:block;width:100%;max-width:100%;height:auto;max-height:none;margin:auto;object-fit:contain;border-radius:14px}
+.small{color:#cbd5e1;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="card">
+<h1>🖼️ SASIKUMAR AI Image Maker</h1>
+<p class="small">Describe the image you want to create.</p>
+
+<textarea id="prompt" placeholder="Example: A beautiful peacock in a natural garden, realistic digital art"></textarea>
+
+<button class="generate" onclick="generateImage()">✨ Generate Image</button>
+
+<div class="tool-title">🛠️ All Tools</div>
+<div class="tool-grid">
+<button type="button" onclick="openCamera()">📷 Camera</button>
+<button type="button" onclick="openUpload()">📤 Upload</button>
+<button type="button" onclick="selectPrompt()">☑️ Select</button>
+<button type="button" onclick="pasteImage()">📋 Paste Image</button>
+<button type="button" onclick="sharePrompt()">📤 Share</button>
+<button type="button" onclick="cutPrompt()">✂️ Cut</button>
+<button type="button" onclick="copyPrompt()">📋 Copy</button>
+<button type="button" onclick="pastePrompt()">📥 Paste Text</button>
+</div>
+
+<input id="cameraInput" class="hidden-file" type="file" accept="image/*" capture="environment" onchange="showSelectedImage(this)">
+<input id="uploadInput" class="hidden-file" type="file" accept="image/*" onchange="showSelectedImage(this)">
+<button class="back" onclick="location.href='/'">⬅️ Back to SASIKUMAR AI</button>
+
+<div id="status"></div>
+<div id="result"></div>
+</div>
+</div>
+
+<script>
+function openCamera(){document.getElementById("cameraInput").click();}
+function openUpload(){document.getElementById("uploadInput").click();}
+function selectPrompt(){const e=document.getElementById("prompt");e.focus();e.select();}
+
+function showSelectedImage(input){
+ const file=input.files&&input.files[0];
+ if(!file)return;
+ const reader=new FileReader();
+ reader.onload=function(e){
+   const r=document.getElementById("result");
+   r.innerHTML="";
+   const img=document.createElement("img");
+   img.src=e.target.result;
+   img.alt="Selected image preview";
+   r.appendChild(img);
+   document.getElementById("status").textContent="✅ Image preview ready.";
+ };
+ reader.readAsDataURL(file);
+}
+
+async function pasteImage(){
+ try{
+   const items=await navigator.clipboard.read();
+   for(const item of items){
+     const type=item.types.find(t=>t.startsWith("image/"));
+     if(type){
+       const blob=await item.getType(type);
+       const r=document.getElementById("result");
+       r.innerHTML="";
+       const img=document.createElement("img");
+       img.src=URL.createObjectURL(blob);
+       img.alt="Pasted image preview";
+       r.appendChild(img);
+       document.getElementById("status").textContent="✅ Image pasted.";
+       return;
+     }
+   }
+   alert("No image found in clipboard.");
+ }catch(e){
+   alert("📋 Image paste permission unavailable. Please use Upload.");
+ }
+}
+
+async function sharePrompt(){
+  const text=document.getElementById("prompt").value.trim();
+  if(!text){alert("Enter image description first.");return;}
+  if(navigator.share){
+    try{await navigator.share({title:"SASIKUMAR AI Image Maker",text});}
+    catch(e){}
+  }else{
+    await navigator.clipboard.writeText(text);
+    alert("Copied. You can share it now.");
+  }
+}
+async function copyPrompt(){
+  const el=document.getElementById("prompt");
+  if(!el.value){alert("Enter image description first.");return;}
+  await navigator.clipboard.writeText(el.value);
+  alert("✅ Copied");
+}
+async function cutPrompt(){
+  const el=document.getElementById("prompt");
+  if(!el.value){alert("Enter image description first.");return;}
+  await navigator.clipboard.writeText(el.value);
+  el.value="";
+  alert("✂️ Cut");
+}
+async function pastePrompt(){
+  const el=document.getElementById("prompt");
+  try{
+    el.value=await navigator.clipboard.readText();
+    el.focus();
+  }catch(e){
+    alert("📥 Paste permission is unavailable. Please paste manually.");
+  }
+}
+
+async function generateImage(){
+  const prompt=document.getElementById("prompt").value.trim();
+  const status=document.getElementById("status");
+  const result=document.getElementById("result");
+
+  result.innerHTML="";
+
+  if(!prompt){
+    status.textContent="Please enter an image description.";
+    return;
+  }
+
+  status.textContent="⏳ Generating image...";
+
+  try{
+    const response=await fetch("/api/ai/image",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({prompt})
+    });
+
+    const data=await response.json();
+
+    if(!data.ok){
+      if(String(data.error).includes("429")){
+        status.textContent="⏳ Gemini quota unavailable — creating local poster...";
+        try{
+          const fallback=await fetch("/api/any-content",{
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({content:prompt,theme:"classic"})
+          });
+          const fb=await fallback.json();
+          if(fb.ok && fb.imageUrl){
+            status.textContent="✅ Local poster created successfully.";
+            const img=document.createElement("img");
+            img.src=fb.imageUrl;
+            img.alt=prompt;
+            result.appendChild(img);
+            return;
+          }
+          status.textContent="❌ "+(fb.error || "Local poster creation failed.");
+        }catch(e){
+          status.textContent="❌ Local poster service unavailable.";
+        }
+      }else{
+        status.textContent="❌ "+(data.error || "Image generation failed.");
+      }
+      return;
+    }
+
+    status.textContent="✅ Image generated successfully.";
+
+    const img=document.createElement("img");
+    img.src=data.imageUrl;
+    img.alt=prompt;
+    result.appendChild(img);
+
+  }catch(error){
+    status.textContent="❌ Unable to connect to the image service.";
+  }
+}
+</script>
+</body>
+</html>

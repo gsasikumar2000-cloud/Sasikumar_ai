@@ -1,0 +1,124 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI HUB</title>
+<style>
+body{margin:0;background:#080b12;color:white;font-family:Arial;text-align:center}
+h1{margin:20px 0 5px;font-size:24px}
+p{color:#aaa}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:16px;max-width:600px;margin:auto}
+button{border:1px solid #39445c;background:#141a28;color:white;border-radius:15px;padding:18px 8px;font-size:16px;min-height:90px}
+.icon{font-size:30px;display:block;margin-bottom:7px}
+#box{max-width:600px;margin:10px auto;padding:16px}
+.card{background:#111827;border:1px solid #39445c;border-radius:15px;padding:18px}
+input,select{width:100%;box-sizing:border-box;padding:12px;margin:7px 0;border-radius:9px;border:1px solid #39445c;background:#080b12;color:white}
+.action{width:100%;min-height:auto;margin-top:8px}
+video,img{max-width:100%;margin-top:12px;border-radius:12px}
+.ok{color:#62e58b}.bad{color:#ff7373}
+</style>
+</head>
+<body><div style="width:110px;height:110px;margin:18px auto 10px;background:#111;border:2px solid #FFD700;border-radius:22px;display:flex;align-items:center;justify-content:center;overflow:hidden;"><img src="/assets/sasikumar-ai-logo.png?t=1" alt="SASIKUMAR AI" style="width:26px;height:26px;display:block;visibility:visible;opacity:1;"></div>
+
+<h1>🤖 SASIKUMAR AI HUB</h1>
+<p>Video & Poster AD Dashboard</p>
+
+<div class="grid">
+<button onclick="videoBox()"><span class="icon">🎬</span>Video</button>
+<button onclick="posterBox()"><span class="icon">🖼️</span>Poster AD</button>
+<button onclick="creativeBox()"><span class="icon">🎨</span>Creative</button>
+<button onclick="linkBox()"><span class="icon">🔗</span>Link Manager</button>
+<button onclick="shareBox()"><span class="icon">📤</span>Share</button>
+<button onclick="dailyBox()"><span class="icon">📅</span>Daily Auto</button>
+<button onclick="metaBox()"><span class="icon">▶️</span>Meta Video</button>
+<button onclick="statusBox()"><span class="icon">📊</span>Status</button>
+</div>
+
+<div id="box"></div>
+
+<script>
+function show(html){document.getElementById("box").innerHTML=html}
+
+function videoBox(){
+show('<div class="card"><h2>🎬 Video</h2><input id="videoFile" type="file" accept="video/*"><p id="videoStatus">Minimum 02:00</p><div id="videoPreview"></div></div>');
+document.getElementById("videoFile").onchange=function(){
+var f=this.files[0]; if(!f)return;
+var v=document.createElement("video");
+v.preload="metadata";
+v.onloadedmetadata=function(){
+if(v.duration<120){
+document.getElementById("videoStatus").innerHTML='<span class="bad">❌ Rejected — minimum 02:00</span>';
+return;
+}
+document.getElementById("videoStatus").innerHTML='<span class="ok">✅ Accepted — '+Math.floor(v.duration/60)+':'+String(Math.floor(v.duration%60)).padStart(2,"0")+'</span>';
+document.getElementById("videoPreview").innerHTML='<video controls src="'+URL.createObjectURL(f)+'"></video>';
+};
+v.src=URL.createObjectURL(f);
+}
+}
+
+function posterBox(){
+show('<div class="card"><h2>🖼️ Poster AD</h2><input id="posterFile" type="file" accept="image/*"><div id="posterPreview"></div></div>');
+document.getElementById("posterFile").onchange=function(){
+var f=this.files[0];if(!f)return;
+document.getElementById("posterPreview").innerHTML='<img src="'+URL.createObjectURL(f)+'">';
+};
+}
+
+function creativeBox(){
+show('<div class="card"><h2>🎨 Creative Studio</h2><input id="creativeText" placeholder="Enter title"><select id="creativeFont"><option>Arial</option><option>Georgia</option><option>Impact</option><option>Verdana</option></select><select id="creativeAnim"><option>Fade</option><option>Slide</option><option>Zoom</option><option>Typewriter</option></select><button class="action" onclick="creativePreview()">Preview</button><div id="creativePreview"></div></div>');
+}
+
+function creativePreview(){
+var t=document.getElementById("creativeText").value||"SASIKUMAR AI";
+var f=document.getElementById("creativeFont").value;
+document.getElementById("creativePreview").innerHTML='<div class="card"><h2 style="font-family:'+f+'">'+t.replace(/[&<>]/g,"")+'</h2><small>SASIKUMAR AI</small></div>';
+}
+
+function linkBox(){
+show('<div class="card"><h2>🔗 Link Manager</h2><input id="url" placeholder="Enter URL"><button class="action" onclick="copyUrl()">📋 Copy</button><button class="action" onclick="openUrl()">↗️ Open</button></div>');
+}
+
+function copyUrl(){
+var x=document.getElementById("url").value;
+if(x){navigator.clipboard.writeText(x).then(function(){alert("Link copied");});}
+}
+
+function openUrl(){
+var x=document.getElementById("url").value.trim();
+if(x)window.open(x,"_blank");
+}
+
+function shareBox(){
+show('<div class="card"><h2>📤 Share</h2><input id="shareUrl" placeholder="Enter URL"><button class="action" onclick="shareUrl()">📤 Share</button></div>');
+}
+
+function shareUrl(){
+var x=document.getElementById("shareUrl").value.trim();
+if(!x)return;
+if(navigator.share){navigator.share({title:"SASIKUMAR AI HUB",url:x});}
+else{navigator.clipboard.writeText(x).then(function(){alert("Link copied");});}
+}
+
+function dailyBox(){
+show('<div class="card"><h2>📅 Daily Auto Post</h2><p>🕤 Release: <b>09:30 AM IST</b></p><p>🌙 Cleanup: <b>12:00 AM IST</b></p><p>Timezone: <b>Asia/Kolkata</b></p></div>');
+}
+
+function metaBox(){
+show('<div class="card"><h2>▶️ Meta Video</h2><input id="metaUrl" placeholder="Public Facebook / Instagram video URL"><button class="action" onclick="metaPreview()">👁️ Preview</button><div id="metaResult"></div></div>');
+}
+
+function metaPreview(){
+var x=document.getElementById("metaUrl").value.trim();
+if(!x)return;
+document.getElementById("metaResult").innerHTML='<p class="ok">✅ URL ready</p><button class="action" onclick="window.open(\''+x.replace(/'/g,"")+'\',\'_blank\')">↗️ Open Video</button>';
+}
+
+function statusBox(){
+show('<div class="card"><h2>📊 Status</h2><p class="ok">● Hub Page Online</p><p>Video minimum: 02:00</p><p>Release: 09:30 AM IST</p><p>Cleanup: 12:00 AM IST</p></div>');
+}
+</script>
+
+</body>
+</html>

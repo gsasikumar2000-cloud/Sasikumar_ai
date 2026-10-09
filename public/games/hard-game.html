@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI — Hard Game</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#080b16;color:#fff;font-family:Arial,sans-serif;text-align:center}
+header{padding:18px;background:linear-gradient(135deg,#111b4d,#7b19a8)}
+h1{margin:5px 0;font-size:28px}
+.game{max-width:700px;margin:20px auto;padding:20px}
+#arena{height:420px;position:relative;overflow:hidden;border:3px solid #555;border-radius:18px;background:#111827}
+.target{position:absolute;width:55px;height:55px;border-radius:50%;background:#ff3030;box-shadow:0 0 20px #ff3030;cursor:pointer}
+.info{display:flex;justify-content:space-around;gap:10px;margin:15px 0;flex-wrap:wrap}
+.box{padding:12px 20px;background:#172033;border-radius:12px}
+button{border:0;border-radius:12px;padding:13px 22px;font-size:17px;font-weight:bold;cursor:pointer;background:#00e5ff;color:#001018}
+button:hover{transform:scale(1.04)}
+#message{min-height:28px;margin:12px;font-weight:bold}
+</style>
+</head>
+<body>
+<header>
+<h1>🔥 SASIKUMAR AI — HARD GAME</h1>
+<p>🎯 Target Challenge</p>
+</header>
+
+<div class="game">
+<div class="info">
+<div class="box">Score: <b id="score">0</b></div>
+<div class="box">Time: <b id="time">30</b>s</div>
+<div class="box">Level: <b id="level">1</b></div>
+</div>
+
+<div id="message">Press START and hit the targets!</div>
+<div id="arena"></div>
+<br>
+<button onclick="startGame()">🚀 START GAME</button>
+</div>
+
+<script>
+let score=0,time=30,level=1,running=false,timer,target;
+
+const arena=document.getElementById("arena");
+const scoreEl=document.getElementById("score");
+const timeEl=document.getElementById("time");
+const levelEl=document.getElementById("level");
+const message=document.getElementById("message");
+
+function spawnTarget(){
+  if(!running)return;
+  if(target)target.remove();
+
+  target=document.createElement("div");
+  target.className="target";
+
+  const maxX=arena.clientWidth-55;
+  const maxY=arena.clientHeight-55;
+
+  target.style.left=Math.random()*maxX+"px";
+  target.style.top=Math.random()*maxY+"px";
+
+  target.onclick=()=>{
+    if(!running)return;
+    score++;
+    level=Math.floor(score/10)+1;
+    scoreEl.textContent=score;
+    levelEl.textContent=level;
+    spawnTarget();
+  };
+
+  arena.appendChild(target);
+}
+
+function startGame(){
+  clearInterval(timer);
+  score=0;
+  time=30;
+  level=1;
+  running=true;
+
+  scoreEl.textContent=score;
+  timeEl.textContent=time;
+  levelEl.textContent=level;
+  message.textContent="🔥 GO! Hit the targets!";
+
+  spawnTarget();
+
+  timer=setInterval(()=>{
+    time--;
+    timeEl.textContent=time;
+
+    if(time<=0){
+      clearInterval(timer);
+      running=false;
+      if(target)target.remove();
+      message.textContent="🏆 GAME OVER — Score: "+score;
+    }
+  },1000);
+}
+</script>
+</body>
+</html>

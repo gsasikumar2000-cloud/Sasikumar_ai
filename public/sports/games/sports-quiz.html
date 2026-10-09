@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🧠 Sports Quiz | SASIKUMAR AI</title>
+<style>
+body{font-family:Arial;margin:0;background:linear-gradient(135deg,#101827,#1d4ed8);color:white;text-align:center}
+.card{max-width:700px;margin:30px auto;padding:25px;background:#ffffff15;border-radius:24px}
+button{display:block;width:90%;margin:12px auto;padding:16px;border:0;border-radius:14px;font-size:18px;cursor:pointer}
+.info{background:#0004;padding:15px;border-radius:15px;text-align:left}
+</style></head><body><div class="card">
+<h1>🧠 Sports Quiz</h1><h2 id="q"></h2><div id="answers"></div>
+<h3>Score: <span id="score">0</span></h3>
+<button onclick="location.reload()">🔄 Restart Quiz</button>
+<div class="info"><h2>📚 Learn Sports</h2><p>This quiz introduces basic facts about cricket, football, basketball, tennis and other sports.</p></div>
+</div>
+<script>
+const qs=[
+['How many players are normally on the field for one football team?',['9','10','11','12'],2],
+['How many legal deliveries are normally in a cricket over?',['4','5','6','8'],2],
+['How many points is a free throw worth in basketball?',['1','2','3','4'],0],
+['How many points is a basketball shot from beyond the three-point line worth?',['1','2','3','4'],2],
+['Which sport uses a shuttlecock?',['Tennis','Badminton','Football','Cricket'],1],
+['Which sport uses a net and a ball and is commonly played with six players per team?',['Volleyball','Boxing','Golf','Swimming'],0]
+];
+let i=0,score=0;
+function show(){if(i>=qs.length){document.getElementById('q').textContent='🏆 Quiz Complete!';document.getElementById('answers').innerHTML='<p>You scored '+score+' / '+qs.length+'</p>';return;}document.getElementById('q').textContent=qs[i][0];document.getElementById('answers').innerHTML='';qs[i][1].forEach((a,n)=>{let b=document.createElement('button');b.textContent=a;b.onclick=()=>answer(n);document.getElementById('answers').appendChild(b);});}
+function answer(n){if(n===qs[i][2]){score++;alert('✅ Correct!');}else alert('❌ Not correct. Keep learning!');document.getElementById('score').textContent=score;i++;show();}
+show();
+</script></body></html>

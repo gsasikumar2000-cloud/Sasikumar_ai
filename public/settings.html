@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Settings - SASIKUMAR AI</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#eef4ff;color:#17243b}
+header{background:linear-gradient(135deg,#102347,#1769aa);color:white;padding:24px;text-align:center}
+header img{width:42px;height:42px;object-fit:contain}
+main{max-width:700px;margin:20px auto;padding:0 14px}
+.card{background:white;padding:20px;margin:15px 0;border-radius:16px;box-shadow:0 3px 12px #1233}
+a,button{display:inline-block;padding:12px 15px;margin:5px;border:0;border-radius:9px;background:#1769aa;color:white;text-decoration:none;font-weight:bold;cursor:pointer}
+p{line-height:1.6}
+</style>
+</head>
+<body>
+<header>
+<img src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI">
+<h1>⚙️ SASIKUMAR AI</h1>
+<p>Settings & Preferences</p>
+</header>
+<main>
+<section class="card">
+<h2>🏠 Navigation</h2>
+<a href="/">← Home Page</a>
+<a href="/hub-dashboard.html">AI HUB</a>
+</section>
+<section class="card">
+<h2>🎨 Display Settings</h2>
+<p>Dark Mode: <button id="darkToggle" type="button">Enable</button></p>
+</section>
+<section class="card">
+<h2>📄 Information & Support</h2>
+<p><a href="/privacy-policy.html">🔒 Privacy Policy</a></p>
+<p><a href="/disclaimer.html">⚠️ Disclaimer</a></p>
+<p><a href="/mission.html">🎯 Mission</a></p>
+<p><a href="/vision.html">👁️ Vision</a></p>
+<p><a href="/communication.html">📞 Communication</a></p>
+<p><a href="/customer-feedback.html">💬 Customer Feedback</a></p>
+</section>
+</main>
+<script>
+const btn=document.getElementById("darkToggle");
+function applyDark(on){
+ document.body.style.background=on?"#101827":"#eef4ff";
+ document.body.style.color=on?"#f1f5fb":"#17243b";
+ document.querySelectorAll(".card").forEach(c=>{
+  c.style.background=on?"#1c293b":"white";
+  c.style.color=on?"#f1f5fb":"#17243b";
+ });
+ btn.textContent=on?"Disable":"Enable";
+ localStorage.setItem("sasikumar_settings_dark",on?"on":"off");
+}
+applyDark(localStorage.getItem("sasikumar_settings_dark")==="on");
+btn.addEventListener("click",()=>applyDark(localStorage.getItem("sasikumar_settings_dark")!=="on"));
+</script>
+</body>
+</html>

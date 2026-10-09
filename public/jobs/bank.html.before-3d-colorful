@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bank Jobs - SASIKUMAR AI</title>
+<style>
+body{font-family:Arial;margin:0;background:#f5f5f5;color:#222}
+header{background:#111;color:#fff;padding:20px;text-align:center}
+main{max-width:700px;margin:auto;padding:16px}
+.card{background:#fff;padding:18px;margin:14px 0;border-radius:16px;box-shadow:0 2px 8px #ccc}
+</style></head>
+<body>
+<header><h1>🏦 Bank Jobs</h1><p>SASIKUMAR AI</p></header>
+<main>
+<div class="card"><h2>🏦 Banking Recruitment</h2>
+<p>Public Sector Banks • Regional Rural Banks • Banking recruitment examinations</p>
+<p>Always verify the latest notification, eligibility and deadline on the official recruitment website.</p>
+</div>
+<div class="card"><h2>📝 Application</h2><a href="apply.html">View Job Apply Details →</a></div>
+</main>
+</body></html>

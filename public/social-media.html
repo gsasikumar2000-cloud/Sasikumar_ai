@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SASIKUMAR AI - Follow & Share</title>
+<style>
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f5f5f5;
+  color:#111;
+}
+.container{
+  max-width:600px;
+  margin:auto;
+  padding:20px;
+}
+.card{
+  background:#fff;
+  border-radius:18px;
+  padding:20px;
+  margin:12px 0;
+  box-shadow:0 4px 14px rgba(0,0,0,.08);
+}
+h1{text-align:center}
+a{
+  display:block;
+  text-decoration:none;
+  color:#111;
+  font-weight:bold;
+  padding:15px;
+  border-radius:12px;
+  background:#eee;
+  margin-top:10px;
+}
+.back{
+  text-align:center;
+  margin-top:20px;
+}
+.back a{
+  background:#111;
+  color:#fff;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<div class="card">
+<h1>📢 SASIKUMAR AI</h1>
+<p style="text-align:center">Follow • Connect • Share</p>
+</div>
+
+<div class="card">
+<a href="https://www.youtube.com/@RefferalBusinessDailyEarn" target="_blank">▶️ YouTube</a>
+
+<a href="https://www.instagram.com/invites/contact/?utm_content=337vydt&stkn=wcjnc75iphf" target="_blank">📸 Instagram</a>
+
+<a href="https://www.facebook.com/share/p/1Dak2qEDfH/" target="_blank">📘 Facebook</a>
+
+<a href="https://www.threads.net/@Sa.sikumar3728" target="_blank">🧵 Threads</a>
+
+<a href="https://wa.me/919894440400" target="_blank">💬 WhatsApp</a>
+
+<a href="https://t.me/9894440400" target="_blank">✈️ Telegram</a>
+
+<a href="mailto:gsasikumar2000@gmail.com">📧 Email</a>
+</div>
+
+<div class="card">
+<h3>📤 Share SASIKUMAR AI</h3>
+<button onclick="shareApp()" style="width:100%;padding:15px;border:0;border-radius:12px;font-size:16px;">
+📲 Share Website
+</button>
+</div>
+
+<div class="back">
+<a href="/">⬅️ Back to SASIKUMAR AI</a>
+</div>
+
+</div>
+
+<script>
+async function shareApp(){
+  const data={
+    title:"SASIKUMAR AI",
+    text:"SASIKUMAR AI - Tamil + English AI, Gold, Banking, Education, Jobs and more.",
+    url:window.location.origin
+  };
+
+  if(navigator.share){
+    try{
+      await navigator.share(data);
+    }catch(e){}
+  }else{
+    await navigator.clipboard.writeText(window.location.origin);
+    alert("Website link copied!");
+  }
+}
+</script>
+
+</body>
+</html>

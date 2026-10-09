@@ -1,0 +1,173 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI HUB</title>
+<style>
+body{margin:0;background:#080b12;color:white;font-family:Arial;text-align:center}
+h1{margin:20px 0 5px;font-size:24px}
+p{color:#aaa}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:16px;max-width:600px;margin:auto}
+button{border:1px solid #39445c;background:linear-gradient(145deg,#1d2638,#0c111c);color:white;border-radius:15px;padding:18px 8px;font-size:16px;min-height:90px;box-shadow:0 7px 0 #070a10,0 12px 22px rgba(0,0,0,.45);transform:translateY(0) perspective(500px) rotateX(0deg);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+button:hover{transform:translateY(-5px) perspective(500px) rotateX(4deg);box-shadow:0 11px 0 #070a10,0 18px 28px rgba(0,0,0,.55);border-color:#ffd54a}
+button:active{transform:translateY(4px);box-shadow:0 3px 0 #070a10,0 6px 12px rgba(0,0,0,.4)}
+.icon{font-size:30px;display:block;margin-bottom:7px;filter:drop-shadow(0 4px 3px rgba(0,0,0,.5))}
+.icon{font-size:30px;display:block;margin-bottom:7px}
+#box{max-width:600px;margin:10px auto;padding:16px}
+.card{background:#111827;border:1px solid #39445c;border-radius:15px;padding:18px}
+input,select{width:100%;box-sizing:border-box;padding:12px;margin:7px 0;border-radius:9px;border:1px solid #39445c;background:#080b12;color:white}
+.action{width:100%;min-height:auto;margin-top:8px}
+video,img{max-width:100%;margin-top:12px;border-radius:12px}
+.ok{color:#62e58b}.bad{color:#ff7373}
+</style>
+</head>
+<body><div style="width:110px;height:110px;margin:18px auto 10px;background:#111;border:2px solid #FFD700;border-radius:22px;display:flex;align-items:center;justify-content:center;overflow:hidden;"><img src="/assets/sasikumar-ai-logo.png?t=1" alt="SASIKUMAR AI" style="width:26px;height:26px;display:block;visibility:visible;opacity:1;"></div>
+
+<h1>🤖 SASIKUMAR AI HUB</h1>
+<p>Welcome to SASIKUMAR AI HUB</p>
+
+<div class="card" style="margin:12px 16px">
+<h2>👋 Welcome Board</h2>
+<p>🤖 Smart Services • Daily Updates • Business • Education • Gold • Sports</p>
+</div>
+
+<div class="grid">
+<button onclick="thirukkuralBox()"><span class="icon">📜</span>Daily Thirukkural</button>
+<button onclick="goldBox()"><span class="icon" style="font-size:26px">🪙</span>Gold Price</button>
+<button onclick="jobBox()"><span class="icon">💼</span>Jobs</button>
+<button onclick="settingsBox()"><span class="icon">⚙️</span>Settings</button>
+<button onclick="sportsBox()"><span class="icon">⚽</span>Sports & Games</button>
+<button onclick="hub3dBox()"><span class="icon">🎨</span>3D HUB</button>
+</div>
+
+<div id="box"></div>
+
+<div class="card" style="margin:12px 16px">
+<h2>🪙 Gold & Silver Extra Explain</h2>
+<p>24K Gold • 22K Gold • Silver • Daily Rate Update</p>
+<p>Use the Gold & Silver section for detailed price information.</p>
+</div>
+
+
+<div class="grid">
+<button onclick="videoBox()"><span class="icon">🎬</span>Video</button>
+<button onclick="posterBox()"><span class="icon">🖼️</span>Poster AD</button>
+<button onclick="creativeBox()"><span class="icon">🎨</span>Creative</button>
+<button onclick="linkBox()"><span class="icon">🔗</span>Link Manager</button>
+<button onclick="shareBox()"><span class="icon">📤</span>Share</button>
+<button onclick="dailyBox()"><span class="icon">📅</span>Daily Auto</button>
+<button onclick="metaBox()"><span class="icon">▶️</span>Meta Video</button>
+<button onclick="statusBox()"><span class="icon">📊</span>Status</button>
+</div>
+
+<script>
+
+function thirukkuralBox(){
+show('<div class="card"><h2>📜 Daily Thirukkural</h2><p>Daily Thirukkural will be displayed here.</p><p><b>திருக்குறள் தினசரி புதுப்பிப்பு</b></p></div>');
+}
+
+function goldBox(){
+show('<div class="card"><h2 style="font-size:26px">🪙 Gold & Silver Price</h2><p>24K Gold • 22K Gold • Silver</p><p>Live daily rate section</p><button class="action" onclick="window.location.href='/'">📊 Open Gold Price</button></div>');
+}
+
+function jobBox(){
+show('<div class="card"><h2>💼 Jobs</h2><p>Job opportunities and updates.</p><button class="action" onclick="window.open('/jobs.html','_blank')">Open Jobs</button></div>');
+}
+
+function settingsBox(){
+show('<div class="card"><h2>⚙️ Settings</h2><p>HUB settings and preferences.</p></div>');
+}
+
+function sportsBox(){
+show('<div class="card"><h2>⚽ Sports & Games</h2><p>Sports news, scores and games.</p><button class="action" onclick="window.open('/sports.html','_blank')">Open Sports</button></div>');
+}
+
+function hub3dBox(){
+show('<div class="card"><h2>🎨 3D SASIKUMAR AI HUB</h2><p>Interactive 3D HUB branding and promotional area.</p><div style="font-size:60px;padding:18px">🤖</div></div>');
+}
+
+function show(html){document.getElementById("box").innerHTML=html}
+
+function videoBox(){
+show('<div class="card"><h2>🎬 Video</h2><input id="videoFile" type="file" accept="video/*"><p id="videoStatus">Minimum 02:00</p><div id="videoPreview"></div></div>');
+document.getElementById("videoFile").onchange=function(){
+var f=this.files[0]; if(!f)return;
+var v=document.createElement("video");
+v.preload="metadata";
+v.onloadedmetadata=function(){
+if(v.duration<120){
+document.getElementById("videoStatus").innerHTML='<span class="bad">❌ Rejected — minimum 02:00</span>';
+return;
+}
+document.getElementById("videoStatus").innerHTML='<span class="ok">✅ Accepted — '+Math.floor(v.duration/60)+':'+String(Math.floor(v.duration%60)).padStart(2,"0")+'</span>';
+document.getElementById("videoPreview").innerHTML='<video controls src="'+URL.createObjectURL(f)+'"></video>';
+};
+v.src=URL.createObjectURL(f);
+}
+}
+
+function posterBox(){
+show('<div class="card"><h2>🖼️ Poster AD</h2><input id="posterFile" type="file" accept="image/*"><div id="posterPreview"></div></div>');
+document.getElementById("posterFile").onchange=function(){
+var f=this.files[0];if(!f)return;
+document.getElementById("posterPreview").innerHTML='<img src="'+URL.createObjectURL(f)+'">';
+};
+}
+
+function creativeBox(){
+show('<div class="card"><h2>🎨 Creative Studio</h2><input id="creativeText" placeholder="Enter title"><select id="creativeFont"><option>Arial</option><option>Georgia</option><option>Impact</option><option>Verdana</option></select><select id="creativeAnim"><option>Fade</option><option>Slide</option><option>Zoom</option><option>Typewriter</option></select><button class="action" onclick="creativePreview()">Preview</button><div id="creativePreview"></div></div>');
+}
+
+function creativePreview(){
+var t=document.getElementById("creativeText").value||"SASIKUMAR AI";
+var f=document.getElementById("creativeFont").value;
+document.getElementById("creativePreview").innerHTML='<div class="card"><h2 style="font-family:'+f+'">'+t.replace(/[&<>]/g,"")+'</h2><small>SASIKUMAR AI</small></div>';
+}
+
+function linkBox(){
+show('<div class="card"><h2>🔗 Link Manager</h2><input id="url" placeholder="Enter URL"><button class="action" onclick="copyUrl()">📋 Copy</button><button class="action" onclick="openUrl()">↗️ Open</button></div>');
+}
+
+function copyUrl(){
+var x=document.getElementById("url").value;
+if(x){navigator.clipboard.writeText(x).then(function(){alert("Link copied");});}
+}
+
+function openUrl(){
+var x=document.getElementById("url").value.trim();
+if(x)window.open(x,"_blank");
+}
+
+function shareBox(){
+show('<div class="card"><h2>📤 Share</h2><input id="shareUrl" placeholder="Enter URL"><button class="action" onclick="shareUrl()">📤 Share</button></div>');
+}
+
+function shareUrl(){
+var x=document.getElementById("shareUrl").value.trim();
+if(!x)return;
+if(navigator.share){navigator.share({title:"SASIKUMAR AI HUB",url:x});}
+else{navigator.clipboard.writeText(x).then(function(){alert("Link copied");});}
+}
+
+function dailyBox(){
+show('<div class="card"><h2>📅 Daily Auto Post</h2><p>🕤 Release: <b>09:30 AM IST</b></p><p>🌙 Cleanup: <b>12:00 AM IST</b></p><p>Timezone: <b>Asia/Kolkata</b></p></div>');
+}
+
+function metaBox(){
+show('<div class="card"><h2>▶️ Meta Video</h2><input id="metaUrl" placeholder="Public Facebook / Instagram video URL"><button class="action" onclick="metaPreview()">👁️ Preview</button><div id="metaResult"></div></div>');
+}
+
+function metaPreview(){
+var x=document.getElementById("metaUrl").value.trim();
+if(!x)return;
+document.getElementById("metaResult").innerHTML='<p class="ok">✅ URL ready</p><button class="action" onclick="window.open(\''+x.replace(/'/g,"")+'\',\'_blank\')">↗️ Open Video</button>';
+}
+
+function statusBox(){
+show('<div class="card"><h2>📊 Status</h2><p class="ok">● Hub Page Online</p><p>Video minimum: 02:00</p><p>Release: 09:30 AM IST</p><p>Cleanup: 12:00 AM IST</p></div>');
+}
+</script>
+
+</body>
+</html>

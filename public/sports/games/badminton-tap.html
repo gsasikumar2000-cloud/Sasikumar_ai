@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🏸 Badminton Tap | SASIKUMAR AI</title>
+<style>
+body{font-family:Arial;margin:0;background:linear-gradient(135deg,#052e16,#15803d);color:#fff;text-align:center}
+.card{max-width:650px;margin:25px auto;padding:25px;background:#ffffff18;border-radius:24px}
+button{font-size:22px;padding:17px 28px;margin:10px;border:0;border-radius:15px;cursor:pointer}
+.shuttle{font-size:80px;margin:20px}.info{background:#0004;padding:15px;border-radius:15px;text-align:left}
+</style></head><body><div class="card">
+<h1>🏸 Badminton Tap</h1><p>Tap to return the shuttle!</p>
+<h2>Score: <span id="score">0</span> | Rallies: <span id="r">0</span>/10</h2>
+<div class="shuttle">🏸</div>
+<button onclick="hit()">🏸 RETURN</button><br>
+<button onclick="location.reload()">🔄 Play Again</button>
+<div class="info"><h2>📚 Badminton Knowledge</h2>
+<p>• Badminton is played with a racket and shuttlecock.</p>
+<p>• A rally begins with a serve.</p>
+<p>• Players try to send the shuttle over the net and inside the court.</p>
+<p>• Good footwork, timing and control are important skills.</p></div>
+</div>
+<script>
+let score=0,r=0;
+function hit(){if(r>=10)return;r++;if(Math.random()<.75)score+=1;document.getElementById('score').textContent=score;document.getElementById('r').textContent=r;if(r===10)setTimeout(()=>alert('🏸 Game Over! Score: '+score),100);}
+</script></body></html>

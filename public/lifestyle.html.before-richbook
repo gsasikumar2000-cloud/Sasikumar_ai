@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI • Lifestyle Book</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:#0d0d0d;color:#fff}
+header{padding:18px;text-align:center;background:#151515}
+h1{margin:0;font-size:24px}
+.sub{color:#bbb;margin-top:6px}
+.container{max-width:900px;margin:auto;padding:15px}
+.card{background:#181818;border:1px solid #333;border-radius:16px;padding:18px;margin:12px 0}
+.card h2{margin-top:0}
+.card p{line-height:1.6;color:#ddd}
+button{border:0;border-radius:12px;padding:11px 15px;margin:5px;background:#252525;color:#fff}
+button:hover{background:#333}
+.tip{padding:12px;border-radius:12px;background:#111;margin-top:10px}
+.back{width:100%;font-size:16px}
+</style>
+</head>
+<body>
+
+<header>
+<h1>📘 SASIKUMAR AI Lifestyle Book</h1>
+<div class="sub">Tamil + English • Practical Life Guide</div>
+</header>
+
+<div class="container">
+
+<button class="back" onclick="location.href='/'">🏠 Back to SASIKUMAR AI</button>
+
+<div class="card">
+<h2>🌱 Daily Life</h2>
+<p><b>தமிழ்:</b> தினசரி வாழ்க்கையை ஒழுங்காக நடத்த சிறிய நல்ல பழக்கங்களை உருவாக்குங்கள்.</p>
+<p><b>English:</b> Build simple habits that make everyday life more organized and useful.</p>
+<div class="tip">💡 Tip: Plan tomorrow's important tasks before sleeping.</div>
+</div>
+
+<div class="card">
+<h2>💰 Money & Savings</h2>
+<p><b>தமிழ்:</b> வருமானம், செலவு, சேமிப்பு ஆகியவற்றை தனித்தனியாக பதிவு செய்வது பண மேலாண்மைக்கு உதவும்.</p>
+<p><b>English:</b> Track income, expenses and savings separately to understand your money better.</p>
+<div class="tip">💡 Tip: Review your monthly expenses regularly.</div>
+</div>
+
+<div class="card">
+<h2>💼 Business Life</h2>
+<p><b>தமிழ்:</b> வாடிக்கையாளர் சேவை, நேர மேலாண்மை மற்றும் தெளிவான பதிவுகள் வணிகத்தில் முக்கியம்.</p>
+<p><b>English:</b> Customer service, time management and accurate records are important in business.</p>
+</div>
+
+<div class="card">
+<h2>📚 Education & Learning</h2>
+<p><b>தமிழ்:</b> தினமும் சிறிது நேரம் தொடர்ந்து கற்றுக்கொள்வது அறிவை வளர்க்கும்.</p>
+<p><b>English:</b> Consistent daily learning helps build knowledge over time.</p>
+</div>
+
+<div class="card">
+<h2>💻 Technology</h2>
+<p><b>தமிழ்:</b> புதிய தொழில்நுட்பங்களை பாதுகாப்பாகவும் பொறுப்புடனும் பயன்படுத்த கற்றுக்கொள்ளுங்கள்.</p>
+<p><b>English:</b> Learn to use new technology safely, responsibly and effectively.</p>
+</div>
+
+<div class="card">
+<h2>⏰ Time Management</h2>
+<p><b>தமிழ்:</b> முக்கியமான பணிகளை முதலில் செய்து, தேவையற்ற நேர விரயத்தை குறைக்கவும்.</p>
+<p><b>English:</b> Prioritize important tasks and reduce unnecessary distractions.</p>
+</div>
+
+<div class="card">
+<h2>🎯 Goals & Personal Development</h2>
+<p><b>தமிழ்:</b> பெரிய இலக்கை சிறிய, செய்யக்கூடிய படிகளாக பிரிக்கவும்.</p>
+<p><b>English:</b> Break a large goal into small, achievable steps.</p>
+</div>
+
+<div class="card">
+<h2>🧠 Puzzles & Brain Games</h2>
+<p><b>தமிழ்:</b> புதிர்கள் மற்றும் reasoning activities மூலம் சிந்தனை திறனை பயிற்சி செய்யலாம்.</p>
+<p><b>English:</b> Puzzles and reasoning activities can provide useful mental practice.</p>
+</div>
+
+<div class="card">
+<h2>🗣️ Communication</h2>
+<p><b>தமிழ்:</b> தெளிவாக கேட்டு, மரியாதையாக பதிலளிப்பது நல்ல தொடர்பை உருவாக்கும்.</p>
+<p><b>English:</b> Listening carefully and responding respectfully improves communication.</p>
+</div>
+
+</div>
+</body>
+</html>

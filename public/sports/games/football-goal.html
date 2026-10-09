@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>⚽ Football Goal | SASIKUMAR AI</title>
+<style>
+body{font-family:Arial;margin:0;background:linear-gradient(135deg,#07152b,#075985);color:white;text-align:center}
+.card{max-width:650px;margin:30px auto;padding:25px;background:#ffffff15;border-radius:24px}
+button{font-size:20px;padding:16px 25px;margin:8px;border:0;border-radius:14px;cursor:pointer}
+.goal{font-size:85px;margin:20px}
+.info{background:#0004;padding:15px;border-radius:15px;text-align:left}
+</style></head><body><div class="card">
+<h1>⚽ Football Goal</h1><p>Choose a direction and take the shot!</p>
+<h2>Goals: <span id="score">0</span> | Shots: <span id="shots">0</span>/10</h2>
+<div class="goal">⚽🥅</div>
+<button onclick="shoot('Left')">⬅️ Left</button><button onclick="shoot('Center')">⬆️ Center</button><button onclick="shoot('Right')">➡️ Right</button>
+<div id="result"></div><button onclick="location.reload()">🔄 Play Again</button>
+<div class="info"><h2>📚 Football Knowledge</h2>
+<p>• A goal is scored when the whole ball crosses the goal line between the posts and under the crossbar.</p>
+<p>• A penalty kick is taken from the penalty mark.</p>
+<p>• Players normally cannot deliberately handle the ball with their hands or arms.</p></div>
+</div>
+<script>
+let score=0,shots=0;
+function shoot(d){if(shots>=10)return;shots++;let save=['Left','Center','Right'][Math.floor(Math.random()*3)];if(d!==save){score++;document.getElementById('result').textContent='⚽ GOAL!';}else document.getElementById('result').textContent='🧤 SAVED!';document.getElementById('score').textContent=score;document.getElementById('shots').textContent=shots;if(shots===10)setTimeout(()=>alert('Game Over! Goals: '+score),100);}
+</script></body></html>

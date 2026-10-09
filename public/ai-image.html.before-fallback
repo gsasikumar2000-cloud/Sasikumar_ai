@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI - Image Maker</title>
+<style>
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#020617,#111827,#312e81);color:white;min-height:100vh}
+.wrap{max-width:700px;margin:auto;padding:24px 16px}
+.card{background:rgba(15,23,42,.95);border-radius:22px;padding:22px}
+h1{text-align:center}
+textarea{width:100%;min-height:130px;box-sizing:border-box;padding:14px;border-radius:14px;background:#020617;color:white;border:1px solid #475569;font-size:16px}
+button{width:100%;margin-top:14px;padding:14px;border:0;border-radius:14px;font-size:16px;font-weight:bold}
+.generate{background:#6366f1;color:white}
+.back{background:#334155;color:white}
+#status{margin-top:16px;padding:12px;border-radius:12px;background:#1e293b;white-space:pre-wrap}
+#result{margin-top:18px;text-align:center}
+#result img{max-width:100%;border-radius:18px}
+.small{color:#cbd5e1;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="card">
+<h1>🖼️ SASIKUMAR AI Image Maker</h1>
+<p class="small">Describe the image you want to create.</p>
+
+<textarea id="prompt" placeholder="Example: A beautiful peacock in a natural garden, realistic digital art"></textarea>
+
+<button class="generate" onclick="generateImage()">✨ Generate Image</button>
+<button class="back" onclick="location.href='/'">⬅️ Back to SASIKUMAR AI</button>
+
+<div id="status"></div>
+<div id="result"></div>
+</div>
+</div>
+
+<script>
+async function generateImage(){
+  const prompt=document.getElementById("prompt").value.trim();
+  const status=document.getElementById("status");
+  const result=document.getElementById("result");
+
+  result.innerHTML="";
+
+  if(!prompt){
+    status.textContent="Please enter an image description.";
+    return;
+  }
+
+  status.textContent="⏳ Generating image...";
+
+  try{
+    const response=await fetch("/api/ai/image",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({prompt})
+    });
+
+    const data=await response.json();
+
+    if(!data.ok){
+      if(String(data.error).includes("429")){
+        status.textContent="⚠️ Image generation is currently unavailable because the Gemini image-generation quota is not enabled for this API plan.";
+      }else{
+        status.textContent="❌ "+(data.error || "Image generation failed.");
+      }
+      return;
+    }
+
+    status.textContent="✅ Image generated successfully.";
+
+    const img=document.createElement("img");
+    img.src=data.imageUrl;
+    img.alt=prompt;
+    result.appendChild(img);
+
+  }catch(error){
+    status.textContent="❌ Unable to connect to the image service.";
+  }
+}
+</script>
+</body>
+</html>

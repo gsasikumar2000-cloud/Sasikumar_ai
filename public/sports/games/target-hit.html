@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>🎯 Target Hit | SASIKUMAR AI</title>
+<style>
+body{font-family:Arial;margin:0;background:linear-gradient(135deg,#171717,#4c1d95);color:white;text-align:center}
+.card{max-width:650px;margin:30px auto;padding:25px;background:#ffffff15;border-radius:24px}
+#target{width:230px;height:230px;border-radius:50%;margin:25px auto;background:radial-gradient(circle,#fff 0 15%,#111 16% 30%,#fff 31% 45%,#111 46% 60%,#fff 61%);cursor:pointer}
+button{font-size:20px;padding:15px 25px;border:0;border-radius:14px;cursor:pointer}
+.info{background:#0004;padding:15px;border-radius:15px;text-align:left}
+</style></head><body><div class="card">
+<h1>🎯 Target Hit</h1><p>Hit the target as many times as possible!</p>
+<h2>Score: <span id="score">0</span> | Hits: <span id="hits">0</span>/10</h2>
+<div id="target" onclick="hit()"></div><button onclick="location.reload()">🔄 Play Again</button>
+<div class="info"><h2>📚 Target Sports Knowledge</h2>
+<p>• Accuracy means how consistently a player hits the intended target.</p>
+<p>• Concentration and controlled movement are important in target sports.</p>
+<p>• Different sports use different target sizes, distances and scoring systems.</p></div>
+</div>
+<script>
+let score=0,hits=0;
+function hit(){if(hits>=10)return;hits++;score+=Math.floor(Math.random()*10)+1;document.getElementById('score').textContent=score;document.getElementById('hits').textContent=hits;if(hits<10){document.getElementById('target').style.transform='translate('+(Math.random()*180-90)+'px,'+(Math.random()*100-50)+'px)';}else alert('🎯 Game Over! Score: '+score);}
+</script></body></html>

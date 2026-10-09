@@ -1,0 +1,2864 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI - Maths • Gold • Finance Equations</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  font-family:Arial,sans-serif;
+  margin:0;
+  padding:16px;
+  background:linear-gradient(135deg,#f7f7f7,#fff8df);
+  color:#222;
+}
+.container{max-width:1000px;margin:auto}
+h1{text-align:center;color:#7a5a00;margin:10px 0}
+.subtitle{text-align:center;color:#555;margin-bottom:20px}
+.card{
+  background:#fff;
+  padding:18px;
+  margin:14px 0;
+  border-radius:16px;
+  box-shadow:0 3px 12px #00000018;
+  border:1px solid #eadca8;
+}
+h2{margin-top:0;color:#725500}
+h3{color:#333;margin-bottom:6px}
+.eq{
+  font-size:20px;
+  font-weight:bold;
+  background:#fff9df;
+  padding:10px;
+  border-radius:9px;
+  margin:8px 0;
+}
+.note{color:#555;font-size:14px;line-height:1.6}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:12px;
+}
+button{
+  border:0;
+  border-radius:10px;
+  padding:10px 14px;
+  margin:4px;
+  cursor:pointer;
+  font-weight:bold;
+  background:#c99a22;
+  color:white;
+}
+input{
+  width:100%;
+  padding:10px;
+  margin:5px 0 10px;
+  border:1px solid #ccc;
+  border-radius:8px;
+}
+.result{
+  padding:10px;
+  margin-top:8px;
+  background:#eef8ee;
+  border-radius:8px;
+  font-weight:bold;
+}
+.top{
+  position:sticky;
+  top:0;
+  z-index:10;
+  background:#fffdf4;
+  padding:8px;
+  border-bottom:1px solid #ddd;
+  text-align:center;
+}
+
+.math-learning-card{
+  border:2px solid #eadca8;
+}
+.math-learning-card select{
+  background:#fff;
+  color:#222;
+}
+.math-details{
+  margin-top:16px;
+  padding:16px;
+  border-radius:12px;
+  background:#fffdf4;
+  border:1px solid #eadca8;
+  line-height:1.7;
+  overflow-wrap:anywhere;
+}
+.math-ai-content{
+  font-size:16px;
+  line-height:1.8;
+}
+</style>
+
+<style id="sasikumar-education-3d">
+*{box-sizing:border-box}
+
+html{scroll-behavior:smooth}
+
+body{
+  font-family:Arial,sans-serif;
+  margin:0;
+  padding:16px;
+  min-height:100vh;
+  color:#172033;
+  background:
+    radial-gradient(circle at 8% 8%,rgba(124,58,237,.22),transparent 25%),
+    radial-gradient(circle at 92% 12%,rgba(6,182,212,.22),transparent 25%),
+    radial-gradient(circle at 50% 95%,rgba(245,158,11,.20),transparent 30%),
+    linear-gradient(135deg,#f8fbff,#fff7fc,#f8f5ff);
+  background-attachment:fixed;
+}
+
+.container{
+  max-width:1000px;
+  margin:auto;
+  perspective:1200px;
+}
+
+h1{
+  text-align:center;
+  margin:18px 0 8px;
+  font-size:clamp(28px,6vw,46px);
+  font-weight:900;
+  background:linear-gradient(90deg,#6d28d9,#0891b2,#db2777,#d97706,#6d28d9);
+  background-size:300% auto;
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  animation:eduGradient 7s linear infinite;
+  filter:drop-shadow(0 5px 10px rgba(80,40,150,.18));
+}
+
+.subtitle{
+  text-align:center;
+  color:#475569;
+  margin-bottom:24px;
+  font-weight:700;
+  letter-spacing:.3px;
+}
+
+.card{
+  position:relative;
+  background:rgba(255,255,255,.82);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  padding:20px;
+  margin:16px 0;
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,.75);
+  box-shadow:
+    0 12px 30px rgba(30,41,59,.12),
+    0 2px 6px rgba(30,41,59,.08);
+  transform:translateZ(0);
+  transition:transform .25s ease,box-shadow .25s ease;
+  overflow:hidden;
+}
+
+.card::before{
+  content:"";
+  position:absolute;
+  width:150px;
+  height:150px;
+  border-radius:50%;
+  top:-80px;
+  right:-60px;
+  background:linear-gradient(135deg,rgba(124,58,237,.18),rgba(6,182,212,.10));
+  pointer-events:none;
+}
+
+.card:hover{
+  transform:translateY(-5px) rotateX(.6deg);
+  box-shadow:
+    0 20px 40px rgba(30,41,59,.16),
+    0 5px 12px rgba(124,58,237,.10);
+}
+
+h2{
+  margin-top:0;
+  color:#5b21b6;
+  font-weight:900;
+}
+
+h3{
+  color:#334155;
+  margin-bottom:6px;
+}
+
+.eq{
+  font-size:20px;
+  font-weight:900;
+  color:#312e81;
+  background:linear-gradient(135deg,#eef2ff,#ecfeff);
+  padding:13px;
+  border-radius:13px;
+  margin:10px 0;
+  border-left:5px solid #7c3aed;
+  box-shadow:inset 0 1px 5px rgba(0,0,0,.04);
+}
+
+.note{
+  color:#475569;
+  font-size:14px;
+  line-height:1.7;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:15px;
+}
+
+button{
+  border:0;
+  border-radius:13px;
+  padding:11px 16px;
+  margin:5px;
+  cursor:pointer;
+  font-weight:800;
+  color:#fff;
+  background:linear-gradient(135deg,#7c3aed,#0891b2);
+  box-shadow:0 6px 14px rgba(79,70,229,.22);
+  transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;
+}
+
+button:hover{
+  transform:translateY(-3px) scale(1.02);
+  box-shadow:0 10px 22px rgba(79,70,229,.30);
+  filter:saturate(1.15);
+}
+
+button:active{
+  transform:scale(.96);
+}
+
+input{
+  width:100%;
+  padding:12px;
+  margin:6px 0 11px;
+  border:1px solid #cbd5e1;
+  border-radius:11px;
+  background:rgba(255,255,255,.9);
+  outline:none;
+  transition:border-color .2s,box-shadow .2s;
+}
+
+input:focus{
+  border-color:#7c3aed;
+  box-shadow:0 0 0 4px rgba(124,58,237,.12);
+}
+
+.result{
+  padding:12px;
+  margin-top:9px;
+  background:linear-gradient(135deg,#ecfdf5,#eff6ff);
+  border-radius:11px;
+  border-left:4px solid #10b981;
+  font-weight:800;
+}
+
+.top{
+  position:sticky;
+  top:8px;
+  z-index:10;
+  background:rgba(255,255,255,.78);
+  backdrop-filter:blur(15px);
+  -webkit-backdrop-filter:blur(15px);
+  padding:9px;
+  border:1px solid rgba(255,255,255,.8);
+  border-radius:16px;
+  text-align:center;
+  box-shadow:0 8px 24px rgba(15,23,42,.10);
+}
+
+.math-learning-card{
+  border:2px solid rgba(124,58,237,.18);
+  background:
+    linear-gradient(135deg,rgba(255,255,255,.92),rgba(245,243,255,.88));
+}
+
+.math-learning-card h2{
+  background:linear-gradient(90deg,#6d28d9,#0891b2);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+
+.math-learning-card select{
+  background:#fff;
+  color:#222;
+  border:1px solid #cbd5e1;
+  border-radius:11px;
+  padding:10px;
+}
+
+.math-details{
+  margin-top:16px;
+  padding:17px;
+  border-radius:15px;
+  background:linear-gradient(135deg,#ffffff,#f5f3ff,#ecfeff);
+  border:1px solid rgba(124,58,237,.18);
+  line-height:1.75;
+  overflow-wrap:anywhere;
+  box-shadow:inset 0 1px 8px rgba(0,0,0,.03);
+}
+
+.math-ai-content{
+  font-size:16px;
+  line-height:1.85;
+}
+
+@keyframes eduGradient{
+  0%{background-position:0% center}
+  50%{background-position:100% center}
+  100%{background-position:0% center}
+}
+
+@media(max-width:600px){
+  body{padding:10px}
+  .card{padding:15px;border-radius:18px}
+  .top{top:5px}
+  button{padding:10px 12px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation:none !important;
+    transition:none !important;
+  }
+}
+</style>
+
+</head>
+
+<body>
+<div class="container">
+
+<div class="top">
+<button onclick="location.href='/'">🏠 Dashboard</button>
+<button onclick="window.print()">🖨️ Print / PDF</button>
+</div>
+
+<h1>📐 SASIKUMAR AI — Equations</h1>
+<div class="subtitle">
+🧮 Maths • 🪙 Gold • 💰 Finance • 📊 Business Maths
+</div>
+
+
+<!-- CLASS 1-12 MATHEMATICS LEARNING FLOW -->
+<div class="card maths-learning-card">
+<h2>📚 School Mathematics — Class 1 to 12</h2>
+
+<p class="note">
+Class → Mathematics Topic → Open Selected → Tamil + English maximum useful details
+</p>
+
+<div class="grid">
+
+<div>
+<label><b>1️⃣ Student Level</b></label>
+<select id="studentLevel" style="width:100%;padding:11px;border:1px solid #ccc;border-radius:8px;margin:5px 0 12px;">
+<option value="">Select Student Level</option>
+<option value="primary">Primary — Class 1–5</option>
+<option value="middle">Middle School — Class 6–8</option>
+<option value="secondary">Secondary — Class 9–10</option>
+<option value="higher">Higher Secondary — Class 11–12</option>
+</select>
+</div>
+
+<div>
+<label><b>2️⃣ Subject</b></label>
+<select id="mathSubject" style="width:100%;padding:11px;border:1px solid #ccc;border-radius:8px;margin:5px 0 12px;">
+<option value="">Select Subject</option>
+<option value="Mathematics">Mathematics</option>
+<option value="Physics">Physics</option>
+<option value="Chemistry">Chemistry</option>
+<option value="Computer Science">Computer Science</option>
+</select>
+</div>
+
+<div>
+<label><b>3️⃣ Class</b></label>
+<select id="mathClass" style="width:100%;padding:11px;border:1px solid #ccc;border-radius:8px;margin:5px 0 12px;">
+<option value="">Select Level & Subject first</option>
+</select>
+</div>
+
+<div>
+<label><b>4️⃣ Chapter / Topic</b></label>
+<select id="mathTopic" style="width:100%;padding:11px;border:1px solid #ccc;border-radius:8px;margin:5px 0 12px;">
+<option value="">Select Class first</option>
+</select>
+</div>
+
+</div>
+
+<button id="mathOpenBtn" disabled onclick="openMathTopic()">
+📖 Open Selected
+</button>
+
+<div id="mathSelectedInfo" class="note" style="margin-top:10px;">
+Student Level → Subject → Class → Chapter / Topic
+</div>
+
+<div id="mathDetails" class="math-details" style="display:none;"></div>
+
+<button id="mathGoogleBtn" style="display:none;" onclick="searchMathTopic()">
+🔎 Google Search – More Details
+</button>
+
+</div>
+
+<script>
+(function(){
+
+const levelEl = document.getElementById("studentLevel");
+const subjectEl = document.getElementById("mathSubject");
+const classEl = document.getElementById("mathClass");
+const topicEl = document.getElementById("mathTopic");
+const openBtn = document.getElementById("mathOpenBtn");
+const infoEl = document.getElementById("mathSelectedInfo");
+const detailsEl = document.getElementById("mathDetails");
+const googleBtn = document.getElementById("mathGoogleBtn");
+
+const levels = {
+  primary: [1,2,3,4,5],
+  middle: [6,7,8],
+  secondary: [9,10],
+  higher: [11,12]
+};
+
+const topics = {
+"Mathematics": {
+1:["Numbers","Counting","Addition","Subtraction","Shapes","Measurement","Time","Money"],
+2:["Numbers","Addition","Subtraction","Multiplication","Division","Fractions","Shapes","Measurement","Time","Money"],
+3:["Numbers","Addition","Subtraction","Multiplication","Division","Fractions","Decimals","Measurement","Time","Money","Geometry"],
+4:["Large Numbers","Addition","Subtraction","Multiplication","Division","Fractions","Decimals","Factors","Multiples","Geometry","Measurement","Data Handling"],
+5:["Numbers","Factors and Multiples","Fractions","Decimals","Percentage","Geometry","Area and Perimeter","Measurement","Data Handling"],
+6:["Knowing Our Numbers","Whole Numbers","Integers","Fractions","Decimals","Ratio","Percentage","Algebra","Basic Geometry","Mensuration","Data Handling"],
+7:["Integers","Fractions and Decimals","Data Handling","Simple Equations","Lines and Angles","Triangles","Comparing Quantities","Perimeter and Area","Algebraic Expressions","Exponents","Symmetry","Probability"],
+8:["Rational Numbers","Linear Equations","Understanding Quadrilaterals","Practical Geometry","Data Handling","Squares and Square Roots","Cubes and Cube Roots","Comparing Quantities","Algebraic Expressions","Mensuration","Exponents and Powers","Direct and Inverse Proportion","Factorisation","Graphs","Probability"],
+9:["Number Systems","Polynomials","Coordinate Geometry","Linear Equations in Two Variables","Euclid Geometry","Lines and Angles","Triangles","Quadrilaterals","Circles","Heron's Formula","Surface Areas and Volumes","Statistics","Probability"],
+10:["Real Numbers","Polynomials","Pair of Linear Equations","Quadratic Equations","Arithmetic Progressions","Triangles","Coordinate Geometry","Introduction to Trigonometry","Applications of Trigonometry","Circles","Areas Related to Circles","Surface Areas and Volumes","Statistics","Probability"],
+11:["Sets","Relations and Functions","Trigonometric Functions","Complex Numbers","Linear Inequalities","Permutations and Combinations","Binomial Theorem","Sequences and Series","Straight Lines","Conic Sections","Limits and Derivatives","Statistics","Probability"],
+12:["Relations and Functions","Inverse Trigonometric Functions","Matrices","Determinants","Continuity and Differentiability","Applications of Derivatives","Integrals","Applications of Integrals","Differential Equations","Vector Algebra","Three Dimensional Geometry","Linear Programming","Probability"]
+},
+
+"Physics": {
+1:["Measurement","Motion","Push and Pull","Light","Sound"],
+2:["Measurement","Motion","Light","Sound","Magnets"],
+3:["Measurement","Motion","Energy","Light","Sound"],
+4:["Force","Motion","Energy","Heat","Light","Sound"],
+5:["Force and Motion","Energy","Light","Sound","Simple Machines"],
+6:["Motion","Force","Energy","Light","Electricity"],
+7:["Heat","Motion","Force","Pressure","Light","Sound"],
+8:["Force","Pressure","Friction","Sound","Light","Electricity"],
+9:["Motion","Force and Laws of Motion","Gravitation","Work and Energy","Sound"],
+10:["Light","Human Eye","Electricity","Magnetic Effects of Electric Current","Sources of Energy"],
+11:["Units and Measurements","Motion","Laws of Motion","Work Energy and Power","Gravitation","Thermodynamics","Oscillations","Waves"],
+12:["Electric Charges and Fields","Electrostatic Potential","Current Electricity","Moving Charges and Magnetism","Electromagnetic Induction","Alternating Current","Ray Optics","Wave Optics","Atoms","Nuclei","Semiconductor Electronics"]
+},
+
+"Chemistry": {
+1:["Materials","Water","Air","Changes"],
+2:["Materials","Water","Air","Changes"],
+3:["Materials Around Us","Water","Air","Changes"],
+4:["Matter","Materials","Water","Air","Changes"],
+5:["Matter","Materials","Water","Air","Separation"],
+6:["Components of Food","Materials","Separation of Substances","Changes Around Us"],
+7:["Matter","Physical and Chemical Changes","Acids and Bases","Heat"],
+8:["Crop Production","Materials","Combustion","Coal and Petroleum","Chemical Effects"],
+9:["Matter in Our Surroundings","Is Matter Around Us Pure","Atoms and Molecules","Structure of Atom"],
+10:["Chemical Reactions","Acids Bases and Salts","Metals and Non-metals","Carbon Compounds","Periodic Classification"],
+11:["Some Basic Concepts of Chemistry","Structure of Atom","Chemical Bonding","Thermodynamics","Equilibrium","Redox Reactions","Organic Chemistry"],
+12:["Solutions","Electrochemistry","Chemical Kinetics","Surface Chemistry","Coordination Compounds","Haloalkanes","Alcohols Phenols Ethers","Amines","Biomolecules"]
+},
+
+"Computer Science": {
+1:["Computer Basics","Parts of Computer","Keyboard","Mouse"],
+2:["Computer Basics","Files","Typing","Drawing"],
+3:["Hardware","Software","Internet Basics","Programming Basics"],
+4:["Computer Networks","Internet","Algorithms","Programming"],
+5:["Algorithms","Scratch","Internet Safety","Data"],
+6:["Computer Basics","Algorithms","Programming","Internet"],
+7:["Python Basics","Variables","Conditions","Loops","Functions"],
+8:["Python","Lists","Functions","Algorithms","Cyber Safety"],
+9:["Programming","Python","Data Structures","Computer Networks","Cyber Security"],
+10:["Python","SQL","Data Structures","Networks","Cyber Security"],
+11:["Computer Systems","Python","Data Structures","Database Concepts","Computer Networks"],
+12:["Python","Data Structures","Database Management","Computer Networks","Computer Security"]
+}
+};
+
+function resetAll(){
+  classEl.innerHTML = '<option value="">Select Level & Subject first</option>';
+  topicEl.innerHTML = '<option value="">Select Class first</option>';
+  openBtn.disabled = true;
+  detailsEl.style.display = "none";
+  googleBtn.style.display = "none";
+}
+
+levelEl.addEventListener("change", function(){
+  resetAll();
+
+  if(!this.value || !subjectEl.value){
+    infoEl.textContent = "Student Level → Subject → Class → Chapter / Topic";
+    return;
+  }
+
+  loadClasses();
+});
+
+subjectEl.addEventListener("change", function(){
+  resetAll();
+
+  if(!this.value || !levelEl.value){
+    infoEl.textContent = "Student Level → Subject → Class → Chapter / Topic";
+    return;
+  }
+
+  loadClasses();
+});
+
+function loadClasses(){
+  classEl.innerHTML = '<option value="">Select Class</option>';
+
+  (levels[levelEl.value] || []).forEach(function(num){
+    const option = document.createElement("option");
+    option.value = "Class " + num;
+    option.textContent = "Class " + num;
+    classEl.appendChild(option);
+  });
+
+  infoEl.textContent =
+    levelEl.options[levelEl.selectedIndex].text +
+    " → " + subjectEl.value + " → Select Class";
+}
+
+classEl.addEventListener("change", function(){
+  topicEl.innerHTML = '<option value="">Select Chapter / Topic</option>';
+
+  const cls = this.value;
+  const subject = subjectEl.value;
+
+  if(!cls || !subject) return;
+
+  const num = Number(cls.replace("Class ",""));
+  const list = topics[subject]?.[num] || [];
+
+  list.forEach(function(topic){
+    const option = document.createElement("option");
+    option.value = topic;
+    option.textContent = topic;
+    topicEl.appendChild(option);
+  });
+
+  openBtn.disabled = true;
+  detailsEl.style.display = "none";
+  googleBtn.style.display = "none";
+
+  infoEl.textContent =
+    cls + " → " + subject + " → Select Chapter / Topic";
+});
+
+topicEl.addEventListener("change", function(){
+  const cls = classEl.value;
+  const subject = subjectEl.value;
+  const topic = this.value;
+
+  openBtn.disabled = !(cls && subject && topic);
+
+  if(cls && subject && topic){
+    infoEl.textContent =
+      "Selected: " + cls + " → " + subject + " → " + topic;
+  }
+});
+
+window.openMathTopic = async function(){
+  const level = levelEl.value;
+  const subject = subjectEl.value;
+  const cls = classEl.value;
+  const topic = topicEl.value;
+
+  if(!cls || !subject || !topic) return;
+
+  detailsEl.style.display = "block";
+  detailsEl.innerHTML = `
+    <h3>📖 ${topic}</h3>
+    <p><b>Student Level:</b> ${level || "School"}</p>
+    <p><b>Class:</b> ${cls}</p>
+    <p><b>Subject:</b> ${subject}</p>
+
+    <div style="padding:14px;margin:12px 0;border-radius:10px;background:#f5f5f5;">
+      🤖 <b>SASIKUMAR AI is preparing the topic explanation...</b>
+      <br><small>தமிழ் + English • Examples • Formula • Step-by-step</small>
+    </div>
+  `;
+
+  detailsEl.scrollIntoView({
+    behavior:"smooth",
+    block:"start"
+  });
+
+  try {
+    const prompt = `
+You are SASIKUMAR AI Education Tutor.
+
+Explain this school mathematics topic for ${cls}, ${subject}, topic: ${topic}.
+
+Give maximum useful educational detail suitable for the student's class.
+
+IMPORTANT:
+- Give Tamil explanation first.
+- Then give clear English explanation.
+- Use simple language.
+- Explain the definition/concept.
+- Give important rules.
+- Give formulas/equations with symbols explained.
+- Give at least 2 worked examples step-by-step.
+- Give common mistakes.
+- Give practical/real-life application where relevant.
+- Give 5 practice questions.
+- Give answers after the questions.
+- End with a short revision summary.
+- Do not invent an official textbook quotation.
+- Keep mathematics accurate.
+- Format with headings and bullet points.
+`;
+
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: prompt,
+        source: "education-topic"
+      })
+    });
+
+    if(!response.ok){
+      throw new Error("AI request failed: HTTP " + response.status);
+    }
+
+    const data = await response.json();
+
+    const answer =
+      data.reply ||
+      data.response ||
+      data.message ||
+      data.answer ||
+      "";
+
+    if(!answer){
+      throw new Error("Empty AI response");
+    }
+
+    const safeAnswer = String(answer)
+      .replace(/&/g,"&amp;")
+      .replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;")
+      .replace(/\n/g,"<br>");
+
+    detailsEl.innerHTML = `
+      <h3>📖 ${topic}</h3>
+
+      <p>
+        <b>Student Level:</b> ${level || "School"}
+        &nbsp; | &nbsp;
+        <b>Class:</b> ${cls}
+        &nbsp; | &nbsp;
+        <b>Subject:</b> ${subject}
+      </p>
+
+      <div class="math-ai-explanation"
+           style="margin-top:14px;padding:16px;border-radius:12px;background:#fff;border:1px solid #ddd;line-height:1.65;">
+        <div style="font-size:18px;font-weight:700;margin-bottom:10px;">
+          🤖 SASIKUMAR AI — Topic Explanation
+        </div>
+        ${safeAnswer}
+      </div>
+
+      <div style="margin-top:14px;padding:12px;border-radius:10px;background:#f5f5f5;">
+        📚 <b>Learning:</b> Review the examples and try the practice questions before checking the answers.
+      </div>
+
+      <div style="margin-top:12px;">
+        <button type="button"
+          onclick="searchMathTopic()">
+          🔎 Google Search – More Details
+        </button>
+      </div>
+    `;
+
+  } catch(error) {
+    console.error("SASIKUMAR AI Topic Error:", error);
+
+    detailsEl.innerHTML = `
+      <h3>📖 ${topic}</h3>
+
+      <p><b>Class:</b> ${cls}</p>
+      <p><b>Subject:</b> ${subject}</p>
+
+      <div style="padding:14px;border-radius:10px;background:#fff3cd;border:1px solid #ffe69c;">
+        ⚠️ <b>AI explanation could not be loaded.</b>
+        <br><br>
+        ${String(error.message || error)}
+      </div>
+
+      <h4>📚 Topic Learning Guide</h4>
+      <ul>
+        <li>Definition / வரையறை</li>
+        <li>Concept / கருத்து</li>
+        <li>Rules / விதிகள்</li>
+        <li>Formula / சூத்திரம்</li>
+        <li>Worked Example / எடுத்துக்காட்டு</li>
+        <li>Step-by-step Method / படிப்படியான முறை</li>
+        <li>Practice Questions / பயிற்சி கேள்விகள்</li>
+        <li>Answers / பதில்கள்</li>
+        <li>Summary / சுருக்கம்</li>
+      </ul>
+
+      <button type="button" onclick="searchMathTopic()">
+        🔎 Google Search – More Details
+      </button>
+    `;
+  }
+};
+
+window.searchMathTopic = function(){
+
+  const cls = classEl.value;
+  const subject = subjectEl.value;
+  const topic = topicEl.value;
+
+  if(!cls || !subject || !topic) return;
+
+  const query = encodeURIComponent(
+    "SASIKUMAR AI " + cls + " " + subject + " " + topic +
+    " Tamil English explanation formula examples"
+  );
+
+  window.open(
+    "https://www.google.com/search?q=" + query,
+    "_blank",
+    "noopener,noreferrer"
+  );
+};
+
+})();
+</script>
+
+<!-- MATHS -->
+<div class="card">
+<h2>🧮 Maths Equations</h2>
+
+<div class="grid">
+<div>
+<h3>➕ Arithmetic</h3>
+<div class="eq">Sum = a + b</div>
+<div class="eq">Difference = a − b</div>
+<div class="eq">Product = a × b</div>
+<div class="eq">Quotient = a ÷ b</div>
+</div>
+
+<div>
+<h3>🔢 Fractions</h3>
+<div class="eq">a/b + c/d = (ad + bc)/bd</div>
+<div class="eq">a/b × c/d = ac/bd</div>
+<div class="eq">a/b ÷ c/d = ad/bc</div>
+</div>
+
+<div>
+<h3>📊 Percentage</h3>
+<div class="eq">Percentage = (Part ÷ Total) × 100</div>
+<div class="eq">Part = Total × Percentage ÷ 100</div>
+</div>
+
+<div>
+<h3>📈 Profit & Loss</h3>
+<div class="eq">Profit = SP − CP</div>
+<div class="eq">Loss = CP − SP</div>
+<div class="eq">Profit% = Profit ÷ CP × 100</div>
+<div class="eq">Loss% = Loss ÷ CP × 100</div>
+</div>
+
+<div>
+<h3>📐 Algebra</h3>
+<div class="eq">a(b+c) = ab + ac</div>
+<div class="eq">a² − b² = (a−b)(a+b)</div>
+<div class="eq">x = (−b ± √(b²−4ac)) ÷ 2a</div>
+</div>
+
+<div>
+<h3>📏 Geometry</h3>
+<div class="eq">Rectangle Area = l × b</div>
+<div class="eq">Square Area = a²</div>
+<div class="eq">Triangle Area = ½ × b × h</div>
+<div class="eq">Circle Area = πr²</div>
+<div class="eq">Circle Circumference = 2πr</div>
+</div>
+
+<div>
+<h3>📦 Mensuration</h3>
+<div class="eq">Cube Volume = a³</div>
+<div class="eq">Cuboid Volume = l × b × h</div>
+<div class="eq">Cylinder Volume = πr²h</div>
+</div>
+
+<div>
+<h3>📐 Trigonometry</h3>
+<div class="eq">sin θ = Opposite ÷ Hypotenuse</div>
+<div class="eq">cos θ = Adjacent ÷ Hypotenuse</div>
+<div class="eq">tan θ = Opposite ÷ Adjacent</div>
+<div class="eq">sin²θ + cos²θ = 1</div>
+</div>
+
+<div>
+<h3>📊 Statistics</h3>
+<div class="eq">Mean = Sum of values ÷ Number of values</div>
+<div class="eq">Range = Maximum − Minimum</div>
+</div>
+
+<div>
+<h3>🎲 Probability</h3>
+<div class="eq">P(E) = Favourable outcomes ÷ Total outcomes</div>
+</div>
+</div>
+</div>
+
+<!-- GOLD -->
+<div class="card">
+<h2>🪙 Gold Calculations</h2>
+
+<div class="grid">
+
+<div>
+<h3>⚖️ Weight</h3>
+<div class="eq">Value = Weight × Rate per gram</div>
+<div class="eq">10g = 10 × 1g rate</div>
+<div class="eq">8g = 8 × 1g rate</div>
+<p class="note">
+Always confirm the applicable market rate before calculating a transaction.
+</p>
+</div>
+
+<div>
+<h3>🔶 Purity</h3>
+<div class="eq">Pure Gold = Weight × Purity ÷ 100</div>
+<div class="eq">22K Purity ≈ 91.6%</div>
+<div class="eq">18K Purity = 75%</div>
+<div class="eq">24K Purity ≈ 99.9%</div>
+</div>
+
+<div>
+<h3>🔢 Karat Conversion</h3>
+<div class="eq">Purity% = Karat ÷ 24 × 100</div>
+<div class="eq">Karat = Purity% × 24 ÷ 100</div>
+</div>
+
+<div>
+<h3>💰 Gold Value</h3>
+<div class="eq">Gold Value = Net Weight × Applicable Rate</div>
+<div class="eq">Net Weight = Gross Weight − Stone/Other Weight</div>
+</div>
+
+<div>
+<h3>💎 Making Charges</h3>
+<div class="eq">Making Charge = Gold Value × Making% ÷ 100</div>
+<div class="eq">Subtotal = Gold Value + Making Charge</div>
+</div>
+
+<div>
+<h3>🧾 General Bill</h3>
+<div class="eq">Subtotal = Gold + Making + Other Charges</div>
+<div class="eq">Final Amount = Subtotal + Applicable Tax</div>
+<p class="note">
+Tax and charges depend on the applicable rules and transaction.
+</p>
+</div>
+
+</div>
+</div>
+
+<!-- GOLD CALCULATOR -->
+<div class="card">
+<h2>🪙 Gold Quick Calculator</h2>
+
+<label>Gold weight (grams)</label>
+<input id="goldWeight" type="number" step="0.001" placeholder="Example: 8">
+
+<label>Rate per gram (₹)</label>
+<input id="goldRate" type="number" step="0.01" placeholder="Example: 15000">
+
+<button onclick="calcGold()">Calculate Gold Value</button>
+
+<div id="goldResult" class="result">Result will appear here.</div>
+</div>
+
+<!-- FINANCE -->
+<div class="card">
+<h2>💰 Finance Maths</h2>
+
+<div class="grid">
+
+<div>
+<h3>📈 Simple Interest</h3>
+<div class="eq">SI = (P × R × T) ÷ 100</div>
+<div class="eq">Amount = P + SI</div>
+</div>
+
+<div>
+<h3>📊 Compound Interest</h3>
+<div class="eq">A = P(1 + R/100)ⁿ</div>
+<div class="eq">CI = A − P</div>
+</div>
+
+<div>
+<h3>🏦 EMI</h3>
+<div class="eq">EMI = P × r × (1+r)ⁿ ÷ ((1+r)ⁿ−1)</div>
+<p class="note">
+P = Principal, r = monthly interest rate, n = number of monthly instalments.
+</p>
+</div>
+
+<div>
+<h3>💵 Loan Interest</h3>
+<div class="eq">Interest = Amount Paid − Principal</div>
+<div class="eq">Total Payment = EMI × Number of EMIs</div>
+</div>
+
+<div>
+<h3>🏦 FD</h3>
+<div class="eq">Interest depends on Principal, Rate, Time and compounding method</div>
+<div class="eq">Maturity = Principal + Interest</div>
+</div>
+
+<div>
+<h3>💳 RD</h3>
+<div class="eq">Total Deposit = Monthly Deposit × Number of Months</div>
+<div class="eq">Maturity = Deposits + Applicable Interest</div>
+</div>
+
+</div>
+</div>
+
+<!-- EMI CALCULATOR -->
+<div class="card">
+<h2>🧮 EMI Calculator</h2>
+
+<label>Loan Principal (₹)</label>
+<input id="loanP" type="number" placeholder="Example: 500000">
+
+<label>Annual Interest Rate (%)</label>
+<input id="loanR" type="number" step="0.01" placeholder="Example: 12">
+
+<label>Tenure (months)</label>
+<input id="loanN" type="number" placeholder="Example: 60">
+
+<button onclick="calcEMI()">Calculate EMI</button>
+
+<div id="emiResult" class="result">Result will appear here.</div>
+</div>
+
+<!-- OLD EQUATIONS -->
+<div class="card">
+<h2>📚 Old Equations / Quick Reference</h2>
+
+<div class="grid">
+<div>
+<h3>⚖️ Density</h3>
+<div class="eq">Density = Mass ÷ Volume</div>
+</div>
+
+<div>
+<h3>📏 Pythagoras</h3>
+<div class="eq">a² + b² = c²</div>
+</div>
+
+<div>
+<h3>🔢 Average</h3>
+<div class="eq">Average = Sum ÷ Number of values</div>
+</div>
+
+<div>
+<h3>💰 Interest</h3>
+<div class="eq">SI = PRT ÷ 100</div>
+</div>
+
+<div>
+<h3>📊 Percentage</h3>
+<div class="eq">Percentage = Part ÷ Total × 100</div>
+</div>
+</div>
+</div>
+
+</div>
+
+<script>
+function calcGold(){
+  const w=Number(document.getElementById("goldWeight").value);
+  const r=Number(document.getElementById("goldRate").value);
+
+  if(w<=0 || r<=0){
+    document.getElementById("goldResult").textContent =
+      "Please enter valid weight and rate.";
+    return;
+  }
+
+  const value=w*r;
+
+  document.getElementById("goldResult").textContent =
+    "🪙 Gold Value = ₹" +
+    value.toLocaleString("en-IN",{maximumFractionDigits:2});
+}
+
+function calcEMI(){
+  const P=Number(document.getElementById("loanP").value);
+  const annual=Number(document.getElementById("loanR").value);
+  const n=Number(document.getElementById("loanN").value);
+
+  if(P<=0 || annual<0 || n<=0){
+    document.getElementById("emiResult").textContent =
+      "Please enter valid loan details.";
+    return;
+  }
+
+  const r=annual/12/100;
+  let emi;
+
+  if(r===0){
+    emi=P/n;
+  }else{
+    emi=P*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);
+  }
+
+  const total=emi*n;
+  const interest=total-P;
+
+  document.getElementById("emiResult").innerHTML =
+    "💳 Monthly EMI = ₹"+emi.toLocaleString("en-IN",{maximumFractionDigits:2})+
+    "<br>💰 Total Payment = ₹"+total.toLocaleString("en-IN",{maximumFractionDigits:2})+
+    "<br>📈 Total Interest = ₹"+interest.toLocaleString("en-IN",{maximumFractionDigits:2});
+}
+</script>
+
+
+<!-- Result Page Edit Tools -->
+<div id="resultEditTools" style="
+  margin:20px 0;
+  padding:15px;
+  border:1px solid #ddd;
+  border-radius:12px;
+  background:#f8fafc;
+">
+  <div style="font-weight:700;margin-bottom:10px;">
+    📝 Result Tools
+  </div>
+
+  <button onclick="selectResultText()">☑️ Select</button>
+  <button onclick="copyResultText()">📋 Copy</button>
+  <button onclick="cutResultText()">✂️ Cut</button>
+  <button onclick="pasteResultText()">📌 Paste</button>
+  <button onclick="saveResultText()">💾 Save</button>
+
+  <textarea id="resultEditBox"
+    placeholder="Select / copy / cut / paste result text here..."
+    style="
+      width:100%;
+      min-height:160px;
+      margin-top:12px;
+      padding:10px;
+      box-sizing:border-box;
+      border-radius:10px;
+      border:1px solid #ccc;
+      font-size:16px;
+      line-height:1.6;
+    "></textarea>
+</div>
+
+<script>
+function getResultContent() {
+  const box = document.getElementById("resultEditBox");
+  if (!box) return "";
+  return box.value;
+}
+
+function selectResultText() {
+  const box = document.getElementById("resultEditBox");
+  box.focus();
+  box.select();
+}
+
+async function copyResultText() {
+  const box = document.getElementById("resultEditBox");
+  box.focus();
+  box.select();
+
+  try {
+    await navigator.clipboard.writeText(box.value);
+    alert("✅ Result copied");
+  } catch (e) {
+    document.execCommand("copy");
+    alert("✅ Result copied");
+  }
+}
+
+async function cutResultText() {
+  const box = document.getElementById("resultEditBox");
+  box.focus();
+  box.select();
+
+  try {
+    await navigator.clipboard.writeText(box.value);
+    box.value = "";
+    alert("✂️ Result cut");
+  } catch (e) {
+    document.execCommand("cut");
+    alert("✂️ Result cut");
+  }
+}
+
+async function pasteResultText() {
+  const box = document.getElementById("resultEditBox");
+  box.focus();
+
+  try {
+    const text = await navigator.clipboard.readText();
+    box.value += text;
+    alert("📌 Pasted");
+  } catch (e) {
+    alert("📌 Please allow clipboard access");
+  }
+}
+
+function saveResultText() {
+  const text = getResultContent();
+
+  if (!text.trim()) {
+    alert("⚠️ Result is empty");
+    return;
+  }
+
+  const blob = new Blob([text], {
+    type: "text/plain;charset=utf-8"
+  });
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+
+  a.href = url;
+  a.download = "SASIKUMAR-AI-Result.txt";
+  a.click();
+
+  URL.revokeObjectURL(url);
+
+  alert("💾 Result saved");
+}
+</script>
+
+
+<!-- SASIKUMAR AI Government Exam Papers — Clear Paper Viewer -->
+<section id="governmentExamPapers" style="
+  margin-top:24px;
+  padding:18px;
+  background:#fff;
+  border:1px solid #ddd;
+  border-radius:16px;
+">
+
+  <h2>📚 Government Public Exam Papers</h2>
+
+  <div style="
+    padding:14px;
+    margin:12px 0;
+    background:#f5f8ff;
+    border:1px solid #cfd8ea;
+    border-radius:12px;
+  ">
+    <b>🏛️ Tamil Nadu Government Public Examination</b><br>
+    <small>10th & 12th Question Papers • Answer Key • Q&A Viewer</small>
+  </div>
+
+  <label>📅 Year</label>
+  <select id="examYear" style="width:100%;padding:13px;margin:6px 0 12px;">
+    <option value="">Select Year</option>
+  </select>
+
+  <label>🎓 Class</label>
+  <select id="examClass" style="width:100%;padding:13px;margin:6px 0 12px;">
+    <option value="">Select Class</option>
+    <option value="10th">10th</option>
+    <option value="12th">12th</option>
+  </select>
+
+  <label>📖 Subject</label>
+  <select id="examSubject" style="width:100%;padding:13px;margin:6px 0 12px;">
+    <option value="">Select Subject</option>
+    <option>Tamil</option>
+    <option>English</option>
+    <option>Mathematics</option>
+    <option>Science</option>
+    <option>Social Science</option>
+    <option>Physics</option>
+    <option>Chemistry</option>
+    <option>Biology</option>
+    <option>Computer Science</option>
+    <option>Commerce</option>
+    <option>Accountancy</option>
+    <option>Economics</option>
+  </select>
+
+  <label>🌐 Medium</label>
+  <select id="examMedium" style="width:100%;padding:13px;margin:6px 0 16px;">
+    <option value="">Select Medium</option>
+    <option value="Tamil">Tamil Medium</option>
+    <option value="English">English Medium</option>
+  </select>
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <button onclick="openExamPaper()">📄 Question Paper</button>
+    <button onclick="openAnswerKey()">✅ Answer Key</button>
+  </div>
+
+  <div id="examPageInfo" style="
+    margin-top:16px;
+    padding:12px;
+    text-align:center;
+    font-weight:bold;
+    background:#f5f5f5;
+    border-radius:10px;
+  ">
+    Select Year → Class → Subject → Medium
+  </div>
+
+  <div id="examPaperContent" style="
+    margin-top:12px;
+    padding:20px;
+    min-height:520px;
+    background:#fff;
+    border:2px solid #222;
+    border-radius:10px;
+    line-height:1.8;
+    font-size:17px;
+    overflow-wrap:anywhere;
+  ">
+    <div style="text-align:center;padding:80px 10px;">
+      <div style="font-size:42px;">📄</div>
+      <h3>Government Exam Paper Viewer</h3>
+      <p>Select Year, Class, Subject and Medium.</p>
+      <p>Then choose Question Paper or Answer Key.</p>
+    </div>
+  </div>
+
+  <div id="examNavigation" style="
+    display:flex;
+    gap:8px;
+    justify-content:center;
+    flex-wrap:wrap;
+    margin-top:14px;
+  ">
+    <button onclick="goExamPage(-1)">◀️ Previous</button>
+    <button onclick="goExamPage(1)">Next ▶️</button>
+    <button onclick="goExamPage(0)">🔄 First Page</button>
+  </div>
+
+  <div style="
+    margin-top:14px;
+    padding:14px;
+    background:#fff8dc;
+    border:1px solid #e0c766;
+    border-radius:10px;
+  ">
+    ⭐ <b>Important Marks / Questions</b>
+    <div id="importantMarks" style="margin-top:8px;">
+      Select a paper first.
+    </div>
+  </div>
+
+  <div style="
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:16px;
+  ">
+    <button onclick="selectExamContent()">☑️ Select</button>
+    <button onclick="copyExamContent()">📋 Copy</button>
+    <button onclick="cutExamContent()">✂️ Cut</button>
+    <button onclick="pasteExamContent()">📌 Paste</button>
+    <button onclick="sendExamContent()">📤 Send</button>
+    <button onclick="shareExamContent()">🔗 Share</button>
+    <button onclick="printExamContent()">🖨️ Print</button>
+    <button onclick="saveExamContent()">💾 Save</button>
+  </div>
+
+</section>
+
+<script>
+let examPages = [];
+let examCurrentPage = 0;
+let examMode = "";
+
+(function loadExamYears() {
+  const year = document.getElementById("examYear");
+  if (!year) return;
+
+  const currentYear = new Date().getFullYear();
+
+  for (let y = currentYear; y >= 2000; y--) {
+    const option = document.createElement("option");
+    option.value = String(y);
+    option.textContent = String(y);
+    year.appendChild(option);
+  }
+})();
+
+function getExamInfo() {
+  const year = document.getElementById("examYear")?.value;
+  const cls = document.getElementById("examClass")?.value;
+  const subject = document.getElementById("examSubject")?.value;
+  const medium = document.getElementById("examMedium")?.value;
+
+  if (!year || !cls || !subject || !medium) {
+    alert("⚠️ Please select Year, Class, Subject and Medium");
+    return null;
+  }
+
+  return {year, cls, subject, medium};
+}
+
+function setExamHeader(x, mode) {
+  return `
+    <div style="
+      padding:12px;
+      margin-bottom:16px;
+      background:#f5f5f5;
+      border-radius:10px;
+      border:1px solid #ddd;
+    ">
+      <b>${mode}</b><br>
+      📅 ${x.year} &nbsp; | &nbsp;
+      🎓 ${x.cls} &nbsp; | &nbsp;
+      📖 ${x.subject} &nbsp; | &nbsp;
+      🌐 ${x.medium}
+    </div>
+  `;
+}
+
+function openOfficialDgeExam(mode) {
+  const x = getExamInfo();
+  if (!x) return;
+
+  examMode = mode === "paper"
+    ? "📄 Question Paper"
+    : "✅ Answer Key";
+
+  examCurrentPage = 0;
+
+  const dgeUrl = x.cls === "10th"
+    ? "https://www.dge.tn.gov.in/ta/sslc.html"
+    : "https://www.dge.tn.gov.in/hsc.html";
+
+  examPages = [
+    `
+      ${setExamHeader(x, examMode)}
+
+      <div style="
+        padding:18px;
+        border:2px solid #222;
+        border-radius:10px;
+        background:#fff;
+      ">
+        <h3>🏛️ Tamil Nadu Directorate of Government Examinations</h3>
+
+        <p>
+          <b>Year:</b> ${x.year}<br>
+          <b>Class:</b> ${x.cls}<br>
+          <b>Subject:</b> ${x.subject}<br>
+          <b>Medium:</b> ${x.medium}
+        </p>
+
+        <hr>
+
+        <p>
+          Official DGE Question Bank-ல் இந்த தேர்வுக்கான
+          verified paper/document-ஐ பார்க்கலாம்.
+        </p>
+
+        <button
+          onclick="window.open('${dgeUrl}', '_blank', 'noopener,noreferrer')"
+          style="
+            width:100%;
+            padding:14px;
+            font-size:16px;
+            font-weight:bold;
+          "
+        >
+          ${mode === "paper"
+            ? "📄 Open Official Question Paper"
+            : "✅ Open Official DGE Source"}
+        </button>
+
+        <div style="
+          margin-top:14px;
+          padding:14px;
+          background:#fff8dc;
+          border-radius:8px;
+          border:1px solid #e0c766;
+        ">
+          ℹ️ SASIKUMAR AI does not generate or modify official
+          examination questions or answer keys.
+          The selected paper is opened from the official DGE source.
+        </div>
+      </div>
+    `
+  ];
+
+  document.getElementById("importantMarks").textContent =
+    "Official DGE source opened for the selected examination.";
+
+  showExamPage();
+}
+
+function openExamPaper() {
+  openOfficialDgeExam("paper");
+}
+
+function openAnswerKey() {
+  openOfficialDgeExam("answer");
+}
+
+function showExamPage() {
+  const box = document.getElementById("examPaperContent");
+  const info = document.getElementById("examPageInfo");
+
+  if (!box || !info || !examPages.length) return;
+
+  if (examCurrentPage < 0) examCurrentPage = 0;
+  if (examCurrentPage >= examPages.length) {
+    examCurrentPage = examPages.length - 1;
+  }
+
+  box.innerHTML = examPages[examCurrentPage];
+
+  info.innerHTML =
+    `${examMode} &nbsp; • &nbsp; Page ${examCurrentPage + 1} / ${examPages.length}`;
+
+  box.scrollIntoView({
+    behavior:"smooth",
+    block:"start"
+  });
+}
+
+function goExamPage(step) {
+  if (!examPages.length) return;
+
+  if (step === 0) {
+    examCurrentPage = 0;
+  } else {
+    examCurrentPage += step;
+  }
+
+  if (examCurrentPage < 0) examCurrentPage = 0;
+  if (examCurrentPage >= examPages.length) {
+    examCurrentPage = examPages.length - 1;
+  }
+
+  showExamPage();
+}
+
+function getExamText() {
+  const box = document.getElementById("examPaperContent");
+  return box ? box.innerText.trim() : "";
+}
+
+function selectExamContent() {
+  const box = document.getElementById("examPaperContent");
+  if (!box) return;
+
+  const range = document.createRange();
+  range.selectNodeContents(box);
+
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+  selection.addRange(range);
+}
+
+async function copyExamContent() {
+  const text = getExamText();
+
+  if (!text) return;
+
+  try {
+    await navigator.clipboard.writeText(text);
+    alert("📋 Exam paper copied");
+  } catch {
+    selectExamContent();
+    alert("📋 Text selected. Use Copy.");
+  }
+}
+
+function cutExamContent() {
+  selectExamContent();
+
+  try {
+    document.execCommand("cut");
+  } catch {}
+
+  alert("✂️ Selected exam content");
+}
+
+async function pasteExamContent() {
+  try {
+    const text = await navigator.clipboard.readText();
+
+    const box = document.getElementById("examPaperContent");
+    if (!box) return;
+
+    box.focus();
+    document.execCommand("insertText", false, text);
+
+    alert("📌 Pasted");
+  } catch {
+    alert("📌 Clipboard permission is required.");
+  }
+}
+
+async function sendExamContent() {
+  const text = getExamText();
+
+  if (!text) return;
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title:"SASIKUMAR AI Exam Paper",
+        text
+      });
+      return;
+    } catch {}
+  }
+
+  await copyExamContent();
+}
+
+async function shareExamContent() {
+  const text = getExamText();
+
+  if (!text) return;
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title:"SASIKUMAR AI Government Exam Paper",
+        text
+      });
+      return;
+    } catch {}
+  }
+
+  await copyExamContent();
+}
+
+function printExamContent() {
+  const box = document.getElementById("examPaperContent");
+  if (!box) return;
+
+  const printWindow = window.open("", "_blank");
+
+  if (!printWindow) {
+    alert("⚠️ Popup blocked. Please allow popups.");
+    return;
+  }
+
+  printWindow.document.write(`
+    <html>
+    <head>
+      <title>SASIKUMAR AI Exam Paper</title>
+      <style>
+        body{
+          font-family:Arial,sans-serif;
+          padding:30px;
+          line-height:1.8;
+        }
+        @page{
+          size:A4;
+          margin:15mm;
+        }
+      </style>
+    </head>
+    <body>${box.innerHTML}
+<!-- SASIKUMAR AI — MERGED EDUCATION Q&A -->
+<section id="mergedEducationQA" style="
+  margin-top:28px;
+  padding:18px;
+  border:2px solid #7c3aed;
+  border-radius:18px;
+  background:#fff;
+">
+  <h2 style="text-align:center;">📚 Education Q&A</h2>
+  <p style="text-align:center;">
+    Tamil + English • Class 1–12 • Subject • Group • Search
+  </p>
+
+  <header>
+<h1>📚 SASIKUMAR AI</h1>
+<div>Education Q&A • School Learning</div>
+</header>
+
+<div class="container">
+<section class="card" style="margin-bottom:18px;">
+  <h2>🤖 Education AI • Web AI</h2>
+  <p>தமிழ் அல்லது English-ல் உங்கள் கல்வி கேள்வியை கேளுங்கள்.</p>
+  <textarea id="aiQuestion" rows="4" placeholder="உங்கள் கேள்வியை இங்கே எழுதுங்கள்..."></textarea>
+  <button onclick="askEducationAI()" style="margin-top:10px;padding:12px 18px;border:0;border-radius:10px;cursor:pointer;">🚀 Ask Education AI</button>
+  <div id="aiAnswer" style="margin-top:14px;white-space:pre-wrap;"></div>
+</section>
+
+<button class="back" onclick="location.href='/'">← Dashboard</button>
+
+<div class="card">
+<h2>🎓 Education Q&A</h2>
+
+<select id="classFilter" onchange="updateEducationFilters(); render()">
+<option value="">All Classes</option>
+<option hidden>7th</option>
+<option hidden>8th</option>
+<option hidden>9th</option>
+<option hidden>10th</option>
+<option>11th</option>
+<option>12th</option>
+</select>
+
+<select id="mediumFilter" onchange="render()">
+<option value="">All Mediums</option>
+<option value="Tamil">Tamil</option>
+<option value="English">English</option>
+</select>
+<select id="groupFilter" onchange="updateSubjectFilter(); render()">
+<option value="">All Groups</option>
+<option>2501</option>
+<option>2502</option>
+<option>2503</option>
+<option>2504</option>
+<option>2505</option>
+<option>2506</option>
+<option>2601</option>
+<option>2602</option>
+<option>2603</option>
+<option>2604</option>
+<option>2605</option>
+<option>2606</option>
+<option>2607</option>
+<option>2608</option>
+<option>2701</option>
+<option>2702</option>
+<option>2703</option>
+<option>2704</option>
+<option>2705</option>
+<option>2706</option>
+<option>2707</option>
+</select>
+
+<select id="subjectFilter" onchange="render()">
+<option value="">All Subjects</option>
+<option>Mathematics</option>
+<option>Science</option>
+<option>Social Science</option>
+<option>Tamil</option>
+<option>English</option>
+<option>Physics</option>
+<option>Chemistry</option>
+<option>Biology</option>
+<option>Computer Science</option>
+<option>Commerce</option>
+<option>Accountancy</option>
+<option>Economics</option>
+<option>Agriculture</option>
+<option>Physical Education</option>
+<option>Statistics</option>
+<option>Bio-Chemistry</option>
+<option>Communicative English</option>
+<option>Home Science</option>
+<option>Micro-Biology</option>
+<option>General Nursing</option>
+<option>Nutrition and Dietetics</option>
+<option>Botany</option>
+<option>Zoology</option>
+<option>Computer Applications</option>
+<option>History</option>
+<option>Political Science</option>
+<option>Ethics and Indian Culture</option>
+<option>Advanced Language (Tamil)</option>
+</select>
+
+<div style="display:flex;gap:6px;align-items:center"><input id="search" placeholder="Search question..." oninput="render()" onkeydown="if(event.key==='Enter') render()" style="flex:1"><button type="button" onclick="render()" aria-label="Search">🔎</button></div>
+</div>
+
+<div id="qaList"></div>
+</div>
+
+</script>
+<script>
+async function askEducationAI(){
+  const q = document.getElementById("aiQuestion").value.trim();
+  const out = document.getElementById("aiAnswer");
+
+  if(!q){
+    out.textContent = "⚠️ Please enter your education question.";
+    return;
+  }
+
+  out.textContent = "⏳ SASIKUMAR AI is thinking...";
+
+  try{
+    const r = await fetch("/api/chat", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({message:q})
+    });
+
+    const data = await r.json();
+
+    if(data.reply){
+      out.textContent = "🤖 " + data.reply;
+    }else{
+      out.textContent = "⚠️ AI response not available.";
+    }
+  }catch(err){
+    out.textContent = "❌ Web AI connection failed. Please try again.";
+  }
+}
+</script>
+<script>
+const QA=[
+{c:"10th",s:"Science",q:"What is photosynthesis?",a:"Photosynthesis is the process by which green plants make food using sunlight, carbon dioxide, and water."},
+{c:"10th",s:"Science",q:"ஒளிச்சேர்க்கை என்றால் என்ன?",a:"சூரிய ஒளியைப் பயன்படுத்தி பச்சைத் தாவரங்கள் கார்பன் டை ஆக்சைடு மற்றும் நீரிலிருந்து உணவை உருவாக்கும் செயல்முறை ஒளிச்சேர்க்கை எனப்படும்."},
+{c:"10th",s:"Mathematics",q:"What is a prime number?",a:"A prime number is a whole number greater than 1 that has exactly two factors: 1 and itself."},
+{c:"10th",s:"Mathematics",q:"பகா எண் என்றால் என்ன?",a:"1 மற்றும் அதே எண்ணைத் தவிர வேறு காரணிகள் இல்லாத, 1-ஐ விட பெரிய முழு எண் பகா எண் எனப்படும்."},
+{c:"10th",s:"English",q:"What is a noun?",a:"A noun is a word that names a person, place, thing, animal, or idea."},
+{c:"10th",s:"English",q:"பெயர்ச்சொல் என்றால் என்ன?",a:"ஒரு நபர், இடம், பொருள், விலங்கு அல்லது கருத்தின் பெயரைக் குறிக்கும் சொல் பெயர்ச்சொல் எனப்படும்."},
+{c:"11th",s:"Physics",q:"What is force?",a:"Force is a push or pull that can change the motion or shape of an object."},
+{c:"11th",s:"Physics",q:"விசை என்றால் என்ன?",a:"ஒரு பொருளின் இயக்கத்தையோ வடிவத்தையோ மாற்றக்கூடிய தள்ளுதல் அல்லது இழுத்தல் விசை எனப்படும்."},
+{c:"11th",s:"Chemistry",q:"What is an atom?",a:"An atom is the smallest unit of an element that retains the chemical properties of that element."},
+{c:"11th",s:"Chemistry",q:"அணு என்றால் என்ன?",a:"ஒரு தனிமத்தின் வேதியியல் பண்புகளைத் தக்கவைத்துக் கொள்ளும் மிகச் சிறிய அலகு அணு எனப்படும்."},
+
+{c:"7th",s:"Mathematics",q:"What is a fraction?",a:"A fraction represents a part of a whole, such as 1/2."},
+{c:"8th",s:"Science",q:"What is force?",a:"Force is a push or pull that can change the motion of an object."},
+{c:"9th",s:"Science",q:"What is an atom?",a:"An atom is the basic unit of an element that retains the chemical properties of that element."},
+{c:"10th",s:"Mathematics",q:"Solve: 2x + 5 = 15.",a:"2x = 10, so x = 5."},
+{c:"10th",s:"Social Science",q:"What is democracy?",a:"Democracy is a system of government in which people participate in choosing their representatives."},
+{c:"10th",s:"English",q:"What is a noun?",a:"A noun is a word used to name a person, place, animal, thing, or idea."},
+{c:"11th",s:"Physics",q:"What is velocity?",a:"Velocity is the rate of change of displacement with respect to time."},
+{c:"11th",s:"Chemistry",q:"What is a catalyst?",a:"A catalyst changes the rate of a chemical reaction without being consumed in the overall reaction."},
+{c:"12th",s:"Physics",q:"State Newton's second law.",a:"The acceleration of an object depends on the net force acting on it and its mass."},
+{c:"12th",s:"Biology",q:"What is a cell?",a:"A cell is the basic structural and functional unit of living organisms."},
+{c:"12th",s:"Mathematics",q:"What is a matrix?",a:"A matrix is a rectangular arrangement of numbers or other mathematical elements in rows and columns."},
+{c:"12th",s:"Computer Science",q:"What is an algorithm?",a:"An algorithm is a finite sequence of clear steps used to solve a problem or perform a computation."},
+{c:"12th",s:"Commerce",q:"What is commerce?",a:"Commerce refers to activities involved in the exchange and distribution of goods and services."},
+{c:"12th",s:"Accountancy",q:"What is accounting?",a:"Accounting is the systematic process of recording, classifying and summarising financial transactions."},
+{c:"12th",s:"Economics",q:"What is demand?",a:"Demand is the quantity of a good or service that consumers are willing and able to buy at a given price and time."},
+{c:"11th",s:"English",q:"What is a noun?",a:"A noun is a word that names a person, place, thing, animal, or idea."},
+{c:"11th",s:"English",q:"What is a verb?",a:"A verb is a word that expresses an action, occurrence, or state of being."},
+{c:"11th",s:"English",q:"What is a metaphor?",a:"A metaphor is a figure of speech that directly compares one thing with another."},
+
+{c:"10th",s:"நாகர்",q:"நாகர் வரலாறு என்றால் என்ன?",a:"நாகர் வரலாறு தொடர்பான முக்கிய நிகழ்வுகள், பண்பாடு மற்றும் வரலாற்றுச் சிறப்புகளைப் பற்றிய ஆய்வாகும்."},
+];
+
+const GROUPS={
+"2501":["Physics","Chemistry","Statistics","Mathematics"],
+"2502":["Physics","Chemistry","Computer Science","Mathematics"],
+"2503":["Physics","Chemistry","Biology","Mathematics"],
+"2504":["Physics","Chemistry","Bio-Chemistry","Mathematics"],
+"2505":["Physics","Chemistry","Communicative English","Mathematics"],
+"2506":["Physics","Chemistry","Mathematics","Home Science"],
+"2601":["Physics","Chemistry","Biology","Computer Science"],
+"2602":["Physics","Chemistry","Biology","Micro-Biology"],
+"2603":["Physics","Chemistry","Biology","Bio-Chemistry"],
+"2604":["Physics","Chemistry","Biology","General Nursing"],
+"2605":["Physics","Chemistry","Biology","Nutrition and Dietetics"],
+"2606":["Physics","Chemistry","Biology","Communicative English"],
+"2607":["Physics","Chemistry","Biology","Home Science"],
+"2608":["Physics","Chemistry","Botany","Zoology"],
+"2701":["Statistics","Economics","Commerce","Accountancy"],
+"2702":["Economics","Commerce","Accountancy","Computer Applications"],
+"2703":["Communicative English","Economics","Commerce","Accountancy"],
+"2704":["History","Economics","Commerce","Accountancy"],
+"2705":["Economics","Political Science","Commerce","Accountancy"],
+"2706":["Economics","Commerce","Accountancy","Ethics and Indian Culture"],
+"2707":["Economics","Commerce","Accountancy","Advanced Language (Tamil)"]
+};
+
+function updateEducationFilters(){
+  const c=document.getElementById("classFilter").value;
+  const g=document.getElementById("groupFilter");
+
+  if(c==="11th"){
+    g.style.display="";
+    [...g.options].forEach(o=>{
+      o.hidden=!!o.value && !(o.value.startsWith("25") || o.value.startsWith("26"));
+    });
+  }else if(c==="12th"){
+    g.style.display="";
+    [...g.options].forEach(o=>{
+      o.hidden=!!o.value && !o.value.startsWith("27");
+    });
+  }else{
+    g.style.display="none";
+    g.value="";
+    [...g.options].forEach(o=>o.hidden=false);
+  }
+
+  updateSubjectFilter();
+}
+
+function updateSubjectFilter(){
+  const c=document.getElementById("classFilter").value;
+  const g=document.getElementById("groupFilter").value;
+  const subjectFilter=document.getElementById("subjectFilter");
+
+  let subjects=[];
+
+  if(c==="11th" || c==="12th"){
+    subjects=g && GROUPS[g]
+      ? [...new Set(GROUPS[g])]
+      : [...new Set(Object.values(GROUPS).flat())];
+  }else{
+    subjects=[
+      "Tamil",
+      "English",
+      "Mathematics",
+      "Science",
+      "Social Science"
+    ];
+  }
+
+  const current=subjectFilter.value;
+
+  subjectFilter.innerHTML =
+    '<option value="">All Subjects</option>' +
+    subjects.map(x=>`<option>${x}</option>`).join('');
+
+  subjectFilter.value=subjects.includes(current) ? current : '';
+}
+
+async function shareAnswer(i){
+  const x=QA[i];
+  const text=`${x.s}\nQ: ${x.q}\n\nAnswer: ${x.a}`;
+
+  if(navigator.share){
+    try{
+      await navigator.share({title:"SASIKUMAR AI",text});
+    }catch(e){}
+  }else if(navigator.clipboard){
+    await navigator.clipboard.writeText(text);
+    alert("✅ Answer copied");
+  }else{
+    alert("📋 Copy is available by long-pressing the text.");
+  }
+}
+
+function render(){
+  const c=document.getElementById("classFilter").value;
+  const m=document.getElementById("mediumFilter").value;
+  const s=document.getElementById("subjectFilter").value;
+  const g=document.getElementById("groupFilter").value;
+  const q=document.getElementById("search").value.toLowerCase();
+
+  const groupSubjects=GROUPS[g]||[];
+
+  const data=QA.filter(x=>{
+    const isTamil=/[\u0B80-\u0BFF]/.test(x.q+" "+x.a);
+    const medium=isTamil ? "Tamil" : "English";
+
+    return (!c||x.c===c)
+      &&(!m||medium===m)
+      &&(!s||x.s===s)
+      &&(!g||groupSubjects.includes(x.s))
+      &&(!q||(x.q+" "+x.a+" "+x.s).toLowerCase().includes(q));
+  });
+
+  document.getElementById("qaList").innerHTML=data.length
+    ? data.map((x,i)=>`
+      <div class="card">
+        <div><b>${x.c} • ${x.s}</b></div>
+        <div style="font-size:13px;margin:4px 0">
+          📚 Medium: ${/[\u0B80-\u0BFF]/.test(x.q+" "+x.a) ? "Tamil" : "English"}
+        </div>
+        <div class="question">Q${i+1}. ${x.q}</div>
+        <div class="answer">✅ ${x.a}</div>
+        <button onclick="shareAnswer(${i})">📤 Share</button>
+      </div>`).join("")
+    : `<div class="card">⚠️ No practice Q&A found for the selected filters.</div>`;
+}
+updateEducationFilters();
+updateSubjectFilter();
+render();
+</script>
+</section>
+<!-- END MERGED EDUCATION Q&A -->
+
+</body>
+    </html>
+  `);
+
+  printWindow.document.close();
+  printWindow.focus();
+
+  setTimeout(() => {
+    printWindow.print();
+  }, 300);
+}
+
+function saveExamContent() {
+  const text = getExamText();
+
+  if (!text) return;
+
+  const blob = new Blob(
+    [text],
+    {type:"text/plain;charset=utf-8"}
+  );
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+
+  a.href = url;
+  a.download =
+    "SASIKUMAR-AI-" +
+    (document.getElementById("examYear")?.value || "exam") +
+    "-paper.txt";
+
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  URL.revokeObjectURL(url);
+
+  alert("💾 Exam paper saved");
+}
+</script>
+
+
+<!-- SASIKUMAR AI Government Exam Q&A Bank -->
+<section id="governmentQABank" style="
+  margin-top:24px;
+  padding:18px;
+  border:2px solid #222;
+  border-radius:14px;
+  background:#fff;
+">
+
+  <h2>📚 Government Exam Q&A Bank</h2>
+
+  <p>
+    🎓 10th & 12th • 📖 All Subjects • 🌐 Tamil / English
+  </p>
+
+  <label>🎓 Class</label>
+  <select id="qaClass" style="width:100%;padding:13px;margin:6px 0 14px;">
+    <option value="">Select Class</option>
+    <option value="10th">10th</option>
+    <option value="12th">12th</option>
+  </select>
+
+  <label>📖 Subject</label>
+  <select id="qaSubject" style="width:100%;padding:13px;margin:6px 0 14px;">
+    <option value="">All Subjects</option>
+    <option>Tamil</option>
+    <option>English</option>
+    <option>Mathematics</option>
+    <option>Science</option>
+    <option>Social Science</option>
+    <option>Physics</option>
+    <option>Chemistry</option>
+    <option>Biology</option>
+    <option>Computer Science</option>
+    <option>Commerce</option>
+    <option>Accountancy</option>
+    <option>Economics</option>
+  </select>
+
+  <label>🌐 Medium</label>
+  <select id="qaMedium" style="width:100%;padding:13px;margin:6px 0 14px;">
+    <option value="">All Mediums</option>
+    <option value="Tamil">Tamil Medium</option>
+    <option value="English">English Medium</option>
+  </select>
+
+  <label>⭐ Mark</label>
+  <select id="qaMark" style="width:100%;padding:13px;margin:6px 0 14px;">
+    <option value="">All Marks</option>
+    <option value="1">1 Mark</option>
+    <option value="2">2 Mark</option>
+    <option value="3">3 Mark</option>
+    <option value="5">5 Mark</option>
+    <option value="10">10 Mark</option>
+  </select>
+
+  <label>🔥 Importance</label>
+  <select id="qaImportant" style="width:100%;padding:13px;margin:6px 0 16px;">
+    <option value="">All Questions</option>
+    <option value="important">Important Questions</option>
+  </select>
+
+  <button onclick="loadGovernmentQABank()"
+    style="width:100%;padding:14px;font-weight:bold;">
+    📚 Load Q&A Bank
+  </button>
+
+  <div id="qaResultInfo" style="
+    margin-top:16px;
+    padding:12px;
+    text-align:center;
+    font-weight:bold;
+    background:#f5f5f5;
+    border-radius:10px;
+  ">
+    Select filters and load the Q&A Bank.
+  </div>
+
+  <!-- Legal-size result paper -->
+  <div id="qaResultBox" contenteditable="true" style="
+    width:215.9mm;
+    min-height:355.6mm;
+    max-width:100%;
+    box-sizing:border-box;
+    margin:16px auto;
+    padding:18mm;
+    background:#fff;
+    border:1px solid #bbb;
+    border-radius:4px;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+    overflow:auto;
+  ">
+    <h3>📚 Q&A Bank Result</h3>
+    <p>Select the filters above and click <b>Load Q&A Bank</b>.</p>
+  </div>
+<div id="qaResultFooter" style="
+  margin-top:24px;
+  padding-top:14px;
+  border-top:2px solid #999;
+  text-align:center;
+  font-size:14px;
+  line-height:1.8;
+">
+  <div>📄 A4 Paper</div>
+  <div>🤖 <strong>SASIKUMAR AI</strong></div>
+  <div>🌐 <span id="qaResultUrl"></span></div>
+  <div style="margin-top:10px;">
+    <button type="button" onclick="followUpQABank()">🔄 Follow Up</button>
+    <button type="button" onclick="shareQABank()">📤 Share</button>
+  </div>
+</div>
+
+
+  <div style="
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:12px;
+  ">
+    <button onclick="selectQABank()">☑️ Select</button>
+    <button onclick="copyQABank()">📋 Copy</button>
+    <button onclick="cutQABank()">✂️ Cut</button>
+    <button onclick="pasteQABank()">📌 Paste</button>
+    <button onclick="shareQABank()">🔗 Share</button>
+    <button onclick="moveQABank(-1)">⬆️ Up</button>
+    <button onclick="moveQABank(1)">⬇️ Down</button>
+    <button onclick="printQABank()">🖨️ Print</button>
+    <button onclick="saveQABank()">💾 Save</button>
+    <button onclick="popQABank()">🪟 Pop</button>
+  </div>
+
+</section>
+
+<script>
+const GOVERNMENT_QA_BANK = [
+  {
+    className: "10th",
+    subject: "Mathematics",
+    medium: "English",
+    mark: 1,
+    important: true,
+    question: "What is the value of 2 + 3?",
+    answer: "5"
+  },
+  {
+    className: "10th",
+    subject: "Mathematics",
+    medium: "Tamil",
+    mark: 2,
+    important: true,
+    question: "Solve: x + 5 = 12.",
+    answer: "x = 7."
+  },
+  {
+    className: "10th",
+    subject: "Science",
+    medium: "English",
+    mark: 1,
+    important: true,
+    question: "What is the basic unit of life?",
+    answer: "The cell is the basic unit of life."
+  },
+  {
+    className: "10th",
+    subject: "Social Science",
+    medium: "English",
+    mark: 3,
+    important: false,
+    question: "What is democracy?",
+    answer: "Democracy is a system of government in which people participate in choosing their representatives."
+  },
+  {
+    className: "12th",
+    subject: "Physics",
+    medium: "English",
+    mark: 2,
+    important: true,
+    question: "What is the SI unit of force?",
+    answer: "The SI unit of force is newton (N)."
+  },
+  {
+    className: "12th",
+    subject: "Chemistry",
+    medium: "English",
+    mark: 1,
+    important: true,
+    question: "What is the pH of a neutral solution at 25°C?",
+    answer: "The pH is 7."
+  },
+  {
+    className: "12th",
+    subject: "Biology",
+    medium: "Tamil",
+    mark: 3,
+    important: true,
+    question: "செல் என்றால் என்ன?",
+    answer: "செல் என்பது உயிரினங்களின் அடிப்படை கட்டமைப்பு மற்றும் செயல்பாட்டு அலகாகும்."
+  },
+  {
+    className: "12th",
+    subject: "Mathematics",
+    medium: "English",
+    mark: 5,
+    important: true,
+    question: "Define a matrix.",
+    answer: "A matrix is a rectangular arrangement of numbers or elements in rows and columns."
+  },
+
+  // SASIKUMAR AI Practice Q&A
+  {
+    className: "10th",
+    subject: "Tamil",
+    medium: "Tamil",
+    mark: 1,
+    important: true,
+    question: "தமிழ் மொழியின் சிறப்பை கூறுக.",
+    answer: "தமிழ் தொன்மையும் செம்மையும் சிறப்பும் கொண்ட செம்மொழியாகும்."
+  },
+  {
+    className: "10th",
+    subject: "English",
+    medium: "English",
+    mark: 2,
+    important: true,
+    question: "What is a noun?",
+    answer: "A noun is a word used to name a person, place, thing, or idea."
+  },
+  {
+    className: "10th",
+    subject: "Mathematics",
+    medium: "English",
+    mark: 3,
+    important: true,
+    question: "Solve: 2x + 5 = 15.",
+    answer: "2x = 10, therefore x = 5."
+  },
+  {
+    className: "10th",
+    subject: "Science",
+    medium: "English",
+    mark: 2,
+    important: true,
+    question: "What is photosynthesis?",
+    answer: "Photosynthesis is the process by which green plants make food using sunlight, carbon dioxide, and water."
+  },
+  {
+    className: "10th",
+    subject: "Social Science",
+    medium: "English",
+    mark: 5,
+    important: true,
+    question: "What is democracy?",
+    answer: "Democracy is a system of government in which people participate in choosing their representatives."
+  },
+  {
+    className: "12th",
+    subject: "Physics",
+    medium: "English",
+    mark: 2,
+    important: true,
+    question: "State Newton's second law of motion.",
+    answer: "The rate of change of momentum of an object is proportional to the applied force and occurs in the direction of the force."
+  },
+  {
+    className: "12th",
+    subject: "Chemistry",
+    medium: "English",
+    mark: 3,
+    important: true,
+    question: "What is a catalyst?",
+    answer: "A catalyst is a substance that changes the rate of a chemical reaction without being consumed permanently."
+  },
+  {
+    className: "12th",
+    subject: "Biology",
+    medium: "English",
+    mark: 2,
+    important: true,
+    question: "What is DNA?",
+    answer: "DNA is the molecule that carries genetic information in living organisms."
+  },
+  {
+    className: "12th",
+    subject: "Computer Science",
+    medium: "English",
+    mark: 5,
+    important: true,
+    question: "What is an algorithm?",
+    answer: "An algorithm is a finite sequence of clear steps used to solve a problem or perform a task."
+  },
+  {
+    className: "12th",
+    subject: "Commerce",
+    medium: "English",
+    mark: 3,
+    important: true,
+    question: "What is commerce?",
+    answer: "Commerce refers to activities involved in the exchange and distribution of goods and services."
+  },
+  {
+    className: "12th",
+    subject: "Accountancy",
+    medium: "English",
+    mark: 2,
+    important: true,
+    question: "What is a journal?",
+    answer: "A journal is a book of original entry in which business transactions are recorded chronologically."
+  },
+  {
+    className: "12th",
+    subject: "Economics",
+    medium: "English",
+    mark: 3,
+    important: true,
+    question: "What is demand?",
+    answer: "Demand is the quantity of a good or service that consumers are willing and able to buy at a given price and time."
+  },
+
+  {
+    className: "10th",
+    subject: "Science",
+    medium: "Tamil",
+    mark: 1,
+    important: true,
+    question: "ஒளிச்சேர்க்கை என்றால் என்ன?",
+    answer: "பச்சைத் தாவரங்கள் சூரிய ஒளியின் உதவியுடன் கார்பன் டைஆக்சைடு மற்றும் நீரைப் பயன்படுத்தி உணவை உருவாக்கும் செயல்முறை ஒளிச்சேர்க்கை எனப்படும்."
+  },
+  {
+    className: "10th",
+    subject: "Science",
+    medium: "Tamil",
+    mark: 2,
+    important: true,
+    question: "விசையின் SI அலகு என்ன?",
+    answer: "விசையின் SI அலகு நியூட்டன் (N) ஆகும்."
+  },
+  {
+    className: "10th",
+    subject: "Mathematics",
+    medium: "Tamil",
+    mark: 1,
+    important: true,
+    question: "25% ஐ பின்னமாக எழுதுக.",
+    answer: "25% = 25/100 = 1/4."
+  },
+  {
+    className: "10th",
+    subject: "Social Science",
+    medium: "Tamil",
+    mark: 1,
+    important: true,
+    question: "ஜனநாயகம் என்றால் என்ன?",
+    answer: "மக்கள் தங்கள் பிரதிநிதிகளைத் தேர்ந்தெடுப்பதில் பங்கேற்கும் ஆட்சி முறை ஜனநாயகம் ஆகும்."
+  },
+  {
+    className: "10th",
+    subject: "Tamil",
+    medium: "Tamil",
+    mark: 2,
+    important: true,
+    question: "திருக்குறளின் ஆசிரியர் யார்?",
+    answer: "திருக்குறளின் ஆசிரியர் திருவள்ளுவர்."
+  },
+  {
+    className: "10th",
+    subject: "English",
+    medium: "English",
+    mark: 1,
+    important: true,
+    question: "What is a verb?",
+    answer: "A verb is a word that expresses an action, occurrence, or state."
+  },
+  {
+    className: "10th",
+    subject: "Science",
+    medium: "English",
+    mark: 1,
+    important: true,
+    question: "What is photosynthesis?",
+    answer: "Photosynthesis is the process by which green plants make food using sunlight, carbon dioxide, and water."
+  },
+  {
+    className: "10th",
+    subject: "Mathematics",
+    medium: "English",
+    mark: 2,
+    important: true,
+    question: "Solve: 3x + 2 = 14.",
+    answer: "3x = 12, therefore x = 4."
+  },
+  {
+    className: "10th",
+    subject: "Social Science",
+    medium: "English",
+    mark: 2,
+    important: true,
+    question: "What is democracy?",
+    answer: "Democracy is a system of government in which people participate in choosing their representatives."
+  },
+  {
+    className: "12th",
+    subject: "Physics",
+    medium: "Tamil",
+    mark: 2,
+    important: true,
+    question: "நியூட்டனின் இரண்டாம் இயக்க விதியைக் கூறுக.",
+    answer: "ஒரு பொருளின் உந்தத்தின் மாறுபாட்டு வீதம் அதன்மீது செயல்படும் விசைக்கு நேர்விகிதமாகவும், விசையின் திசையிலும் இருக்கும்."
+  },
+  {
+    className: "12th",
+    subject: "Chemistry",
+    medium: "Tamil",
+    mark: 1,
+    important: true,
+    question: "வினையூக்கி என்றால் என்ன?",
+    answer: "வேதிவினையின் வேகத்தை மாற்றி, வினை முடிவில் நிரந்தரமாக நுகரப்படாத பொருள் வினையூக்கி எனப்படும்."
+  },
+  {
+    className: "12th",
+    subject: "Biology",
+    medium: "Tamil",
+    mark: 2,
+    important: true,
+    question: "DNA என்றால் என்ன?",
+    answer: "DNA என்பது உயிரினங்களின் மரபியல் தகவலைக் கொண்டிருக்கும் மூலக்கூறு ஆகும்."
+  },
+  {
+    className: "12th",
+    subject: "Mathematics",
+    medium: "Tamil",
+    mark: 2,
+    important: true,
+    question: "அணி (Matrix) என்றால் என்ன?",
+    answer: "வரிசைகள் மற்றும் நெடுவரிசைகளில் அமைக்கப்பட்ட எண்கள் அல்லது உறுப்புகளின் செவ்வக அமைப்பு அணி எனப்படும்."
+  },
+  {
+    className: "12th",
+    subject: "Computer Science",
+    medium: "Tamil",
+    mark: 2,
+    important: true,
+    question: "அல்காரிதம் என்றால் என்ன?",
+    answer: "ஒரு சிக்கலைத் தீர்க்க அல்லது ஒரு பணியைச் செய்யப் பயன்படும் தெளிவான மற்றும் வரையறுக்கப்பட்ட படிகளின் வரிசை அல்காரிதம் எனப்படும்."
+  },
+  {
+    className: "12th",
+    subject: "Commerce",
+    medium: "Tamil",
+    mark: 2,
+    important: true,
+    question: "வாணிபம் என்றால் என்ன?",
+    answer: "பொருட்கள் மற்றும் சேவைகளின் பரிமாற்றம் மற்றும் விநியோகத்துடன் தொடர்புடைய செயல்பாடுகள் வாணிபம் எனப்படும்."
+  },
+  {
+    className: "12th",
+    subject: "Accountancy",
+    medium: "Tamil",
+    mark: 2,
+    important: true,
+    question: "Journal என்றால் என்ன?",
+    answer: "வணிகப் பரிவர்த்தனைகள் காலவரிசைப்படி முதலில் பதிவு செய்யப்படும் புத்தகம் Journal எனப்படும்."
+  },
+  {
+    className: "12th",
+    subject: "Economics",
+    medium: "Tamil",
+    mark: 2,
+    important: true,
+    question: "தேவை (Demand) என்றால் என்ன?",
+    answer: "குறிப்பிட்ட விலை மற்றும் காலத்தில் நுகர்வோர் வாங்க விரும்பியும் வாங்கும் திறனுடனும் இருக்கும் பொருள் அல்லது சேவையின் அளவு தேவை எனப்படும்."
+  },
+  {
+    className: "12th",
+    subject: "Physics",
+    medium: "English",
+    mark: 1,
+    important: true,
+    question: "What is the SI unit of energy?",
+    answer: "The SI unit of energy is joule (J)."
+  },
+  {
+    className: "12th",
+    subject: "Chemistry",
+    medium: "English",
+    mark: 1,
+    important: true,
+    question: "What is the pH of a neutral solution at 25°C?",
+    answer: "The pH of a neutral solution at 25°C is 7."
+  },
+  {
+    className: "12th",
+    subject: "Biology",
+    medium: "English",
+    mark: 1,
+    important: true,
+    question: "What is a cell?",
+    answer: "A cell is the basic structural and functional unit of life."
+  },
+  {
+    className: "12th",
+    subject: "Mathematics",
+    medium: "English",
+    mark: 2,
+    important: true,
+    question: "What is the determinant of a 2 × 2 matrix [[a,b],[c,d]]?",
+    answer: "The determinant is ad − bc."
+  }
+
+];
+
+async function loadGovernmentQABank() {
+  updateQABankUrl();
+
+  const cls = String(document.getElementById("qaClass")?.value || "").trim();
+  const subject = String(document.getElementById("qaSubject")?.value || "").trim();
+  const medium = String(document.getElementById("qaMedium")?.value || "").trim();
+  const mark = String(document.getElementById("qaMark")?.value || "").trim();
+  const important = String(document.getElementById("qaImportant")?.value || "").trim();
+
+  console.log("📚 Government Q&A filters:", {
+    cls, subject, medium, mark, important
+  });
+
+  const result = GOVERNMENT_QA_BANK.filter(item => {
+    const classOK =
+      !cls ||
+      String(item.className).trim() === cls;
+
+    const subjectOK =
+      !subject ||
+      subject === "All Subjects" ||
+      String(item.subject).trim() === subject;
+
+    const mediumOK =
+      !medium ||
+      medium === "Tamil Medium" && String(item.medium).trim() === "Tamil" ||
+      medium === "English Medium" && String(item.medium).trim() === "English" ||
+      String(item.medium).trim() === medium;
+
+    const markOK =
+      !mark ||
+      String(item.mark).trim() === mark;
+
+    const importantOK =
+      !important ||
+      important === "important" && item.important === true;
+
+    return classOK && subjectOK && mediumOK && markOK && importantOK;
+  });
+
+  console.log("📚 Government Q&A matched:", result.length);
+
+  const box = document.getElementById("qaResultBox");
+  const info = document.getElementById("qaResultInfo");
+
+  if (!result.length) {
+    info.textContent = "⚠️ No Practice Q&A data is available for the selected filters.";
+
+    box.innerHTML = `
+      <h3>📚 SASIKUMAR AI Practice Q&A</h3>
+      <p>No practice question-wise data is currently available for the selected filters.</p>
+      <div style="padding:14px;background:#fff8dc;border:1px solid #e0c766;border-radius:8px;">
+        ℹ️ These are SASIKUMAR AI practice questions, not verified Government examination questions.
+      </div>
+    `;
+    return;
+  }
+
+  info.textContent = `${result.length} practice question(s) found.`;
+
+  box.innerHTML = `
+    <div style="
+      padding:12px;
+      margin-bottom:18px;
+      background:#eef7ff;
+      border:1px solid #b8d8f5;
+      border-radius:8px;
+    ">
+      <b>📚 SASIKUMAR AI Practice Q&A</b><br>
+      <small>⚠️ Practice content — not an official Government examination paper or answer key.</small>
+    </div>
+
+    ${result.map((item, i) => `
+      <article
+        class="government-qa-item"
+        data-qa-index="${i}"
+        style="
+          margin-bottom:20px;
+          padding:16px;
+          border:1px solid #ddd;
+          border-radius:12px;
+          background:#fff;
+        "
+      >
+        <b>Question ${i + 1}</b>
+
+        <div style="margin-top:10px;font-size:17px;">
+          ${item.question}
+        </div>
+
+        <div style="
+          margin-top:12px;
+          padding:12px;
+          background:#eefaf0;
+          border-left:4px solid #2e8b57;
+          border-radius:8px;
+        ">
+          <b>✅ Answer / பதில்</b><br>
+          ${item.answer}
+        </div>
+
+        <div class="qa-ai-explanation"
+          style="
+            margin-top:12px;
+            padding:12px;
+            background:#f5f7ff;
+            border-left:4px solid #4b6cb7;
+            border-radius:8px;
+          "
+        >
+          🤖 <b>Explanation / விளக்கம்</b><br>
+          <span>Preparing AI explanation...</span>
+        </div>
+
+        <small style="display:block;margin-top:10px;">
+          ${item.mark} Mark • ${item.subject} • ${item.medium}
+        </small>
+      </article>
+    `).join("")}
+  `;
+
+  console.log("🤖 Government Q&A AI loop started:", result.length);
+
+  // Generate AI explanations one-by-one for stable loading.
+  for (let i = 0; i < result.length; i++) {
+    const item = result[i];
+
+    const article = box.querySelector(
+      `.government-qa-item[data-qa-index="${i}"]`
+    );
+
+    const explanationBox =
+      article?.querySelector(".qa-ai-explanation span");
+
+    console.log("🤖 Q&A item", i + 1, "explanationBox:", !!explanationBox);
+    if (!explanationBox) continue;
+
+    try {
+      explanationBox.textContent = "⏳ Generating AI explanation...";
+
+      const prompt = `
+You are SASIKUMAR AI Education Tutor.
+
+Explain this school exam practice question clearly.
+
+Class: ${item.className}
+Subject: ${item.subject}
+Medium: ${item.medium}
+Question: ${item.question}
+Given Answer: ${item.answer}
+
+Requirements:
+1. Explain in Tamil first.
+2. Then explain in simple English.
+3. Explain why the answer is correct.
+4. Show method or steps where applicable.
+5. Include the relevant formula or rule where applicable.
+6. For Science, explain the scientific concept accurately.
+7. Keep the explanation suitable for ${item.className}.
+8. Do not change the given answer.
+9. Do not claim this is an official Government exam question.
+10. Do not mention Web Search, Gemini, AI provider, or internal system details.
+`;
+
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 40000);
+
+      try {
+        console.log("🤖 Sending Q&A AI request:", i + 1);
+      const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            message: prompt,
+            source: "government-qa-explanation"
+          }),
+          signal: controller.signal
+        });
+
+        if (!response.ok) {
+          throw new Error("HTTP " + response.status);
+        }
+
+        const data = await response.json();
+
+        const explanation =
+          data.reply ||
+          data.response ||
+          data.message ||
+          data.answer ||
+          "";
+
+        if (!explanation) {
+          throw new Error("Empty AI response");
+        }
+
+        explanationBox.innerHTML = String(explanation)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/\n/g, "<br>");
+
+      } finally {
+        clearTimeout(timeout);
+      }
+
+    } catch (error) {
+      console.error(
+        "Government Q&A explanation error:",
+        error
+      );
+
+      explanationBox.innerHTML =
+        "⚠️ AI explanation is temporarily unavailable. " +
+        "The Answer above remains available.";
+    }
+  }
+
+
+function getQABankText() {
+  return document.getElementById("qaResultBox")?.innerText || "";
+}
+
+function selectQABank() {
+  const box = document.getElementById("qaResultBox");
+  if (!box) return;
+  const range = document.createRange();
+  range.selectNodeContents(box);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
+
+async function copyQABank() {
+  const text = getQABankText();
+  if (!text) return;
+  await navigator.clipboard.writeText(text);
+  alert("✅ Q&A copied");
+}
+
+function cutQABank() {
+  selectQABank();
+  document.execCommand("cut");
+}
+
+async function pasteQABank() {
+  const text = await navigator.clipboard.readText();
+  document.getElementById("qaResultBox").focus();
+  document.execCommand("insertText", false, text);
+}
+
+async function shareQABank() {
+  const text = getQABankText();
+  if (navigator.share) {
+    await navigator.share({
+      title: "SASIKUMAR AI Q&A Bank",
+      text
+    });
+  } else {
+    await navigator.clipboard.writeText(text);
+    alert("✅ Q&A copied for sharing");
+  }
+}
+
+
+function followUpQABank() {
+  const box = document.getElementById("qaResultBox");
+  if (!box) return;
+
+  const followUp = prompt(
+    "SASIKUMAR AI Follow Up\n\nEnter your next question:"
+  );
+
+  if (followUp && followUp.trim()) {
+    box.innerHTML += `
+      <hr>
+      <h3>🔄 Follow Up</h3>
+      <p><strong>Question:</strong> ${followUp.trim()}</p>
+      <p>🤖 SASIKUMAR AI — Follow-up question received.</p>
+    `;
+  }
+}
+
+function updateQABankUrl() {
+  const el = document.getElementById("qaResultUrl");
+  if (el) el.textContent = window.location.href;
+}
+
+function moveQABank(direction) {
+  const box = document.getElementById("qaResultBox");
+  if (!box) return;
+  window.scrollBy({
+    top: direction * 500,
+    behavior: "smooth"
+  });
+}
+
+function printQABank() {
+  const box = document.getElementById("qaResultBox");
+  if (!box) return;
+
+  const w = window.open("", "_blank");
+  w.document.write(`
+    <html>
+    <head>
+      <title>SASIKUMAR AI — Q&A Bank</title>
+      <style>
+        @page { size: Legal; margin: 18mm; }
+        body { font-family: Arial, sans-serif; line-height:1.6; }
+      </style>
+    </head>
+    <body>${box.innerHTML}</body>
+    </html>
+  `);
+  w.document.close();
+  w.print();
+}
+
+function saveQABank() {
+  const blob = new Blob([getQABankText()], {
+    type: "text/plain;charset=utf-8"
+  });
+
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "sasikumar-ai-qa-bank.txt";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function popQABank() {
+  const box = document.getElementById("qaResultBox");
+  if (!box) return;
+
+  const w = window.open("", "SASIKUMAR_AI_QA",
+    "width=900,height=700,scrollbars=yes");
+
+  w.document.write(`
+    <html>
+    <head>
+      <title>SASIKUMAR AI Q&A Bank</title>
+    </head>
+    <body>${box.innerHTML}</body>
+    </html>
+  `);
+
+  w.document.close();
+}
+</script>
+
+<!-- SASIKUMAR AI Page Up / Down Tools -->
+<div id="pageUpDownTools" style="
+  position:fixed;
+  right:14px;
+  bottom:20px;
+  z-index:9999;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+">
+  <button onclick="window.scrollTo({top:0,behavior:'smooth'})"
+    title="Go to Top"
+    style="
+      width:48px;
+      height:48px;
+      border-radius:50%;
+      border:1px solid #ccc;
+      font-size:22px;
+      cursor:pointer;
+      box-shadow:0 3px 10px rgba(0,0,0,.18);
+    ">⬆️</button>
+
+  <button onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})"
+    title="Go to Bottom"
+    style="
+      width:48px;
+      height:48px;
+      border-radius:50%;
+      border:1px solid #ccc;
+      font-size:22px;
+      cursor:pointer;
+      box-shadow:0 3px 10px rgba(0,0,0,.18);
+    ">⬇️</button>
+</div>
+
+<script>
+function updateUpDownTools() {
+  const tools = document.getElementById("pageUpDownTools");
+  if (!tools) return;
+
+  const nearTop = window.scrollY < 150;
+  const nearBottom =
+    window.innerHeight + window.scrollY >=
+    document.documentElement.scrollHeight - 150;
+
+  tools.style.opacity = (nearTop && nearBottom) ? "0.65" : "1";
+}
+
+window.addEventListener("scroll", updateUpDownTools);
+window.addEventListener("resize", updateUpDownTools);
+updateUpDownTools();
+</script>
+</body>
+</html>

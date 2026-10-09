@@ -1,0 +1,930 @@
+const {
+  default: makeWASocket,
+  useMultiFileAuthState,
+  DisconnectReason
+} = require('@whiskeysockets/baileys');
+
+const pino = require('pino');
+const Jimp = require('jimp');
+const fs = require('fs');
+const qrcode = require('qrcode-terminal');
+
+const POSTER_FILE = './deepavali-poster.png';
+
+// --------------------------------------------------
+// Utility: draw a filled circle
+// --------------------------------------------------
+function drawCircle(image, cx, cy, radius, color) {
+  const r2 = radius * radius;
+
+  const startX = Math.max(0, cx - radius);
+  const endX = Math.min(image.bitmap.width - 1, cx + radius);
+  const startY = Math.max(0, cy - radius);
+  const endY = Math.min(image.bitmap.height - 1, cy + radius);
+
+  image.scan(
+    startX,
+    startY,
+    endX - startX + 1,
+    endY - startY + 1,
+    function (x, y, idx) {
+      const dx = x - cx;
+      const dy = y - cy;
+
+      if (dx * dx + dy * dy <= r2) {
+        this.bitmap.data[idx] = (color >> 24) & 255;
+        this.bitmap.data[idx + 1] = (color >> 16) & 255;
+        this.bitmap.data[idx + 2] = (color >> 8) & 255;
+        this.bitmap.data[idx + 3] = color & 255;
+      }
+    }
+  );
+}
+
+// --------------------------------------------------
+// Utility: draw a simple diya
+// --------------------------------------------------
+function drawDiya(image, centerX, centerY) {
+
+  // Diya bowl
+  image.scan(
+    centerX - 230,
+    centerY,
+    460,
+    150,
+    function (x, y, idx) {
+
+      const dx = Math.abs(x - centerX);
+      const dy = y - centerY;
+
+      const width = 230 - Math.floor(dy * 1.1);
+
+      if (width > 0 && dx < width) {
+        this.bitmap.data[idx] = 190;
+        this.bitmap.data[idx + 1] = 105;
+        this.bitmap.data[idx + 2] = 15;
+        this.bitmap.data[idx + 3] = 255;
+      }
+    }
+  );
+
+  // Oil area
+  drawCircle(
+    image,
+    centerX,
+    centerY + 15,
+    115,
+    0x5A2600FF
+  );
+
+  // Flame outer
+  drawCircle(
+    image,
+    centerX,
+    centerY - 100,
+    65,
+    0xFF8C00FF
+  );
+
+  // Flame inner
+  drawCircle(
+    image,
+    centerX,
+    centerY - 105,
+    38,
+    0xFFF2A600
+  );
+
+  // Flame tip
+  image.scan(
+    centerX - 30,
+    centerY - 175,
+    60,
+    70,
+    function (x, y, idx) {
+      const dx = x - centerX;
+      const dy = y - (centerY - 145);
+
+      if (
+        (dx * dx) / 900 +
+        (dy * dy) / 4900 < 1
+      ) {
+        this.bitmap.data[idx] = 255;
+        this.bitmap.data[idx + 1] = 210;
+        this.bitmap.data[idx + 2] = 40;
+        this.bitmap.data[idx + 3] = 255;
+      }
+    }
+  );
+}
+
+// --------------------------------------------------
+// Create Deepavali poster
+// --------------------------------------------------
+async function createDeepavaliPoster(customMessage) {
+
+  const WIDTH = 1080;
+  const HEIGHT = 1350;
+
+  // Create warm background
+  const image = new Jimp(
+    WIDTH,
+    HEIGHT,
+    0x8A1600FF
+  );
+
+  // Vertical orange/gold gradient
+  image.scan(
+    0,
+    0,
+    WIDTH,
+    HEIGHT,
+    function (x, y, idx) {
+
+      const ratio = y / HEIGHT;
+
+      const red = Math.floor(255 - ratio * 70);
+      const green = Math.floor(120 + ratio * 65);
+      const blue = Math.floor(10 + ratio * 20);
+
+      this.bitmap.data[idx] = red;
+      this.bitmap.data[idx + 1] = green;
+      this.bitmap.data[idx + 2] = blue;
+      this.bitmap.data[idx + 3] = 255;
+    }
+  );
+
+  // Fonts
+  const titleFont =
+    await Jimp.loadFont(Jimp.FONT_SANS_64_WHITE);
+
+  const smallFont =
+    await Jimp.loadFont(Jimp.FONT_SANS_32_WHITE);
+
+  const tinyFont =
+    await Jimp.loadFont(Jimp.FONT_SANS_16_WHITE);
+
+  // ------------------------------------------------
+  // Decorative golden sparkles
+  // ------------------------------------------------
+  const sparkles = [
+    [100, 150],
+    [970, 150],
+    [160, 330],
+    [920, 320],
+    [80, 620],
+    [1000, 620],
+    [130, 900],
+    [950, 900],
+    [70, 1120],
+    [1010, 1120]
+  ];
+
+  for (const [x, y] of sparkles) {
+    drawCircle(
+      image,
+      x,
+      y,
+      9,
+      0xFFF0A0FF
+    );
+
+    drawCircle(
+      image,
+      x,
+      y,
+      3,
+      0xFFFFFFFF
+    );
+  }
+
+  // ------------------------------------------------
+  // Top heading
+  // ------------------------------------------------
+  image.print(
+    smallFont,
+    0,
+    95,
+    {
+      text: '✨ FESTIVAL OF LIGHTS ✨',
+      alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER
+    },
+    WIDTH
+  );
+
+  // ------------------------------------------------
+  // Main title
+  // ------------------------------------------------
+  image.print(
+    titleFont,
+    0,
+    190,
+    {
+      text: 'HAPPY',
+      alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER
+    },
+    WIDTH
+  );
+
+  image.print(
+    titleFont,
+    0,
+    275,
+    {
+      text: 'DEEPAVALI',
+      alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER
+    },
+    WIDTH
+  );
+
+  // ------------------------------------------------
+  // Sub heading
+  // ------------------------------------------------
+  image.print(
+    smallFont,
+    0,
+    390,
+    {
+      text: 'Light • Joy • Prosperity',
+      alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER
+    },
+    WIDTH
+  );
+
+  // ------------------------------------------------
+  // User message
+  // ------------------------------------------------
+  if (customMessage) {
+
+    image.print(
+      smallFont,
+      60,
+      485,
+      {
+        text: customMessage,
+        alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
+        alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE
+      },
+      960,
+      180
+    );
+  }
+
+  // ------------------------------------------------
+  // Central Diya
+  // ------------------------------------------------
+  drawDiya(
+    image,
+    WIDTH / 2,
+    735
+  );
+
+  // ------------------------------------------------
+  // Decorative small diyas
+  // ------------------------------------------------
+  drawCircle(
+    image,
+    240,
+    850,
+    35,
+    0xFFB020FF
+  );
+
+  drawCircle(
+    image,
+    240,
+    810,
+    18,
+    0xFFF5A000
+  );
+
+  drawCircle(
+    image,
+    840,
+    850,
+    35,
+    0xFFB020FF
+  );
+
+  drawCircle(
+    image,
+    840,
+    810,
+    18,
+    0xFFF5A000
+  );
+
+  // ------------------------------------------------
+  // Celebration message
+  // ------------------------------------------------
+  image.print(
+    smallFont,
+    40,
+    930,
+    {
+      text: 'Celebrate with Family & Friends',
+      alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER
+    },
+    1000
+  );
+
+  // ------------------------------------------------
+  // Branding box
+  // ------------------------------------------------
+  image.print(
+    titleFont,
+    0,
+    1010,
+    {
+      text: 'SASIKUMAR AI',
+      alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER
+    },
+    WIDTH
+  );
+
+  image.print(
+    smallFont,
+    0,
+    1100,
+    {
+      text: 'Smart Digital Services',
+      alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER
+    },
+    WIDTH
+  );
+
+  image.print(
+    smallFont,
+    0,
+    1160,
+    {
+      text: 'WhatsApp: 95850 80842',
+      alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER
+    },
+    WIDTH
+  );
+
+  // ------------------------------------------------
+  // Footer
+  // ------------------------------------------------
+  image.print(
+    tinyFont,
+    0,
+    1275,
+    {
+      text: 'Wishing you Light, Happiness & Prosperity',
+      alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER
+    },
+    WIDTH
+  );
+
+  await image.writeAsync(POSTER_FILE);
+
+  return POSTER_FILE;
+}
+
+// --------------------------------------------------
+// WhatsApp Bot
+// --------------------------------------------------
+async function startBot() {
+
+  const { state, saveCreds } =
+    await useMultiFileAuthState('auth_info');
+
+  const sock = makeWASocket({
+    logger: pino({ level: 'silent' }),
+    auth: state,
+    printQRInTerminal: false
+  });
+
+  // -----------------------------------------------
+  // Connection
+  // -----------------------------------------------
+  sock.ev.on(
+    'connection.update',
+    (update) => {
+
+      const {
+        connection,
+        lastDisconnect,
+        qr
+      } = update;
+
+      if (qr) {
+
+        console.log('\n📱 WhatsApp QR Code:\n');
+
+        qrcode.generate(
+          qr,
+          { small: true }
+        );
+
+        console.log(
+          '\nWhatsApp → Linked Devices → Link a Device\n'
+        );
+      }
+
+      if (connection === 'open') {
+
+        console.log(
+          '\n================================'
+        );
+
+        console.log(
+          '✅ SASIKUMAR AI Poster Bot Connected!'
+        );
+
+        console.log(
+          '================================\n'
+        );
+      }
+
+      if (connection === 'close') {
+
+        const shouldReconnect =
+          lastDisconnect?.error?.output?.statusCode !==
+          DisconnectReason.loggedOut;
+
+        console.log(
+          'Connection closed. Reconnect:',
+          shouldReconnect
+        );
+
+        if (shouldReconnect) {
+
+          setTimeout(
+            startBot,
+            3000
+          );
+        }
+      }
+    }
+  );
+
+  sock.ev.on(
+    'creds.update',
+    saveCreds
+  );
+
+  // -----------------------------------------------
+  // Message handler
+  // -----------------------------------------------
+  sock.ev.on(
+    'messages.upsert',
+    async ({ messages }) => {
+
+      const msg = messages[0];
+
+      if (
+        !msg?.message ||
+        msg.key.fromMe
+      ) {
+        return;
+      }
+
+      const sender =
+        msg.key.remoteJid;
+
+      const text =
+        msg.message.conversation ||
+        msg.message.extendedTextMessage?.text ||
+        '';
+
+      const command =
+        text.trim();
+
+      // -------------------------------------------
+      // POSTER command
+      // -------------------------------------------
+      if (
+        command
+          .toLowerCase()
+          .startsWith('poster ')
+      ) {
+
+        const userText =
+          command
+            .slice(7)
+            .trim();
+
+        if (!userText) {
+
+          await sock.sendMessage(
+            sender,
+            {
+              text:
+                '❌ Example:\n\n' +
+                'poster Diwali Offer 50% OFF'
+            }
+          );
+
+          return;
+        }
+
+        await sock.sendMessage(
+          sender,
+          {
+            text:
+              '⏳ Deepavali poster தயாராகிறது...\n' +
+              '✨ Please wait...'
+          }
+        );
+
+        try {
+
+          const poster =
+            await createDeepavaliPoster(
+              userText
+            );
+
+          await sock.sendMessage(
+            sender,
+            {
+              image:
+                fs.readFileSync(poster),
+
+              caption:
+                '🪔✨ HAPPY DEEPAVALI ✨🪔\n\n' +
+                'இதோ உங்கள் Deepavali Poster!\n\n' +
+                '🤖 SASIKUMAR AI\n' +
+                'Smart Digital Services'
+            }
+          );
+
+          console.log(
+            '✅ Deepavali poster sent:',
+            userText
+          );
+
+        } catch (error) {
+
+          console.error(
+            'Poster Error:',
+            error
+          );
+
+          await sock.sendMessage(
+            sender,
+            {
+              text:
+                '❌ Poster உருவாக்குவதில் பிழை ஏற்பட்டது.\n\n' +
+                error.message
+            }
+          );
+        }
+      }
+
+      // -------------------------------------------
+      // HELP command
+      // -------------------------------------------
+      if (
+        command.toLowerCase() ===
+        'poster help'
+      ) {
+
+        await sock.sendMessage(
+          sender,
+          {
+            text:
+              '🪔 SASIKUMAR AI Poster Bot\n\n' +
+              'Poster உருவாக்க:\n\n' +
+              'poster Diwali Offer 50% OFF\n\n' +
+              'Example:\n' +
+              'poster Happy Deepavali\n\n' +
+              '✨ Festival Poster Ready!'
+          }
+        );
+      }
+    }
+  );
+}
+
+// Start
+startBot();
+
+
+
+
+
+
+
+
+const {
+  default: makeWASocket,
+  useMultiFileAuthState,
+  downloadContentFromMessage
+} = require("@whiskeysockets/baileys");
+
+const qrcode = require("qrcode-terminal");
+const P = require("pino");
+
+// ===============================
+// Tamil + Tanglish + English
+// Language Detection
+// ===============================
+function detectLanguage(text) {
+  const t = text.toLowerCase().trim();
+
+  // Tamil Unicode
+  const hasTamil = /[\u0B80-\u0BFF]/.test(t);
+
+  // Common Tanglish words
+  const tanglishWords = [
+    "vanakkam",
+    "nandri",
+    "epdi",
+    "eppadi",
+    "irukeenga",
+    "irukinga",
+    "enna",
+    "ennanga",
+    "enna panra",
+    "enna panreenga",
+    "saapteengala",
+    "saptiya",
+    "saptacha",
+    "romba",
+    "nalla",
+    "venum",
+    "vendam",
+    "inga",
+    "anga",
+    "enga",
+    "ungal",
+    "unga",
+    "neenga",
+    "naan",
+    "naanga",
+    "seri",
+    "sari",
+    "illai",
+    "illa",
+    "aama",
+    "ama",
+    "mudiya",
+    "theriyuma",
+    "puriyala",
+    "sollunga",
+    "parunga",
+    "paarunga"
+  ];
+
+  const hasTanglish = tanglishWords.some(word =>
+    t.includes(word)
+  );
+
+  // Common English words
+  const englishWords = [
+    "hello",
+    "hi",
+    "hey",
+    "good morning",
+    "good afternoon",
+    "good evening",
+    "how are you",
+    "what are you doing",
+    "thank you",
+    "thanks",
+    "please",
+    "yes",
+    "no",
+    "okay",
+    "ok",
+    "help",
+    "price",
+    "gold",
+    "silver",
+    "rate",
+    "today",
+    "recharge",
+    "booking",
+    "job",
+    "education"
+  ];
+
+  const hasEnglish = englishWords.some(word =>
+    t.includes(word)
+  );
+
+  // Tamil + English/Tanglish
+  if (hasTamil && (hasTanglish || hasEnglish)) {
+    return "mixed";
+  }
+
+  if (hasTamil) {
+    return "tamil";
+  }
+
+  if (hasTanglish) {
+    return "tanglish";
+  }
+
+  if (hasEnglish) {
+    return "english";
+  }
+
+  // Default
+  return "english";
+}
+
+
+// ===============================
+// Start WhatsApp Bot
+// ===============================
+async function startBot() {
+  const { state, saveCreds } =
+    await useMultiFileAuthState("auth");
+
+  const sock = makeWASocket({
+    auth: state,
+    logger: P({ level: "silent" })
+  });
+
+  sock.ev.on("creds.update", saveCreds);
+
+  if (!state.creds.registered) {
+    const phoneNumber = process.env.WHATSAPP_PHONE_NUMBER;
+
+    if (phoneNumber) {
+      setTimeout(async () => {
+        try {
+          const code = await sock.requestPairingCode(phoneNumber);
+          console.log("📱 WhatsApp Pairing Code:", code);
+        } catch (pairingError) {
+          console.log(
+            "❌ WhatsApp Pairing Code Error:",
+            pairingError.message
+          );
+        }
+      }, 3000);
+    } else {
+      console.log("⚠️ WHATSAPP_PHONE_NUMBER not set → QR pairing enabled");
+    }
+  }
+
+  // Connection
+  sock.ev.on("connection.update", (update) => {
+    const { connection, qr } = update;
+
+    if (qr) {
+      console.log("📱 WhatsApp QR Scan:");
+      qrcode.generate(qr, { small: true });
+    }
+
+    if (connection === "open") {
+      console.log("✅ SASIKUMAR AI WhatsApp Bot Connected");
+    }
+
+    if (connection === "close") {
+      console.log("❌ WhatsApp disconnected. Restarting...");
+      setTimeout(startBot, 5000);
+    }
+  });
+
+
+  // ===============================
+  // Incoming Messages
+  // ===============================
+  sock.ev.on("messages.upsert", async ({ messages }) => {
+    try {
+      const msg = messages[0];
+
+      if (!msg.message || msg.key.fromMe) return;
+
+      const jid = msg.key.remoteJid;
+
+      // ===============================
+      // WhatsApp VOICE MESSAGE
+      // ===============================
+      const audioMessage =
+        msg.message.audioMessage;
+
+      let text =
+        msg.message.conversation ||
+        msg.message.extendedTextMessage?.text ||
+        "";
+
+      if (audioMessage) {
+        console.log("🎤 Voice message received");
+
+        try {
+          const stream = await downloadContentFromMessage(
+            audioMessage,
+            "audio"
+          );
+
+          const chunks = [];
+
+          for await (const chunk of stream) {
+            chunks.push(chunk);
+          }
+
+          const audioBuffer = Buffer.concat(chunks);
+
+          console.log(
+            "🎤 Voice downloaded:",
+            audioBuffer.length,
+            "bytes"
+          );
+
+          const voiceMime =
+            String(audioMessage.mimetype || "audio/ogg").split(";")[0];
+
+          console.log("🎤 Voice MIME:", voiceMime);
+
+          const voicePrompt =
+            "The user sent a WhatsApp voice message. " +
+            "First understand/transcribe the spoken request internally, " +
+            "then answer the user's request clearly. " +
+            "Do not explain the transcription process.";
+
+          let voiceReply;
+
+          try {
+            voiceReply = await askAI(
+              voicePrompt,
+              "",
+              {
+                data: audioBuffer.toString("base64"),
+                type: voiceMime
+              }
+            );
+
+            if (!voiceReply || !voiceReply.trim()) {
+              voiceReply = "மன்னிக்கவும் 🙏 Voice message-க்கு பதில் கிடைக்கவில்லை.";
+            }
+          } catch (voiceAIError) {
+            console.log(
+              "❌ Voice AI Error:",
+              voiceAIError.message
+            );
+
+            voiceReply =
+              "மன்னிக்கவும் 🙏 Voice message-ஐ தற்போது AI மூலம் புரிந்துகொள்ள முடியவில்லை.";
+          }
+
+          await sock.sendMessage(jid, {
+            text: voiceReply
+          });
+
+          return;
+        } catch (voiceError) {
+          console.log(
+            "❌ Voice download error:",
+            voiceError.message
+          );
+
+          await sock.sendMessage(jid, {
+            text: "மன்னிக்கவும் 🙏 Voice message-ஐ பெற முடியவில்லை."
+          });
+
+          return;
+        }
+      }
+
+      if (!text.trim()) return;
+
+      const lower = text.toLowerCase();
+
+      const language = detectLanguage(text);
+
+      console.log(
+        `📩 Message: ${text} | Language: ${language}`
+      );
+
+      // ===============================
+      // SASIKUMAR AI MULTI-LANGUAGE REPLY
+      // ===============================
+      let reply = "";
+
+      try {
+        reply = await askAI(
+          text,
+          language,
+          null
+        );
+
+        if (!reply || !reply.trim()) {
+          reply = "Sorry, I could not generate a reply.";
+        }
+      } catch (aiError) {
+        console.log("⚠️ AI Reply Error:", aiError.message);
+
+        if (language === "tamil" || language === "tanglish") {
+          reply = "மன்னிக்கவும் 🙏 தற்போது AI பதில் கிடைக்கவில்லை. சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.";
+        } else {
+          reply = "Sorry 🙏 SASIKUMAR AI is temporarily unable to reply. Please try again later.";
+        }
+      }
+
+      await sock.sendMessage(jid, {
+        text: reply
+      });
+
+    } catch (error) {
+      console.log("❌ Message Error:", error.message);
+    }
+  });
+}
+
+startBot();

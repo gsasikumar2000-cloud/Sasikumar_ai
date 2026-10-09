@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI — All Booking Centre</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:Arial,sans-serif;
+  color:#fff;
+  background:linear-gradient(135deg,#07152e,#172554,#312e81,#0f766e);
+}
+.wrap{max-width:1000px;margin:auto;padding:24px}
+.header{
+  text-align:center;
+  padding:25px 10px;
+}
+.logo{width:26px;height:26px;object-fit:contain}
+h1{margin:10px 0 5px;font-size:32px}
+.sub{opacity:.85}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+  gap:18px;
+  margin-top:25px;
+}
+.card{
+  padding:22px;
+  border-radius:22px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.2);
+  box-shadow:0 10px 30px rgba(0,0,0,.25);
+  text-align:center;
+  backdrop-filter:blur(10px);
+}
+.icon{font-size:42px}
+.card h2{font-size:20px;margin:12px 0 8px}
+.card p{font-size:14px;opacity:.8;min-height:38px}
+button{
+  width:100%;
+  padding:12px;
+  border:0;
+  border-radius:12px;
+  font-weight:bold;
+  cursor:pointer;
+}
+.available{background:#22c55e;color:#062e16}
+.soon{background:#facc15;color:#422006}
+.note{
+  margin-top:25px;
+  padding:16px;
+  border-radius:16px;
+  background:rgba(0,0,0,.22);
+  font-size:14px;
+  line-height:1.6;
+}
+a{color:inherit;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="header">
+  <img class="logo" src="/assets/sasikumar-ai-logo.png?v=20261002" alt="SASIKUMAR AI">
+  <h1>📚 All Booking Centre</h1>
+  <div class="sub">SASIKUMAR AI — One place for booking services</div>
+</header>
+
+<section class="grid">
+
+<div class="card">
+  <div class="icon">🚌</div>
+  <h2>Bus Booking</h2>
+  <p>Bus ticket booking centre</p>
+  <button class="available" onclick="openTravel('bus')">OPEN BUS UAT</button>
+</div>
+
+<div class="card">
+  <div class="icon">🚆</div>
+  <h2>Train Booking</h2>
+  <p>Train ticket booking centre</p>
+  <button class="soon" onclick="comingSoon('Train Booking')">Coming Soon</button>
+</div>
+
+<div class="card">
+  <div class="icon">✈️</div>
+  <h2>Flight Booking</h2>
+  <p>Flight ticket booking centre</p>
+  <button class="available" onclick="openTravel('flight')">OPEN FLIGHT UAT</button>
+</div>
+
+<div class="card">
+  <div class="icon">🏖️</div>
+  <h2>Holiday Packages</h2>
+  <p>Pay2All holiday package enquiry</p>
+  <button class="available" onclick="openTravel('holiday')">OPEN HOLIDAYS</button>
+</div>
+
+<div class="card">
+  <div class="icon">🏨</div>
+  <h2>Hotel Booking</h2>
+  <p>Hotel reservation centre</p>
+  <button class="soon" onclick="comingSoon('Hotel Booking')">Coming Soon</button>
+</div>
+
+<div class="card">
+  <div class="icon">🎟️</div>
+  <h2>Movie & Event</h2>
+  <p>Movie and event ticket centre</p>
+  <button class="soon" onclick="comingSoon('Movie & Event Booking')">Coming Soon</button>
+</div>
+
+<div class="card">
+<div class="icon">📺</div>
+<h2>DTH Recharge</h2>
+<p>Pay2All DTH recharge service</p>
+<button class="available" onclick="retailerInfo('DTH Recharge')">OPEN DTH</button>
+</div>
+
+<div class="card">
+<div class="icon">💡</div>
+<h2>BBPS / Bill Payment</h2>
+<p>Electricity • Water • Gas • Broadband • Bills</p>
+<button class="available" onclick="retailerInfo('BBPS / Bill Payment')">OPEN BBPS</button>
+</div>
+
+<div class="card">
+<div class="icon">🏦</div>
+<h2>AEPS</h2>
+<p>Cash Withdrawal • Balance Enquiry • Mini Statement</p>
+<button class="available" onclick="retailerInfo('AEPS')">OPEN AEPS</button>
+</div>
+
+<div class="card">
+<div class="icon">💸</div>
+<h2>Money Transfer</h2>
+<p>Domestic Money Transfer</p>
+<button class="available" onclick="retailerInfo('Money Transfer')">OPEN DMT</button>
+</div>
+
+<div class="card">
+<div class="icon">🪪</div>
+<h2>PAN Services</h2>
+<p>UTI PAN service</p>
+<button class="available" onclick="retailerInfo('PAN Services')">OPEN PAN</button>
+</div>
+
+<div class="card">
+<div class="icon">🔐</div>
+<h2>Bank / UPI Verification</h2>
+<p>Bank account and UPI verification</p>
+<button class="available" onclick="retailerInfo('Bank / UPI Verification')">OPEN VERIFY</button>
+</div>
+
+<div class="card">
+<div class="icon">🚗</div>
+<h2>eChallan</h2>
+<p>eChallan service</p>
+<button class="available" onclick="retailerInfo('eChallan')">OPEN eCHALLAN</button>
+</div>
+
+<div class="card">
+<div class="icon">🎁</div>
+<h2>Gift Cards</h2>
+<p>Digital gift card service</p>
+<button class="available" onclick="retailerInfo('Gift Cards')">OPEN GIFT CARDS</button>
+</div>
+
+<div class="card">
+  <div class="icon">📱</div>
+  <h2>Mobile Recharge</h2>
+  <p>Pay2All recharge centre</p>
+  <a href="/developer/recharge.html">
+    <button class="available">OPEN RECHARGE</button>
+  </a>
+</div>
+
+</section>
+
+<div class="note">
+  ℹ️ Booking integrations will be activated only when the required provider/API is configured.
+  Do not enter payment details on services that are not yet activated.
+</div>
+
+</div>
+
+<script>
+async function openTravel(type){
+  try{
+    let r;
+
+    if(type==="flight"){
+      r=await fetch("/api/travel/flights/search",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+          origin:"MAA",
+          destination:"DEL",
+          depart_date:new Date().toISOString().slice(0,10),
+          adults:1,
+          children:0,
+          infants:0,
+          cabin_class:"Economy"
+        })
+      });
+      alert("✈️ Flight UAT response received. Status: "+r.status);
+    }
+
+    if(type==="bus"){
+      r=await fetch("/api/travel/buses/cities?q=Chennai");
+      alert("🚌 Bus UAT service connected. Status: "+r.status);
+    }
+
+    if(type==="holiday"){
+      r=await fetch("/api/travel/holidays");
+      alert("🏖️ Holiday service connected. Status: "+r.status);
+    }
+
+    if(r){
+      const data=await r.json();
+      console.log("SASIKUMAR AI Travel UAT:",data);
+    }
+  }catch(e){
+    console.error(e);
+    alert("Travel service connection failed.");
+  }
+}
+
+function retailerInfo(name){
+alert("🏪 "+name+"\\n\\nPay2All retailer service integration.\\n\\nLIVE activation requires the required Pay2All service/KYC approval.");
+}
+
+function comingSoon(name){
+  alert(name+" is coming soon in SASIKUMAR AI.");
+}
+</script>
+</body>
+</html>

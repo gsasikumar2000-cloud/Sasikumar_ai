@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SASIKUMAR AI</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,"Noto Sans Tamil",sans-serif;
+  background:#f4f4f4;
+}
+
+.header{
+  background:#111;
+  color:#ffd700;
+  padding:18px;
+  text-align:center;
+  font-size:25px;
+  font-weight:bold;
+}
+
+.status{
+  text-align:center;
+  background:#e8ffe8;
+  color:green;
+  padding:8px;
+}
+
+#chat{
+  height:calc(100vh - 170px);
+  overflow-y:auto;
+  padding:15px;
+}
+
+.msg{
+  margin:10px 0;
+  padding:12px 15px;
+  border-radius:12px;
+  line-height:1.5;
+  word-wrap:break-word;
+}
+
+.user{
+  background:#d9ecff;
+  text-align:right;
+}
+
+.ai{
+  background:white;
+  border:1px solid #ddd;
+}
+
+.inputbox{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  display:flex;
+  padding:10px;
+  background:white;
+  border-top:1px solid #ddd;
+}
+
+#q{
+  flex:1;
+  padding:13px;
+  border:1px solid #bbb;
+  border-radius:10px;
+  font-size:16px;
+}
+
+button{
+  margin-left:8px;
+  padding:13px 18px;
+  border:0;
+  border-radius:10px;
+  background:#111;
+  color:#ffd700;
+  font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">🤖 SASIKUMAR AI</div>
+
+<div class="status">Server Connected ✅</div>
+
+<div id="chat">
+  <div class="msg ai">
+    🤖 வணக்கம்! நான் SASIKUMAR AI. கேள்வி கேளுங்கள்.
+  </div>
+</div>
+
+<div class="inputbox">
+  <input id="q" type="text" placeholder="உங்கள் கேள்வியை எழுதுங்கள்..." autocomplete="off">
+  <button onclick="send()">Send</button>
+</div>
+
+<script>
+const q = document.getElementById("q");
+const chat = document.getElementById("chat");
+
+async function send(){
+
+  const v = q.value.trim();
+
+  if(!v) return;
+
+  chat.innerHTML += `
+    <div class="msg user">👤 ${escapeHtml(v)}</div>
+  `;
+
+  q.value = "";
+
+  const loading = document.createElement("div");
+  loading.className = "msg ai";
+  loading.id = "loading";
+  loading.innerText = "🤖 பதில் எழுதுகிறது...";
+  chat.appendChild(loading);
+
+  chat.scrollTop = chat.scrollHeight;
+
+  try{
+
+    const r = await fetch("/api/chat", {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        message:v
+      })
+    });
+
+    const d = await r.json();
+
+    if(d.reply){
+
+      loading.innerText = "🤖 " + d.reply;
+
+    }else if(d.error){
+
+      loading.innerText = "❌ " + d.error;
+
+    }else{
+
+      loading.innerText = "❌ பதில் கிடைக்கவில்லை.";
+
+    }
+
+  }catch(e){
+
+    loading.innerText =
+      "❌ Server connection error. Server இயங்குகிறதா என்று பார்க்கவும்.";
+
+    console.error(e);
+
+  }
+
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function escapeHtml(text){
+
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
+
+}
+
+q.addEventListener("keydown", function(e){
+
+  if(e.key === "Enter"){
+    e.preventDefault();
+    send();
+  }
+
+});
+</script>
+
+</body>
+</html>

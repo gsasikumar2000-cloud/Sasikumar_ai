@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI Daily Video</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+ margin:0;
+ overflow:hidden;
+ font-family:Arial,sans-serif;
+ background:#020617;
+ color:white;
+}
+
+.video{
+ width:100vw;
+ height:100vh;
+ min-height:520px;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ position:relative;
+ overflow:hidden;
+ background:linear-gradient(135deg,#020617,#172554,#111827);
+}
+
+.slide{
+ position:absolute;
+ width:90%;
+ max-width:720px;
+ text-align:center;
+ opacity:0;
+ transform:scale(.7) rotate(-3deg);
+ transition:1s ease;
+}
+
+.slide.active{
+ opacity:1;
+ transform:scale(1) rotate(0);
+}
+
+.logo{
+ font-size:42px;
+ font-weight:900;
+ letter-spacing:2px;
+}
+
+.gold{
+ color:#ffd700;
+}
+
+h1{
+ font-size:42px;
+ margin:15px 0;
+ color:#ffd700;
+ text-shadow:0 0 20px #ffd700;
+}
+
+p{
+ font-size:22px;
+ line-height:1.5;
+}
+
+.rate{
+ max-width:450px;
+ margin:12px auto;
+ padding:14px;
+ border:2px solid #ffd700;
+ border-radius:15px;
+ background:#0f172a;
+ font-size:25px;
+}
+
+.badge{
+ display:inline-block;
+ padding:8px 18px;
+ background:#ef4444;
+ border-radius:12px;
+ font-weight:bold;
+}
+
+.date{
+ position:absolute;
+ top:18px;
+ width:100%;
+ text-align:center;
+ font-size:17px;
+ color:#cbd5e1;
+}
+
+.controls{
+ position:absolute;
+ bottom:25px;
+ z-index:20;
+ display:flex;
+ gap:10px;
+}
+
+button{
+ padding:13px 20px;
+ border:0;
+ border-radius:12px;
+ font-size:17px;
+ font-weight:bold;
+}
+
+.play{
+ background:#ffd700;
+ color:#111;
+}
+
+.stop{
+ background:#ef4444;
+ color:white;
+}
+
+/* Different daily animations */
+
+.style0 .slide.active{
+ animation:zoom 3s ease;
+}
+
+.style1 .slide.active{
+ animation:bounce 3s ease;
+}
+
+.style2 .slide.active{
+ animation:slideleft 3s ease;
+}
+
+.style3 .slide.active{
+ animation:rotatein 3s ease;
+}
+
+.style4 .slide.active{
+ animation:float 3s ease;
+}
+
+.style5 .slide.active{
+ animation:pulse 3s ease;
+}
+
+.style6 .slide.active{
+ animation:flip 3s ease;
+}
+
+@keyframes zoom{
+ from{transform:scale(.4)}
+ to{transform:scale(1)}
+}
+
+@keyframes bounce{
+ 0%{transform:translateY(100px);opacity:0}
+ 60%{transform:translateY(-15px)}
+ 100%{transform:translateY(0);opacity:1}
+}
+
+@keyframes slideleft{
+ from{transform:translateX(100%);opacity:0}
+ to{transform:translateX(0);opacity:1}
+}
+
+@keyframes rotatein{
+ from{transform:rotate(-15deg) scale(.5);opacity:0}
+ to{transform:rotate(0) scale(1);opacity:1}
+}
+
+@keyframes float{
+ 0%,100%{transform:translateY(0)}
+ 50%{transform:translateY(-20px)}
+}
+
+@keyframes pulse{
+ 0%{transform:scale(.8);opacity:0}
+ 50%{transform:scale(1.08)}
+ 100%{transform:scale(1);opacity:1}
+}
+
+@keyframes flip{
+ from{transform:rotateY(90deg);opacity:0}
+ to{transform:rotateY(0);opacity:1}
+}
+</style>
+</head>
+
+<body>
+
+<div class="video" id="video">
+
+<div class="date" id="today"></div>
+
+<div class="slide active">
+ <div class="logo">
+  SASIKUMAR <span class="gold">AI</span>
+ </div>
+
+ <h1>🪙 LIVE THANJAVUR<br>GOLD RATE</h1>
+
+ <p>வணக்கம் நண்பர்களே! 👋</p>
+</div>
+
+<div class="slide">
+
+ <div class="badge">● LIVE</div>
+
+ <h1>THANJAVUR GOLD RATE</h1>
+
+ <div class="rate">
+  24K <span id="rate24">Loading...</span> /g
+ </div>
+
+ <div class="rate">
+  22K <span id="rate22">Loading...</span> /g
+ </div>
+
+</div>
+
+<div class="slide">
+
+ <div class="logo">
+  SASIKUMAR <span class="gold">AI</span>
+ </div>
+
+ <h1>🤖 SMART AI</h1>
+
+ <p>
+ Gold • News • Jobs<br>
+ Banking • Calculators • Gold Expert
+ </p>
+
+</div>
+
+<div class="slide">
+
+ <h1>🌟 TODAY'S AI TIP</h1>
+
+ <p id="tip">
+ தங்கம் வாங்கும் முன் இன்றைய விலையை சரிபாருங்கள்.
+ </p>
+
+</div>
+
+<div class="slide">
+
+ <div class="logo">
+  SASIKUMAR <span class="gold">AI</span>
+ </div>
+
+ <h1>📲 SHARE</h1>
+
+ <p>உங்கள் நண்பர்கள் மற்றும் குடும்பத்தினருடன் பகிருங்கள்! ❤️</p>
+
+</div>
+
+<div class="controls">
+
+ <button class="play" onclick="startVideo()">
+ ▶️ Play Audio Video
+ </button>
+
+ <button class="stop" onclick="stopVideo()">
+ ⏹ Stop
+ </button>
+
+</div>
+
+</div>
+
+<script>
+
+const slides=document.querySelectorAll(".slide");
+
+let current=0;
+let timer=null;
+let playing=false;
+
+/* DAILY STYLE */
+
+const now=new Date();
+
+const dayNumber=Math.floor(
+ Date.UTC(
+  now.getFullYear(),
+  now.getMonth(),
+  now.getDate()
+ )/86400000
+);
+
+const dailyStyle=dayNumber%7;
+
+document.getElementById("video")
+.classList.add("style"+dailyStyle);
+
+document.getElementById("today").innerText=
+ "📅 "+now.toLocaleDateString(
+  "en-IN",
+  {
+   day:"2-digit",
+   month:"long",
+   year:"numeric"
+  }
+ );
+
+/* DAILY TIPS */
+
+const tips=[
+ "தங்கம் வாங்கும் முன் இன்றைய விலையை சரிபாருங்கள்.",
+ "நகையின் purity மற்றும் hallmark சரிபார்க்கவும்.",
+ "எடை மற்றும் rate இரண்டையும் சரியாக கணக்கிடுங்கள்.",
+ "Bill மற்றும் purity details பாதுகாப்பாக வைத்துக்கொள்ளுங்கள்.",
+ "Gold loan எடுப்பதற்கு முன் interest மற்றும் terms பார்க்கவும்.",
+ "தங்க விலை தினமும் மாறக்கூடும்.",
+ "SASIKUMAR AI மூலம் உங்கள் calculation-ஐ எளிதாக பார்க்கலாம்."
+];
+
+document.getElementById("tip").innerText=
+ tips[dailyStyle];
+
+/* LIVE RATE */
+
+async function loadRate(){
+
+ try{
+
+  const response=
+   await fetch("/api/gold-rate");
+
+  const data=
+   await response.json();
+
+  if(data){
+
+   if(data["24K"])
+    document.getElementById("rate24").innerText=
+     "₹"+Number(data["24K"]).toFixed(2);
+
+   if(data["22K"])
+    document.getElementById("rate22").innerText=
+     "₹"+Number(data["22K"]).toFixed(2);
+  }
+
+ }catch(error){
+
+  document.getElementById("rate24").innerText=
+   "Live";
+
+  document.getElementById("rate22").innerText=
+   "Live";
+
+ }
+
+}
+
+loadRate();
+
+/* AUDIO */
+
+const voiceText=[
+
+ "வணக்கம் நண்பர்களே. இது சசிகுமார் ஏ ஐ. தஞ்சாவூர் இன்றைய தங்க விலை தகவல்கள்.",
+
+ "இன்றைய தஞ்சாவூர் தங்க விலையை சசிகுமார் ஏ ஐ மூலம் தெரிந்து கொள்ளுங்கள்.",
+
+ "சசிகுமார் ஏ ஐ. தங்கம், செய்திகள், வேலைவாய்ப்பு, வங்கி சேவைகள் மற்றும் கால்குலேட்டர்கள்.",
+
+ "இன்றைய சிறிய தகவல். தங்கம் வாங்கும் முன் விலையையும் தரத்தையும் சரிபாருங்கள்.",
+
+ "இந்த வீடியோவை உங்கள் நண்பர்கள் மற்றும் குடும்பத்தினருடன் பகிருங்கள்."
+];
+
+/*
+ Browser TTS-ல் உண்மையான குழந்தை voice
+ எல்லா Android devices-லும் கிடைக்காது.
+ High pitch + playful rate பயன்படுத்தப்படுகிறது.
+*/
+
+function speak(text){
+
+ speechSynthesis.cancel();
+
+ const voice=
+  new SpeechSynthesisUtterance(text);
+
+ voice.lang="ta-IN";
+
+ voice.rate=
+  [0.92,0.96,0.90,1.00,0.94][dailyStyle%5];
+
+ voice.pitch=
+  [1.35,1.45,1.25,1.50,1.30][dailyStyle%5];
+
+ const voices=
+  speechSynthesis.getVoices();
+
+ const tamilVoice=
+  voices.find(v=>
+   v.lang &&
+   v.lang.toLowerCase().startsWith("ta")
+  );
+
+ if(tamilVoice)
+  voice.voice=tamilVoice;
+
+ speechSynthesis.speak(voice);
+}
+
+/* SLIDES */
+
+function showSlide(index){
+
+ slides.forEach(
+  s=>s.classList.remove("active")
+ );
+
+ slides[index].classList.add("active");
+
+ speak(voiceText[index]);
+}
+
+function startVideo(){
+
+ if(playing)return;
+
+ playing=true;
+ current=0;
+
+ showSlide(current);
+
+ timer=setInterval(()=>{
+
+  current++;
+
+  if(current>=slides.length){
+
+   stopVideo();
+   return;
+
+  }
+
+  showSlide(current);
+
+ },3000);
+
+}
+
+function stopVideo(){
+
+ playing=false;
+
+ clearInterval(timer);
+
+ speechSynthesis.cancel();
+
+ slides.forEach(
+  s=>s.classList.remove("active")
+ );
+
+ slides[0].classList.add("active");
+
+ current=0;
+}
+
+/* NEW DAY AUTO REFRESH */
+
+function checkNewDay(){
+
+ const today=
+  new Date().toDateString();
+
+ const saved=
+  localStorage.getItem("sasikumarVideoDay");
+
+ if(saved!==today){
+
+  localStorage.setItem(
+   "sasikumarVideoDay",
+   today
+  );
+
+  if(saved){
+   location.reload();
+  }
+
+ }else{
+
+  localStorage.setItem(
+   "sasikumarVideoDay",
+   today
+  );
+
+ }
+
+}
+
+checkNewDay();
+
+setInterval(checkNewDay,60000);
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI – Video Maker</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#0b1020;
+  color:#fff;
+  padding:18px;
+}
+.wrap{max-width:900px;margin:auto}
+.card{
+  background:#151c32;
+  border:1px solid #2b3658;
+  border-radius:18px;
+  padding:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,.25);
+}
+h1{margin:0 0 8px;font-size:26px}
+.sub{opacity:.75;margin-bottom:18px}
+label{display:block;margin:14px 0 7px;font-weight:bold}
+textarea,select{
+  width:100%;
+  border:1px solid #3a466c;
+  background:#0d1428;
+  color:#fff;
+  border-radius:12px;
+  padding:13px;
+  font-size:16px;
+}
+textarea{min-height:130px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+button{
+  border:0;
+  border-radius:12px;
+  padding:13px 16px;
+  margin-top:14px;
+  font-size:15px;
+  font-weight:bold;
+  cursor:pointer;
+}
+.primary{width:100%;background:#ffffff;color:#111}
+.secondary{background:#273352;color:#fff}
+#status{margin-top:15px;text-align:center;min-height:24px}
+#result{margin-top:18px}
+video{
+  width:100%;
+  max-height:70vh;
+  border-radius:14px;
+  background:#000;
+}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+.actions button{flex:1;min-width:120px}
+.back{display:inline-block;color:#fff;text-decoration:none;margin-bottom:15px}
+@media(max-width:600px){
+  body{padding:10px}
+  .row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<a class="back" href="/">← Back to SASIKUMAR AI</a>
+
+<div class="card">
+  <h1>🎬 SASIKUMAR AI Video Maker</h1>
+  <div class="sub">Create an AI video from your idea.</div>
+
+  <label for="prompt">Video Prompt</label>
+  <textarea id="prompt" placeholder="Example: A beautiful sunrise over Thanjavur with Tamil Nadu culture, cinematic style"></textarea>
+
+  <div class="row">
+    <div>
+      <label for="duration">Duration</label>
+      <select id="duration">
+        <option value="5">5 seconds</option>
+        <option value="8">8 seconds</option>
+        <option value="10">10 seconds</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="ratio">Aspect Ratio</label>
+      <select id="ratio">
+        <option value="16:9">16:9 Landscape</option>
+        <option value="9:16">9:16 Portrait</option>
+        <option value="1:1">1:1 Square</option>
+      </select>
+    </div>
+  </div>
+
+  <button class="primary" onclick="generateVideo()">🎬 Generate Video</button>
+
+  <div id="status"></div>
+  <div id="result"></div>
+</div>
+
+<script>
+async function generateVideo(){
+  const prompt=document.getElementById("prompt").value.trim();
+  const duration=document.getElementById("duration").value;
+  const ratio=document.getElementById("ratio").value;
+  const status=document.getElementById("status");
+  const result=document.getElementById("result");
+
+  result.innerHTML="";
+
+  if(!prompt){
+    status.textContent="❌ Please enter a video prompt.";
+    return;
+  }
+
+  status.textContent="⏳ Preparing AI video...";
+
+  try{
+    const response=await fetch("/api/ai/video",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        prompt,
+        duration:Number(duration),
+        ratio
+      })
+    });
+
+    const data=await response.json();
+
+    if(!data.ok){
+      status.textContent="❌ "+(data.error || "Video generation failed.");
+      return;
+    }
+
+    status.textContent="✅ Video generated successfully.";
+
+    const video=document.createElement("video");
+    video.controls=true;
+    video.playsInline=true;
+    video.src=data.videoUrl;
+    result.appendChild(video);
+
+    const actions=document.createElement("div");
+    actions.className="actions";
+
+    const share=document.createElement("button");
+    share.className="secondary";
+    share.textContent="📤 Share";
+    share.onclick=async()=>{
+      try{
+        if(navigator.share){
+          await navigator.share({
+            title:"SASIKUMAR AI Video",
+            url:location.origin+data.videoUrl
+          });
+        }else{
+          await navigator.clipboard.writeText(location.origin+data.videoUrl);
+          alert("Video link copied.");
+        }
+      }catch(e){}
+    };
+
+    const download=document.createElement("button");
+    download.className="secondary";
+    download.textContent="⬇️ Download";
+    download.onclick=()=>{
+      const a=document.createElement("a");
+      a.href=data.videoUrl;
+      a.download="sasikumar-ai-video.mp4";
+      a.click();
+    };
+
+    actions.appendChild(share);
+    actions.appendChild(download);
+    result.appendChild(actions);
+
+  }catch(error){
+    status.textContent="❌ Unable to connect to the video service.";
+  }
+}
+</script>
+</body>
+</html>
