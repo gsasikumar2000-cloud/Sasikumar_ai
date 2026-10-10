@@ -424,6 +424,67 @@ app.get("/api/gold-rate", async (req, res) => {
   }
 });
 
+
+// ================= SILVER RATE API =================
+let silverRateCache = null;
+let silverRateCacheTime = 0;
+const SILVER_CACHE_MS = 5 * 60 * 1000;
+
+app.get("/api/silver-rate", async (req, res) => {
+  try {
+    const state = req.query.state || "Tamil Nadu";
+    const district = req.query.district || "Thanjavur";
+
+    if (silverRateCache && Date.now() - silverRateCacheTime < SILVER_CACHE_MS) {
+      return res.json({ ...silverRateCache, state, district, cached: true });
+    }
+
+    const response = await fetch("https://api.oropocket.com/public/prices");
+    if (!response.ok) {
+      throw new Error("OroPocket returned HTTP " + response.status);
+    }
+
+    const payload = await response.json();
+    const silver = payload?.data?.silver;
+    const gram = Number(silver?.sell);
+
+    if (!Number.isFinite(gram) || gram <= 0) {
+      throw new Error("Valid live Silver price unavailable");
+    }
+
+    const data = {
+      ok: true,
+      state,
+      district,
+      price_gram_999: Number(gram.toFixed(2)),
+      price_10g_999: Number((gram * 10).toFixed(2)),
+      price_kg_999: Number((gram * 1000).toFixed(2)),
+      silver: {
+        gram: Number(gram.toFixed(2)),
+        tenGram: Number((gram * 10).toFixed(2)),
+        kg: Number((gram * 1000).toFixed(2))
+      },
+      currency: "INR",
+      unit: "gram",
+      source: "OroPocket • Silver • INR/gram",
+      updatedAt: payload?.data?.timestamp || new Date().toISOString(),
+      cached: false,
+      note: "Reference Silver 999 rate. Local retail prices may differ."
+    };
+
+    silverRateCache = data;
+    silverRateCacheTime = Date.now();
+    console.log("Silver rate:", data.price_gram_999, "INR/g");
+    return res.json(data);
+  } catch (error) {
+    console.error("Silver Rate Error:", error.message);
+    return res.status(503).json({
+      ok: false,
+      reply: "Live Silver Rate unavailable: " + error.message
+    });
+  }
+});
+
 app.get('/health',(q,r)=>r.json({global:"OK", groq:!!GROQ}));
 app.get('/webhook',(q,r)=>{ if(q.query['hub.mode']==='subscribe'&&q.query['hub.verify_token']===VERIFY) r.send(q.query['hub.challenge']); else r.sendStatus(403);});
 app.post('/webhook',async(req,res)=>{
