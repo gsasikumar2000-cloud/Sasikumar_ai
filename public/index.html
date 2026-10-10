@@ -3083,7 +3083,73 @@ function printAppraisalReport(btn){
     "<meta name='viewport' content='width=device-width,initial-scale=1'>" +
     "<title>SASIKUMAR AI - Appraisal Report</title>" +
     "<style>body{font-family:Arial,sans-serif;margin:20px;color:#111;background:#fff}.report-box{max-width:850px;margin:auto}</style>" +
-    "</head><body>" + el.outerHTML + "</body></html>"
+    "
+<style id="skGlobalFontColorTheme">
+:root {
+  --sk-text: #172554;
+  --sk-heading: #075985;
+  --sk-accent: #2563eb;
+  --sk-border: #bfdbfe;
+  --sk-card-bg: #ffffff;
+}
+html { font-size: 16px; }
+body {
+  color: var(--sk-text);
+  font-size: 16px;
+  line-height: 1.6;
+}
+h1, h2, h3, h4, h5, h6,
+.dash-title, .section-title {
+  color: var(--sk-heading);
+  line-height: 1.35;
+}
+h1 { font-size: clamp(1.5rem, 4vw, 2.1rem); }
+h2 { font-size: clamp(1.3rem, 3.5vw, 1.75rem); }
+h3 { font-size: clamp(1.1rem, 3vw, 1.4rem); }
+p, label, li { font-size: 1rem; }
+small, .small, .hint, .subtitle { font-size: .875rem; }
+button, .btn, input, select, textarea {
+  font-family: inherit;
+  font-size: 1rem;
+}
+button, .btn {
+  line-height: 1.4;
+  transition: filter .2s ease, transform .2s ease;
+}
+button:hover, .btn:hover { filter: brightness(.96); }
+button:focus-visible, a:focus-visible,
+input:focus-visible, select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #60a5fa;
+  outline-offset: 2px;
+}
+a { color: #1d4ed8; }
+.card, .service-card, .dashboard-card {
+  border-color: var(--sk-border);
+}
+#skReplyToolsBar button {
+  font-size: .9rem;
+  font-weight: 600;
+}
+@media (max-width: 600px) {
+  html { font-size: 15px; }
+  body { font-size: 15px; }
+  h1 { font-size: 1.5rem; }
+  h2 { font-size: 1.3rem; }
+  h3 { font-size: 1.1rem; }
+  button, .btn, input, select, textarea {
+    font-size: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}
+</style>
+
+</head><body>" + el.outerHTML + "</body></html>"
   );
   w.document.close();
   setTimeout(function(){ try{ w.print(); }catch(e){} },700);
