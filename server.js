@@ -222,6 +222,208 @@ async function sendWA(to,pid,pl){
     return false;
   }
 }
+// ================= GOLD RATE API =================
+let goldRateCache = null;
+let goldRateCacheTime = 0;
+
+const GOLD_CACHE_MS = 5 * 60 * 1000;
+
+app.get("/api/gold-rate", async (req, res) => {
+  try {
+    const state = req.query.state || "Tamil Nadu";
+    const district = req.query.district || "Thanjavur";
+
+    // Return cached rate for 5 minutes
+    if (
+      goldRateCache &&
+      Date.now() - goldRateCacheTime < GOLD_CACHE_MS
+    ) {
+      return res.json({
+        ...goldRateCache,
+        state,
+        district,
+        cached: true
+      });
+    }
+
+    let r24, r22, r20, r19, r18;
+    let buy = null;
+    let sell = null;
+    let gst = null;
+    let change24h = null;
+    let source = "";
+    let fallbackUsed = false;
+
+    // 1) PRIMARY: OroPocket public Gold API
+    try {
+      const response = await fetch(
+        "https://api.oropocket.com/public/prices"
+      );
+
+      const data = await response.json();
+
+      if (
+        !response.ok ||
+        !data.data ||
+        !data.data.gold
+      ) {
+        throw new Error("OroPocket Gold price unavailable");
+      }
+
+      const gold = data.data.gold;
+
+      buy = Number(gold.buy);
+      sell = Number(gold.sell);
+      gst = Number(gold.gst);
+
+      if (!Number.isFinite(sell) || sell <= 0) {
+        throw new Error("Invalid OroPocket Gold sell price");
+      }
+
+      // OroPocket price is INR per gram.
+      // Use sell as the reference gold price.
+      r24 = Math.round(sell);
+      r22 = Math.round(r24 * 22 / 24);
+      r20 = Math.round(r24 * 20 / 24);
+      r19 = Math.round(r24 * 19 / 24);
+      r18 = Math.round(r24 * 18 / 24);
+
+      if (
+        gold.change24h &&
+        Number.isFinite(Number(gold.change24h.sell))
+      ) {
+        change24h = Number(gold.change24h.sell);
+      }
+
+      source = "OroPocket • Gold • INR/gram • SASIKUMAR AI";
+
+      console.log("✅ OroPocket Gold:", sell);
+      console.log("📈 24h change:", change24h);
+
+    } catch (oropocketError) {
+      console.warn(
+        "⚠️ OroPocket Gold unavailable:",
+        oropocketError.message
+      );
+
+      // 2) FALLBACK: goldprice.dev
+      console.log("🔄 Trying goldprice.dev fallback...");
+
+      const fallback = await fetch(
+        "https://api.goldprice.dev/v1/prices?symbol=XAU-INR-SPOT"
+      );
+
+      const fd = await fallback.json();
+
+      if (
+        !fallback.ok ||
+        !fd.symbols ||
+        !fd.symbols[0]
+      ) {
+        throw new Error(
+          "OroPocket and goldprice.dev unavailable"
+        );
+      }
+
+      const ouncePrice = Number(fd.symbols[0].price);
+
+      if (
+        !Number.isFinite(ouncePrice) ||
+        ouncePrice <= 0
+      ) {
+        throw new Error(
+          "Invalid goldprice.dev XAU-INR price"
+        );
+      }
+
+      // 1 troy ounce = 31.1034768 grams
+      r24 = Math.round(
+        ouncePrice / 31.1034768
+      );
+
+      r22 = Math.round(r24 * 22 / 24);
+      r20 = Math.round(r24 * 20 / 24);
+      r19 = Math.round(r24 * 19 / 24);
+      r18 = Math.round(r24 * 18 / 24);
+
+      source =
+        "goldprice.dev • XAU/INR • SASIKUMAR AI";
+
+      fallbackUsed = true;
+    }
+
+    const rates = {
+      "24K": r24,
+      "22K": r22,
+      "20K": r20,
+      "19K": r19,
+      "18K": r18
+    };
+
+    const responseData = {
+      ok: true,
+
+      state,
+      district,
+
+      date: new Intl.DateTimeFormat("en-GB", {
+        timeZone: "Asia/Kolkata"
+      }).format(new Date()),
+
+      rates,
+
+      rates8g: Object.fromEntries(
+        Object.entries(rates).map(
+          ([k, v]) => [k, v * 8]
+        )
+      ),
+
+      buy,
+      sell,
+      gst,
+      change24h,
+
+      source,
+      fallbackUsed,
+      cached: false,
+
+      note:
+        "Reference gold price. Thanjavur jewellery retail rate may differ.",
+
+      updatedAt: new Date().toISOString()
+    };
+
+    // Save in-memory cache
+    goldRateCache = responseData;
+    goldRateCacheTime = Date.now();
+
+    console.log("===== GOLD RATE DEBUG =====");
+    console.log("24K:", r24);
+    console.log("22K:", r22);
+    console.log("20K:", r20);
+    console.log("19K:", r19);
+    console.log("18K:", r18);
+    console.log("Source:", source);
+    console.log("Fallback:", fallbackUsed);
+    console.log("===========================");
+
+    res.json(responseData);
+
+  } catch (e) {
+    console.error(
+      "Gold Rate Error:",
+      e.message
+    );
+
+    res.status(503).json({
+      ok: false,
+      reply:
+        "❌ Live Gold Rate unavailable: " +
+        e.message
+    });
+  }
+});
+
 app.get('/health',(q,r)=>r.json({global:"OK", groq:!!GROQ}));
 app.get('/webhook',(q,r)=>{ if(q.query['hub.mode']==='subscribe'&&q.query['hub.verify_token']===VERIFY) r.send(q.query['hub.challenge']); else r.sendStatus(403);});
 app.post('/webhook',async(req,res)=>{
@@ -311,6 +513,74 @@ Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada �
 
   const match=normalized.match(/^(?:option[\s_-]*)?(19|1[0-8]|[1-9])$/);
   const option=match ? match[1] : null;
+  // Direct live Gold Rate response for WhatsApp
+  if (
+    option === "1" ||
+    /(gold|தங்கம்|தங்க விலை)/i.test(txt)
+  ) {
+    try {
+      const port = process.env.PORT || 10000;
+      const response = await fetch(
+        `http://127.0.0.1:${port}/api/gold-rate?state=Tamil%20Nadu&district=Thanjavur`
+      );
+      const g = await response.json();
+
+      if (!response.ok || !g.ok || !g.rates) {
+        throw new Error(g.reply || "Live Gold Rate unavailable");
+      }
+
+      const money = n =>
+        Number(n).toLocaleString("en-IN", {
+          maximumFractionDigits: 2
+        });
+
+      const updated = g.updatedAt
+        ? new Intl.DateTimeFormat("en-IN", {
+            timeZone: "Asia/Kolkata",
+            dateStyle: "medium",
+            timeStyle: "short"
+          }).format(new Date(g.updatedAt))
+        : g.date;
+
+      const body =
+        "🪙 SASIKUMAR AI — Gold Rate\n\n" +
+        "📍 " + (g.district || "Thanjavur") + ", " +
+        (g.state || "Tamil Nadu") + "\n" +
+        "📅 Date: " + (g.date || "Not provided") + "\n\n" +
+        "🟡 24K: ₹" + money(g.rates["24K"]) + " / gram\n" +
+        "🟡 22K: ₹" + money(g.rates["22K"]) + " / gram\n" +
+        "🟡 20K: ₹" + money(g.rates["20K"]) + " / gram\n" +
+        "🟡 18K: ₹" + money(g.rates["18K"]) + " / gram\n\n" +
+        "⚖️ 22K, 8 grams: ₹" +
+        money(g.rates8g?.["22K"] ?? g.rates["22K"] * 8) + "\n" +
+        "⚖️ 24K, 8 grams: ₹" +
+        money(g.rates8g?.["24K"] ?? g.rates["24K"] * 8) + "\n\n" +
+        "🕒 Updated: " + updated + "\n" +
+        "🔗 Source: " + (g.source || "API source unavailable") + "\n\n" +
+        "ℹ️ " + (g.note ||
+          "Reference rate only. Local jewellery prices may differ.") +
+        (g.fallbackUsed ? "\n⚠️ Fallback source used." : "") +
+        (g.cached ? "\nℹ️ Cached API result." : "");
+
+      const sent = await sendWA(
+        from, pid, { type: "text", text: { body: body.slice(0, 3500) } }
+      );
+      if (sent) add(from, "assistant", body);
+    } catch (error) {
+      console.error("[WhatsApp Gold Rate]", error.message);
+      const message =
+        "⚠️ தற்போது நேரடி Gold Rate கிடைக்கவில்லை.\n" +
+        "தவறான விலையைக் காட்டாமல் நிறுத்தியுள்ளோம். சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.";
+      const sent = await sendWA(
+        from, pid, { type: "text", text: { body: message } }
+      );
+      if (sent) add(from, "assistant", message);
+    }
+
+    res.sendStatus(200);
+    return;
+  }
+
   const prompt=option ? prompts[option] : txt;
 
   let ans=await groqAI(prompt,from);
