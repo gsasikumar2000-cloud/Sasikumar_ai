@@ -112,6 +112,8 @@ document.getElementById("ask").addEventListener("click", async () => {
     "Subject: " + document.getElementById("subject").value + ".",
     "Task: " + document.getElementById("mode").value + ".",
     "For exam preparation, explain concepts clearly and do not invent official exam dates, cutoffs, or syllabus changes.",
+    "Accuracy rules: For mathematics and science, calculate the result before answering and verify it independently. For MCQs, provide exactly one correct option, ensure all options are distinct, and make the answer key match the explanation. If an earlier statement conflicts with the calculation, give only the corrected result and explain it clearly. Never fabricate facts or claim official exam information without verification.",
+    "For mock tests and quizzes, place the answer key after all questions so learners can attempt them first.",
     "Question: " + q
   ].join("\n");
   const button = document.getElementById("ask");
