@@ -65,6 +65,25 @@ function smartAI(t){
  return `🤖 Sasikumar GLOBAL AI Sir: "${t}" - Naan world knowledge AI! Science, history, tech, code, gold, jobs, life edhu venumnaalum ketkalam. Specific ah ketta full answer tharuven!`;
 }
 
+function tamilHistoryAnswer(q) {
+  const text = String(q || "").toLowerCase();
+  const asksKings = /மூவேந்தர்|மூன்று முக்கிய அரச|சேரர்.*சோழர்|சோழர்.*பாண்டியர்|tamil history/i.test(text);
+  if (!asksKings) return null;
+
+  return `## தமிழகத்தின் மூவேந்தர்கள்
+
+தமிழக வரலாற்றில் புகழ்பெற்ற மூன்று அரச மரபுகள் சேரர், சோழர், பாண்டியர்.
+
+| அரச மரபு | முக்கிய வரலாற்று மையங்கள் |
+|---|---|
+| சேரர் | வஞ்சி என்பது பாரம்பரியமாகக் குறிப்பிடப்படும் தலைநகரம். அதன் துல்லியமான இடம் குறித்து வரலாற்று ஆய்வுகளில் கருத்து வேறுபாடுகள் உள்ளன; கரூருடனான தொடர்பும் விவாதிக்கப்படுகிறது. |
+| சோழர் | உறையூர் பழைய சோழ மையமாக இருந்தது. தஞ்சாவூர் மற்றும் கங்கைகொண்ட சோழபுரம் பிற்காலப் பேரரசுச் சோழர்களின் முக்கிய தலைநகரங்களாக விளங்கின. |
+| பாண்டியர் | மதுரை முக்கியமான பாண்டிய அரசியல் மற்றும் பண்பாட்டு மையமாக விளங்கியது. |
+
+**நினைவில் கொள்ளுங்கள்:** இந்த அரச மரபுகளின் தலைநகரங்களும் அரசியல் மையங்களும் காலத்திற்கேற்ப மாறின. சேரர்களின் பழைய தலைநகரத்தின் துல்லியமான இடம் குறித்து முழுமையான ஒருமித்த கருத்து இல்லை.`;
+
+}
+
 // WEB API - THIS FIXES YOUR SCREENSHOT ERROR
 app.post('/api/chat', async(req,res)=>{
  try{
@@ -72,7 +91,7 @@ app.post('/api/chat', async(req,res)=>{
   const txt = message || category || "hi";
   const uid="web-user";
   add(uid,"user",txt);
-  let ans = await groqAI(txt,uid);
+  let ans = tamilHistoryAnswer(txt) || await groqAI(txt,uid);
   if(!ans) ans = await globalKnowledge(txt);
   if(!ans) ans = smartAI(txt);
   add(uid,"assistant",ans);
