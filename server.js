@@ -65,6 +65,22 @@ function smartAI(t){
  return `🤖 Sasikumar GLOBAL AI Sir: "${t}" - Naan world knowledge AI! Science, history, tech, code, gold, jobs, life edhu venumnaalum ketkalam. Specific ah ketta full answer tharuven!`;
 }
 
+function conversationRecallAnswer(q,u) {
+  const text = String(q || "").toLowerCase();
+  const asksRecall = /நான்\s*(முன்பு|முன்னாடி|முந்தைய)\s*(என்ன|எதை)\s*(சொன்னேன்|கேட்டேன்)|முன்பு\s*நான்|what did i (say|ask) before|my previous message|remember my last message/i.test(text);
+
+  if (!asksRecall) return null;
+
+  const history = mem.get(u) || [];
+  const previous = [...history].reverse().find(m => m.r === "user");
+
+  if (!previous) {
+    return "இந்த உரையாடல் நினைவகத்தில் முந்தைய செய்தி கிடைக்கவில்லை. அதனால் ஊகித்துப் பதிலளிக்க மாட்டேன்.";
+  }
+
+  return `உங்கள் முந்தைய செய்தி: “${String(previous.t).slice(0,2000)}”`;
+}
+
 function tamilHistoryAnswer(q) {
   const text = String(q || "").toLowerCase();
   const asksKings = /மூவேந்தர்|மூன்று முக்கிய அரச|சேரர்.*சோழர்|சோழர்.*பாண்டியர்|tamil history/i.test(text);
@@ -96,7 +112,7 @@ app.post('/api/chat', async(req,res)=>{
     ? "web:" + safeId
     : "web:oneoff:" + Date.now() + ":" + Math.random().toString(36).slice(2);
 
-  let ans = tamilHistoryAnswer(txt) || await groqAI(txt,uid);
+  let ans = conversationRecallAnswer(txt,uid) || tamilHistoryAnswer(txt) || await groqAI(txt,uid);
   if(!ans) ans = await globalKnowledge(txt);
   if(!ans) ans = smartAI(txt);
 
