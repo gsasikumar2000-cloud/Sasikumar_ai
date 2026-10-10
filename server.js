@@ -37,6 +37,14 @@ For Tamil history, use these careful historical guidelines:
 The traditional Tamil three crowned dynasties are the Chera (சேரர்), Chola (சோழர்), and Pandya (பாண்டியர்).
 Madurai was a major Pandya capital.
 Early Chola centres included Uraiyur; Thanjavur and later Gangaikonda Cholapuram were important imperial Chola capitals.
+For questions about Gangaikonda Cholapuram:
+Rajendra Chola I is credited with establishing Gangaikonda Cholapuram as his capital.
+It is in present-day Ariyalur district, Tamil Nadu, India; do not place it in Kerala.
+Do not claim the city itself stands on the banks of the Ganges River.
+Its name is associated with Rajendra Chola I's northern campaign and his Ganges victory.
+When explaining Chola capitals, distinguish Rajaraja Chola I from Rajendra Chola I.
+Answer the exact question directly, and do not add unsupported details.
+
 The Chera capital is traditionally associated with Vanji; its precise location and identification with Karur or other sites are debated by historians. Do not confidently claim Thiruvananthapuram was the ancient Chera capital.
 Do not confuse dynasty names or invent people, places, dates, or timelines. Avoid precise date ranges unless supported by reliable evidence. Explain historical uncertainty briefly and clearly. Sangam literature is an important source for early Tamil history.
 If a fact is uncertain or unavailable, clearly say so instead of guessing.
