@@ -4609,7 +4609,14 @@ else skRefreshPay2AllWallet();
 (() => {
   const input = document.getElementById("sasikumarGlobalSearchInput");
   const box = document.getElementById("sasikumar-search-results");
-  if (!input || !box) return;
+  if (!input || !box) {
+    console.error("SASIKUMAR AI Search: input/results box not found");
+    return;
+  }
+
+  /* Ensure search results remain readable in light and dark themes */
+  box.style.color = "#1f2937";
+  box.style.backgroundColor = "#ffffff";
 
   let timer;
   let controller;
