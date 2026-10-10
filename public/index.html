@@ -355,6 +355,45 @@ font-family:"Noto Sans Tamil","Nirmala UI","Latha",Arial,sans-serif !important;
 .ai-note,a{
 text-decoration:none !important;
 }
+
+/* SASIKUMAR AI TOP LOGO DESIGN */
+.dash-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 14px 12px;
+  margin: 8px auto;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #fffdf5, #f4ead0, #ffffff);
+  border: 1px solid #e5d4a4;
+  box-shadow: 0 5px 18px rgba(110,80,20,.12);
+  color: #173b70;
+  font-size: clamp(21px, 5vw, 32px);
+  font-weight: 900;
+  text-align: center;
+}
+.dash-title .sai-home-logo {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  flex-shrink: 0;
+  animation: skLogo360 2.5s linear infinite;
+  transform-style: preserve-3d;
+}
+@media (max-width: 480px) {
+  .dash-title {
+    gap: 7px;
+    padding: 11px 7px;
+    font-size: 22px;
+  }
+  .dash-title .sai-home-logo {
+    width: 50px;
+    height: 50px;
+  }
+}
+
 </style>
 
 <div id="welcomeTopBoard" style="position:relative;width:calc(100% - 24px);margin:6px auto 8px;padding:8px 6px;text-align:center;border-radius:16px;background:linear-gradient(135deg,#eef6ff,#fff7e8);box-shadow:0 5px 16px rgba(0,0,0,.10);max-width:900px;z-index:10;">
@@ -1733,6 +1772,7 @@ async function send(){
     if (replyAttachment) {
       if (replyAttachment.size > 10 * 1024 * 1024) {
         alert("📎 File size 10 MB-க்கு மேல் இருக்கக்கூடாது.");
+        skSending = false;
         return;
       }
 
