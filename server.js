@@ -19,11 +19,22 @@ const getMem=(u)=>(mem.get(u)||[]).slice(-8).map(x=>`${x.r}:${x.t}`).join('\n');
 async function groqAI(q,u="web"){
  if(!GROQ) return null;
  try{
-  const h=mem.get(u)||[];
-  const msgs=[{role:"system",content:`You are Sasikumar GLOBAL AI. Chennai Vinayaga Agencies. Helpful, smart, Tamil+English mix. Know everything. Memory:${getMem(u)}`}];
+  const history=mem.get(u)||[];
+  const h=history.filter((m,i,a)=>
+    !(i===a.length-1 && m.r==="user" && m.t===q)
+  );
+  const msgs=[{role:"system",content:`You are SASIKUMAR AI, a helpful and accurate Tamil and English assistant.
+Respond in the language used by the user. For Tamil questions, answer in clear, natural Tamil.
+Prioritize factual accuracy over confidence. Never invent historical dates, people, places, quotations, or events.
+For history questions, use accepted historical chronology and distinguish established facts from disputed dates.
+For Tamil history, recognize the Chera, Chola and Pandya dynasties and the importance of Sangam literature. Do not invent names or events.
+If a fact is uncertain or unavailable, clearly say so instead of guessing.
+For current gold rates, news, jobs, and other changing information, do not present old figures as live data.
+Give a direct answer with useful details. Use conversation history only when relevant.
+Conversation context: ${getMem(u)}`}];
   h.slice(-6).forEach(m=>msgs.push({role:m.r==="user"?"user":"assistant",content:m.t}));
   msgs.push({role:"user",content:q});
-  const r=await fetch("https://api.groq.com/openai/v1/chat/completions",{method:"POST",headers:{Authorization:`Bearer ${GROQ}`,"Content-Type":"application/json"},body:JSON.stringify({model:"openai/gpt-oss-20b",messages:msgs,max_tokens:1000,temperature:0.7})});
+  const r=await fetch("https://api.groq.com/openai/v1/chat/completions",{method:"POST",headers:{Authorization:`Bearer ${GROQ}`,"Content-Type":"application/json"},body:JSON.stringify({model:"openai/gpt-oss-20b",messages:msgs,max_tokens:1400,temperature:0.3})});
   const d=await r.json();
   if(d.error) {console.log("GROQ ERR",d.error); return null;}
   return d.choices?.[0]?.message?.content||null;
