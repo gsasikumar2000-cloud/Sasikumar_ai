@@ -357,9 +357,9 @@ text-decoration:none !important;
 }
 </style>
 
-<div id="welcomeTopBoard" style="position:relative;width:calc(100% - 24px);margin:0 auto 12px;padding:18px 8px;text-align:center;border-radius:24px;background:linear-gradient(135deg,#eef6ff,#fff7e8);box-shadow:0 10px 30px rgba(0,0,0,.12);max-width:900px;z-index:99999;">
-  <div style="font-size:clamp(32px,8vw,64px);font-weight:900;letter-spacing:1px;">WELCOME TO</div>
-  <div style="font-size:clamp(38px,10vw,78px);font-weight:1000;letter-spacing:2px;">SASIKUMAR AI</div>
+<div id="welcomeTopBoard" style="position:relative;width:calc(100% - 24px);margin:6px auto 8px;padding:8px 6px;text-align:center;border-radius:16px;background:linear-gradient(135deg,#eef6ff,#fff7e8);box-shadow:0 5px 16px rgba(0,0,0,.10);max-width:900px;z-index:10;">
+  <div style="font-size:clamp(18px,4.5vw,28px);font-weight:900;letter-spacing:1px;">WELCOME TO</div>
+  <div style="font-size:clamp(25px,6vw,42px);font-weight:1000;letter-spacing:1px;">SASIKUMAR AI</div>
   <div style="margin-top:8px;font-size:clamp(14px,3.5vw,20px);font-weight:800;">
     <span id="skWelcomeDate" style="display:none;"></span>
     &nbsp; • &nbsp;
@@ -4337,12 +4337,16 @@ function pdfNotes(){
 
 <style id="sk3DAdButtonStyle">
 #sk3DAdButton{
-position:fixed;right:16px;bottom:18px;z-index:9999;
-border:0;border-radius:22px;padding:13px 18px;
-font-weight:900;font-size:14px;color:#fff;cursor:pointer;
+position:fixed;right:10px;top:110px;bottom:auto;z-index:9999;
+border:0;border-radius:18px;padding:9px 12px;
+font-weight:900;font-size:12px;color:#fff;cursor:pointer;
 background:linear-gradient(135deg,#ff2bd6,#713cff,#00cfff);
-box-shadow:0 10px 30px rgba(0,0,0,.35);
+box-shadow:0 6px 18px rgba(0,0,0,.25);
 animation:sk3dFloat 2.8s ease-in-out infinite;
+max-width:calc(100vw - 20px);
+}
+@media(max-width:480px){
+#sk3DAdButton{right:8px;top:100px;padding:8px 10px;font-size:11px}
 }
 #sk3DAdButton:hover{transform:scale(1.06)}
 @keyframes sk3dFloat{
