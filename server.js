@@ -188,7 +188,40 @@ app.get('/api/global-search', async (req, res) => {
 
 app.get('/api/status',(req,res)=>res.json({live:true, groq:!!GROQ, gemini:!!GROQ, users:mem.size}));
 
-async function sendWA(to,pid,pl){ if(!WATOKEN) return; await fetch(`https://graph.facebook.com/v20.0/${pid}/messages`,{method:"POST",headers:{Authorization:`Bearer ${WATOKEN}`,"Content-Type":"application/json"},body:JSON.stringify({messaging_product:"whatsapp",to,...pl})});}
+async function sendWA(to,pid,pl){
+  if(!WATOKEN){
+    console.error("[WhatsApp] WHATSAPP_TOKEN is missing");
+    return false;
+  }
+  if(!to || !pid){
+    console.error("[WhatsApp] Recipient or phone_number_id is missing");
+    return false;
+  }
+  try{
+    const response = await fetch(
+      `https://graph.facebook.com/v20.0/${pid}/messages`,
+      {
+        method:"POST",
+        headers:{
+          Authorization:`Bearer ${WATOKEN}`,
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({messaging_product:"whatsapp",to,...pl})
+      }
+    );
+    const result = await response.json().catch(()=>({}));
+    if(!response.ok){
+      console.error("[WhatsApp] API error:", response.status,
+        JSON.stringify(result.error || result).slice(0,1000));
+      return false;
+    }
+    console.log("[WhatsApp] Message accepted by API");
+    return true;
+  }catch(error){
+    console.error("[WhatsApp] Request failed:", error.message);
+    return false;
+  }
+}
 app.get('/health',(q,r)=>r.json({global:"OK", groq:!!GROQ}));
 app.get('/webhook',(q,r)=>{ if(q.query['hub.mode']==='subscribe'&&q.query['hub.verify_token']===VERIFY) r.send(q.query['hub.challenge']); else r.sendStatus(403);});
 app.post('/webhook',async(req,res)=>{
@@ -197,7 +230,10 @@ app.post('/webhook',async(req,res)=>{
   const from=m.from; const pid=v.metadata.phone_number_id; const txt=m.text?.body||m.interactive?.button_reply?.id||"hi";
   add(from,"user",txt); let ans=await groqAI(txt,from); if(!ans) ans=await globalKnowledge(txt); if(!ans) ans=smartAI(txt);
   await sendWA(from,pid,{type:"text",text:{body:ans.slice(0,3500)}}); add(from,"assistant",ans); res.sendStatus(200);
- }catch(e){res.sendStatus(200);}
+ }catch(e){
+  console.error("[WhatsApp] Webhook processing failed:", e.message);
+  if(!res.headersSent) res.sendStatus(200);
+}
 });
 app.get('*',(q,r)=>r.sendFile(path.join(__dirname,'public','index.html')));
 app.listen(process.env.PORT||10000,()=>console.log("GLOBAL API FIXED"));
