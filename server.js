@@ -636,30 +636,64 @@ Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada �
           }).format(new Date(g.updatedAt))
         : g.date;
 
-      const body =
-        "🪙 SASIKUMAR AI — Gold Rate\n\n" +
-        "📍 " + (g.district || "Thanjavur") + ", " +
-        (g.state || "Tamil Nadu") + "\n" +
-        "📅 Date: " + (g.date || "Not provided") + "\n\n" +
-        "🟡 24K: ₹" + money(g.rates["24K"]) + " / gram\n" +
-        "🟡 22K: ₹" + money(g.rates["22K"]) + " / gram\n" +
-        "🟡 20K: ₹" + money(g.rates["20K"]) + " / gram\n" +
-        "🟡 18K: ₹" + money(g.rates["18K"]) + " / gram\n\n" +
-        "⚖️ 22K, 8 grams: ₹" +
-        money(g.rates8g?.["22K"] ?? g.rates["22K"] * 8) + "\n" +
-        "⚖️ 24K, 8 grams: ₹" +
-        money(g.rates8g?.["24K"] ?? g.rates["24K"] * 8) + "\n\n" +
-        "🕒 Updated: " + updated + "\n" +
-        "🔗 Source: " + (g.source || "API source unavailable") + "\n\n" +
-        "ℹ️ " + (g.note ||
-          "Reference rate only. Local jewellery prices may differ.") +
-        (g.fallbackUsed ? "\n⚠️ Fallback source used." : "") +
-        (g.cached ? "\nℹ️ Cached API result." : "");
 
-      const sent = await sendWA(
-        from, pid, { type: "text", text: { body: body.slice(0, 3500) } }
-      );
-      if (sent) add(from, "assistant", body);
+const silverResponse = await fetch(
+  `http://127.0.0.1:${port}/api/silver-rate?state=Tamil%20Nadu&district=Thanjavur`
+);
+const silver = await silverResponse.json().catch(() => ({}));
+
+const silverText = silverResponse.ok && silver.ok
+  ? "\n\n🥈 SILVER 999 RATE\n" +
+    "⚪ 1 gram: ₹" + money(silver.price_gram_999) + "\n" +
+    "⚪ 10 grams: ₹" + money(silver.price_10g_999) + "\n" +
+    "⚪ 1 kg: ₹" + money(silver.price_kg_999) + "\n" +
+    "🔗 Silver Source: " + (silver.source || "OroPocket") + "\n" +
+    "🕒 Silver Updated: " +
+    (silver.updatedAt
+      ? new Intl.DateTimeFormat("en-IN", {
+          timeZone: "Asia/Kolkata",
+          dateStyle: "medium",
+          timeStyle: "short"
+        }).format(new Date(silver.updatedAt))
+      : "Not provided") +
+    (silver.cached ? "\nℹ️ Silver rate is cached." : "")
+  : "\n\n⚠️ Silver rate is temporarily unavailable.";
+
+const body =
+  "🪙 SASIKUMAR AI — GOLD & SILVER RATE\n\n" +
+  "📍 " + (g.district || "Thanjavur") + ", " +
+  (g.state || "Tamil Nadu") + "\n" +
+  "📅 Gold Date: " + (g.date || "Not provided") + "\n\n" +
+  "🟡 24K Gold: ₹" + money(g.rates["24K"]) + " / gram\n" +
+  "🟡 22K Gold: ₹" + money(g.rates["22K"]) + " / gram\n" +
+  "🟡 20K Gold: ₹" + money(g.rates["20K"]) + " / gram\n" +
+  "🟡 18K Gold: ₹" + money(g.rates["18K"]) + " / gram\n\n" +
+  "⚖️ 22K, 8 grams: ₹" +
+  money(g.rates8g?.["22K"] ?? g.rates["22K"] * 8) + "\n" +
+  "⚖️ 24K, 8 grams: ₹" +
+  money(g.rates8g?.["24K"] ?? g.rates["24K"] * 8) + "\n\n" +
+  "🕒 Gold Updated: " + updated + "\n" +
+  "🔗 Gold Source: " + (g.source || "API source unavailable") +
+  silverText + "\n\n" +
+  "ℹ️ Reference rates only. Local jewellery prices may differ." +
+  (g.fallbackUsed ? "\n⚠️ Gold fallback source used." : "") +
+  (g.cached ? "\nℹ️ Gold rate is cached." : "") +
+  (silver.cached ? "\nℹ️ Silver rate is cached." : "");
+
+const logoSent = await sendWA(from, pid, {
+  type: "image",
+  image: {
+    link: "https://sasikumar-ai-9wdq.onrender.com/assets/sasikumar-ai-logo.png",
+    caption: "🤖 SASIKUMAR AI ✨\n🥇 Live Gold & Silver Rates\n🌐 https://sasikumar-ai-9wdq.onrender.com"
+  }
+});
+if (logoSent) add(from, "assistant", "[SASIKUMAR AI Logo]");
+
+const sent = await sendWA(
+  from, pid, { type: "text", text: { body: body.slice(0, 3500) } }
+);
+if (sent) add(from, "assistant", body);
+
     } catch (error) {
       console.error("[WhatsApp Gold Rate]", error.message);
       const message =
