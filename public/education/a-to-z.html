@@ -77,6 +77,52 @@ a{color:#1459b8}
 <section class="card" aria-live="polite">
 <h2>📘 AI Answer</h2>
 <div id="answer">Your learning answer will appear here.</div>
+
+<section class="card" id="skInteractiveQuiz" style="margin-top:24px;padding:18px;border-radius:16px;background:#f0f7ff;color:#172b4d">
+  <h2>📝 Interactive Maths Quiz</h2>
+  <p>Choose an answer for each question, then submit to see your score.</p>
+  <form id="skQuizForm">
+    <fieldset style="margin:14px 0;padding:12px;border:1px solid #c8d5e8;border-radius:12px">
+      <legend>1. What is 7 + 6?</legend>
+      <label><input type="radio" name="skq1" value="A" style="width:auto"> A) 12</label><br>
+      <label><input type="radio" name="skq1" value="B" style="width:auto"> B) 13</label><br>
+      <label><input type="radio" name="skq1" value="C" style="width:auto"> C) 14</label><br>
+      <label><input type="radio" name="skq1" value="D" style="width:auto"> D) 15</label>
+    </fieldset>
+    <fieldset style="margin:14px 0;padding:12px;border:1px solid #c8d5e8;border-radius:12px">
+      <legend>2. Which number is prime?</legend>
+      <label><input type="radio" name="skq2" value="A" style="width:auto"> A) 1</label><br>
+      <label><input type="radio" name="skq2" value="B" style="width:auto"> B) 4</label><br>
+      <label><input type="radio" name="skq2" value="C" style="width:auto"> C) 9</label><br>
+      <label><input type="radio" name="skq2" value="D" style="width:auto"> D) 11</label>
+    </fieldset>
+    <fieldset style="margin:14px 0;padding:12px;border:1px solid #c8d5e8;border-radius:12px">
+      <legend>3. A rectangle is 10 cm long and 5 cm wide. What is its area?</legend>
+      <label><input type="radio" name="skq3" value="A" style="width:auto"> A) 50 cm²</label><br>
+      <label><input type="radio" name="skq3" value="B" style="width:auto"> B) 30 cm²</label><br>
+      <label><input type="radio" name="skq3" value="C" style="width:auto"> C) 15 cm²</label><br>
+      <label><input type="radio" name="skq3" value="D" style="width:auto"> D) 25 cm²</label>
+    </fieldset>
+    <fieldset style="margin:14px 0;padding:12px;border:1px solid #c8d5e8;border-radius:12px">
+      <legend>4. What comes next: 2, 4, 8, 16, ...?</legend>
+      <label><input type="radio" name="skq4" value="A" style="width:auto"> A) 18</label><br>
+      <label><input type="radio" name="skq4" value="B" style="width:auto"> B) 24</label><br>
+      <label><input type="radio" name="skq4" value="C" style="width:auto"> C) 32</label><br>
+      <label><input type="radio" name="skq4" value="D" style="width:auto"> D) 48</label>
+    </fieldset>
+    <fieldset style="margin:14px 0;padding:12px;border:1px solid #c8d5e8;border-radius:12px">
+      <legend>5. Solve: 3y − 9 = 0</legend>
+      <label><input type="radio" name="skq5" value="A" style="width:auto"> A) 3</label><br>
+      <label><input type="radio" name="skq5" value="B" style="width:auto"> B) 2</label><br>
+      <label><input type="radio" name="skq5" value="C" style="width:auto"> C) 1</label><br>
+      <label><input type="radio" name="skq5" value="D" style="width:auto"> D) 0</label>
+    </fieldset>
+    <button type="submit">✅ Submit Quiz</button>
+    <button type="button" id="skQuizReset" style="margin-top:8px">🔄 Try Again</button>
+  </form>
+  <div id="skQuizResult" role="status" aria-live="polite" style="margin-top:16px;font-weight:bold"></div>
+</section>
+
 </section>
 <section class="card">
 <h3>🔗 More Education Tools</h3>
@@ -137,6 +183,41 @@ document.getElementById("ask").addEventListener("click", async () => {
     button.textContent = "✨ Ask SASIKUMAR AI";
   }
 });
+
+// Interactive quiz: score is calculated locally from the fixed answer key.
+(() => {
+  const form = document.getElementById("skQuizForm");
+  const result = document.getElementById("skQuizResult");
+  const key = {skq1:"B", skq2:"D", skq3:"A", skq4:"C", skq5:"A"};
+  const explanations = [
+    "1. B) 13 — 7 + 6 = 13.",
+    "2. D) 11 — 11 has exactly two positive factors: 1 and 11.",
+    "3. A) 50 cm² — area = length × width = 10 × 5.",
+    "4. C) 32 — each number is doubled.",
+    "5. A) 3 — 3y − 9 = 0 gives 3y = 9, so y = 3."
+  ];
+  if (!form || !result) return;
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    let score = 0;
+    let unanswered = 0;
+    Object.keys(key).forEach((name) => {
+      const selected = form.querySelector('input[name="' + name + '"]:checked');
+      if (!selected) unanswered++;
+      else if (selected.value === key[name]) score++;
+    });
+    result.textContent =
+      "Your Score: " + score + " / " + Object.keys(key).length +
+      (unanswered ? " • Unanswered: " + unanswered : "") +
+      "\n\nAnswer review:\n" + explanations.join("\n");
+    result.style.whiteSpace = "pre-line";
+  });
+  document.getElementById("skQuizReset").addEventListener("click", () => {
+    form.reset();
+    result.textContent = "";
+  });
+})();
+
 </script>
 </body>
 </html>
