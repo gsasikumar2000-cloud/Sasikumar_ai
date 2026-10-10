@@ -226,14 +226,104 @@ app.get('/health',(q,r)=>r.json({global:"OK", groq:!!GROQ}));
 app.get('/webhook',(q,r)=>{ if(q.query['hub.mode']==='subscribe'&&q.query['hub.verify_token']===VERIFY) r.send(q.query['hub.challenge']); else r.sendStatus(403);});
 app.post('/webhook',async(req,res)=>{
  try{
-  const v=req.body.entry?.[0]?.changes?.[0]?.value; const m=v?.messages?.[0]; if(!m){res.sendStatus(200);return;}
-  const from=m.from; const pid=v.metadata.phone_number_id; const txt=m.text?.body||m.interactive?.button_reply?.id||"hi";
-  add(from,"user",txt); let ans=await groqAI(txt,from); if(!ans) ans=await globalKnowledge(txt); if(!ans) ans=smartAI(txt);
-  await sendWA(from,pid,{type:"text",text:{body:ans.slice(0,3500)}}); add(from,"assistant",ans); res.sendStatus(200);
+  const v=req.body.entry?.[0]?.changes?.[0]?.value;
+  const m=v?.messages?.[0];
+  if(!m){res.sendStatus(200);return;}
+
+  const from=m.from;
+  const pid=v.metadata.phone_number_id;
+  const txt=String(m.text?.body||m.interactive?.button_reply?.id||m.interactive?.list_reply?.id||"hi").trim();
+  const normalized=txt.toLowerCase().replace(/[\uFE0F\u20E3]/g,"").trim();
+
+  const menuText =
+`🤖 Welcome 🙏
+SASIKUMAR AI
+
+🖼️ Logo: SASIKUMAR AI
+🌐 Website: https://sasikumar-ai-9wdq.onrender.com
+
+🎁 Visit Bonus • ▶️ Continue
+Website: https://sasikumar-ai-9wdq.onrender.com
+
+🌍 MULTI-LANGUAGE AI
+Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada • Bengali • Marathi • Gujarati • Punjabi • Urdu • Odia • Assamese • More Languages
+
+1️⃣ Gold Rate
+2️⃣ Gold Loan / EMI
+3️⃣ Banking
+4️⃣ Gold Expert
+5️⃣ Appraisal
+6️⃣ Education
+7️⃣ Jobs
+8️⃣ Business / Tech News
+9️⃣ General AI
+🔟 🚨 Breaking News
+1️⃣1️⃣ 💼 Business News
+1️⃣2️⃣ 🏏 Sports
+1️⃣3️⃣ 🔎 Web Search
+1️⃣4️⃣ 🎨 Poster / Creative
+1️⃣5️⃣ 📸 Image AI
+1️⃣6️⃣ 🎬 Video Maker
+1️⃣7️⃣ 📞 Contact / Communication
+1️⃣8️⃣ ⭐ Feedback
+1️⃣9️⃣ ℹ️ About SASIKUMAR AI
+
+🗣️ Any Language — Ask Freely
+
+ஒரு option number அனுப்புங்கள்.
+உதாரணம்: 1
+
+அல்லது எந்த மொழியிலும் உங்கள் கேள்வியை நேரடியாக அனுப்பலாம்.
+
+— SASIKUMAR AI`;
+
+  const menuTriggers=["hi","hello","hai","வணக்கம்","menu","start","help","மெனு","continue"];
+  const prompts={
+   "1":"Help the user check the latest available gold rate for their location. State date and source; never invent live prices.",
+   "2":"Explain gold loans, eligibility, interest and EMI. Ask for necessary details and avoid promising loan approval.",
+   "3":"Help with general banking services and safe banking practices. Never ask for PIN, OTP or passwords.",
+   "4":"Help with gold purity, karat conversion, hallmark and gold testing.",
+   "5":"Help prepare a gold appraisal report. Ask for weight, purity, rate and required details; never invent measurements.",
+   "6":"Help with education and explain the subject in the language the user uses.",
+   "7":"Help with job searches and explain how to verify job notices. Do not invent vacancies.",
+   "8":"Help with business and technology news. Clearly state dates and sources when available.",
+   "9":"You are SASIKUMAR AI. Answer the user's question clearly in their language.",
+   "10":"Help the user find the latest breaking news. Use verified recent information and provide dates and sources when available.",
+   "11":"Help the user find recent business news using verified information and dates/sources.",
+   "12":"Help with sports news, fixtures and results. Verify current details when possible.",
+   "13":"Help answer the user's question using web search. Provide source names and links when available; do not pretend to have searched if you have not.",
+   "14":"Help the user create a poster or creative design. Ask for topic, language and preferred text. Explain that they can use the SASIKUMAR AI website for creative tools.",
+   "15":"Help the user create an image. Ask what image they want and guide them to the Image Maker on https://sasikumar-ai-9wdq.onrender.com/ai-image.html. Do not claim an image was generated unless it actually was.",
+   "16":"Help the user plan a video and guide them to https://sasikumar-ai-9wdq.onrender.com/daily-video.html. Do not claim a video was generated unless it actually was.",
+   "17":"Help the user find SASIKUMAR AI contact and communication options. Website: https://sasikumar-ai-9wdq.onrender.com",
+   "18":"Ask the user for their feedback or suggestions about SASIKUMAR AI and help them phrase it clearly.",
+   "19":"Explain SASIKUMAR AI and its available services. Website: https://sasikumar-ai-9wdq.onrender.com"
+  };
+
+  add(from,"user",txt);
+
+  if(menuTriggers.includes(normalized)){
+    const sent=await sendWA(from,pid,{type:"text",text:{body:menuText}});
+    if(sent) add(from,"assistant",menuText);
+    res.sendStatus(200);
+    return;
+  }
+
+  const match=normalized.match(/^(?:option[\s_-]*)?(19|1[0-8]|[1-9])$/);
+  const option=match ? match[1] : null;
+  const prompt=option ? prompts[option] : txt;
+
+  let ans=await groqAI(prompt,from);
+  if(!ans) ans=await globalKnowledge(prompt);
+  if(!ans) ans=smartAI(prompt);
+
+  const sent=await sendWA(from,pid,{type:"text",text:{body:String(ans).slice(0,3500)}});
+  if(sent) add(from,"assistant",ans);
+  res.sendStatus(200);
  }catch(e){
-  console.error("[WhatsApp] Webhook processing failed:", e.message);
+  console.error("[WhatsApp] Webhook processing failed:",e.message);
   if(!res.headersSent) res.sendStatus(200);
-}
+ }
 });
 app.get('*',(q,r)=>r.sendFile(path.join(__dirname,'public','index.html')));
 app.listen(process.env.PORT||10000,()=>console.log("GLOBAL API FIXED"));
