@@ -87,13 +87,20 @@ function tamilHistoryAnswer(q) {
 // WEB API - THIS FIXES YOUR SCREENSHOT ERROR
 app.post('/api/chat', async(req,res)=>{
  try{
-  const {message, category} = req.body;
-  const txt = message || category || "hi";
-  const uid="web-user";
-  add(uid,"user",txt);
+  const {message, category, conversationId} = req.body || {};
+  const txt = String(message || category || "hi").slice(0,12000);
+  const safeId = String(conversationId || "")
+    .replace(/[^a-zA-Z0-9_-]/g, "")
+    .slice(0,80);
+  const uid = safeId
+    ? "web:" + safeId
+    : "web:oneoff:" + Date.now() + ":" + Math.random().toString(36).slice(2);
+
   let ans = tamilHistoryAnswer(txt) || await groqAI(txt,uid);
   if(!ans) ans = await globalKnowledge(txt);
   if(!ans) ans = smartAI(txt);
+
+  add(uid,"user",txt);
   add(uid,"assistant",ans);
   res.json({reply:ans, status:"ok", ai: GROQ? "Groq LIVE" : "Offline Smart"});
  }catch(e){console.error(e); res.json({reply:"Error Sir, try again!", status:"error"});}

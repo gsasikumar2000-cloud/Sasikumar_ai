@@ -1754,12 +1754,24 @@ async function send(){
   sendBtn.innerText="…";
 
   try{
+    const conversationId = (() => {
+      let id = sessionStorage.getItem("sasikumarConversationId");
+      if (!id) {
+        id = (crypto.randomUUID
+          ? crypto.randomUUID()
+          : "sk-" + Date.now() + "-" + Math.random().toString(36).slice(2));
+        sessionStorage.setItem("sasikumarConversationId", id);
+      }
+      return id;
+    })();
+
     const r=await fetch("/api/chat",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({
         message,
-        attachment
+        attachment,
+        conversationId
       })
     });
 
