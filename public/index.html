@@ -1716,57 +1716,56 @@ function skAIQuick(message){
   send();
 }
 
+let skSending = false;
+
 async function send(){
-  const message=q.value.trim();
+  if (skSending) return;
 
-  if(!message && !replyAttachment)return;
+  const message = q.value.trim();
+  if (!message && !replyAttachment) return;
 
-  let attachment=null;
+  skSending = true;
+  let attachment = null;
 
-  if(replyAttachment){
-    if(replyAttachment.size > 10 * 1024 * 1024){
-      alert("📎 File size 10 MB-க்கு மேல் இருக்கக்கூடாது.");
-      return;
+  try {
+    if (replyAttachment) {
+      if (replyAttachment.size > 10 * 1024 * 1024) {
+        alert("📎 File size 10 MB-க்கு மேல் இருக்கக்கூடாது.");
+        return;
+      }
+
+      attachment = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const result = String(reader.result || "");
+          const comma = result.indexOf(",");
+          resolve({
+            data: comma >= 0 ? result.slice(comma + 1) : result,
+            type: replyAttachment.type || "application/octet-stream",
+            name: replyAttachment.name
+          });
+        };
+        reader.onerror = () => reject(new Error("File read failed"));
+        reader.readAsDataURL(replyAttachment);
+      });
     }
 
-    attachment=await new Promise((resolve,reject)=>{
-      const reader=new FileReader();
+    const userText = message
+      ? "👤 " + escapeHtml(message)
+      : "👤 📎 " + escapeHtml(replyAttachment.name);
 
-      reader.onload=()=>{
-        const result=String(reader.result||"");
-        const comma=result.indexOf(",");
+    chat.innerHTML += '<div class="msg user">' + userText + '</div>';
+    q.value = "";
 
-        resolve({
-          data:comma>=0 ? result.slice(comma+1) : result,
-          type:replyAttachment.type || "application/octet-stream",
-          name:replyAttachment.name
-        });
-      };
+    const loading = document.createElement("div");
+    loading.className = "msg ai";
+    loading.innerText = "🤖 பதில் எழுதுகிறது...";
+    chat.appendChild(loading);
+    bottomChat();
 
-      reader.onerror=()=>reject(new Error("File read failed"));
-      reader.readAsDataURL(replyAttachment);
-    });
-  }
+    sendBtn.disabled = true;
+    sendBtn.innerText = "…";
 
-  const userText=message
-    ? "👤 "+escapeHtml(message)
-    : "👤 📎 "+escapeHtml(replyAttachment.name);
-
-  chat.innerHTML+='<div class="msg user">'+userText+'</div>';
-
-  q.value="";
-
-  const loading=document.createElement("div");
-  loading.className="msg ai";
-  loading.innerText="🤖 பதில் எழுதுகிறது...";
-  chat.appendChild(loading);
-
-  bottomChat();
-
-  sendBtn.disabled=true;
-  sendBtn.innerText="…";
-
-  try{
     const conversationId = (() => {
       let id = sessionStorage.getItem("sasikumarConversationId");
       if (!id) {
@@ -1778,40 +1777,55 @@ async function send(){
       return id;
     })();
 
-    const r=await fetch("/api/chat",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        message,
-        attachment,
-        conversationId
-      })
-    });
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 90000);
 
-    if(!r.ok)throw new Error("HTTP "+r.status);
-
-    const d=await r.json();
-
-    loading.innerText=d.reply
-      ?"🤖 "+d.reply
-      :"❌ பதில் கிடைக்கவில்லை.";
-
-    if(d.reply && voiceEnabled && typeof speakTamil==="function"){
-      speakTamil(String(d.reply).replace(/^🤖\s*/,""));
+    let r;
+    try {
+      r = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message, attachment, conversationId }),
+        signal: controller.signal
+      });
+    } finally {
+      clearTimeout(timer);
     }
 
-    if(replyAttachment){
+    if (!r.ok) throw new Error("HTTP " + r.status);
+
+    const d = await r.json();
+    if (!d.reply) throw new Error("Empty AI reply");
+
+    loading.innerText = "🤖 " + d.reply;
+
+    if (voiceEnabled && typeof speakTamil === "function") {
+      speakTamil(String(d.reply).replace(/^🤖\s*/, ""));
+    }
+
+    if (replyAttachment && typeof removeReplyAttachment === "function") {
       removeReplyAttachment();
     }
+  } catch (e) {
+    console.error("SASIKUMAR AI reply error:", e);
 
-  }catch(e){
-    console.error(e);
-    loading.innerText=
-      "❌ Server connection error.\\"+
-      "Server இயங்குகிறதா என்று பார்க்கவும்.";
-  }finally{
-    sendBtn.disabled=false;
-    sendBtn.innerText="Send";
+    const messageText = e.name === "AbortError"
+      ? "⏳ பதில் வர அதிக நேரமாகிறது. மீண்டும் முயற்சிக்கவும்."
+      : "🌐 இணைப்பில் சிக்கல் ஏற்பட்டது. இணையத்தைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.";
+
+    const last = chat.lastElementChild;
+    if (last && last.classList.contains("msg") && last.classList.contains("ai")) {
+      last.innerText = messageText;
+    } else {
+      const errorBox = document.createElement("div");
+      errorBox.className = "msg ai";
+      errorBox.innerText = messageText;
+      chat.appendChild(errorBox);
+    }
+  } finally {
+    skSending = false;
+    sendBtn.disabled = false;
+    sendBtn.innerText = "Send";
     bottomChat();
   }
 }
@@ -3083,74 +3097,8 @@ function printAppraisalReport(btn){
     "<meta name='viewport' content='width=device-width,initial-scale=1'>" +
     "<title>SASIKUMAR AI - Appraisal Report</title>" +
     "<style>body{font-family:Arial,sans-serif;margin:20px;color:#111;background:#fff}.report-box{max-width:850px;margin:auto}</style>" +
-    "
-<style id="skGlobalFontColorTheme">
-:root {
-  --sk-text: #172554;
-  --sk-heading: #075985;
-  --sk-accent: #2563eb;
-  --sk-border: #bfdbfe;
-  --sk-card-bg: #ffffff;
-}
-html { font-size: 16px; }
-body {
-  color: var(--sk-text);
-  font-size: 16px;
-  line-height: 1.6;
-}
-h1, h2, h3, h4, h5, h6,
-.dash-title, .section-title {
-  color: var(--sk-heading);
-  line-height: 1.35;
-}
-h1 { font-size: clamp(1.5rem, 4vw, 2.1rem); }
-h2 { font-size: clamp(1.3rem, 3.5vw, 1.75rem); }
-h3 { font-size: clamp(1.1rem, 3vw, 1.4rem); }
-p, label, li { font-size: 1rem; }
-small, .small, .hint, .subtitle { font-size: .875rem; }
-button, .btn, input, select, textarea {
-  font-family: inherit;
-  font-size: 1rem;
-}
-button, .btn {
-  line-height: 1.4;
-  transition: filter .2s ease, transform .2s ease;
-}
-button:hover, .btn:hover { filter: brightness(.96); }
-button:focus-visible, a:focus-visible,
-input:focus-visible, select:focus-visible,
-textarea:focus-visible {
-  outline: 3px solid #60a5fa;
-  outline-offset: 2px;
-}
-a { color: #1d4ed8; }
-.card, .service-card, .dashboard-card {
-  border-color: var(--sk-border);
-}
-#skReplyToolsBar button {
-  font-size: .9rem;
-  font-weight: 600;
-}
-@media (max-width: 600px) {
-  html { font-size: 15px; }
-  body { font-size: 15px; }
-  h1 { font-size: 1.5rem; }
-  h2 { font-size: 1.3rem; }
-  h3 { font-size: 1.1rem; }
-  button, .btn, input, select, textarea {
-    font-size: 16px;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    scroll-behavior: auto !important;
-    transition-duration: .01ms !important;
-  }
-}
-</style>
-
-</head><body>" + el.outerHTML + "</body></html>"
-  );
+    "</head><body>" + el.outerHTML + "</body></html>"
+);
   w.document.close();
   setTimeout(function(){ try{ w.print(); }catch(e){} },700);
 }
