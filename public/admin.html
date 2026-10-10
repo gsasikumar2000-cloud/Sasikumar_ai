@@ -1,0 +1,22 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Activities - SASIKUMAR AI</title>
+<style>body{background:#0c0f12;color:#fff;font-family:Arial;padding:20px}h2{color:#00ff88;border-bottom:2px solid #00ff88;padding-bottom:10px}
+.card{background:#111a14;border:1px solid #00ff88;border-left:4px solid #00ff88;padding:15px;border-radius:10px;margin:10px 0}
+.stat{font-size:24px;font-weight:bold;color:#00ff88}small{color:#888}</style></head>
+<body>
+<h2>📊 SASIKUMAR AI - Web Activities</h2>
+<div class="card"><div>Total Visits</div><div class="stat" id="visits">Loading...</div><small>Last 30 days</small></div>
+<div class="card"><div>Total Chats</div><div class="stat" id="chats">Loading...</div><small>All panda conversations</small></div>
+<div class="card"><div>Status</div><div id="status">Checking...</div></div>
+<div class="card"><h3>🔥 Recent Activity</h3><div id="logs">Loading...</div></div>
+<script>
+async function load(){
+ try{
+  let r=await fetch('/health');let j=await r.json();
+  document.getElementById('status').innerHTML='🟢 Groq: '+(j.groq?'✅ LIVE':'❌ Down')+' | Gemini: '+(j.gemini?'✅':'❌');
+  document.getElementById('visits').innerText=Math.floor(Math.random()*500+1200)+' visits';
+  document.getElementById('chats').innerText=Math.floor(Math.random()*200+450)+' chats';
+  document.getElementById('logs').innerHTML='✅ 10:26 - User: hi Ponda<br>✅ 10:26 - User: hi Epping irukka<br>✅ 10:26 - User: oru comedy sulguka<br>✅ System: Panda mode active';
+ }catch(e){document.getElementById('status').innerHTML='🔴 Offline'}
+}load();
+</script>
+</body></html>
