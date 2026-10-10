@@ -415,7 +415,7 @@ text-decoration:none !important;
 
   <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px;">
     <button type="button"
-      onclick="if(window.askAI){askAI(document.getElementById('saiReplyInput').value)}else{document.getElementById('globalSearchInput')?.focus()}"
+      onclick="document.getElementById('q').value=document.getElementById('saiReplyInput').value.trim();if(document.getElementById('q').value){send();}"
       style="padding:12px 22px;border:0;border-radius:24px;background:#2563eb;color:#fff;font-weight:800;cursor:pointer;">
       🤖 GO / Enter
     </button>
