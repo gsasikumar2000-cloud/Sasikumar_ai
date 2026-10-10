@@ -1533,6 +1533,16 @@ Tamil + English • Gold • General Q&A • Web Search</div>
 </div>
 
 <div class="input-area">
+
+<div id="skReplyToolsBar" style="display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin:8px 0;padding:9px;border:1px solid #cbd5e1;border-radius:14px;background:linear-gradient(135deg,#eff6ff,#f0fdfa);">
+  <button type="button" onclick="const q=document.getElementById('q');if(q){const t=q.value; if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(()=>{q.value='';q.focus();}).catch(()=>alert('Cut permission unavailable. Select and cut the text manually.'));}else{q.select();alert('Please cut the selected text manually.');}}" style="padding:8px 11px;border:0;border-radius:10px;background:#dbeafe;">✂️ Cut</button>
+  <button type="button" onclick="const q=document.getElementById('q');if(q&&navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(q.value).catch(()=>alert('Copy permission unavailable.'));}else if(q){q.select();alert('Please copy the selected text manually.');}" style="padding:8px 11px;border:0;border-radius:10px;background:#dbeafe;">📋 Copy</button>
+  <button type="button" onclick="const q=document.getElementById('q');if(q&&navigator.clipboard&&navigator.clipboard.readText){navigator.clipboard.readText().then(t=>{q.value+=t;q.dispatchEvent(new Event('input',{bubbles:true}));q.focus();}).catch(()=>alert('Paste permission unavailable. Long-press the reply box and select Paste.'));}else if(q){q.focus();alert('Long-press the reply box and select Paste.');}" style="padding:8px 11px;border:0;border-radius:10px;background:#dcfce7;">📥 Paste</button>
+  <button type="button" onclick="alert('⚡ Dual Tool');" style="padding:8px 11px;border:0;border-radius:10px;background:#fef3c7;">⚡ Dual</button>
+  <button type="button" onclick="if(typeof noteCamera==='function'){noteCamera();}else{alert('Camera tool unavailable');}" style="padding:8px 11px;border:0;border-radius:10px;background:#fce7f3;">📷 Camera</button>
+  <button type="button" onclick="if(typeof noteUpload==='function'){noteUpload();}else{alert('Upload tool unavailable');}" style="padding:8px 11px;border:0;border-radius:10px;background:#e0e7ff;">📁 Upload</button>
+  <button type="button" onclick="if(typeof startVoice==='function'){startVoice();}else{alert('Voice tool unavailable');}" style="padding:8px 11px;border:0;border-radius:10px;background:#ccfbf1;">🎤 Voice</button>
+</div>
 <div class="input-row">
 <textarea id="q" rows="2" placeholder="உங்கள் கேள்வியை எழுதுங்கள்..."></textarea>
 <button id="sendBtn" onclick="send()">Send</button>
@@ -2213,6 +2223,48 @@ const content =
   fillDistricts();
   districtBox.value = "Thanjavur";
 
+
+/* SASIKUMAR_GOLD_SILVER_AUTO_REFRESH */
+(function setupSasikumarRateAutoRefresh(){
+  if (window.__skRateAutoRefreshInstalled) return;
+  window.__skRateAutoRefreshInstalled = true;
+
+  let skRateRefreshTimer = null;
+
+  function skScheduleRateRefresh(){
+    if (skRateRefreshTimer) clearTimeout(skRateRefreshTimer);
+    if (document.hidden) return;
+
+    skRateRefreshTimer = setTimeout(async function(){
+      if (!document.hidden) {
+        const stateEl = document.getElementById("skState");
+        const districtEl = document.getElementById("skDistrict");
+        if (stateEl && districtEl && stateEl.value && districtEl.value &&
+            typeof window.skLoadRates === "function") {
+          try { await window.skLoadRates(); }
+          catch (error) { console.error("Gold/Silver auto-refresh failed:", error); }
+        }
+      }
+      skScheduleRateRefresh();
+    }, 5 * 60 * 1000);
+  }
+
+  document.addEventListener("visibilitychange", function(){
+    if (document.hidden) {
+      if (skRateRefreshTimer) clearTimeout(skRateRefreshTimer);
+      skRateRefreshTimer = null;
+    } else {
+      skScheduleRateRefresh();
+    }
+  });
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", skScheduleRateRefresh, {once:true});
+  } else {
+    skScheduleRateRefresh();
+  }
+})();
+
 function liveGoldRate(){
   const target = document.getElementById("skGoldApp");
   if (target) {
@@ -2265,22 +2317,44 @@ async function skLoadRates(){
       "&district=" +
       encodeURIComponent(district);
 
-    const [gr,sr] =
-      await Promise.all([
-        fetch(goldURL),
-        fetch(silverURL)
-      ]);
+    const [goldFetch, silverFetch] = await Promise.allSettled([
+  fetch(goldURL, { headers: { Accept: "application/json" } }),
+  fetch(silverURL, { headers: { Accept: "application/json" } })
+]);
 
-    const gold = await gr.json();
-    const silver = await sr.json();
+async function skReadRateResponse(response, label) {
+  const raw = await response.text();
+  let data;
 
-    if(!gold.ok)
-      throw new Error("Gold API error");
+  try {
+    data = JSON.parse(raw);
+  } catch (e) {
+    throw new Error(label + " API returned invalid JSON (HTTP " + response.status + ")");
+  }
 
-    if(!silver.ok)
-      throw new Error("Silver API error");
+  if (!response.ok) {
+    throw new Error(label + " API HTTP " + response.status + ": " + (data.reply || "Request failed"));
+  }
 
-    const money = n =>
+  return data;
+}
+
+if (goldFetch.status !== "fulfilled") {
+  throw new Error("Gold API network error: " + goldFetch.reason);
+}
+const gold = await skReadRateResponse(goldFetch.value, "Gold");
+
+let silver = null;
+try {
+  if (silverFetch.status !== "fulfilled") {
+    throw silverFetch.reason;
+  }
+  silver = await skReadRateResponse(silverFetch.value, "Silver");
+} catch (silverError) {
+  console.error("Silver rate unavailable:", silverError);
+}
+
+const money = n =>
       Number(n || 0).toLocaleString("en-IN");
 
     const money2 = n =>
@@ -2331,30 +2405,21 @@ async function skLoadRates(){
         <div class="skCard silverCard">
           <div>⚪</div>
           <small>1 GRAM</small>
-          <strong>₹${money2(
-            silver.price_gram_999 ||
-            silver.silver?.gram
-          )}</strong>
+          <strong>${silver ? "₹" + money2(silver.price_gram_999 || silver.silver?.gram) : "Unavailable"}</strong>
           <span>999 Silver</span>
         </div>
 
         <div class="skCard silverCard">
           <div>⚪</div>
           <small>10 GRAMS</small>
-          <strong>₹${money2(
-            silver.price_10g_999 ||
-            silver.silver?.tenGram
-          )}</strong>
+          <strong>${silver ? "₹" + money2(silver.price_10g_999 || silver.silver?.tenGram) : "Unavailable"}</strong>
           <span>999 Silver</span>
         </div>
 
         <div class="skCard silverCard">
           <div>⚪</div>
           <small>1 KG</small>
-          <strong>₹${money(
-            silver.price_kg_999 ||
-            silver.silver?.kg
-          )}</strong>
+          <strong>${silver ? "₹" + money(silver.price_kg_999 || silver.silver?.kg) : "Unavailable"}</strong>
           <span>999 Silver</span>
         </div>
 
@@ -2387,29 +2452,103 @@ async function skLoadRates(){
 }
 
 
+window.skLoadRates = skLoadRates;
+
 function skShowPoster(state,district){
-
-  const box =
-    document.getElementById("skPoster");
-
+  const box = document.getElementById("skPoster");
   if(!box) return;
 
   box.innerHTML = `
     <div class="skPosterCard">
-
-      <h3>🖼️ Daily Live Poster</h3>
-
+      <h3>🖼️ SASIKUMAR AI — Daily Gold & Silver</h3>
       <p>🇮🇳 ${state} → ${district}</p>
-
-      <img
-        src="/daily-gold-poster.svg?t=${Date.now()}"
-        alt="SASIKUMAR AI Daily Gold Silver Poster"
-      >
-
+      <p>⏳ Loading current rates...</p>
     </div>
   `;
-}
 
+  const qs = "?state=" + encodeURIComponent(state) +
+             "&district=" + encodeURIComponent(district);
+
+  async function readRate(response, label){
+    const body = await response.text();
+    let data;
+
+    try {
+      data = JSON.parse(body);
+    } catch(e) {
+      throw new Error(
+        label + " API returned invalid JSON (HTTP " +
+        response.status + "). Please retry."
+      );
+    }
+
+    if(!response.ok || !data || data.ok === false){
+      throw new Error(
+        (data && (data.reply || data.error || data.message)) ||
+        label + " rate unavailable (HTTP " + response.status + ")"
+      );
+    }
+
+    return data;
+  }
+
+  Promise.all([
+    fetch("/api/gold-rate" + qs, {
+      headers: { "Accept": "application/json" }
+    }),
+    fetch("/api/silver-rate" + qs, {
+      headers: { "Accept": "application/json" }
+    })
+  ])
+  .then(async responses => {
+    const gold = await readRate(responses[0], "Gold");
+    const silver = await readRate(responses[1], "Silver");
+
+    if(!gold.rates || !gold.rates8g){
+      throw new Error("Gold API response is missing rate data.");
+    }
+
+    const money = n => {
+      const value = Number(n);
+      return Number.isFinite(value)
+        ? value.toLocaleString("en-IN", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          })
+        : "Unavailable";
+    };
+
+    box.innerHTML = `
+      <div class="skPosterCard" style="padding:18px;border:2px solid #d4af37;border-radius:16px;background:linear-gradient(135deg,#fffdf3,#edf8ff);color:#222;text-align:center;overflow-wrap:anywhere">
+        <h3>🇮🇳 SASIKUMAR AI</h3>
+        <h3>🟨 LIVE GOLD & ⚪ SILVER 999</h3>
+        <p><b>${state} → ${district}</b></p>
+        <hr>
+        <p>🟨 24K Gold / 1 gram<br><strong>₹${money(gold.rates["24K"])}</strong></p>
+        <p>🟨 22K Gold / 1 gram<br><strong>₹${money(gold.rates["22K"])}</strong></p>
+        <p>🟨 22K Gold / 8 grams<br><strong>₹${money(gold.rates8g["22K"])}</strong></p>
+        <hr>
+        <p>⚪ Silver 999 / 1 gram<br><strong>₹${money(silver.price_gram_999)}</strong></p>
+        <p>⚪ Silver 999 / 10 grams<br><strong>₹${money(silver.price_10g_999)}</strong></p>
+        <p>⚪ Silver 999 / 1 kg<br><strong>₹${money(silver.price_kg_999)}</strong></p>
+        <small>Source: OroPocket reference prices</small><br>
+        <small>Gold updated: ${gold.updatedAt || gold.date || "Latest API response"}</small><br>
+        <small>Silver updated: ${silver.updatedAt || "Latest API response"}</small><br>
+        <small>Jewellery/shop rates may differ.</small><br>
+        <button type="button" onclick="window.print()" style="margin-top:12px;padding:10px 18px;border-radius:8px">🖨️ Print / Save PDF</button>
+      </div>
+    `;
+  })
+  .catch(error => {
+    console.error("Daily poster error:", error);
+    box.innerHTML = `
+      <div class="skError">
+        ❌ Live poster unavailable
+        <small>${String(error.message || "Rate API error")}</small>
+      </div>
+    `;
+  });
+}
 
 document.addEventListener("DOMContentLoaded",()=>{const b=document.getElementById("bankingServicesBtn");if(b)b.addEventListener("click",bankingServices);});
 
@@ -3218,6 +3357,9 @@ function goldReport(){
 
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:15px;">
       <button type="button" class="loan-calc" onclick="printAppraisalReport('${id}')">🖨️ PRINT / PDF</button>
+      <button type="button" class="loan-calc" onclick="saveAppraisalReport('${id}')">💾 SAVE REPORT</button>
+      <button type="button" class="loan-calc" onclick="showSavedAppraisalReports('${id}')">📂 SAVED REPORTS</button>
+      <div id="arSavedList${id}" style="width:100%;margin-top:10px"></div>
       <button type="button" class="loan-calc" onclick="location.reload()">↩️ RETURN MAIN</button>
     </div>
 
@@ -3269,6 +3411,7 @@ function goldReport(){
 }
 
 function printAppraisalReport(id){
+  id = (id && id.dataset && id.dataset.id) ? id.dataset.id : id;
   const el=document.getElementById("appraisalReport"+id);
   if(!el){ alert("Appraisal Report not found."); return; }
 
@@ -3292,6 +3435,174 @@ function printAppraisalReport(id){
   w.focus();
   setTimeout(()=>{try{w.print()}catch(e){}},700);
 }
+
+
+const SK_APPRAISAL_STORAGE_KEY = "sasikumarAppraisalReports";
+const SK_APPRAISAL_MAX_AGE = 30 * 24 * 60 * 60 * 1000;
+
+function skGetAppraisalReports() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(SK_APPRAISAL_STORAGE_KEY) || "[]");
+    const now = Date.now();
+    const valid = Array.isArray(raw)
+      ? raw.filter(r => r && r.id && r.createdAt &&
+          now - Number(r.createdAt) < SK_APPRAISAL_MAX_AGE &&
+          Number(r.createdAt) <= now)
+      : [];
+    localStorage.setItem(SK_APPRAISAL_STORAGE_KEY, JSON.stringify(valid));
+    return valid;
+  } catch (e) {
+    console.error("Appraisal storage read failed:", e);
+    return [];
+  }
+}
+
+function saveAppraisalReport(id) {
+  const root = document.getElementById("appraisalReport" + id);
+  if (!root) {
+    alert("Appraisal Report not found.");
+    return;
+  }
+
+  const get = name => root.querySelector("#" + name + id);
+  const image = root.querySelector("#arPreview" + id + " img");
+
+  const report = {
+    id: String(Date.now()) + String(Math.floor(Math.random() * 1000)),
+    createdAt: Date.now(),
+    customer: get("arName")?.value || "",
+    phone: get("arPhone")?.value || "",
+    gross: get("arGross")?.value || "",
+    stone: get("arStone")?.value || "0",
+    net: get("arNet")?.value || "",
+    karat: get("arKarat")?.value || "22",
+    rate: get("arRate")?.value || "",
+    value: get("arValue")?.value || "",
+    remarks: get("arRemarks")?.value || "",
+    image: image?.src || ""
+  };
+
+  try {
+    const reports = skGetAppraisalReports();
+    reports.push(report);
+    localStorage.setItem(SK_APPRAISAL_STORAGE_KEY, JSON.stringify(reports));
+    alert("✅ Appraisal Report saved on this device. It will expire after 30 days.");
+    showSavedAppraisalReports(id);
+  } catch (e) {
+    alert("Unable to save. Device storage may be full, especially if the report includes a large image.");
+    console.error("Appraisal save failed:", e);
+  }
+}
+
+function showSavedAppraisalReports(id) {
+  const container = document.getElementById("arSavedList" + id);
+  if (!container) {
+    alert("Saved Reports area not found.");
+    return;
+  }
+
+  container.replaceChildren();
+  const reports = skGetAppraisalReports();
+  const heading = document.createElement("h3");
+  heading.textContent = "📂 SAVED APPRAISAL REPORTS";
+  container.appendChild(heading);
+
+  if (!reports.length) {
+    const empty = document.createElement("p");
+    empty.textContent = "No saved reports. Save a report first.";
+    container.appendChild(empty);
+    return;
+  }
+
+  reports.sort((a, b) => Number(b.createdAt) - Number(a.createdAt));
+
+  reports.forEach(report => {
+    const row = document.createElement("div");
+    row.style.cssText = "padding:10px;margin:8px 0;border:1px solid #bbb;border-radius:8px;background:#fff;color:#111";
+
+    const label = document.createElement("div");
+    label.textContent =
+      (report.customer || "Unnamed customer") + " • " +
+      (report.karat || "22") + "K • " +
+      new Date(Number(report.createdAt)).toLocaleString();
+    row.appendChild(label);
+
+    const open = document.createElement("button");
+    open.type = "button";
+    open.className = "loan-calc";
+    open.textContent = "📄 OPEN REPORT";
+    open.addEventListener("click", () => loadAppraisalReport(report.id));
+    row.appendChild(open);
+
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "loan-calc";
+    remove.textContent = "🗑️ DELETE";
+    remove.addEventListener("click", () => {
+      if (!confirm("Delete this saved appraisal report?")) return;
+      const remaining = skGetAppraisalReports().filter(r => r.id !== report.id);
+      localStorage.setItem(SK_APPRAISAL_STORAGE_KEY, JSON.stringify(remaining));
+      showSavedAppraisalReports(id);
+    });
+    row.appendChild(remove);
+    container.appendChild(row);
+  });
+}
+
+function loadAppraisalReport(savedId) {
+  const report = skGetAppraisalReports().find(r => r.id === savedId);
+  if (!report) {
+    alert("This saved report has expired or was deleted.");
+    return;
+  }
+
+  goldReport();
+
+  const boxes = document.querySelectorAll('.report-box[id^="appraisalReport"]');
+  const root = boxes[boxes.length - 1];
+  if (!root) {
+    alert("Unable to open a new appraisal report.");
+    return;
+  }
+
+  const id = root.id.substring("appraisalReport".length);
+  const set = (name, value) => {
+    const field = root.querySelector("#" + name + id);
+    if (field) {
+      field.value = value == null ? "" : value;
+      field.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+  };
+
+  set("arName", report.customer);
+  set("arPhone", report.phone);
+  set("arGross", report.gross);
+  set("arStone", report.stone);
+  set("arKarat", report.karat);
+  set("arRate", report.rate);
+  set("arRemarks", report.remarks);
+
+  if (report.image && report.image.startsWith("data:image/")) {
+    const preview = root.querySelector("#arPreview" + id);
+    if (preview) {
+      const img = document.createElement("img");
+      img.src = report.image;
+      img.alt = "Saved gold image";
+      img.style.cssText = "max-width:100%;max-height:300px;object-fit:contain";
+      preview.replaceChildren(img);
+    }
+  }
+
+  root.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function cleanupExpiredAppraisalReports() {
+  skGetAppraisalReports();
+}
+
+cleanupExpiredAppraisalReports();
+setInterval(cleanupExpiredAppraisalReports, 60 * 60 * 1000);
+
 
 function openEducationFolder(){
   const oldBox = document.getElementById("sasikumarEducationPanel");
@@ -4754,5 +5065,75 @@ else skRefreshPay2AllWallet();
   object-fit:contain!important;
 }
 </style>
+
+<!-- SASIKUMAR AI APPRAISER MOBILE FIX -->
+<style>
+.report-box {
+  width: 100%;
+  max-width: 850px;
+  margin: 12px auto;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+}
+.report-box table {
+  width: 100%;
+  max-width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.report-box th,
+.report-box td {
+  padding: 8px;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+.report-box input,
+.report-box select,
+.report-box textarea {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+.report-box img {
+  max-width: 100%;
+  height: auto;
+}
+@media (max-width: 600px) {
+  .report-box {
+    padding: 10px !important;
+    border-radius: 12px;
+  }
+  .report-box table,
+  .report-box tbody,
+  .report-box tr {
+    width: 100%;
+    max-width: 100%;
+  }
+  .report-box td,
+  .report-box th {
+    padding: 6px 4px;
+    font-size: 13px;
+  }
+  .report-box td:first-child {
+    width: 38%;
+  }
+  .report-box td:last-child {
+    width: 62%;
+  }
+  .report-box input,
+  .report-box select,
+  .report-box textarea {
+    font-size: 16px;
+  }
+  .report-box button {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    margin: 4px 2px;
+  }
+}
+</style>
+
 </body>
 </html>
