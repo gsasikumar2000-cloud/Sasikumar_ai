@@ -460,7 +460,7 @@ text-decoration:none !important;
     <button type="button" onclick="alert('All Model')">🤖 All Model</button>
     <button type="button" onclick="document.execCommand('cut')">✂️ Cut</button>
     <button type="button" onclick="document.execCommand('copy')">📋 Copy</button>
-    <button type="button" onclick="navigator.clipboard?.readText().then(t=>{document.getElementById('saiReplyInput').value=t})">📥 Paste</button>
+    <button type="button" onclick="navigator.clipboard?.readText().then(t=>{const q=document.getElementById('q');if(q){q.value=t;q.dispatchEvent(new Event('input',{bubbles:true}));q.focus();}}).catch(()=>alert('Paste permission unavailable. Long-press the reply box and select Paste.'))">📥 Paste</button>
     <button type="button" onclick="alert('Dual Tool')">⚡ Dual</button>
     <button type="button" onclick="document.getElementById('skCameraInput').click()">📷 Camera</button>
     <button type="button" onclick="document.getElementById('skUploadInput').click()">📁 Upload</button>
@@ -471,7 +471,7 @@ text-decoration:none !important;
 </div>
 <!-- END SASIKUMAR AI FIRST PAGE TOOLS -->
 <!-- SASIKUMAR AI FIRST PAGE WEB SEARCH -->
-<div id="skFirstPageWebSearch" style="display:none!important" style="width:100%;max-width:900px;margin:14px auto;padding:14px;box-sizing:border-box;">
+<div id="skFirstPageWebSearch" style="display:none!important;width:100%;max-width:900px;margin:14px auto;padding:14px;box-sizing:border-box;">
   <div style="text-align:center;">
     <img src="/assets/sasikumar-ai-logo.png?v=20261006"
          alt="SASIKUMAR AI"
@@ -505,7 +505,7 @@ text-decoration:none !important;
     Ask SASIKUMAR AI for a reply anytime.
   </p>
   <button type="button"
-          onclick="document.getElementById('saiReplyInput')?.focus();document.getElementById('saiReplyInput')?.scrollIntoView({behavior:'smooth',block:'center'});"
+          onclick="document.getElementById('q')?.focus();document.getElementById('q')?.scrollIntoView({behavior:'smooth',block:'center'});"
           style="padding:12px 24px;border:0;border-radius:24px;background:#2563eb;color:#fff;font-weight:800;cursor:pointer;">
     🤖 Ask Anyway
   </button>
