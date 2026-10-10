@@ -755,8 +755,10 @@ document.getElementById("dailyScrollingMessage").style.background =
       font-weight:bold;
       cursor:pointer;
     ">
+    🔐 LOGIN
+  </button>
 
-    <button type="button" onclick="showSignupForm()" style="width:100%;margin-top:14px;padding:12px;border:0;border-radius:10px;background:#2563eb;color:#fff;font-weight:bold;cursor:pointer;">
+  <button type="button" onclick="showSignupForm()" style="width:100%;margin-top:14px;padding:12px;border:0;border-radius:10px;background:#2563eb;color:#fff;font-weight:bold;cursor:pointer;">
       🆕 USER SIGN UP
     </button>
 
@@ -770,11 +772,7 @@ document.getElementById("dailyScrollingMessage").style.background =
       <div id="signupMessage" style="margin-top:10px;min-height:22px;font-weight:bold;text-align:center;"></div>
     </div>
 
-
-      🔐 LOGIN
-    </button>
-
-    <div id="loginMessage"
+      <div id="loginMessage"
       style="margin-top:14px;min-height:22px;font-weight:bold;">
     </div>
 
@@ -1038,20 +1036,15 @@ function closeAdminControl(){
 </script>
 
 
-<div class="header">🤖 SASIKUMAR AI</div>
+<div class="header" style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+  <span>🤖 SASIKUMAR AI</span>
+  <button type="button" aria-label="Profile and Login" title="Profile / Login"
+    onclick="document.getElementById('sasikumarLoginScreen').style.display='flex'"
+    style="padding:7px 12px;border:1px solid #d4af37;border-radius:50%;background:#fff;color:#8a6500;font-size:21px;cursor:pointer;">👤</button>
+</div>
 
 <div class="status">🟢 Server Connected • AI Active</div>
 
-<div id="skFirstPageAccountButtons" style="width:100%;display:flex;gap:10px;justify-content:center;padding:4px 10px 16px;box-sizing:border-box;">
-  <button type="button" onclick="showSignupForm();document.getElementById('sasikumarLoginScreen').style.display='block';"
-    style="flex:1;max-width:180px;padding:12px;border:0;border-radius:12px;background:#2563eb;color:#fff;font-weight:800;font-size:15px;cursor:pointer;">
-    🆕 Sign Up
-  </button>
-  <button type="button" onclick="document.getElementById('sasikumarLoginScreen').style.display='block';"
-    style="flex:1;max-width:180px;padding:12px;border:0;border-radius:12px;background:#16a34a;color:#fff;font-weight:800;font-size:15px;cursor:pointer;">
-    🔐 Login
-  </button>
-</div>
 <div id="dashboard" class="dashboard" style="padding-top:20px;">
 
 <!-- SASIKUMAR AI — ALL CONTENT LIVE MIX -->
@@ -1566,7 +1559,7 @@ style="position:absolute;top:8px;right:8px;padding:9px 13px;border:0;border-radi
 </div><div style="font-size:18px;line-height:1.5;font-weight:600;">🤖 வணக்கம்! நான் SASIKUMAR AI.</div>
 
 எதையும் கேளுங்கள்.
-Tamil + English • Gold • General Q&A • Web Search</div>
+Tamil + English • Gold • General Q&A</div>
 </div>
 
 <div id="sasikumarAIReplySection" class="input-area">
