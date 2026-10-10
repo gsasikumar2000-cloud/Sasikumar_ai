@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI - Education A to Z</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#eef5ff;color:#17233b}
+header{background:linear-gradient(120deg,#123c8c,#087eaa);color:white;padding:22px 16px;text-align:center}
+header h1{margin:0 0 8px;font-size:25px}
+main{max-width:900px;margin:18px auto;padding:12px}
+.card{background:white;border-radius:16px;padding:17px;margin:12px 0;box-shadow:0 4px 16px #10204012}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:9px}
+button,select,textarea,input{font:inherit;border-radius:10px;padding:12px;border:1px solid #c8d5e8;width:100%}
+button{background:#1459b8;color:white;border:0;font-weight:bold;cursor:pointer}
+button:focus,input:focus,select:focus,textarea:focus{outline:2px solid #4b9cff}
+textarea{min-height:110px;resize:vertical}
+label{display:block;font-weight:bold;margin:12px 0 6px}
+#answer{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6}
+.small{font-size:13px;color:#53627a}
+a{color:#1459b8}
+</style>
+</head>
+<body>
+<header>
+<h1>📚 SASIKUMAR AI — Education A–Z</h1>
+<p>All Subjects • Exam Preparation • AI Tutor</p>
+</header>
+<main>
+<section class="card">
+<h2>🎯 Choose your learning area</h2>
+<div class="grid">
+<button type="button" data-topic="School education Classes 1 to 12">🏫 School 1–12</button>
+<button type="button" data-topic="College and higher education">🎓 College</button>
+<button type="button" data-topic="NEET medical entrance exam preparation">🧬 NEET</button>
+<button type="button" data-topic="JEE engineering entrance exam preparation">⚙️ JEE</button>
+<button type="button" data-topic="TNPSC Group 1, Group 2, Group 2A and Group 4 preparation">📝 TNPSC</button>
+<button type="button" data-topic="UPSC civil services exam preparation">🇮🇳 UPSC</button>
+<button type="button" data-topic="SSC exam preparation">📘 SSC</button>
+<button type="button" data-topic="Railway recruitment exam preparation">🚆 Railway</button>
+<button type="button" data-topic="Banking exams preparation">🏦 Banking</button>
+<button type="button" data-topic="TNUSRB Police recruitment exam preparation">👮 TNUSRB</button>
+<button type="button" data-topic="Teacher Eligibility Test TET preparation">🍎 TET</button>
+<button type="button" data-topic="Computer science and programming">💻 Computer</button>
+</div>
+</section>
+<section class="card">
+<h2>🤖 AI Tutor</h2>
+<label for="language">Answer language</label>
+<select id="language">
+<option value="Tamil">தமிழ்</option>
+<option value="English">English</option>
+<option value="Tanglish">Tanglish</option>
+</select>
+<label for="subject">Subject</label>
+<select id="subject">
+<option>Mathematics</option><option>Physics</option><option>Chemistry</option>
+<option>Biology</option><option>Tamil</option><option>English</option>
+<option>History</option><option>Geography</option><option>Economics</option>
+<option>Polity</option><option>General Science</option><option>Computer Science</option>
+<option>Current Affairs</option><option>Reasoning</option><option>General Knowledge</option>
+</select>
+<label for="mode">Learning mode</label>
+<select id="mode">
+<option value="Explain step by step with examples">📖 Learn a topic</option>
+<option value="Create 5 multiple-choice quiz questions with answer key and explanations">🧠 Quiz / MCQ</option>
+<option value="Create a practice mock test with questions, options, and a separate answer key">📝 Mock Test</option>
+<option value="Make concise revision notes and important concepts">📌 Revision Notes</option>
+<option value="Solve the question step by step and explain the method">➗ Solve a question</option>
+</select>
+<label for="question">Your topic or question</label>
+<textarea id="question" placeholder="உங்கள் பாடம் அல்லது கேள்வியை இங்கே எழுதுங்கள்..."></textarea>
+<button id="ask" type="button">✨ Ask SASIKUMAR AI</button>
+<p class="small">AI answers can contain mistakes. Verify important exam facts with official syllabus and notices.</p>
+</section>
+<section class="card" aria-live="polite">
+<h2>📘 AI Answer</h2>
+<div id="answer">Your learning answer will appear here.</div>
+</section>
+<section class="card">
+<h3>🔗 More Education Tools</h3>
+<p><a href="/education/qa.html">Open Education Q&amp;A</a></p>
+<p><a href="/education/equations.html">Open Equations &amp; Maths</a></p>
+<p><a href="/">Back to SASIKUMAR AI Homepage</a></p>
+</section>
+</main>
+<script>
+const question = document.getElementById("question");
+document.querySelectorAll("[data-topic]").forEach(button => {
+  button.addEventListener("click", () => {
+    question.value = button.dataset.topic + " — help me prepare with a clear study plan, important topics, and practice questions.";
+    question.focus();
+    document.getElementById("subject").value =
+      /NEET/.test(button.dataset.topic) ? "Biology" :
+      /JEE|Mathematics/.test(button.dataset.topic) ? "Mathematics" :
+      /TNPSC|UPSC|SSC|Railway|Banking|TNUSRB|TET/.test(button.dataset.topic) ? "General Knowledge" : "General Science";
+    document.getElementById("mode").value = "Explain step by step with examples";
+  });
+});
+document.getElementById("ask").addEventListener("click", async () => {
+  const q = question.value.trim();
+  const answer = document.getElementById("answer");
+  if (!q) {
+    answer.textContent = "Please enter a subject or question first.";
+    question.focus();
+    return;
+  }
+  const prompt = [
+    "You are SASIKUMAR AI Education Tutor.",
+    "Answer in " + document.getElementById("language").value + ".",
+    "Subject: " + document.getElementById("subject").value + ".",
+    "Task: " + document.getElementById("mode").value + ".",
+    "For exam preparation, explain concepts clearly and do not invent official exam dates, cutoffs, or syllabus changes.",
+    "Question: " + q
+  ].join("\n");
+  const button = document.getElementById("ask");
+  button.disabled = true;
+  button.textContent = "⏳ Please wait...";
+  answer.textContent = "SASIKUMAR AI is preparing your answer...";
+  try {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({message: prompt, question: prompt})
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Request failed");
+    const result = data.answer || data.reply || data.response || data.text || data.message;
+    answer.textContent = typeof result === "string" ? result : JSON.stringify(data, null, 2);
+  } catch (error) {
+    answer.textContent = "Could not get an AI answer. Please try again or use the main SASIKUMAR AI chat. Details: " + error.message;
+  } finally {
+    button.disabled = false;
+    button.textContent = "✨ Ask SASIKUMAR AI";
+  }
+});
+</script>
+</body>
+</html>
