@@ -2924,27 +2924,13 @@ function printAppraisalReport(btn){
     alert("Please allow pop-ups for SASIKUMAR AI");
     return;
   }
-  w.document.write("<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>SASIKUMAR AI - Appraisal Report</title><style>body{font-family:Arial,sans-serif;margin:20px;color:#111;background:#fff}.report-box{max-width:850px;margin:auto}</style>
-<style>
-/* SASIKUMAR AI SEARCH VISIBLE TOP FIX */
-#sasikumar-global-search {
-  display:block !important;
-  visibility:visible !important;
-  opacity:1 !important;
-  position:sticky !important;
-  top:0 !important;
-  z-index:99999 !important;
-  width:calc(100% - 24px) !important;
-  margin:8px auto 16px !important;
-  box-sizing:border-box !important;
-}
-#sasikumarGlobalSearchInput {
-  display:block !important;
-  visibility:visible !important;
-  opacity:1 !important;
-}
-</style>
-</head><body>" + el.outerHTML + "</body></html>");
+  w.document.write(
+    "<!doctype html><html><head><meta charset='utf-8'>" +
+    "<meta name='viewport' content='width=device-width,initial-scale=1'>" +
+    "<title>SASIKUMAR AI - Appraisal Report</title>" +
+    "<style>body{font-family:Arial,sans-serif;margin:20px;color:#111;background:#fff}.report-box{max-width:850px;margin:auto}</style>" +
+    "</head><body>" + el.outerHTML + "</body></html>"
+  );
   w.document.close();
   setTimeout(function(){ try{ w.print(); }catch(e){} },700);
 }
