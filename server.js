@@ -64,6 +64,70 @@ app.post('/api/chat', async(req,res)=>{
  }catch(e){console.error(e); res.json({reply:"Error Sir, try again!", status:"error"});}
 });
 
+
+// GLOBAL SEARCH API
+app.get('/api/global-search', async (req, res) => {
+  const q = String(req.query.q || '').trim();
+  if (!q) {
+    return res.status(400).json({ error: 'Please provide a search query using ?q=' });
+  }
+
+  try {
+    const key = process.env.TAVILY_API_KEY;
+    if (key) {
+      const response = await fetch('https://api.tavily.com/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          api_key: key,
+          query: q,
+          search_depth: 'basic',
+          max_results: 5
+        })
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        console.error('Tavily search failed:', response.status);
+        return res.status(502).json({ error: 'Search provider request failed' });
+      }
+
+      return res.json({
+        query: q,
+        results: (data.results || []).map(x => ({
+          title: x.title,
+          url: x.url,
+          content: x.content
+        }))
+      });
+    }
+
+    const response = await fetch(
+      'https://en.wikipedia.org/w/api.php?action=query&list=search&format=json&origin=*&srsearch=' +
+      encodeURIComponent(q),
+      { headers: { 'User-Agent': 'SasikumarAI/1.0' } }
+    );
+
+    if (!response.ok) {
+      return res.status(502).json({ error: 'Fallback search provider failed' });
+    }
+
+    const data = await response.json();
+    return res.json({
+      query: q,
+      provider: 'Wikipedia',
+      results: (data.query?.search || []).map(x => ({
+        title: x.title,
+        url: 'https://en.wikipedia.org/wiki/' + encodeURIComponent(x.title.replace(/ /g, '_')),
+        content: x.snippet.replace(/<[^>]*>/g, '')
+      }))
+    });
+  } catch (e) {
+    console.error('Global search error:', e.message);
+    return res.status(502).json({ error: 'Search temporarily unavailable' });
+  }
+});
+
 app.get('/api/status',(req,res)=>res.json({live:true, groq:!!GROQ, gemini:!!GROQ, users:mem.size}));
 
 async function sendWA(to,pid,pl){ if(!WATOKEN) return; await fetch(`https://graph.facebook.com/v20.0/${pid}/messages`,{method:"POST",headers:{Authorization:`Bearer ${WATOKEN}`,"Content-Type":"application/json"},body:JSON.stringify({messaging_product:"whatsapp",to,...pl})});}
