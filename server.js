@@ -566,8 +566,27 @@ Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada �
   add(from,"user",txt);
 
   if(menuTriggers.includes(normalized)){
-    const sent=await sendWA(from,pid,{type:"text",text:{body:menuText}});
-    if(sent) add(from,"assistant",menuText);
+    const logoUrl = "https://sasikumar-ai-9wdq.onrender.com/assets/sasikumar-ai-logo.png";
+
+    // Send the actual logo image with a short welcome caption.
+    const logoSent = await sendWA(from, pid, {
+      type: "image",
+      image: {
+        link: logoUrl,
+        caption: "🤖 Welcome 🙏\\nSASIKUMAR AI ✨\\n🌐 https://sasikumar-ai-9wdq.onrender.com"
+      }
+    });
+
+    // Send the complete 1-19 content menu as a separate message.
+    const menuSent = await sendWA(from, pid, {
+      type: "text",
+      text: { body: menuText }
+    });
+
+    if (logoSent) add(from, "assistant", "[SASIKUMAR AI Logo Image]");
+    if (menuSent) add(from, "assistant", menuText);
+    if (!logoSent) console.error("[WhatsApp] Logo image send failed.");
+
     res.sendStatus(200);
     return;
   }
