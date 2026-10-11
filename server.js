@@ -132,7 +132,7 @@ async function analyzeImageAttachment(attachment, question) {
   }
 
   const model = new GoogleGenerativeAI(GEMINI_API_KEY)
-    .getGenerativeModel({ model: "gemini-2.5-flash" });
+    .getGenerativeModel({ model: "gemini-3.8-flash" });
 
   const result = await model.generateContent([
     {
