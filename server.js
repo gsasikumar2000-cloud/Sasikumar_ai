@@ -665,7 +665,7 @@ Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada �
   add(from,"user",txt);
 
   if(menuTriggers.includes(normalized)){
-    const logoUrl = "https://sasikumar-ai-9wdq.onrender.com/assets/sasikumar-ai-logo.png";
+    const logoUrl = "https://sasikumar-ai-9wdq.onrender.com/assets/sasikumar-ai-logo-60.png";
 
     // Send the actual logo image with a short welcome caption.
     const logoSent = await sendWA(from, pid, {
@@ -768,7 +768,7 @@ const body =
 const logoSent = await sendWA(from, pid, {
   type: "image",
   image: {
-    link: "https://sasikumar-ai-9wdq.onrender.com/assets/sasikumar-ai-logo.png",
+    link: "https://sasikumar-ai-9wdq.onrender.com/assets/sasikumar-ai-logo-60.png",
     caption: "🤖 SASIKUMAR AI ✨\n🥇 Live Gold & Silver Rates\n🌐 https://sasikumar-ai-9wdq.onrender.com"
   }
 });
