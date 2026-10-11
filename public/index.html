@@ -3522,7 +3522,137 @@ input, textarea, select, button {
 }
 </style>
 
-</head><body>" + el.outerHTML + "</body></html>"
+</head><body>" + el.outerHTML + "
+<style id="SK_LIVE_CARDS_COLOR_MOBILE_FINAL">
+/* Live cards: force visibility and fit on mobile */
+#skLiveBookCardsRow {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: stretch !important;
+  gap: 12px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  margin: 12px 0 20px !important;
+  padding: 12px 8px 18px !important;
+  box-sizing: border-box !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  scroll-snap-type: x mandatory !important;
+  position: relative !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+#skLiveBookCardsRow > article,
+#skLiveBookCardsRow > section {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 0 0 280px !important;
+  width: 280px !important;
+  min-width: 0 !important;
+  max-width: 82vw !important;
+  min-height: 220px !important;
+  height: auto !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 14px !important;
+  box-sizing: border-box !important;
+  border: 2px solid #cbd5e1 !important;
+  border-radius: 18px !important;
+  color: #172033 !important;
+  box-shadow: 0 7px 20px #0f172a20 !important;
+  overflow-wrap: anywhere !important;
+  overflow-y: auto !important;
+  scroll-snap-align: start !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+/* Distinct background colors for each card */
+#skLiveBookCardsRow > :nth-child(1) {
+  background: linear-gradient(145deg,#fee2e2,#fff7ed) !important;
+  border-color: #ef4444 !important;
+}
+#skLiveBookCardsRow > :nth-child(2) {
+  background: linear-gradient(145deg,#dcfce7,#ecfdf5) !important;
+  border-color: #22c55e !important;
+}
+#skLiveBookCardsRow > :nth-child(3) {
+  background: linear-gradient(145deg,#dbeafe,#eff6ff) !important;
+  border-color: #3b82f6 !important;
+}
+#skLiveBookCardsRow > :nth-child(4) {
+  background: linear-gradient(145deg,#f3e8ff,#faf5ff) !important;
+  border-color: #a855f7 !important;
+}
+#skLiveBookCardsRow > :nth-child(5) {
+  background: linear-gradient(145deg,#ffedd5,#fff7ed) !important;
+  border-color: #f97316 !important;
+}
+/* Colorful header bars */
+#skLiveBookCardsRow > :nth-child(1) h2,
+#skLiveBookCardsRow > :nth-child(1) h3 {
+  background: #dc2626 !important;
+  color: #fff !important;
+}
+#skLiveBookCardsRow > :nth-child(2) h2,
+#skLiveBookCardsRow > :nth-child(2) h3 {
+  background: #15803d !important;
+  color: #fff !important;
+}
+#skLiveBookCardsRow > :nth-child(3) h2,
+#skLiveBookCardsRow > :nth-child(3) h3 {
+  background: #1d4ed8 !important;
+  color: #fff !important;
+}
+#skLiveBookCardsRow > :nth-child(4) h2,
+#skLiveBookCardsRow > :nth-child(4) h3 {
+  background: #7e22ce !important;
+  color: #fff !important;
+}
+#skLiveBookCardsRow > :nth-child(5) h2,
+#skLiveBookCardsRow > :nth-child(5) h3 {
+  background: #c2410c !important;
+  color: #fff !important;
+}
+#skLiveBookCardsRow > * h2,
+#skLiveBookCardsRow > * h3 {
+  display: block !important;
+  padding: 10px 8px !important;
+  margin: 0 0 12px !important;
+  border-radius: 10px !important;
+  font-size: 17px !important;
+  line-height: 1.4 !important;
+  overflow-wrap: anywhere !important;
+}
+#skLiveBookCardsRow .skLiveBookText,
+#skLiveBookCardsRow a {
+  max-width: 100% !important;
+  overflow-wrap: anywhere !important;
+  white-space: normal !important;
+}
+#skLiveBookCardsRow a {
+  display: inline-block !important;
+  margin-top: 8px !important;
+}
+@media (max-width: 600px) {
+  #skLiveBookCardsRow {
+    gap: 10px !important;
+    padding: 10px 6px 16px !important;
+  }
+  #skLiveBookCardsRow > article,
+  #skLiveBookCardsRow > section {
+    flex: 0 0 82vw !important;
+    width: 82vw !important;
+    max-width: 310px !important;
+    min-height: 210px !important;
+    padding: 12px !important;
+  }
+}
+</style>
+
+</body></html>"
   );
 
   w.document.close();
