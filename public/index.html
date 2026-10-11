@@ -4861,7 +4861,74 @@ function skReplyPrint(){
     '<title>SASIKUMAR AI Reply</title>' +
     '<style>body{font:16px Arial,sans-serif;padding:24px}' +
     'pre{white-space:pre-wrap;overflow-wrap:anywhere}</style>' +
-    '</head><body><h2>SASIKUMAR AI Reply</h2><pre>' +
+    '
+<style id="SK_LIVE_BOOK_CARDS_V2">
+#skLiveBookCardsRow {
+  display:flex!important;
+  flex-flow:row nowrap!important;
+  align-items:stretch!important;
+  gap:12px!important;
+  width:100%!important;
+  box-sizing:border-box!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  padding:10px 3px 16px!important;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+}
+#skLiveBookCardsRow > * {
+  box-sizing:border-box!important;
+  flex:0 0 270px!important;
+  width:270px!important;
+  min-width:270px!important;
+  height:230px!important;
+  min-height:230px!important;
+  max-height:230px!important;
+  margin:0!important;
+  padding:15px!important;
+  border-radius:18px!important;
+  overflow:auto!important;
+  scroll-snap-align:start;
+  box-shadow:0 6px 18px rgba(0,0,0,.20);
+}
+#skLiveBookCardsRow .skLiveBookExtra {
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:flex-start!important;
+  gap:10px!important;
+  color:#fff!important;
+  background:linear-gradient(145deg,#172554,#1d4ed8)!important;
+}
+#skLiveBookCardsRow .skLiveBookExtra h2 {
+  margin:4px 0 8px!important;
+  font-size:19px!important;
+}
+#skLiveBookCardsRow .skLiveBookText {
+  font-size:15px!important;
+  line-height:1.55!important;
+  overflow-wrap:anywhere;
+}
+#skLiveBookCardsRow .skLiveBookLink {
+  display:inline-block;
+  align-self:flex-start;
+  margin-top:auto;
+  padding:8px 12px;
+  border-radius:20px;
+  background:#fff;
+  color:#1e3a8a;
+  font-weight:700;
+  text-decoration:none;
+}
+@media(max-width:420px) {
+  #skLiveBookCardsRow > * {
+    flex-basis:250px!important;
+    width:250px!important;
+    min-width:250px!important;
+  }
+}
+</style>
+
+</head><body><h2>SASIKUMAR AI Reply</h2><pre>' +
     escaped + '</pre></body></html>'
   );
   popup.document.close();
@@ -5597,8 +5664,6 @@ else skRefreshPay2AllWallet();
 #newGoldServices,
 #newEducationServices,
 #newQuickServices,
-#dailyThirukkural,
-#livePonmozhigal,
 #allJobs,
 #banking-products,
 #sasikumarPay2AllWallet,
@@ -5637,6 +5702,50 @@ section:not(.skMainFeatureCard) {
 }
 
 </style>
+
+<style id="SK_LIVE_BOOK_CARDS_V1">
+#dailyThirukkural, #livePonmozhigal {
+  box-sizing: border-box !important;
+  flex: 0 0 280px !important;
+  width: 280px !important;
+  min-width: 280px !important;
+  height: 230px !important;
+  min-height: 230px !important;
+  max-height: 230px !important;
+  margin: 0 !important;
+  padding: 16px !important;
+  border-radius: 18px !important;
+  overflow: auto !important;
+  text-align: center !important;
+  scroll-snap-align: start;
+  box-shadow: 0 6px 18px rgba(0,0,0,.22);
+}
+#skLiveBookCardsRow {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  gap: 12px !important;
+  width: 100% !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  padding: 8px 2px 14px !important;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+#skLiveBookCardsRow > * {
+  flex: 0 0 280px !important;
+  width: 280px !important;
+  min-width: 280px !important;
+}
+@media (max-width: 420px) {
+  #dailyThirukkural, #livePonmozhigal,
+  #skLiveBookCardsRow > * {
+    flex-basis: 250px !important;
+    width: 250px !important;
+    min-width: 250px !important;
+  }
+}
+</style>
+
 <script id="SK_OPTION_B_HIDE_INLINE_V1">
 (function () {
   const selectors = [
@@ -5646,8 +5755,6 @@ section:not(.skMainFeatureCard) {
     '#newGoldServices',
     '#newEducationServices',
     '#newQuickServices',
-    '#dailyThirukkural',
-    '#livePonmozhigal',
     '#allJobs',
     '#banking-products',
     '#sasikumarPay2AllWallet',
@@ -5733,5 +5840,139 @@ section:not(.skMainFeatureCard) {
   }
 })();
 </script>
+
+<script id="SK_LIVE_BOOK_CARDS_SCRIPT_V2">
+(function () {
+  "use strict";
+  function initSKLiveBookCards() {
+    if (document.getElementById("skLiveBookCardsRow")) return;
+
+    var kural = document.getElementById("dailyThirukkural");
+    var ponmozhigal = document.getElementById("livePonmozhigal");
+    if (!kural || !ponmozhigal || !kural.parentNode) {
+      console.warn("SASIKUMAR AI Live Cards: existing Thirukkural/Ponmozhi sections not found.");
+      return;
+    }
+
+    var row = document.createElement("div");
+    row.id = "skLiveBookCardsRow";
+    row.setAttribute("aria-label", "SASIKUMAR AI live book cards");
+    row.setAttribute("role", "region");
+    row.setAttribute("tabindex", "0");
+
+    kural.parentNode.insertBefore(row, kural);
+    kural.classList.add("skMainFeatureCard");
+    ponmozhigal.classList.add("skMainFeatureCard");
+
+    var news = document.createElement("article");
+    news.className = "skLiveBookExtra";
+    news.id = "skLiveNewsBookCard";
+    news.innerHTML =
+      '<h2>📰 LIVE NEWS</h2>' +
+      '<div class="skLiveBookText" id="skLiveNewsBookText">செய்திகளைப் பெறுகிறது...</div>' +
+      '<a class="skLiveBookLink" href="/api/breaking-news?category=Tamil%20Nadu&language=ta">செய்திகள் பார்க்க</a>';
+
+    var sports = document.createElement("article");
+    sports.className = "skLiveBookExtra";
+    sports.id = "skLiveSportsBookCard";
+    sports.innerHTML =
+      '<h2>🏏 LIVE SPORTS</h2>' +
+      '<div class="skLiveBookText">விளையாட்டு செய்திகள், போட்டிகள் மற்றும் விளையாட்டு தகவல்கள்.</div>' +
+      '<a class="skLiveBookLink" href="/sports/">Open Sports</a>';
+
+    var kavithai = document.createElement("article");
+    kavithai.className = "skLiveBookExtra";
+    kavithai.id = "skLiveKavithaiBookCard";
+    kavithai.innerHTML =
+      '<h2>✍️ LIVE KAVITHAI</h2>' +
+      '<div class="skLiveBookText" id="skLiveKavithaiBookText"></div>';
+
+    row.appendChild(news);
+    row.appendChild(sports);
+    row.appendChild(kural);
+    row.appendChild(ponmozhigal);
+    row.appendChild(kavithai);
+
+    var poems = [
+      "புதிய காலை புதிய நம்பிக்கை; முயற்சி தொடர்ந்தால் வெற்றி மலரும்.",
+      "சிறு முயற்சியும் பெரிய மாற்றத்தின் தொடக்கமாகும்.",
+      "அறிவை வளர்த்து, அன்பைப் பகிர்ந்து, நாளை அழகாக்குவோம்.",
+      "தடைகள் வந்தாலும் தளராத மனமே வெற்றியின் முதல் படி.",
+      "நல்ல எண்ணம் விதையாய் விழட்டும்; நல்ல செயல் வாழ்வில் மலரட்டும்."
+    ];
+    var poemIndex = 0;
+    var newsBusy = false;
+
+    function refreshSKNews() {
+      if (newsBusy) return;
+      newsBusy = true;
+      var target = document.getElementById("skLiveNewsBookText");
+      if (!target) { newsBusy = false; return; }
+
+      fetch("/api/breaking-news?category=Tamil%20Nadu&language=ta", {
+        cache: "no-store"
+      })
+      .then(function (response) {
+        if (!response.ok) throw new Error("News request failed: " + response.status);
+        return response.json();
+      })
+      .then(function (data) {
+        var items = Array.isArray(data) ? data :
+          (data.articles || data.news || data.results || data.items || []);
+        var lines = [];
+
+        if (typeof data === "string") lines.push(data);
+        if (data && !Array.isArray(data) && typeof data === "object" && !items.length) {
+          if (data.title) lines.push(data.title);
+          if (data.headline) lines.push(data.headline);
+          if (data.message) lines.push(data.message);
+          if (data.text) lines.push(data.text);
+        }
+        if (Array.isArray(items)) {
+          items.slice(0, 3).forEach(function (item) {
+            if (typeof item === "string") lines.push(item);
+            else if (item) lines.push(item.title || item.headline || item.description || item.name || "");
+          });
+        }
+
+        lines = lines.map(function (x) {
+          return String(x || "").trim();
+        }).filter(Boolean);
+
+        target.textContent = lines.length
+          ? lines.slice(0, 3).join(" • ")
+          : "புதிய செய்திகள் கிடைக்கவில்லை. கீழே உள்ள இணைப்பைத் திறக்கவும்.";
+      })
+      .catch(function () {
+        target.textContent = "செய்திகளை இப்போது பெற முடியவில்லை. மீண்டும் முயற்சிக்கவும்.";
+      })
+      .finally(function () { newsBusy = false; });
+    }
+
+    function rotateSKPoem() {
+      var target = document.getElementById("skLiveKavithaiBookText");
+      if (!target) return;
+      target.textContent = poems[poemIndex % poems.length];
+      poemIndex++;
+    }
+
+    refreshSKNews();
+    rotateSKPoem();
+
+    /* Update live content every two minutes. */
+    window.setInterval(function () {
+      refreshSKNews();
+      rotateSKPoem();
+    }, 120000);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initSKLiveBookCards, { once: true });
+  } else {
+    initSKLiveBookCards();
+  }
+})();
+</script>
+
 </body>
 </html>
