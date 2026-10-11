@@ -3290,550 +3290,7 @@ function printAppraisalReport(btn){
     "<meta name='viewport' content='width=device-width,initial-scale=1'>" +
     "<title>SASIKUMAR AI - Appraisal Report</title>" +
     "<style>body{font-family:Arial,sans-serif;margin:20px;color:#111;background:#fff}.report-box{max-width:850px;margin:auto}</style>" +
-    "
-<style id="SK_COLORFUL_LIGHT_THEME_V1">
-/* SASIKUMAR AI — colorful light theme; preserve existing content */
-:root {
-  color-scheme: light;
-  --sk-page: #f0f9ff;
-  --sk-text: #24324a;
-  --sk-blue: #dbeafe;
-  --sk-green: #dcfce7;
-  --sk-purple: #f3e8ff;
-  --sk-orange: #ffedd5;
-  --sk-pink: #fce7f3;
-}
-
-html {
-  background: #f0f9ff !important;
-  color-scheme: light !important;
-}
-
-body {
-  background: linear-gradient(135deg, #eff6ff, #f0fdf4, #fff7ed) !important;
-  color: var(--sk-text) !important;
-}
-
-h1, h2, h3 {
-  font-weight: 900 !important;
-  line-height: 1.25 !important;
-  overflow-wrap: anywhere;
-}
-
-h1 {
-  font-size: clamp(28px, 5vw, 42px) !important;
-  color: #1d4ed8 !important;
-}
-
-h2 {
-  font-size: clamp(21px, 4vw, 30px) !important;
-}
-
-h3 {
-  font-size: clamp(18px, 3.5vw, 23px) !important;
-}
-
-/* Light, colorful section surfaces */
-#sasikumarSecondPageFolders,
-#dailyThirukkural,
-#livePonmozhigal {
-  color: #24324a !important;
-}
-
-/* Five equal-sized horizontal live cards */
-#skLiveBookCardsRow {
-  display: flex !important;
-  flex-flow: row nowrap !important;
-  align-items: stretch !important;
-  gap: 14px !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  box-sizing: border-box !important;
-  padding: 12px 5px 18px !important;
-  overflow-x: auto !important;
-  overflow-y: hidden !important;
-  -webkit-overflow-scrolling: touch;
-  scroll-snap-type: x mandatory;
-}
-
-#skLiveBookCardsRow > * {
-  flex: 0 0 270px !important;
-  width: 270px !important;
-  min-width: 0 !important;
-  min-height: 230px !important;
-  box-sizing: border-box !important;
-  padding: 16px !important;
-  border: 1px solid #cbd5e1 !important;
-  border-radius: 20px !important;
-  color: #24324a !important;
-  box-shadow: 0 8px 22px #64748b20 !important;
-  scroll-snap-align: start;
-  overflow-wrap: anywhere;
-}
-
-/* Individual card colors */
-#skLiveBookCardsRow > :nth-child(1) {
-  background: linear-gradient(145deg, #dbeafe, #eff6ff) !important;
-  border-color: #60a5fa !important;
-}
-#skLiveBookCardsRow > :nth-child(2) {
-  background: linear-gradient(145deg, #dcfce7, #f0fdf4) !important;
-  border-color: #4ade80 !important;
-}
-#skLiveBookCardsRow > :nth-child(3) {
-  background: linear-gradient(145deg, #fef3c7, #fffbeb) !important;
-  border-color: #fbbf24 !important;
-}
-#skLiveBookCardsRow > :nth-child(4) {
-  background: linear-gradient(145deg, #f3e8ff, #faf5ff) !important;
-  border-color: #c084fc !important;
-}
-#skLiveBookCardsRow > :nth-child(5) {
-  background: linear-gradient(145deg, #fce7f3, #fff1f2) !important;
-  border-color: #f472b6 !important;
-}
-
-#skLiveBookCardsRow h2,
-#skLiveBookCardsRow h3 {
-  color: #1e3a8a !important;
-  font-weight: 900 !important;
-}
-
-#skLiveBookCardsRow a {
-  color: #1d4ed8 !important;
-  font-weight: 800 !important;
-}
-
-/* Existing brand logos */
-img[src*="logo" i],
-img[alt*="SASIKUMAR AI" i] {
-  object-fit: contain;
-  max-width: 100%;
-}
-
-/* Keep images and controls inside small screens */
-img, video, canvas, iframe {
-  max-width: 100%;
-}
-
-input, textarea, select, button {
-  max-width: 100%;
-  box-sizing: border-box;
-}
-
-@media (max-width: 600px) {
-  body {
-    overflow-x: hidden !important;
-  }
-
-  h1 {
-    font-size: clamp(25px, 7vw, 34px) !important;
-  }
-
-  h2 {
-    font-size: clamp(20px, 5.5vw, 25px) !important;
-  }
-
-  #skLiveBookCardsRow {
-    gap: 10px !important;
-    padding-left: 8px !important;
-    padding-right: 8px !important;
-  }
-
-  #skLiveBookCardsRow > * {
-    flex-basis: min(82vw, 290px) !important;
-    width: min(82vw, 290px) !important;
-    min-height: 220px !important;
-  }
-}
-</style>
-
-
-<style id="SK_LIVE_CARDS_MOBILE_VISIBILITY_FIX">
-/* Keep every live card visible */
-#skLiveBookCardsRow {
-  display: flex !important;
-  flex-direction: row !important;
-  flex-wrap: nowrap !important;
-  align-items: stretch !important;
-  gap: 12px !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  box-sizing: border-box !important;
-  padding: 12px 10px 18px !important;
-  margin: 12px 0 !important;
-  overflow-x: auto !important;
-  overflow-y: hidden !important;
-  -webkit-overflow-scrolling: touch !important;
-  scroll-snap-type: x mandatory;
-  position: relative !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-#skLiveBookCardsRow > * {
-  display: flex !important;
-  flex-direction: column !important;
-  flex: 0 0 270px !important;
-  width: 270px !important;
-  min-width: 0 !important;
-  max-width: 85vw !important;
-  min-height: 220px !important;
-  height: auto !important;
-  max-height: none !important;
-  box-sizing: border-box !important;
-  overflow-wrap: anywhere !important;
-  overflow-y: auto !important;
-  scroll-snap-align: start;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-#skLiveBookCardsRow > #dailyThirukkural,
-#skLiveBookCardsRow > #livePonmozhigal {
-  display: flex !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-#skLiveBookCardsRow .skLiveBookText {
-  white-space: normal !important;
-  overflow-wrap: anywhere !important;
-  line-height: 1.5 !important;
-}
-#skLiveBookCardsRow a {
-  display: inline-block !important;
-  max-width: 100% !important;
-  overflow-wrap: anywhere !important;
-}
-@media (max-width: 600px) {
-  #skLiveBookCardsRow {
-    gap: 10px !important;
-    padding: 10px 8px 16px !important;
-  }
-  #skLiveBookCardsRow > * {
-    flex: 0 0 min(82vw, 290px) !important;
-    width: min(82vw, 290px) !important;
-    max-width: 82vw !important;
-    min-height: 210px !important;
-    padding: 12px !important;
-  }
-  #skLiveBookCardsRow h2 {
-    font-size: 18px !important;
-    overflow-wrap: anywhere !important;
-  }
-}
-</style>
-
-
-<style id="SK_LIVE_CARDS_ANCESTOR_VISIBILITY_FIX">
-/* Colorful SASIKUMAR AI welcome board */
-#skWelcomeHero {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  box-sizing: border-box !important;
-  width: calc(100% - 16px) !important;
-  max-width: 1100px !important;
-  margin: 12px auto 18px !important;
-  padding: 22px 12px !important;
-  border: 2px solid #60a5fa !important;
-  border-radius: 22px !important;
-  background: linear-gradient(125deg,#dbeafe,#fce7f3,#fef3c7,#dcfce7) !important;
-  color: #172554 !important;
-  box-shadow: 0 8px 24px rgba(30,64,175,.18) !important;
-  overflow-wrap: anywhere !important;
-}
-#skWelcomeHero > div {
-  max-width: 100% !important;
-  overflow-wrap: anywhere !important;
-}
-#skWelcomeHero > div:nth-of-type(1) {
-  color: #7c3aed !important;
-  text-shadow: 0 1px 0 #fff !important;
-}
-#skWelcomeHero > div:nth-of-type(2) {
-  color: #075985 !important;
-  background: linear-gradient(90deg,#1d4ed8,#7c3aed,#db2777,#ea580c);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-#skLiveBookCardsRow {
-  display: flex !important;
-  flex-flow: row nowrap !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  box-sizing: border-box !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  min-width: 0 !important;
-  overflow-x: auto !important;
-  overflow-y: hidden !important;
-  gap: 12px !important;
-  padding: 10px 4px 16px !important;
-  scroll-snap-type: x mandatory !important;
-  -webkit-overflow-scrolling: touch !important;
-}
-#skLiveBookCardsRow > article,
-#skLiveBookCardsRow > section {
-  display: flex !important;
-  flex: 0 0 270px !important;
-  flex-direction: column !important;
-  box-sizing: border-box !important;
-  width: 270px !important;
-  min-width: 0 !important;
-  max-width: 84vw !important;
-  min-height: 220px !important;
-  max-height: 300px !important;
-  padding: 14px !important;
-  border-radius: 18px !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  overflow-y: auto !important;
-  overflow-wrap: anywhere !important;
-  scroll-snap-align: start !important;
-  box-shadow: 0 5px 18px rgba(15,23,42,.16) !important;
-}
-#skLiveBookCardsRow > :nth-child(1) {
-  background: linear-gradient(145deg,#fee2e2,#fff7ed) !important;
-  border: 2px solid #ef4444 !important;
-  color: #7f1d1d !important;
-}
-#skLiveBookCardsRow > :nth-child(2) {
-  background: linear-gradient(145deg,#dcfce7,#ecfdf5) !important;
-  border: 2px solid #22c55e !important;
-  color: #14532d !important;
-}
-#skLiveBookCardsRow > :nth-child(3) {
-  background: linear-gradient(145deg,#dbeafe,#eff6ff) !important;
-  border: 2px solid #3b82f6 !important;
-  color: #1e3a8a !important;
-}
-#skLiveBookCardsRow > :nth-child(4) {
-  background: linear-gradient(145deg,#f3e8ff,#fdf4ff) !important;
-  border: 2px solid #a855f7 !important;
-  color: #581c87 !important;
-}
-#skLiveBookCardsRow > :nth-child(5) {
-  background: linear-gradient(145deg,#ffedd5,#fef3c7) !important;
-  border: 2px solid #f97316 !important;
-  color: #7c2d12 !important;
-}
-#skLiveBookCardsRow > * h2,
-#skLiveBookCardsRow > * h3 {
-  display: block !important;
-  margin: 0 0 12px !important;
-  padding: 10px 8px !important;
-  border-radius: 11px !important;
-  color: #fff !important;
-  font-size: 17px !important;
-  font-weight: 900 !important;
-  overflow-wrap: anywhere !important;
-}
-#skLiveBookCardsRow > :nth-child(1) h2 { background:#dc2626 !important; }
-#skLiveBookCardsRow > :nth-child(2) h2 { background:#15803d !important; }
-#skLiveBookCardsRow > :nth-child(3) h2 { background:#1d4ed8 !important; }
-#skLiveBookCardsRow > :nth-child(4) h2 { background:#7e22ce !important; }
-#skLiveBookCardsRow > :nth-child(5) h2 { background:#c2410c !important; }
-#skLiveBookCardsRow .skLiveBookText,
-#skLiveBookCardsRow a {
-  overflow-wrap: anywhere !important;
-  white-space: normal !important;
-}
-@media (max-width: 600px) {
-  #skWelcomeHero {
-    width: calc(100% - 12px) !important;
-    margin: 8px auto 14px !important;
-    padding: 16px 8px !important;
-    border-radius: 16px !important;
-  }
-  #skLiveBookCardsRow > article,
-  #skLiveBookCardsRow > section {
-    flex-basis: 82vw !important;
-    width: 82vw !important;
-    max-width: 310px !important;
-    min-height: 210px !important;
-  }
-}
-</style>
-
-
-<style id="SK_LIVE_NEWS_OPEN_WINDOW_V1">
-#skLiveBookCardsRow {
-  display: flex !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  box-sizing: border-box !important;
-  overflow-x: auto !important;
-  overflow-y: hidden !important;
-  -webkit-overflow-scrolling: touch !important;
-}
-#skLiveNewsBookCard {
-  display: flex !important;
-  flex: 0 0 82vw !important;
-  flex-direction: column !important;
-  width: 82vw !important;
-  max-width: 310px !important;
-  min-width: 0 !important;
-  min-height: 210px !important;
-  box-sizing: border-box !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  cursor: pointer !important;
-  background: linear-gradient(135deg,#fee2e2,#fff7ed) !important;
-  border: 2px solid #ef4444 !important;
-  border-radius: 18px !important;
-  padding: 14px !important;
-  color: #7f1d1d !important;
-}
-#skLiveNewsBookCard h2 {
-  background: #dc2626 !important;
-  color: white !important;
-  padding: 10px !important;
-  border-radius: 10px !important;
-}
-#skLiveNewsBookCard a {
-  display: inline-block !important;
-  margin-top: 8px !important;
-  padding: 9px !important;
-  border-radius: 9px !important;
-  background: #b91c1c !important;
-  color: white !important;
-  overflow-wrap: anywhere !important;
-}
-</style>
-
-</head><body>" + el.outerHTML + "
-<style id="SK_LIVE_CARDS_COLOR_MOBILE_FINAL">
-/* Live cards: force visibility and fit on mobile */
-#skLiveBookCardsRow {
-  display: flex !important;
-  flex-direction: row !important;
-  flex-wrap: nowrap !important;
-  align-items: stretch !important;
-  gap: 12px !important;
-  width: 100% !important;
-  max-width: 100% !important;
-  min-width: 0 !important;
-  margin: 12px 0 20px !important;
-  padding: 12px 8px 18px !important;
-  box-sizing: border-box !important;
-  overflow-x: auto !important;
-  overflow-y: hidden !important;
-  -webkit-overflow-scrolling: touch !important;
-  scroll-snap-type: x mandatory !important;
-  position: relative !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-#skLiveBookCardsRow > article,
-#skLiveBookCardsRow > section {
-  display: flex !important;
-  flex-direction: column !important;
-  flex: 0 0 280px !important;
-  width: 280px !important;
-  min-width: 0 !important;
-  max-width: 82vw !important;
-  min-height: 220px !important;
-  height: auto !important;
-  max-height: none !important;
-  margin: 0 !important;
-  padding: 14px !important;
-  box-sizing: border-box !important;
-  border: 2px solid #cbd5e1 !important;
-  border-radius: 18px !important;
-  color: #172033 !important;
-  box-shadow: 0 7px 20px #0f172a20 !important;
-  overflow-wrap: anywhere !important;
-  overflow-y: auto !important;
-  scroll-snap-align: start !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-/* Distinct background colors for each card */
-#skLiveBookCardsRow > :nth-child(1) {
-  background: linear-gradient(145deg,#fee2e2,#fff7ed) !important;
-  border-color: #ef4444 !important;
-}
-#skLiveBookCardsRow > :nth-child(2) {
-  background: linear-gradient(145deg,#dcfce7,#ecfdf5) !important;
-  border-color: #22c55e !important;
-}
-#skLiveBookCardsRow > :nth-child(3) {
-  background: linear-gradient(145deg,#dbeafe,#eff6ff) !important;
-  border-color: #3b82f6 !important;
-}
-#skLiveBookCardsRow > :nth-child(4) {
-  background: linear-gradient(145deg,#f3e8ff,#faf5ff) !important;
-  border-color: #a855f7 !important;
-}
-#skLiveBookCardsRow > :nth-child(5) {
-  background: linear-gradient(145deg,#ffedd5,#fff7ed) !important;
-  border-color: #f97316 !important;
-}
-/* Colorful header bars */
-#skLiveBookCardsRow > :nth-child(1) h2,
-#skLiveBookCardsRow > :nth-child(1) h3 {
-  background: #dc2626 !important;
-  color: #fff !important;
-}
-#skLiveBookCardsRow > :nth-child(2) h2,
-#skLiveBookCardsRow > :nth-child(2) h3 {
-  background: #15803d !important;
-  color: #fff !important;
-}
-#skLiveBookCardsRow > :nth-child(3) h2,
-#skLiveBookCardsRow > :nth-child(3) h3 {
-  background: #1d4ed8 !important;
-  color: #fff !important;
-}
-#skLiveBookCardsRow > :nth-child(4) h2,
-#skLiveBookCardsRow > :nth-child(4) h3 {
-  background: #7e22ce !important;
-  color: #fff !important;
-}
-#skLiveBookCardsRow > :nth-child(5) h2,
-#skLiveBookCardsRow > :nth-child(5) h3 {
-  background: #c2410c !important;
-  color: #fff !important;
-}
-#skLiveBookCardsRow > * h2,
-#skLiveBookCardsRow > * h3 {
-  display: block !important;
-  padding: 10px 8px !important;
-  margin: 0 0 12px !important;
-  border-radius: 10px !important;
-  font-size: 17px !important;
-  line-height: 1.4 !important;
-  overflow-wrap: anywhere !important;
-}
-#skLiveBookCardsRow .skLiveBookText,
-#skLiveBookCardsRow a {
-  max-width: 100% !important;
-  overflow-wrap: anywhere !important;
-  white-space: normal !important;
-}
-#skLiveBookCardsRow a {
-  display: inline-block !important;
-  margin-top: 8px !important;
-}
-@media (max-width: 600px) {
-  #skLiveBookCardsRow {
-    gap: 10px !important;
-    padding: 10px 6px 16px !important;
-  }
-  #skLiveBookCardsRow > article,
-  #skLiveBookCardsRow > section {
-    flex: 0 0 82vw !important;
-    width: 82vw !important;
-    max-width: 310px !important;
-    min-height: 210px !important;
-    padding: 12px !important;
-  }
-}
-</style>
-
-</body></html>"
+    "</head><body>" + el.outerHTML + "</body></html>"
   );
 
   w.document.close();
@@ -5402,76 +4859,8 @@ function skReplyPrint(){
   popup.document.write(
     '<!doctype html><html><head><meta charset="utf-8">' +
     '<title>SASIKUMAR AI Reply</title>' +
-    '<style>body{font:16px Arial,sans-serif;padding:24px}' +
-    'pre{white-space:pre-wrap;overflow-wrap:anywhere}</style>' +
-    '
-<style id="SK_LIVE_BOOK_CARDS_V2">
-#skLiveBookCardsRow {
-  display:flex!important;
-  flex-flow:row nowrap!important;
-  align-items:stretch!important;
-  gap:12px!important;
-  width:100%!important;
-  box-sizing:border-box!important;
-  overflow-x:auto!important;
-  overflow-y:hidden!important;
-  padding:10px 3px 16px!important;
-  scroll-snap-type:x mandatory;
-  -webkit-overflow-scrolling:touch;
-}
-#skLiveBookCardsRow > * {
-  box-sizing:border-box!important;
-  flex:0 0 270px!important;
-  width:270px!important;
-  min-width:270px!important;
-  height:230px!important;
-  min-height:230px!important;
-  max-height:230px!important;
-  margin:0!important;
-  padding:15px!important;
-  border-radius:18px!important;
-  overflow:auto!important;
-  scroll-snap-align:start;
-  box-shadow:0 6px 18px rgba(0,0,0,.20);
-}
-#skLiveBookCardsRow .skLiveBookExtra {
-  display:flex!important;
-  flex-direction:column!important;
-  justify-content:flex-start!important;
-  gap:10px!important;
-  color:#fff!important;
-  background:linear-gradient(145deg,#172554,#1d4ed8)!important;
-}
-#skLiveBookCardsRow .skLiveBookExtra h2 {
-  margin:4px 0 8px!important;
-  font-size:19px!important;
-}
-#skLiveBookCardsRow .skLiveBookText {
-  font-size:15px!important;
-  line-height:1.55!important;
-  overflow-wrap:anywhere;
-}
-#skLiveBookCardsRow .skLiveBookLink {
-  display:inline-block;
-  align-self:flex-start;
-  margin-top:auto;
-  padding:8px 12px;
-  border-radius:20px;
-  background:#fff;
-  color:#1e3a8a;
-  font-weight:700;
-  text-decoration:none;
-}
-@media(max-width:420px) {
-  #skLiveBookCardsRow > * {
-    flex-basis:250px!important;
-    width:250px!important;
-    min-width:250px!important;
-  }
-}
-</style>
-
-</head><body><h2>SASIKUMAR AI Reply</h2><pre>' +
+    '<style>body{font:16px Arial,sans-serif;padding:24px}pre{white-space:pre-wrap;overflow-wrap:anywhere}</style>' +
+    '</head><body><h2>SASIKUMAR AI Reply</h2><pre>' +
     escaped + '</pre></body></html>'
   );
   popup.document.close();
@@ -6625,5 +6014,613 @@ section:not(.skMainFeatureCard) {
 })();
 </script>
 
+
+<!-- Recovered SASIKUMAR AI styles -->
+<style id="SK_COLORFUL_LIGHT_THEME_V1">
+/* SASIKUMAR AI — colorful light theme; preserve existing content */
+:root {
+  color-scheme: light;
+  --sk-page: #f0f9ff;
+  --sk-text: #24324a;
+  --sk-blue: #dbeafe;
+  --sk-green: #dcfce7;
+  --sk-purple: #f3e8ff;
+  --sk-orange: #ffedd5;
+  --sk-pink: #fce7f3;
+}
+
+html {
+  background: #f0f9ff !important;
+  color-scheme: light !important;
+}
+
+body {
+  background: linear-gradient(135deg, #eff6ff, #f0fdf4, #fff7ed) !important;
+  color: var(--sk-text) !important;
+}
+
+h1, h2, h3 {
+  font-weight: 900 !important;
+  line-height: 1.25 !important;
+  overflow-wrap: anywhere;
+}
+
+h1 {
+  font-size: clamp(28px, 5vw, 42px) !important;
+  color: #1d4ed8 !important;
+}
+
+h2 {
+  font-size: clamp(21px, 4vw, 30px) !important;
+}
+
+h3 {
+  font-size: clamp(18px, 3.5vw, 23px) !important;
+}
+
+/* Light, colorful section surfaces */
+#sasikumarSecondPageFolders,
+#dailyThirukkural,
+#livePonmozhigal {
+  color: #24324a !important;
+}
+
+/* Five equal-sized horizontal live cards */
+#skLiveBookCardsRow {
+  display: flex !important;
+  flex-flow: row nowrap !important;
+  align-items: stretch !important;
+  gap: 14px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 12px 5px 18px !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+}
+
+#skLiveBookCardsRow > * {
+  flex: 0 0 270px !important;
+  width: 270px !important;
+  min-width: 0 !important;
+  min-height: 230px !important;
+  box-sizing: border-box !important;
+  padding: 16px !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 20px !important;
+  color: #24324a !important;
+  box-shadow: 0 8px 22px #64748b20 !important;
+  scroll-snap-align: start;
+  overflow-wrap: anywhere;
+}
+
+/* Individual card colors */
+#skLiveBookCardsRow > :nth-child(1) {
+  background: linear-gradient(145deg, #dbeafe, #eff6ff) !important;
+  border-color: #60a5fa !important;
+}
+#skLiveBookCardsRow > :nth-child(2) {
+  background: linear-gradient(145deg, #dcfce7, #f0fdf4) !important;
+  border-color: #4ade80 !important;
+}
+#skLiveBookCardsRow > :nth-child(3) {
+  background: linear-gradient(145deg, #fef3c7, #fffbeb) !important;
+  border-color: #fbbf24 !important;
+}
+#skLiveBookCardsRow > :nth-child(4) {
+  background: linear-gradient(145deg, #f3e8ff, #faf5ff) !important;
+  border-color: #c084fc !important;
+}
+#skLiveBookCardsRow > :nth-child(5) {
+  background: linear-gradient(145deg, #fce7f3, #fff1f2) !important;
+  border-color: #f472b6 !important;
+}
+
+#skLiveBookCardsRow h2,
+#skLiveBookCardsRow h3 {
+  color: #1e3a8a !important;
+  font-weight: 900 !important;
+}
+
+#skLiveBookCardsRow a {
+  color: #1d4ed8 !important;
+  font-weight: 800 !important;
+}
+
+/* Existing brand logos */
+img[src*="logo" i],
+img[alt*="SASIKUMAR AI" i] {
+  object-fit: contain;
+  max-width: 100%;
+}
+
+/* Keep images and controls inside small screens */
+img, video, canvas, iframe {
+  max-width: 100%;
+}
+
+input, textarea, select, button {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+  body {
+    overflow-x: hidden !important;
+  }
+
+  h1 {
+    font-size: clamp(25px, 7vw, 34px) !important;
+  }
+
+  h2 {
+    font-size: clamp(20px, 5.5vw, 25px) !important;
+  }
+
+  #skLiveBookCardsRow {
+    gap: 10px !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  #skLiveBookCardsRow > * {
+    flex-basis: min(82vw, 290px) !important;
+    width: min(82vw, 290px) !important;
+    min-height: 220px !important;
+  }
+}
+</style>
+
+
+<style id="SK_LIVE_CARDS_MOBILE_VISIBILITY_FIX">
+/* Keep every live card visible */
+#skLiveBookCardsRow {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: stretch !important;
+  gap: 12px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 12px 10px 18px !important;
+  margin: 12px 0 !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  scroll-snap-type: x mandatory;
+  position: relative !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+#skLiveBookCardsRow > * {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 0 0 270px !important;
+  width: 270px !important;
+  min-width: 0 !important;
+  max-width: 85vw !important;
+  min-height: 220px !important;
+  height: auto !important;
+  max-height: none !important;
+  box-sizing: border-box !important;
+  overflow-wrap: anywhere !important;
+  overflow-y: auto !important;
+  scroll-snap-align: start;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+#skLiveBookCardsRow > #dailyThirukkural,
+#skLiveBookCardsRow > #livePonmozhigal {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+#skLiveBookCardsRow .skLiveBookText {
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  line-height: 1.5 !important;
+}
+#skLiveBookCardsRow a {
+  display: inline-block !important;
+  max-width: 100% !important;
+  overflow-wrap: anywhere !important;
+}
+@media (max-width: 600px) {
+  #skLiveBookCardsRow {
+    gap: 10px !important;
+    padding: 10px 8px 16px !important;
+  }
+  #skLiveBookCardsRow > * {
+    flex: 0 0 min(82vw, 290px) !important;
+    width: min(82vw, 290px) !important;
+    max-width: 82vw !important;
+    min-height: 210px !important;
+    padding: 12px !important;
+  }
+  #skLiveBookCardsRow h2 {
+    font-size: 18px !important;
+    overflow-wrap: anywhere !important;
+  }
+}
+</style>
+
+
+<style id="SK_LIVE_CARDS_ANCESTOR_VISIBILITY_FIX">
+/* Colorful SASIKUMAR AI welcome board */
+#skWelcomeHero {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  box-sizing: border-box !important;
+  width: calc(100% - 16px) !important;
+  max-width: 1100px !important;
+  margin: 12px auto 18px !important;
+  padding: 22px 12px !important;
+  border: 2px solid #60a5fa !important;
+  border-radius: 22px !important;
+  background: linear-gradient(125deg,#dbeafe,#fce7f3,#fef3c7,#dcfce7) !important;
+  color: #172554 !important;
+  box-shadow: 0 8px 24px rgba(30,64,175,.18) !important;
+  overflow-wrap: anywhere !important;
+}
+#skWelcomeHero > div {
+  max-width: 100% !important;
+  overflow-wrap: anywhere !important;
+}
+#skWelcomeHero > div:nth-of-type(1) {
+  color: #7c3aed !important;
+  text-shadow: 0 1px 0 #fff !important;
+}
+#skWelcomeHero > div:nth-of-type(2) {
+  color: #075985 !important;
+  background: linear-gradient(90deg,#1d4ed8,#7c3aed,#db2777,#ea580c);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+#skLiveBookCardsRow {
+  display: flex !important;
+  flex-flow: row nowrap !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  gap: 12px !important;
+  padding: 10px 4px 16px !important;
+  scroll-snap-type: x mandatory !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+#skLiveBookCardsRow > article,
+#skLiveBookCardsRow > section {
+  display: flex !important;
+  flex: 0 0 270px !important;
+  flex-direction: column !important;
+  box-sizing: border-box !important;
+  width: 270px !important;
+  min-width: 0 !important;
+  max-width: 84vw !important;
+  min-height: 220px !important;
+  max-height: 300px !important;
+  padding: 14px !important;
+  border-radius: 18px !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  overflow-y: auto !important;
+  overflow-wrap: anywhere !important;
+  scroll-snap-align: start !important;
+  box-shadow: 0 5px 18px rgba(15,23,42,.16) !important;
+}
+#skLiveBookCardsRow > :nth-child(1) {
+  background: linear-gradient(145deg,#fee2e2,#fff7ed) !important;
+  border: 2px solid #ef4444 !important;
+  color: #7f1d1d !important;
+}
+#skLiveBookCardsRow > :nth-child(2) {
+  background: linear-gradient(145deg,#dcfce7,#ecfdf5) !important;
+  border: 2px solid #22c55e !important;
+  color: #14532d !important;
+}
+#skLiveBookCardsRow > :nth-child(3) {
+  background: linear-gradient(145deg,#dbeafe,#eff6ff) !important;
+  border: 2px solid #3b82f6 !important;
+  color: #1e3a8a !important;
+}
+#skLiveBookCardsRow > :nth-child(4) {
+  background: linear-gradient(145deg,#f3e8ff,#fdf4ff) !important;
+  border: 2px solid #a855f7 !important;
+  color: #581c87 !important;
+}
+#skLiveBookCardsRow > :nth-child(5) {
+  background: linear-gradient(145deg,#ffedd5,#fef3c7) !important;
+  border: 2px solid #f97316 !important;
+  color: #7c2d12 !important;
+}
+#skLiveBookCardsRow > * h2,
+#skLiveBookCardsRow > * h3 {
+  display: block !important;
+  margin: 0 0 12px !important;
+  padding: 10px 8px !important;
+  border-radius: 11px !important;
+  color: #fff !important;
+  font-size: 17px !important;
+  font-weight: 900 !important;
+  overflow-wrap: anywhere !important;
+}
+#skLiveBookCardsRow > :nth-child(1) h2 { background:#dc2626 !important; }
+#skLiveBookCardsRow > :nth-child(2) h2 { background:#15803d !important; }
+#skLiveBookCardsRow > :nth-child(3) h2 { background:#1d4ed8 !important; }
+#skLiveBookCardsRow > :nth-child(4) h2 { background:#7e22ce !important; }
+#skLiveBookCardsRow > :nth-child(5) h2 { background:#c2410c !important; }
+#skLiveBookCardsRow .skLiveBookText,
+#skLiveBookCardsRow a {
+  overflow-wrap: anywhere !important;
+  white-space: normal !important;
+}
+@media (max-width: 600px) {
+  #skWelcomeHero {
+    width: calc(100% - 12px) !important;
+    margin: 8px auto 14px !important;
+    padding: 16px 8px !important;
+    border-radius: 16px !important;
+  }
+  #skLiveBookCardsRow > article,
+  #skLiveBookCardsRow > section {
+    flex-basis: 82vw !important;
+    width: 82vw !important;
+    max-width: 310px !important;
+    min-height: 210px !important;
+  }
+}
+</style>
+
+
+<style id="SK_LIVE_NEWS_OPEN_WINDOW_V1">
+#skLiveBookCardsRow {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+#skLiveNewsBookCard {
+  display: flex !important;
+  flex: 0 0 82vw !important;
+  flex-direction: column !important;
+  width: 82vw !important;
+  max-width: 310px !important;
+  min-width: 0 !important;
+  min-height: 210px !important;
+  box-sizing: border-box !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  cursor: pointer !important;
+  background: linear-gradient(135deg,#fee2e2,#fff7ed) !important;
+  border: 2px solid #ef4444 !important;
+  border-radius: 18px !important;
+  padding: 14px !important;
+  color: #7f1d1d !important;
+}
+#skLiveNewsBookCard h2 {
+  background: #dc2626 !important;
+  color: white !important;
+  padding: 10px !important;
+  border-radius: 10px !important;
+}
+#skLiveNewsBookCard a {
+  display: inline-block !important;
+  margin-top: 8px !important;
+  padding: 9px !important;
+  border-radius: 9px !important;
+  background: #b91c1c !important;
+  color: white !important;
+  overflow-wrap: anywhere !important;
+}
+</style>
+
+</head><body>" + el.outerHTML + "
+<style id="SK_LIVE_CARDS_COLOR_MOBILE_FINAL">
+/* Live cards: force visibility and fit on mobile */
+#skLiveBookCardsRow {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: stretch !important;
+  gap: 12px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  margin: 12px 0 20px !important;
+  padding: 12px 8px 18px !important;
+  box-sizing: border-box !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  scroll-snap-type: x mandatory !important;
+  position: relative !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+#skLiveBookCardsRow > article,
+#skLiveBookCardsRow > section {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 0 0 280px !important;
+  width: 280px !important;
+  min-width: 0 !important;
+  max-width: 82vw !important;
+  min-height: 220px !important;
+  height: auto !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 14px !important;
+  box-sizing: border-box !important;
+  border: 2px solid #cbd5e1 !important;
+  border-radius: 18px !important;
+  color: #172033 !important;
+  box-shadow: 0 7px 20px #0f172a20 !important;
+  overflow-wrap: anywhere !important;
+  overflow-y: auto !important;
+  scroll-snap-align: start !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+/* Distinct background colors for each card */
+#skLiveBookCardsRow > :nth-child(1) {
+  background: linear-gradient(145deg,#fee2e2,#fff7ed) !important;
+  border-color: #ef4444 !important;
+}
+#skLiveBookCardsRow > :nth-child(2) {
+  background: linear-gradient(145deg,#dcfce7,#ecfdf5) !important;
+  border-color: #22c55e !important;
+}
+#skLiveBookCardsRow > :nth-child(3) {
+  background: linear-gradient(145deg,#dbeafe,#eff6ff) !important;
+  border-color: #3b82f6 !important;
+}
+#skLiveBookCardsRow > :nth-child(4) {
+  background: linear-gradient(145deg,#f3e8ff,#faf5ff) !important;
+  border-color: #a855f7 !important;
+}
+#skLiveBookCardsRow > :nth-child(5) {
+  background: linear-gradient(145deg,#ffedd5,#fff7ed) !important;
+  border-color: #f97316 !important;
+}
+/* Colorful header bars */
+#skLiveBookCardsRow > :nth-child(1) h2,
+#skLiveBookCardsRow > :nth-child(1) h3 {
+  background: #dc2626 !important;
+  color: #fff !important;
+}
+#skLiveBookCardsRow > :nth-child(2) h2,
+#skLiveBookCardsRow > :nth-child(2) h3 {
+  background: #15803d !important;
+  color: #fff !important;
+}
+#skLiveBookCardsRow > :nth-child(3) h2,
+#skLiveBookCardsRow > :nth-child(3) h3 {
+  background: #1d4ed8 !important;
+  color: #fff !important;
+}
+#skLiveBookCardsRow > :nth-child(4) h2,
+#skLiveBookCardsRow > :nth-child(4) h3 {
+  background: #7e22ce !important;
+  color: #fff !important;
+}
+#skLiveBookCardsRow > :nth-child(5) h2,
+#skLiveBookCardsRow > :nth-child(5) h3 {
+  background: #c2410c !important;
+  color: #fff !important;
+}
+#skLiveBookCardsRow > * h2,
+#skLiveBookCardsRow > * h3 {
+  display: block !important;
+  padding: 10px 8px !important;
+  margin: 0 0 12px !important;
+  border-radius: 10px !important;
+  font-size: 17px !important;
+  line-height: 1.4 !important;
+  overflow-wrap: anywhere !important;
+}
+#skLiveBookCardsRow .skLiveBookText,
+#skLiveBookCardsRow a {
+  max-width: 100% !important;
+  overflow-wrap: anywhere !important;
+  white-space: normal !important;
+}
+#skLiveBookCardsRow a {
+  display: inline-block !important;
+  margin-top: 8px !important;
+}
+@media (max-width: 600px) {
+  #skLiveBookCardsRow {
+    gap: 10px !important;
+    padding: 10px 6px 16px !important;
+  }
+  #skLiveBookCardsRow > article,
+  #skLiveBookCardsRow > section {
+    flex: 0 0 82vw !important;
+    width: 82vw !important;
+    max-width: 310px !important;
+    min-height: 210px !important;
+    padding: 12px !important;
+  }
+}
+</style>
+<style id="SK_LIVE_BOOK_CARDS_V2">
+#skLiveBookCardsRow {
+  display:flex!important;
+  flex-flow:row nowrap!important;
+  align-items:stretch!important;
+  gap:12px!important;
+  width:100%!important;
+  box-sizing:border-box!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  padding:10px 3px 16px!important;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+}
+#skLiveBookCardsRow > * {
+  box-sizing:border-box!important;
+  flex:0 0 270px!important;
+  width:270px!important;
+  min-width:270px!important;
+  height:230px!important;
+  min-height:230px!important;
+  max-height:230px!important;
+  margin:0!important;
+  padding:15px!important;
+  border-radius:18px!important;
+  overflow:auto!important;
+  scroll-snap-align:start;
+  box-shadow:0 6px 18px rgba(0,0,0,.20);
+}
+#skLiveBookCardsRow .skLiveBookExtra {
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:flex-start!important;
+  gap:10px!important;
+  color:#fff!important;
+  background:linear-gradient(145deg,#172554,#1d4ed8)!important;
+}
+#skLiveBookCardsRow .skLiveBookExtra h2 {
+  margin:4px 0 8px!important;
+  font-size:19px!important;
+}
+#skLiveBookCardsRow .skLiveBookText {
+  font-size:15px!important;
+  line-height:1.55!important;
+  overflow-wrap:anywhere;
+}
+#skLiveBookCardsRow .skLiveBookLink {
+  display:inline-block;
+  align-self:flex-start;
+  margin-top:auto;
+  padding:8px 12px;
+  border-radius:20px;
+  background:#fff;
+  color:#1e3a8a;
+  font-weight:700;
+  text-decoration:none;
+}
+@media(max-width:420px) {
+  #skLiveBookCardsRow > * {
+    flex-basis:250px!important;
+    width:250px!important;
+    min-width:250px!important;
+  }
+}
+</style>
 </body>
 </html>
