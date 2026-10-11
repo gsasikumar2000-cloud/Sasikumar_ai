@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#075985">
+<title>LIVE NEWS - SASIKUMAR AI</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f0f9ff;color:#102033}
+header{background:linear-gradient(135deg,#075985,#2563eb,#0f766e);color:white;padding:24px 16px;text-align:center}
+header h1{margin:0 0 8px;font-size:27px}
+header p{margin:5px 0}
+.actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:15px}
+button,.home{border:0;border-radius:10px;padding:11px 16px;font-weight:bold;cursor:pointer;text-decoration:none}
+button{background:#fff;color:#075985}
+.home{background:#064e3b;color:white}
+#status{text-align:center;padding:16px;color:#475569}
+#newsList{max-width:900px;margin:0 auto;padding:0 12px 30px}
+.news-card{background:white;border-radius:15px;padding:17px;margin:13px 0;box-shadow:0 4px 16px #0f172a12;border:1px solid #dbeafe}
+.news-card h2{font-size:19px;margin:0 0 10px;line-height:1.5}
+.meta{font-size:12px;color:#64748b;margin-bottom:10px}
+.description{line-height:1.7;white-space:pre-wrap}
+.read{display:inline-block;margin-top:13px;background:#075985;color:white;padding:10px 13px;border-radius:9px;text-decoration:none;font-weight:bold}
+footer{text-align:center;padding:20px;color:#64748b;font-size:13px}
+</style>
+</head>
+<body>
+<header>
+  <h1>📰 SASIKUMAR AI — LIVE NEWS</h1>
+  <p>தமிழ்நாடு மற்றும் சமீபத்திய செய்திகள்</p>
+  <p id="updated">செய்திகளைப் பெறுகிறது...</p>
+  <div class="actions">
+    <button id="refreshBtn" type="button">🔄 Refresh News</button>
+    <a class="home" href="/">🏠 Home</a>
+  </div>
+</header>
+<div id="status" role="status">செய்திகள் ஏற்றப்படுகின்றன...</div>
+<main id="newsList"></main>
+<footer>SASIKUMAR AI · செய்தி விவரங்கள் அந்தந்த செய்தி வெளியீட்டாளர்களுக்குச் சொந்தமானவை.</footer>
+
+<script>
+(function(){
+  "use strict";
+  const endpoint="/api/breaking-news?category=Tamil%20Nadu&language=ta";
+  const list=document.getElementById("newsList");
+  const status=document.getElementById("status");
+  const updated=document.getElementById("updated");
+  const refreshBtn=document.getElementById("refreshBtn");
+
+  function firstValue(obj,keys){
+    for(const key of keys){
+      if(obj && obj[key]!==undefined && obj[key]!==null && obj[key]!==""){
+        return obj[key];
+      }
+    }
+    return "";
+  }
+
+  function safeLink(value){
+    try{
+      const u=new URL(String(value||""),location.origin);
+      return (u.protocol==="https:"||u.protocol==="http:")?u.href:"";
+    }catch(_){return "";}
+  }
+
+  function addText(parent,tag,className,value){
+    const el=document.createElement(tag);
+    if(className)el.className=className;
+    el.textContent=String(value||"");
+    parent.appendChild(el);
+    return el;
+  }
+
+  async function loadNews(){
+    refreshBtn.disabled=true;
+    status.textContent="செய்திகளைப் பெறுகிறது...";
+    try{
+      const response=await fetch(endpoint,{cache:"no-store"});
+      if(!response.ok)throw new Error("HTTP "+response.status);
+      const data=await response.json();
+      let articles=Array.isArray(data)?data:
+        (data.articles||data.news||data.results||data.items||[]);
+      if(!Array.isArray(articles))articles=[];
+
+      list.replaceChildren();
+      if(!articles.length){
+        status.textContent="தற்போது செய்திகள் கிடைக்கவில்லை. சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.";
+        updated.textContent="கடைசியாகச் சரிபார்த்த நேரம்: "+new Date().toLocaleString();
+        return;
+      }
+
+      articles.forEach((item,index)=>{
+        if(typeof item==="string")item={title:item};
+        const card=document.createElement("article");
+        card.className="news-card";
+
+        const title=firstValue(item,["title","headline","name"])||"தலைப்பு இல்லை";
+        addText(card,"h2","",`${index+1}. ${title}`);
+
+        const source=firstValue(item,["source","site","publisher","domain"]);
+        const date=firstValue(item,["published_date","publishedAt","published_at","date","published"]);
+        const meta=[source,date].filter(Boolean).map(v=>
+          typeof v==="object"?(v.name||JSON.stringify(v)):String(v)
+        ).join(" · ");
+        if(meta)addText(card,"div","meta",meta);
+
+        const description=firstValue(item,["description","content","summary","snippet","text"]);
+        if(description)addText(card,"p","description",description);
+
+        const url=safeLink(firstValue(item,["url","link","href"]));
+        if(url){
+          const a=document.createElement("a");
+          a.className="read";
+          a.href=url;
+          a.target="_blank";
+          a.rel="noopener noreferrer";
+          a.textContent="முழுச் செய்தியைப் படிக்க ↗";
+          card.appendChild(a);
+        }
+
+        list.appendChild(card);
+      });
+
+      status.textContent=`✅ மொத்தம் ${articles.length} செய்தி முடிவுகள்`;
+      updated.textContent="கடைசியாகப் புதுப்பிக்கப்பட்டது: "+new Date().toLocaleString();
+    }catch(error){
+      status.textContent="செய்திகளை ஏற்ற முடியவில்லை. இணைய இணைப்பைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.";
+      console.error("LIVE NEWS:",error);
+    }finally{
+      refreshBtn.disabled=false;
+    }
+  }
+
+  refreshBtn.addEventListener("click",loadNews);
+  loadNews();
+})();
+</script>
+</body>
+</html>
