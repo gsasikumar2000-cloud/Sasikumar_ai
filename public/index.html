@@ -6077,29 +6077,88 @@ section:not(.skMainFeatureCard) {
       .then(function (data) {
         var items = Array.isArray(data) ? data :
           (data.articles || data.news || data.results || data.items || []);
-        var lines = [];
+        var validItems = items.filter(function (item) {
+          return item && typeof item === "object" &&
+            String(item.title || item.headline || "").trim();
+        }).slice(0, 3);
 
-        if (typeof data === "string") lines.push(data);
-        if (data && !Array.isArray(data) && typeof data === "object" && !items.length) {
-          if (data.title) lines.push(data.title);
-          if (data.headline) lines.push(data.headline);
-          if (data.message) lines.push(data.message);
-          if (data.text) lines.push(data.text);
+        target.textContent = "";
+
+        if (!validItems.length) {
+          target.textContent =
+            "புதிய செய்திகள் கிடைக்கவில்லை. கீழே உள்ள இணைப்பைத் திறக்கவும்.";
+          return;
         }
-        if (Array.isArray(items)) {
-          items.slice(0, 3).forEach(function (item) {
-            if (typeof item === "string") lines.push(item);
-            else if (item) lines.push(item.title || item.headline || item.description || item.name || "");
+
+        validItems.forEach(function (item, index) {
+          var entry = document.createElement("div");
+          entry.style.cssText =
+            "padding:9px 0;border-bottom:1px solid #cbd5e1;overflow-wrap:anywhere;";
+
+          var title = document.createElement("a");
+          title.textContent = String(item.title || item.headline || "").trim();
+          title.style.cssText =
+            "display:block;font-weight:800;color:#1d4ed8;text-decoration:underline;line-height:1.5;";
+
+          var url = String(item.url || "").trim();
+          try {
+            var parsedUrl = new URL(url, window.location.origin);
+            if (url && (parsedUrl.protocol === "https:" || parsedUrl.protocol === "http:")) {
+              title.href = parsedUrl.href;
+              title.target = "_blank";
+              title.rel = "noopener noreferrer";
+            } else {
+              title.removeAttribute("href");
+              title.style.textDecoration = "none";
+            }
+          } catch (e) {
+            title.removeAttribute("href");
+            title.style.textDecoration = "none";
+          }
+
+          entry.appendChild(title);
+
+          var meta = document.createElement("div");
+          meta.style.cssText = "font-size:12px;color:#475569;margin-top:4px;";
+
+          var details = [];
+          if (item.published_date) {
+            var date = new Date(item.published_date);
+            if (!isNaN(date.getTime())) {
+              details.push("📅 " + date.toLocaleDateString("ta-IN", {
+                day: "numeric", month: "short", year: "numeric"
+              }));
+            }
+          }
+          try {
+            if (url) details.push("🌐 " + new URL(url).hostname.replace(/^www\./, ""));
+          } catch (e) {}
+
+          meta.textContent = details.join(" • ") || "📰 செய்தி மூலம்";
+          entry.appendChild(meta);
+
+          if (item.description || item.content) {
+            var summary = document.createElement("div");
+            summary.style.cssText =
+              "font-size:13px;color:#334155;line-height:1.5;margin-top:5px;";
+            var description = String(item.description || item.content || "").trim();
+            summary.textContent = description.length > 180
+              ? description.slice(0, 180) + "…"
+              : description;
+            entry.appendChild(summary);
+          }
+
+          target.appendChild(entry);
+        });
+
+        var updated = document.createElement("div");
+        updated.textContent = "🔄 " + "செய்திகள் புதுப்பிக்கப்பட்டன: " +
+          new Date().toLocaleTimeString("ta-IN", {
+            hour: "2-digit", minute: "2-digit"
           });
-        }
-
-        lines = lines.map(function (x) {
-          return String(x || "").trim();
-        }).filter(Boolean);
-
-        target.textContent = lines.length
-          ? lines.slice(0, 3).join(" • ")
-          : "புதிய செய்திகள் கிடைக்கவில்லை. கீழே உள்ள இணைப்பைத் திறக்கவும்.";
+        updated.style.cssText =
+          "font-size:11px;color:#64748b;margin-top:7px;";
+        target.appendChild(updated);
       })
       .catch(function () {
         target.textContent = "செய்திகளை இப்போது பெற முடியவில்லை. மீண்டும் முயற்சிக்கவும்.";
