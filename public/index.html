@@ -504,7 +504,7 @@ text-decoration:none !important;
 </div>
 <!-- END SASIKUMAR AI FIRST PAGE TOOLS -->
 <!-- SASIKUMAR AI FIRST PAGE WEB SEARCH -->
-<div style="width:100%;text-align:center;padding:18px 8px 16px;">
+<div id="skWelcomeHero" style="width:100%;text-align:center;padding:18px 8px 16px;">
   <img src="/assets/sasikumar-ai-logo.png?v=20261006"
        alt="SASIKUMAR AI"
        style="width:60px!important;height:60px!important;object-fit:contain;display:block;margin:0 auto 10px;animation:skLogo360 3s linear infinite;">
@@ -2118,11 +2118,14 @@ const content =
   content.innerHTML = `
     <div id="skGoldApp">
 
-      <div style="margin-bottom:12px;">
-        <button type="button" onclick="if(history.length > 1){history.back()}else{location.href='/'}" style="padding:10px 16px;border:0;border-radius:10px;cursor:pointer;font-weight:700;">
-          ⬅️ BACK TO LAST PAGE
-        </button>
-      </div>
+      <button id="skGoldPriceToggle" type="button"
+        aria-expanded="false"
+        onclick="const panel=document.getElementById('skGoldDetails');const opening=panel.style.display==='none';panel.style.display=opening?'block':'none';this.textContent=opening?'✖️ HIDE GOLD PRICE':'🪙 GOLD PRICE';this.setAttribute('aria-expanded',String(opening));"
+        style="display:block;width:100%;max-width:420px;margin:10px auto 14px;padding:13px 18px;border:0;border-radius:12px;cursor:pointer;font-weight:800;font-size:16px;background:linear-gradient(135deg,#f9d976,#f39c12);color:#332200;">
+        🪙 GOLD PRICE
+      </button>
+
+      <div id="skGoldDetails" style="display:none;">
 
       <div class="skHeader">
         <div class="skLogo" style="width:30px!important;height:30px!important;min-width:30px!important;min-height:30px!important;max-width:30px!important;max-height:30px!important;flex:0 0 30px!important;padding:0!important;margin:0!important;overflow:hidden!important;"><img src="/assets/sasikumar-ai-logo.png?v=20261003" alt="SASIKUMAR AI" style="width:30px!important;height:30px!important;min-width:30px!important;min-height:30px!important;max-width:30px!important;max-height:30px!important;object-fit:contain!important;display:block!important;"></div>
@@ -2157,6 +2160,7 @@ const content =
         </div>
       </div>
 
+      </div>
     </div>
   `;
 
@@ -5243,6 +5247,49 @@ else skRefreshPay2AllWallet();
   });
 
   document.body.appendChild(btn);
+})();
+</script>
+
+
+<script id="SK_REPLY_TOP_MOVE_V1">
+(function () {
+  function moveReplyBelowWelcome() {
+    const welcome = document.getElementById("skWelcomeHero");
+    const chat = document.getElementById("chat");
+    const reply = document.getElementById("sasikumarAIReplySection");
+
+    if (!welcome || !chat || !reply) {
+      console.warn("SASIKUMAR AI: Welcome, chat, or reply box not found.");
+      return;
+    }
+
+    welcome.insertAdjacentElement("afterend", chat);
+    chat.insertAdjacentElement("afterend", reply);
+
+    chat.style.display = "block";
+    chat.style.visibility = "visible";
+
+    reply.style.display = "block";
+    reply.style.visibility = "visible";
+    reply.style.width = "100%";
+    reply.style.maxWidth = "900px";
+    reply.style.boxSizing = "border-box";
+    reply.style.margin = "12px auto 18px";
+
+    const tools = document.getElementById("skReplyToolsBar");
+    if (tools) {
+      tools.style.display = "flex";
+      tools.style.flexWrap = "wrap";
+    }
+
+    console.log("SASIKUMAR AI: Reply box moved below Welcome.");
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", moveReplyBelowWelcome, { once: true });
+  } else {
+    moveReplyBelowWelcome();
+  }
 })();
 </script>
 
