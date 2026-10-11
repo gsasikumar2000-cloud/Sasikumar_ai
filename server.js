@@ -149,6 +149,13 @@ async function analyzeImageAttachment(attachment, question) {
       const msg = String(e?.message || e);
       const retryable = /503|429|500|502|504|high demand|temporar|overload|fetch failed/i.test(msg);
 
+      console.error("GEMINI IMAGE ERROR:", JSON.stringify({
+        attempt,
+        model: "gemini-3.8-flash",
+        status: e?.status || e?.statusCode || e?.response?.status || null,
+        message: msg.slice(0, 1200)
+      }));
+
       if (!retryable || attempt === IMAGE_RETRY_MAX) {
         throw e;
       }
