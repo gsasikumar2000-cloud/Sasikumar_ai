@@ -116,9 +116,80 @@ function tamilHistoryAnswer(q) {
 
 }
 
+
+async function groqVisionImage(attachment, question) {
+  if (!GROQ) {
+    throw new Error("Groq Vision fallback is not configured.");
+  }
+
+  const mimeType = String(
+    attachment?.type || attachment?.mimeType || attachment?.mime_type || ""
+  ).split(";")[0].trim().toLowerCase();
+
+  if (!/^image\/(jpeg|jpg|png|webp|gif|bmp)$/.test(mimeType)) {
+    throw new Error("Groq Vision does not support this image format.");
+  }
+
+  const raw = String(attachment?.data || "");
+  const data = raw.replace(/^data:[^,]*;base64,/i, "").replace(/\s/g, "");
+
+  if (!data) throw new Error("Image data is empty.");
+
+  const bytes = Buffer.from(data, "base64");
+  if (bytes.length > 14 * 1024 * 1024) {
+    throw new Error("Image exceeds the 14 MB processing limit.");
+  }
+
+  const prompt = String(
+    question || "இந்தப் படத்தை கவனமாகப் பார்த்து தமிழில் விளக்கவும்."
+  ).slice(0, 10000);
+
+  const response = await fetch(
+    "https://api.groq.com/openai/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${GROQ}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "qwen/qwen3.8-27b",
+        messages: [{
+          role: "user",
+          content: [
+            { type: "text", text: prompt },
+            {
+              type: "image_url",
+              image_url: { url: `data:${mimeType};base64,${data}` }
+            }
+          ]
+        }],
+        max_completion_tokens: 1200,
+        temperature: 0.3
+      })
+    }
+  );
+
+  const result = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    console.error("Groq Vision API error:", response.status,
+      JSON.stringify(result).slice(0, 500));
+    throw new Error(`Groq Vision API failed (${response.status}).`);
+  }
+
+  const answer = result.choices?.[0]?.message?.content;
+  if (typeof answer !== "string" || !answer.trim()) {
+    throw new Error("Groq Vision returned an empty response.");
+  }
+
+  console.log("Image analysis completed using Groq Vision fallback.");
+  return answer.trim();
+}
+
 async function analyzeImageAttachment(attachment, question) {
   if (!GEMINI_API_KEY) {
-    throw new Error("Image analysis requires GEMINI_API_KEY in the server environment.");
+    return await groqVisionImage(attachment, question);
   }
 
   if (!attachment || typeof attachment.data !== "string" ||
@@ -157,7 +228,11 @@ async function analyzeImageAttachment(attachment, question) {
       }));
 
       if (!retryable || attempt === IMAGE_RETRY_MAX) {
-        throw e;
+        console.warn(
+          "Gemini image analysis failed; trying Groq Vision fallback:",
+          String(e?.message || e).slice(0, 250)
+        );
+        return await groqVisionImage(attachment, question);
       }
 
       console.warn(`Gemini image attempt ${attempt} failed; retrying.`);
