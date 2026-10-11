@@ -3218,76 +3218,7 @@ function printAppraisalReport(btn){
 </script>
 
 
-<style id="SK_OPTION_B_REPLY_LIVE_CLEAN_V1">
-/* Keep the main reply, login and three live feature cards */
-#sasikumar-ai-hub-dashboard-card,
-#skAllContentLiveCard,
-#newSasikumarHome,
-#newGoldServices,
-#newEducationServices,
-#newQuickServices,
-#dailyThirukkural,
-#livePonmozhigal,
-#allJobs,
-#banking-products,
-#sasikumarPay2AllWallet,
-#upi-bottom-dashboard,
-#sk3DAdButton,
-#skGoldApp,
-.sk-more-tools,
-.sk-extra-details {
-  display: none !important;
-}
 
-/* Hide service sections, but preserve the three main live cards */
-section:not(.skMainFeatureCard) {
-  display: none !important;
-}
-
-/* Hide extra service/dashboard cards */
-.dash-grid,
-.dash-title,
-.dash-sub,
-.sk-service-zigzag,
-.sk-all-services-card,
-#loanCalculationResult {
-  display: none !important;
-}
-</style>
-<script id="SK_OPTION_B_HIDE_INLINE_V1">
-(function () {
-  const selectors = [
-    '#sasikumar-ai-hub-dashboard-card',
-    '#skAllContentLiveCard',
-    '#newSasikumarHome',
-    '#newGoldServices',
-    '#newEducationServices',
-    '#newQuickServices',
-    '#dailyThirukkural',
-    '#livePonmozhigal',
-    '#allJobs',
-    '#banking-products',
-    '#sasikumarPay2AllWallet',
-    '#upi-bottom-dashboard',
-    '#sk3DAdButton',
-    '#skGoldApp'
-  ];
-
-  function cleanOptionB() {
-    selectors.forEach(function (selector) {
-      document.querySelectorAll(selector).forEach(function (el) {
-        el.style.setProperty('display', 'none', 'important');
-      });
-    });
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', cleanOptionB, { once: true });
-  } else {
-    cleanOptionB();
-  }
-})();
-</script>
 
 </body></html>"
 );
@@ -5479,5 +5410,83 @@ else skRefreshPay2AllWallet();
 })();
 </script>
 
+<style id="SK_OPTION_B_REPLY_LIVE_CLEAN_V1">
+/* Keep the main reply, login and three live feature cards */
+#sasikumar-ai-hub-dashboard-card,
+#skAllContentLiveCard,
+#newSasikumarHome,
+#newGoldServices,
+#newEducationServices,
+#newQuickServices,
+#dailyThirukkural,
+#livePonmozhigal,
+#allJobs,
+#banking-products,
+#sasikumarPay2AllWallet,
+#upi-bottom-dashboard,
+#sk3DAdButton,
+#skGoldApp,
+.sk-more-tools,
+.sk-extra-details {
+  display: none !important;
+}
+
+/* Hide service sections, but preserve the three main live cards */
+section:not(.skMainFeatureCard) {
+  display: none !important;
+}
+
+/* Hide extra service/dashboard cards */
+.dash-grid,
+.dash-title,
+.dash-sub,
+.sk-service-zigzag,
+.sk-all-services-card,
+#loanCalculationResult {
+  display: none !important;
+}
+
+/* Keep the reply heading and question input; hide extra controls */
+.toolbar,
+#skAIQuickQuestions,
+.daily-ticker {
+  display: none !important;
+}
+
+</style>
+<script id="SK_OPTION_B_HIDE_INLINE_V1">
+(function () {
+  const selectors = [
+    '#sasikumar-ai-hub-dashboard-card',
+    '#skAllContentLiveCard',
+    '#newSasikumarHome',
+    '#newGoldServices',
+    '#newEducationServices',
+    '#newQuickServices',
+    '#dailyThirukkural',
+    '#livePonmozhigal',
+    '#allJobs',
+    '#banking-products',
+    '#sasikumarPay2AllWallet',
+    '#upi-bottom-dashboard',
+    '#sk3DAdButton',
+    '#skGoldApp'
+  ];
+
+  function cleanOptionB() {
+    selectors.forEach(function (selector) {
+      document.querySelectorAll(selector).forEach(function (el) {
+        el.style.setProperty('display', 'none', 'important');
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', cleanOptionB, { once: true });
+  } else {
+    cleanOptionB();
+  }
+})();
+</script>
 </body>
 </html>
