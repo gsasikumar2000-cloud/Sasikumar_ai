@@ -360,6 +360,90 @@ app.get('/api/global-search', async (req, res) => {
   }
 });
 
+
+// LIVE BREAKING NEWS API — powered by Tavily
+app.get('/api/breaking-news', async (req, res) => {
+  const category = String(req.query.category || 'Tamil Nadu').trim().slice(0, 80);
+  const language = String(req.query.language || 'ta').toLowerCase();
+  const languageNames = {
+    ta: 'Tamil',
+    en: 'English',
+    hi: 'Hindi',
+    te: 'Telugu',
+    kn: 'Kannada',
+    ml: 'Malayalam'
+  };
+  const lang = languageNames[language] || 'Tamil';
+  const queryByLanguage = {
+    ta: 'தமிழ்நாடு இன்றைய முக்கிய செய்திகள்',
+    en: 'Tamil Nadu latest breaking news',
+    hi: 'तमिलनाडु की ताजा मुख्य खबरें',
+    te: 'తమిళనాడు తాజా ముఖ్య వార్తలు',
+    kn: 'ತಮಿಳುನಾಡಿನ ಇತ್ತೀಚಿನ ಪ್ರಮುಖ ಸುದ್ದಿಗಳು',
+    ml: 'തമിഴ്നാട്ടിലെ ഏറ്റവും പുതിയ പ്രധാന വാർത്തകൾ'
+  };
+
+  const query = category.toLowerCase() === 'tamil nadu'
+    ? queryByLanguage[language] || queryByLanguage.ta
+    : `${category} latest breaking news ${lang}`;
+
+  res.set('Cache-Control', 'no-store');
+
+  try {
+    const key = process.env.TAVILY_API_KEY;
+    if (!key) {
+      return res.status(503).json({
+        error: 'Live news search is not configured.',
+        articles: []
+      });
+    }
+
+    const response = await fetch('https://api.tavily.com/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        api_key: key,
+        query,
+        topic: 'news',
+        search_depth: 'advanced',
+        max_results: 5,
+        days: 3,
+        include_answer: false
+      })
+    });
+
+    if (!response.ok) {
+      console.error('Breaking news provider failed:', response.status);
+      return res.status(502).json({
+        error: 'Live news provider is temporarily unavailable.',
+        articles: []
+      });
+    }
+
+    const data = await response.json();
+    const articles = (data.results || []).map(item => ({
+      title: String(item.title || '').trim(),
+      url: String(item.url || '').trim(),
+      description: String(item.content || '').trim(),
+      published_date: item.published_date || null
+    })).filter(item => item.title && item.url);
+
+    return res.json({
+      category,
+      language,
+      provider: 'Tavily News',
+      articles,
+      news: articles
+    });
+  } catch (error) {
+    console.error('Breaking news error:', error.message);
+    return res.status(502).json({
+      error: 'Unable to retrieve live news right now.',
+      articles: []
+    });
+  }
+});
+
 app.get('/api/status',(req,res)=>res.json({live:true, groq:!!GROQ, gemini:!!GROQ, users:mem.size}));
 
 async function sendWA(to,pid,pl){
