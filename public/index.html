@@ -6480,9 +6480,11 @@ section:not(.skMainFeatureCard) {
 
     function refreshSKNews() {
       if (newsBusy) return;
-      newsBusy = true;
       var target = document.getElementById("skLiveNewsBookText");
-      if (!target) { newsBusy = false; return; }
+      if (!target) return;
+
+      newsBusy = true;
+      target.setAttribute("aria-live", "polite");
 
       fetch("/api/breaking-news?category=Tamil%20Nadu&language=ta", {
         cache: "no-store"
@@ -6494,34 +6496,36 @@ section:not(.skMainFeatureCard) {
       .then(function (data) {
         var items = Array.isArray(data) ? data :
           (data.articles || data.news || data.results || data.items || []);
+
         var validItems = items.filter(function (item) {
           return item && typeof item === "object" &&
             String(item.title || item.headline || "").trim();
         }).slice(0, 3);
 
-        target.textContent = "";
+        target.replaceChildren();
 
         if (!validItems.length) {
-          target.textContent =
-            "புதிய செய்திகள் கிடைக்கவில்லை. கீழே உள்ள இணைப்பைத் திறக்கவும்.";
+          target.textContent = "📰 புதிய செய்திகள் கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.";
           return;
         }
 
         validItems.forEach(function (item, index) {
-          var entry = document.createElement("div");
+          var entry = document.createElement("article");
           entry.style.cssText =
-            "padding:9px 0;border-bottom:1px solid #cbd5e1;overflow-wrap:anywhere;";
+            "padding:10px 0;border-bottom:1px solid #cbd5e1;overflow-wrap:anywhere;";
 
           var title = document.createElement("a");
-          title.textContent = String(item.title || item.headline || "").trim();
+          title.textContent = (index + 1) + ". " +
+            String(item.title || item.headline || "").trim();
           title.style.cssText =
             "display:block;font-weight:800;color:#1d4ed8;text-decoration:underline;line-height:1.5;";
 
           var url = String(item.url || "").trim();
           try {
-            var parsedUrl = new URL(url, window.location.origin);
-            if (url && (parsedUrl.protocol === "https:" || parsedUrl.protocol === "http:")) {
-              title.href = parsedUrl.href;
+            var parsed = new URL(url);
+            if ((parsed.protocol === "https:" || parsed.protocol === "http:") &&
+                parsed.hostname && parsed.hostname.indexOf(".") > 0) {
+              title.href = parsed.href;
               title.target = "_blank";
               title.rel = "noopener noreferrer";
             } else {
@@ -6532,11 +6536,7 @@ section:not(.skMainFeatureCard) {
             title.removeAttribute("href");
             title.style.textDecoration = "none";
           }
-
           entry.appendChild(title);
-
-          var meta = document.createElement("div");
-          meta.style.cssText = "font-size:12px;color:#475569;margin-top:4px;";
 
           var details = [];
           if (item.published_date) {
@@ -6547,21 +6547,24 @@ section:not(.skMainFeatureCard) {
               }));
             }
           }
+
           try {
             if (url) details.push("🌐 " + new URL(url).hostname.replace(/^www\./, ""));
           } catch (e) {}
 
+          var meta = document.createElement("div");
           meta.textContent = details.join(" • ") || "📰 செய்தி மூலம்";
+          meta.style.cssText = "font-size:12px;color:#475569;margin-top:4px;";
           entry.appendChild(meta);
 
-          if (item.description || item.content) {
-            var summary = document.createElement("div");
-            summary.style.cssText =
-              "font-size:13px;color:#334155;line-height:1.5;margin-top:5px;";
-            var description = String(item.description || item.content || "").trim();
-            summary.textContent = description.length > 180
-              ? description.slice(0, 180) + "…"
+          var description = String(item.description || item.content || "").trim();
+          if (description) {
+            var summary = document.createElement("p");
+            summary.textContent = description.length > 140
+              ? description.slice(0, 140) + "…"
               : description;
+            summary.style.cssText =
+              "font-size:13px;color:#334155;line-height:1.5;margin:5px 0 0;";
             entry.appendChild(summary);
           }
 
@@ -6569,7 +6572,7 @@ section:not(.skMainFeatureCard) {
         });
 
         var updated = document.createElement("div");
-        updated.textContent = "🔄 " + "செய்திகள் புதுப்பிக்கப்பட்டன: " +
+        updated.textContent = "🔄 புதுப்பிப்பு: " +
           new Date().toLocaleTimeString("ta-IN", {
             hour: "2-digit", minute: "2-digit"
           });
@@ -6580,7 +6583,9 @@ section:not(.skMainFeatureCard) {
       .catch(function () {
         target.textContent = "செய்திகளை இப்போது பெற முடியவில்லை. மீண்டும் முயற்சிக்கவும்.";
       })
-      .finally(function () { newsBusy = false; });
+      .finally(function () {
+        newsBusy = false;
+      });
     }
 
     function rotateSKPoem() {
