@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
@@ -7,11 +8,12 @@ dotenv.config();
 const __filename=fileURLToPath(import.meta.url);
 const __dirname=path.dirname(__filename);
 const app=express();
-app.use(cors()); app.use(express.json());
+app.use(cors()); app.use(express.json({ limit: '16mb' }));
 app.use(express.static(path.join(__dirname,'public')));
 const VERIFY=process.env.VERIFY_TOKEN||"sasikumar123";
 const WATOKEN=process.env.WHATSAPP_TOKEN;
-const GROQ=process.env.GROQ_API_KEY||process.env.GEMINI_API_KEY;
+const GROQ=process.env.GROQ_API_KEY;
+const GEMINI_API_KEY=process.env.GEMINI_API_KEY;
 const mem=new Map();
 const add=(u,r,t)=>{if(!mem.has(u))mem.set(u,[]);let a=mem.get(u);a.push({r,t,time:Date.now()});if(a.length>30)a.shift()};
 const getMem=(u)=>(mem.get(u)||[]).slice(-8).map(x=>`${x.r}:${x.t}`).join('\n');
@@ -114,11 +116,49 @@ function tamilHistoryAnswer(q) {
 
 }
 
-// WEB API - THIS FIXES YOUR SCREENSHOT ERROR
+async function analyzeImageAttachment(attachment, question) {
+  if (!GEMINI_API_KEY) {
+    throw new Error("Image analysis requires GEMINI_API_KEY in the server environment.");
+  }
+
+  if (!attachment || typeof attachment.data !== "string" ||
+      !String(attachment.type || "").startsWith("image/")) {
+    throw new Error("Please upload a supported image file.");
+  }
+
+  const base64 = attachment.data.replace(/^data:[^,]*,/, "");
+  if (!base64 || base64.length > 14 * 1024 * 1024) {
+    throw new Error("Image is too large. Please try an image smaller than 10 MB.");
+  }
+
+  const model = new GoogleGenerativeAI(GEMINI_API_KEY)
+    .getGenerativeModel({ model: "gemini-2.5-flash" });
+
+  const result = await model.generateContent([
+    {
+      text: String(question || "Describe this image and explain its important details.")
+        .slice(0, 12000)
+    },
+    {
+      inlineData: {
+        mimeType: attachment.type,
+        data: base64
+      }
+    }
+  ]);
+
+  return result.response.text();
+}
+
+// WEB API
 app.post('/api/chat', async(req,res)=>{
  try{
-  const {message, category, conversationId} = req.body || {};
-  const txt = String(message || category || "hi").slice(0,12000);
+  const {message, category, conversationId, attachment} = req.body || {};
+  const hasAttachment = !!attachment;
+  const txt = String(message || category ||
+    (hasAttachment ? "இந்தப் படத்தைப் பார்த்து விளக்கவும்." : "hi")
+  ).slice(0,12000);
+
   const safeId = String(conversationId || "")
     .replace(/[^a-zA-Z0-9_-]/g, "")
     .slice(0,80);
@@ -126,14 +166,42 @@ app.post('/api/chat', async(req,res)=>{
     ? "web:" + safeId
     : "web:oneoff:" + Date.now() + ":" + Math.random().toString(36).slice(2);
 
-  let ans = conversationRecallAnswer(txt,uid) || tamilHistoryAnswer(txt) || await groqAI(txt,uid);
-  if(!ans) ans = await globalKnowledge(txt);
-  if(!ans) ans = smartAI(txt);
+  let ans;
+
+  if (hasAttachment) {
+    if (!String(attachment.type || "").startsWith("image/")) {
+      return res.status(415).json({
+        reply: "தற்போது படங்களை மட்டுமே நேரடியாகப் புரிந்துகொள்ள முடியும். PDF அல்லது document support இன்னும் சேர்க்கப்படவில்லை.",
+        status: "unsupported_attachment"
+      });
+    }
+    ans = await analyzeImageAttachment(attachment, txt);
+  } else {
+    ans = conversationRecallAnswer(txt,uid) ||
+      tamilHistoryAnswer(txt) ||
+      await groqAI(txt,uid);
+
+    if(!ans) ans = await globalKnowledge(txt);
+    if(!ans) ans = smartAI(txt);
+  }
 
   add(uid,"user",txt);
   add(uid,"assistant",ans);
-  res.json({reply:ans, status:"ok", ai: GROQ? "Groq LIVE" : "Offline Smart"});
- }catch(e){console.error(e); res.json({reply:"Error Sir, try again!", status:"error"});}
+  res.json({
+    reply:ans,
+    status:"ok",
+    ai: hasAttachment ? "Gemini Image Analysis" : (GROQ ? "Groq LIVE" : "Offline Smart")
+  });
+ }catch(e){
+  console.error("CHAT API ERROR:", e.message);
+  const status = /GEMINI_API_KEY/.test(e.message) ? 503 : 500;
+  res.status(status).json({
+    reply: /GEMINI_API_KEY/.test(e.message)
+      ? "Image analysis is not configured. Please set GEMINI_API_KEY in Render Environment."
+      : "படத்தைப் புரிந்துகொள்ள முடியவில்லை. சிறிய படத்துடன் மீண்டும் முயற்சிக்கவும்.",
+    status:"error"
+  });
+ }
 });
 
 
