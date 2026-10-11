@@ -3655,6 +3655,54 @@ input, textarea, select, button {
 }
 </style>
 
+
+<style id="SK_LIVE_NEWS_OPEN_WINDOW_V1">
+#skLiveBookCardsRow {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+#skLiveNewsBookCard {
+  display: flex !important;
+  flex: 0 0 82vw !important;
+  flex-direction: column !important;
+  width: 82vw !important;
+  max-width: 310px !important;
+  min-width: 0 !important;
+  min-height: 210px !important;
+  box-sizing: border-box !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  cursor: pointer !important;
+  background: linear-gradient(135deg,#fee2e2,#fff7ed) !important;
+  border: 2px solid #ef4444 !important;
+  border-radius: 18px !important;
+  padding: 14px !important;
+  color: #7f1d1d !important;
+}
+#skLiveNewsBookCard h2 {
+  background: #dc2626 !important;
+  color: white !important;
+  padding: 10px !important;
+  border-radius: 10px !important;
+}
+#skLiveNewsBookCard a {
+  display: inline-block !important;
+  margin-top: 8px !important;
+  padding: 9px !important;
+  border-radius: 9px !important;
+  background: #b91c1c !important;
+  color: white !important;
+  overflow-wrap: anywhere !important;
+}
+</style>
+
 </head><body>" + el.outerHTML + "
 <style id="SK_LIVE_CARDS_COLOR_MOBILE_FINAL">
 /* Live cards: force visibility and fit on mobile */
@@ -6350,15 +6398,19 @@ section:not(.skMainFeatureCard) {
     }
 
     /* Keep the card row's section parent visible when legacy CSS hides sections. */
+    /* Fix every ancestor section hidden by legacy CSS. */
     var liveHost = kural.parentElement;
-    if (liveHost && liveHost.tagName.toLowerCase() === "section") {
-      liveHost.classList.add("skMainFeatureCard");
-      liveHost.style.setProperty("display", "block", "important");
-      liveHost.style.setProperty("visibility", "visible", "important");
-      liveHost.style.setProperty("opacity", "1", "important");
-      liveHost.style.setProperty("width", "100%", "important");
-      liveHost.style.setProperty("max-width", "100%", "important");
-      liveHost.style.setProperty("box-sizing", "border-box", "important");
+    while (liveHost && liveHost !== document.body) {
+      if (liveHost.tagName && liveHost.tagName.toLowerCase() === "section") {
+        liveHost.classList.add("skMainFeatureCard");
+        liveHost.style.setProperty("display", "block", "important");
+        liveHost.style.setProperty("visibility", "visible", "important");
+        liveHost.style.setProperty("opacity", "1", "important");
+        liveHost.style.setProperty("width", "100%", "important");
+        liveHost.style.setProperty("max-width", "100%", "important");
+        liveHost.style.setProperty("box-sizing", "border-box", "important");
+      }
+      liveHost = liveHost.parentElement;
     }
 
     var row = document.createElement("div");
@@ -6377,7 +6429,23 @@ section:not(.skMainFeatureCard) {
     news.innerHTML =
       '<h2>📰 LIVE NEWS</h2>' +
       '<div class="skLiveBookText" id="skLiveNewsBookText">செய்திகளைப் பெறுகிறது...</div>' +
-      '<a class="skLiveBookLink" href="/api/breaking-news?category=Tamil%20Nadu&language=ta">செய்திகள் பார்க்க</a>';
+      '<a class="skLiveBookLink" target="_blank" rel="noopener noreferrer" href="/api/breaking-news?category=Tamil%20Nadu&language=ta">📰 புதிய window-ல் செய்திகள் பார்க்க ↗</a>';
+
+    /* Tap the card body to open the news page in a new tab. */
+    news.style.setProperty("cursor", "pointer");
+    news.addEventListener("click", function (event) {
+      var link = event.target.closest("a");
+      if (link && news.contains(link)) {
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        return;
+      }
+      window.open(
+        "/api/breaking-news?category=Tamil%20Nadu&language=ta",
+        "_blank",
+        "noopener,noreferrer"
+      );
+    });
 
     var sports = document.createElement("article");
     sports.className = "skLiveBookExtra";
