@@ -5263,8 +5263,8 @@ else skRefreshPay2AllWallet();
       return;
     }
 
-    welcome.insertAdjacentElement("afterend", chat);
-    chat.insertAdjacentElement("afterend", reply);
+    welcome.insertAdjacentElement("afterend", reply);
+    reply.insertAdjacentElement("afterend", chat);
 
     chat.style.display = "block";
     chat.style.visibility = "visible";
@@ -5281,6 +5281,9 @@ else skRefreshPay2AllWallet();
       tools.style.display = "flex";
       tools.style.flexWrap = "wrap";
     }
+
+    const goldButton = document.getElementById("skGoldPriceToggle");
+    if (goldButton) goldButton.style.display = "none";
 
     console.log("SASIKUMAR AI: Reply box moved below Welcome.");
   }
