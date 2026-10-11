@@ -1566,10 +1566,11 @@ Tamil + English • Gold • General Q&A</div>
 <div id="sasikumarAIReplySection" class="input-area">
 
 
-<div id="skReplyToolsBar" style="display:none;flex-wrap:wrap;gap:7px;align-items:center;margin:8px 0;padding:9px;border:1px solid #cbd5e1;border-radius:14px;background:linear-gradient(135deg,#eff6ff,#f0fdfa);">
+<div id="skReplyToolsBar" style="display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin:8px 0;padding:9px;border:1px solid #cbd5e1;border-radius:14px;background:linear-gradient(135deg,#eff6ff,#f0fdfa);">
   <button type="button" onclick="const q=document.getElementById('q');if(q){const t=q.value; if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(()=>{q.value='';q.focus();}).catch(()=>alert('Cut permission unavailable. Select and cut the text manually.'));}else{q.select();alert('Please cut the selected text manually.');}}" style="padding:8px 11px;border:0;border-radius:10px;background:#dbeafe;">✂️ Cut</button>
   <button type="button" onclick="const q=document.getElementById('q');if(q&&navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(q.value).catch(()=>alert('Copy permission unavailable.'));}else if(q){q.select();alert('Please copy the selected text manually.');}" style="padding:8px 11px;border:0;border-radius:10px;background:#dbeafe;">📋 Copy</button>
   <button type="button" onclick="const q=document.getElementById('q');if(q&&navigator.clipboard&&navigator.clipboard.readText){navigator.clipboard.readText().then(t=>{q.value+=t;q.dispatchEvent(new Event('input',{bubbles:true}));q.focus();}).catch(()=>alert('Paste permission unavailable. Long-press the reply box and select Paste.'));}else if(q){q.focus();alert('Long-press the reply box and select Paste.');}" style="padding:8px 11px;border:0;border-radius:10px;background:#dcfce7;">📥 Paste</button>
+  <button type="button" onclick="skReplyWebSearch()" style="padding:8px 11px;border:0;border-radius:10px;background:#bfdbfe;color:#1e3a8a;font-weight:700;">🌐 Web Tool</button>
   <button type="button" onclick="alert('⚡ Dual Tool');" style="padding:8px 11px;border:0;border-radius:10px;background:#fef3c7;">⚡ Dual</button>
   <button type="button" onclick="if(typeof noteCamera==='function'){noteCamera();}else{alert('Camera tool unavailable');}" style="padding:8px 11px;border:0;border-radius:10px;background:#fce7f3;">📷 Camera</button>
   <button type="button" onclick="if(typeof noteUpload==='function'){noteUpload();}else{alert('Upload tool unavailable');}" style="padding:8px 11px;border:0;border-radius:10px;background:#e0e7ff;">📁 Upload</button>
@@ -1600,6 +1601,110 @@ function escapeHtml(text){
 }
 
 
+
+
+async function skReplyWebSearch(){
+  const input = document.getElementById("q");
+  const chatBox = document.getElementById("chat");
+  if (!input || !chatBox) {
+    alert("Reply box unavailable.");
+    return;
+  }
+
+  const query = input.value.trim();
+  if (!query) {
+    alert("முதலில் உங்கள் கேள்வியை எழுதுங்கள்.");
+    input.focus();
+    return;
+  }
+
+  let panel = document.getElementById("skReplyWebResults");
+  if (!panel) {
+    panel = document.createElement("div");
+    panel.id = "skReplyWebResults";
+    panel.style.cssText =
+      "margin:12px 0;padding:12px;border:1px solid #93c5fd;" +
+      "border-radius:14px;background:#eff6ff;color:#172554;" +
+      "overflow-wrap:anywhere;";
+    chatBox.appendChild(panel);
+  }
+
+  panel.innerHTML = "<strong>🌐 Web Tool</strong><p>Searching the web...</p>";
+  panel.scrollIntoView({behavior:"smooth", block:"nearest"});
+
+  try {
+    const response = await fetch(
+      "/api/global-search?q=" + encodeURIComponent(query),
+      {headers: {"Accept":"application/json"}}
+    );
+
+    const raw = await response.text();
+    let data;
+    try {
+      data = JSON.parse(raw);
+    } catch (_) {
+      data = {message: raw};
+    }
+
+    if (!response.ok) {
+      throw new Error(
+        (data && (data.error || data.message)) ||
+        ("Search failed (HTTP " + response.status + ")")
+      );
+    }
+
+    const results = Array.isArray(data) ? data :
+      (data.results || data.data || data.items || []);
+
+    const safeText = value => {
+      const el = document.createElement("span");
+      el.textContent = String(value == null ? "" : value);
+      return el.innerHTML;
+    };
+
+    let html = "<strong>🌐 Web Search Results</strong>" +
+      "<p><b>Query:</b> " + safeText(query) + "</p>";
+
+    if (Array.isArray(results) && results.length) {
+      html += results.slice(0, 8).map((item, index) => {
+        if (typeof item === "string") {
+          return "<div style='padding:9px 0;border-top:1px solid #bfdbfe'>" +
+            safeText(item) + "</div>";
+        }
+
+        const title = item.title || item.name || ("Result " + (index + 1));
+        const description =
+          item.content || item.snippet || item.description || item.text || "";
+        const url = item.url || item.link || "";
+        let link = "";
+
+        try {
+          const parsed = new URL(url, window.location.origin);
+          if (parsed.protocol === "https:" || parsed.protocol === "http:") {
+            link = "<p><a href='" + safeText(parsed.href) +
+              "' target='_blank' rel='noopener noreferrer'>Open source ↗</a></p>";
+          }
+        } catch (_) {}
+
+        return "<article style='padding:10px 0;border-top:1px solid #bfdbfe'>" +
+          "<b>" + safeText(title) + "</b><p>" +
+          safeText(description) + "</p>" + link + "</article>";
+      }).join("");
+    } else {
+      const summary = data.answer || data.summary || data.message || data.error;
+      html += summary
+        ? "<p>" + safeText(summary) + "</p>"
+        : "<p>No search results returned. Please try another query.</p>";
+    }
+
+    panel.innerHTML = html;
+  } catch (error) {
+    panel.innerHTML =
+      "<strong>🌐 Web Tool</strong><p>Search failed: " +
+      safeText(error.message || "Unknown error") + "</p>" +
+      "<p>Check the server and search API configuration.</p>";
+  }
+}
 
 function goldHallmark(){
   const box = document.createElement("div");
