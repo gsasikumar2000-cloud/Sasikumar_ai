@@ -1552,7 +1552,7 @@ style="position:absolute;top:8px;right:8px;padding:9px 13px;border:0;border-radi
   <button type="button" class="skBtn" onclick="skAIQuick('Class 10 mathematics பற்றி உதவி வேண்டும்')">📚 Education</button>
 </div>
 <div id="chat">
-<div class="msg ai"><div class="sasikumar-ai-logo-wrap">
+<div class="msg ai skInitialGreeting"><div class="sasikumar-ai-logo-wrap">
 <img src="/assets/sasikumar-ai-logo.png?v=20261002"
      alt="SASIKUMAR AI"
      class="sasikumar-ai-logo" style="width:30px!important;height:30px!important;max-width:30px!important;max-height:30px!important;object-fit:contain!important;display:inline-block!important;">
@@ -1564,6 +1564,7 @@ Tamil + English • Gold • General Q&A</div>
 
 <div id="sasikumarAIReplySection" class="input-area">
 
+<h2 id="skReplyHeading" style="margin:8px 0 12px;text-align:left;font-size:20px;font-weight:800;color:#14532d;">🤖 SASIKUMAR AI REPLY</h2>
 <div id="skReplyToolsBar" style="display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin:8px 0;padding:9px;border:1px solid #cbd5e1;border-radius:14px;background:linear-gradient(135deg,#eff6ff,#f0fdfa);">
   <button type="button" onclick="const q=document.getElementById('q');if(q){const t=q.value; if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(()=>{q.value='';q.focus();}).catch(()=>alert('Cut permission unavailable. Select and cut the text manually.'));}else{q.select();alert('Please cut the selected text manually.');}}" style="padding:8px 11px;border:0;border-radius:10px;background:#dbeafe;">✂️ Cut</button>
   <button type="button" onclick="const q=document.getElementById('q');if(q&&navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(q.value).catch(()=>alert('Copy permission unavailable.'));}else if(q){q.select();alert('Please copy the selected text manually.');}" style="padding:8px 11px;border:0;border-radius:10px;background:#dbeafe;">📋 Copy</button>
@@ -5277,6 +5278,12 @@ else skRefreshPay2AllWallet();
     reply.style.margin = "12px auto 18px";
     reply.style.position = "relative";
     reply.style.zIndex = "2";
+
+    const replyHeading = document.getElementById("skReplyHeading");
+    if (replyHeading) replyHeading.style.display = "block";
+
+    const initialGreeting = document.querySelector("#chat .skInitialGreeting");
+    if (initialGreeting) initialGreeting.style.display = "none";
 
     const tools = document.getElementById("skReplyToolsBar");
     if (tools) {
