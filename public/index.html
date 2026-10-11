@@ -6462,11 +6462,23 @@ section:not(.skMainFeatureCard) {
       '<h2>✍️ LIVE KAVITHAI</h2>' +
       '<div class="skLiveBookText" id="skLiveKavithaiBookText"></div>';
 
-    row.appendChild(news);
     row.appendChild(sports);
     row.appendChild(kural);
     row.appendChild(ponmozhigal);
     row.appendChild(kavithai);
+
+    /* Place LIVE NEWS immediately after the Login section. */
+    var loginSection = document.getElementById("sasikumarLoginScreen");
+    if (loginSection && loginSection.parentNode) {
+      loginSection.insertAdjacentElement("afterend", news);
+      news.style.setProperty("display", "block", "important");
+      news.style.setProperty("width", "calc(100% - 24px)");
+      news.style.setProperty("max-width", "900px");
+      news.style.setProperty("margin", "16px auto");
+      news.style.setProperty("box-sizing", "border-box");
+    } else {
+      row.appendChild(news);
+    }
 
     var poems = [
       "புதிய காலை புதிய நம்பிக்கை; முயற்சி தொடர்ந்தால் வெற்றி மலரும்.",
