@@ -584,6 +584,121 @@ app.get("/api/silver-rate", async (req, res) => {
   }
 });
 
+
+async function downloadWhatsAppMedia(mediaId) {
+  if (!WATOKEN) throw new Error("WhatsApp token is not configured.");
+  if (!mediaId) throw new Error("WhatsApp media ID is missing.");
+
+  const metaResponse = await fetch(
+    `https://graph.facebook.com/v20.0/${encodeURIComponent(mediaId)}`,
+    { headers: { Authorization: `Bearer ${WATOKEN}` } }
+  );
+  const meta = await metaResponse.json().catch(() => ({}));
+  if (!metaResponse.ok || !meta.url) {
+    throw new Error("WhatsApp media metadata download failed.");
+  }
+
+  if (Number(meta.file_size || 0) > 12 * 1024 * 1024) {
+    throw new Error("Media exceeds the 12 MB processing limit.");
+  }
+
+  const fileResponse = await fetch(meta.url, {
+    headers: { Authorization: `Bearer ${WATOKEN}` }
+  });
+  if (!fileResponse.ok) throw new Error("WhatsApp media download failed.");
+
+  const bytes = Buffer.from(await fileResponse.arrayBuffer());
+  if (!bytes.length || bytes.length > 12 * 1024 * 1024) {
+    throw new Error("Media is empty or exceeds the 12 MB processing limit.");
+  }
+
+  const mimeType = String(meta.mime_type || "")
+    .split(";")[0].trim().toLowerCase();
+
+  return {
+    data: bytes.toString("base64"),
+    type: mimeType,
+    size: bytes.length
+  };
+}
+
+async function analyzeWhatsAppMedia(media, question, kind) {
+  const prompt = String(question || "").trim() ||
+    (kind === "image"
+      ? "Describe this image and answer in the user's language."
+      : kind === "audio"
+        ? "Understand this audio, transcribe its speech when possible, and answer in the user's language."
+        : "Summarize this video, describe its important visible content, and answer in the user's language.");
+
+  if (kind === "image") {
+    return await analyzeImageAttachment(
+      { type: media.type, data: media.data },
+      prompt
+    );
+  }
+
+  const allowed = kind === "audio"
+    ? /^audio\/(ogg|mpeg|mp4|wav|webm|aac|flac|mp3)$/.test(media.type)
+    : /^video\/(mp4|webm|quicktime|3gpp)$/.test(media.type);
+
+  if (!allowed) {
+    throw new Error("This media format is not supported.");
+  }
+
+  if (!GEMINI_API_KEY) {
+    throw new Error("Gemini media analysis is not configured.");
+  }
+
+  const model = new GoogleGenerativeAI(GEMINI_API_KEY)
+    .getGenerativeModel({ model: "gemini-3.8-flash" });
+
+  const result = await model.generateContent([
+    { text: prompt.slice(0, 10000) },
+    { inlineData: { mimeType: media.type, data: media.data } }
+  ]);
+
+  const answer = result.response.text();
+  if (!answer) throw new Error("The AI returned an empty media response.");
+  return answer;
+}
+
+async function sendBrandedWAReply(to, pid, answer) {
+  const logoUrl =
+    "https://sasikumar-ai-9wdq.onrender.com/assets/sasikumar-ai-logo.png";
+  const text = String(answer || "மன்னிக்கவும், பதிலை உருவாக்க முடியவில்லை.")
+    .slice(0, 3500);
+
+  // Short replies can be delivered together with the original logo.
+  if (text.length <= 850) {
+    const imageSent = await sendWA(to, pid, {
+      type: "image",
+      image: {
+        link: logoUrl,
+        caption: "🤖 SASIKUMAR AI\n\n" + text
+      }
+    });
+    if (imageSent) {
+      add(to, "assistant", text);
+      return true;
+    }
+  } else {
+    await sendWA(to, pid, {
+      type: "image",
+      image: {
+        link: logoUrl,
+        caption: "🤖 SASIKUMAR AI ✨"
+      }
+    });
+  }
+
+  const sent = await sendWA(to, pid, {
+    type: "text",
+    text: { body: text }
+  });
+  if (sent) add(to, "assistant", text);
+  return sent;
+}
+
 app.get('/health',(q,r)=>r.json({global:"OK", groq:!!GROQ}));
 app.get('/webhook',(q,r)=>{ if(q.query['hub.mode']==='subscribe'&&q.query['hub.verify_token']===VERIFY) r.send(q.query['hub.challenge']); else r.sendStatus(403);});
 app.post('/webhook',async(req,res)=>{
@@ -594,7 +709,16 @@ app.post('/webhook',async(req,res)=>{
 
   const from=m.from;
   const pid=v.metadata.phone_number_id;
-  const txt=String(m.text?.body||m.interactive?.button_reply?.id||m.interactive?.list_reply?.id||"hi").trim();
+  const mediaKind = m.image ? "image" : m.audio ? "audio" : m.video ? "video" : null;
+  const mediaId = m.image?.id || m.audio?.id || m.video?.id || null;
+  const mediaCaption = m.image?.caption || m.video?.caption || "";
+  const txt = String(
+    m.text?.body ||
+    m.interactive?.button_reply?.id ||
+    m.interactive?.list_reply?.id ||
+    mediaCaption ||
+    (mediaKind ? "" : "hi")
+  ).trim();
   const normalized=txt.toLowerCase().replace(/[\uFE0F\u20E3]/g,"").trim();
 
   const menuText =
@@ -665,7 +789,7 @@ Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada �
   add(from,"user",txt);
 
   if(menuTriggers.includes(normalized)){
-    const logoUrl = "https://sasikumar-ai-9wdq.onrender.com/assets/sasikumar-ai-logo-60.png";
+    const logoUrl = "https://sasikumar-ai-9wdq.onrender.com/assets/sasikumar-ai-logo.png";
 
     // Send the actual logo image with a short welcome caption.
     const logoSent = await sendWA(from, pid, {
@@ -685,6 +809,35 @@ Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada �
     if (logoSent) add(from, "assistant", "[SASIKUMAR AI Logo Image]");
     if (menuSent) add(from, "assistant", menuText);
     if (!logoSent) console.error("[WhatsApp] Logo image send failed.");
+
+    res.sendStatus(200);
+    return;
+  }
+
+
+  if (mediaKind) {
+    try {
+      const media = await downloadWhatsAppMedia(mediaId);
+      const answer = await analyzeWhatsAppMedia(
+        media,
+        txt || "",
+        mediaKind
+      );
+      await sendBrandedWAReply(from, pid, answer);
+    } catch (error) {
+      console.error("[WhatsApp media]", JSON.stringify({
+        kind: mediaKind,
+        message: String(error?.message || error).slice(0, 500)
+      }));
+
+      const answer = mediaKind === "image"
+        ? "படத்தைப் புரிந்துகொள்ள முடியவில்லை. தெளிவான சிறிய படத்தை மீண்டும் அனுப்புங்கள்."
+        : mediaKind === "audio"
+          ? "Audio-ஐப் புரிந்துகொள்ள முடியவில்லை. ஆதரிக்கப்படும் audio வடிவில் மீண்டும் அனுப்புங்கள்."
+          : "Video-ஐப் பகுப்பாய்வு செய்ய முடியவில்லை. ஆதரிக்கப்படும் சிறிய video-வை மீண்டும் அனுப்புங்கள்.";
+
+      await sendBrandedWAReply(from, pid, answer);
+    }
 
     res.sendStatus(200);
     return;
@@ -768,7 +921,7 @@ const body =
 const logoSent = await sendWA(from, pid, {
   type: "image",
   image: {
-    link: "https://sasikumar-ai-9wdq.onrender.com/assets/sasikumar-ai-logo-60.png",
+    link: "https://sasikumar-ai-9wdq.onrender.com/assets/sasikumar-ai-logo.png",
     caption: "🤖 SASIKUMAR AI ✨\n🥇 Live Gold & Silver Rates\n🌐 https://sasikumar-ai-9wdq.onrender.com"
   }
 });
@@ -814,8 +967,7 @@ if (sent) add(from, "assistant", body);
   if(!ans) ans=await globalKnowledge(prompt);
   if(!ans) ans=smartAI(prompt);
 
-  const sent=await sendWA(from,pid,{type:"text",text:{body:String(ans).slice(0,3500)}});
-  if(sent) add(from,"assistant",ans);
+  await sendBrandedWAReply(from, pid, ans);
   res.sendStatus(200);
  }catch(e){
   console.error("[WhatsApp] Webhook processing failed:",e.message);
