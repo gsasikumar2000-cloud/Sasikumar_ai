@@ -394,6 +394,43 @@ text-decoration:none !important;
   }
 }
 
+
+
+/* SASIKUMAR AI REAL DOCUMENT REPLY TOOLBAR FIX */
+#sasikumarAIReplySection {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+#skReplyToolsBar {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 7px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  z-index: 20 !important;
+}
+#skReplyToolsBar button {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  min-height: 36px !important;
+  padding: 7px 10px !important;
+  border-radius: 10px !important;
+}
+@media (max-width: 600px) {
+  #skReplyToolsBar button {
+    font-size: 12px !important;
+    padding: 7px !important;
+  }
+}
+
 </style>
 
 
@@ -495,8 +532,8 @@ text-decoration:none !important;
     <button type="button" onclick="document.execCommand('copy')">📋 Copy</button>
     <button type="button" onclick="navigator.clipboard?.readText().then(t=>{const q=document.getElementById('q');if(q){q.value=t;q.dispatchEvent(new Event('input',{bubbles:true}));q.focus();}}).catch(()=>alert('Paste permission unavailable. Long-press the reply box and select Paste.'))">📥 Paste</button>
     <button type="button" onclick="alert('Dual Tool')">⚡ Dual</button>
-    <button type="button" onclick="document.getElementById('skCameraInput').click()">📷 Camera</button>
-    <button type="button" onclick="document.getElementById('skUploadInput').click()">📁 Upload</button>
+    <button type="button" onclick="if(typeof noteCamera==='function'){noteCamera();}">📷 Camera</button>
+    <button type="button" onclick="if(typeof noteUpload==='function'){noteUpload();}">📁 Upload</button>
   </div>
 
   <input id="skCameraInput" type="file" accept="image/*" capture="environment" style="display:none;">
@@ -1566,20 +1603,27 @@ Tamil + English • Gold • General Q&A</div>
 <div id="sasikumarAIReplySection" class="input-area">
 
 
-<div id="skReplyToolsBar" style="display:flex;flex-wrap:wrap;gap:7px;align-items:center;margin:8px 0;padding:9px;border:1px solid #cbd5e1;border-radius:14px;background:linear-gradient(135deg,#eff6ff,#f0fdfa);">
-  <button type="button" onclick="const q=document.getElementById('q');if(q){const t=q.value; if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(()=>{q.value='';q.focus();}).catch(()=>alert('Cut permission unavailable. Select and cut the text manually.'));}else{q.select();alert('Please cut the selected text manually.');}}" style="padding:8px 11px;border:0;border-radius:10px;background:#dbeafe;">✂️ Cut</button>
-  <button type="button" onclick="const q=document.getElementById('q');if(q&&navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(q.value).catch(()=>alert('Copy permission unavailable.'));}else if(q){q.select();alert('Please copy the selected text manually.');}" style="padding:8px 11px;border:0;border-radius:10px;background:#dbeafe;">📋 Copy</button>
-  <button type="button" onclick="const q=document.getElementById('q');if(q&&navigator.clipboard&&navigator.clipboard.readText){navigator.clipboard.readText().then(t=>{q.value+=t;q.dispatchEvent(new Event('input',{bubbles:true}));q.focus();}).catch(()=>alert('Paste permission unavailable. Long-press the reply box and select Paste.'));}else if(q){q.focus();alert('Long-press the reply box and select Paste.');}" style="padding:8px 11px;border:0;border-radius:10px;background:#dcfce7;">📥 Paste</button>
-  <button type="button" onclick="skReplyWebSearch()" style="padding:8px 11px;border:0;border-radius:10px;background:#bfdbfe;color:#1e3a8a;font-weight:700;">🌐 Web Tool</button>
-  <button type="button" onclick="alert('⚡ Dual Tool');" style="padding:8px 11px;border:0;border-radius:10px;background:#fef3c7;">⚡ Dual</button>
-  <button type="button" onclick="if(typeof noteCamera==='function'){noteCamera();}else{alert('Camera tool unavailable');}" style="padding:8px 11px;border:0;border-radius:10px;background:#fce7f3;">📷 Camera</button>
-  <button type="button" onclick="if(typeof noteUpload==='function'){noteUpload();}else{alert('Upload tool unavailable');}" style="padding:8px 11px;border:0;border-radius:10px;background:#e0e7ff;">📁 Upload</button>
-  <button type="button" onclick="if(typeof startVoice==='function'){startVoice();}else{alert('Voice tool unavailable');}" style="padding:8px 11px;border:0;border-radius:10px;background:#ccfbf1;">🎤 Voice</button>
+<div id="skReplyToolsBar" style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0;">
+  <button type="button" onclick="skNewCamera()">📷 Camera</button>
+  <button type="button" onclick="skNewUpload()">📁 Image / File</button>
+  <button type="button" onclick="startVoice()">🎤 Voice Input</button>
+  <button type="button" onclick="toggleAutoVoice()">🎙️ Auto Voice</button>
+  <button type="button" onclick="toggleVoice()">🔊 AI Voice</button>
+  <button type="button" onclick="skReplyWebSearch()">🌐 Web Search</button>
+  <button id="skReplyCutButton" type="button" onclick="skReplyCut()">✂️ Cut</button>
+  <button id="skReplySelectAllButton" type="button" onclick="skReplySelectAll()">☑️ Select All</button>
+  <button id="skReplyEditButton" type="button" onclick="skReplyEdit()">📝 Edit</button>
+  <button id="skReplySaveButton" type="button" onclick="skReplySave()">💾 Save</button>
+  <button id="skReplyPrintButton" type="button" onclick="skReplyPrint()">🖨️ Print</button>
+  <button type="button" onclick="skReplyCopy()">📋 Copy</button>
+  <button type="button" onclick="skReplyPaste()">📥 Paste</button>
+  <button type="button" onclick="removeReplyAttachment()">✖ Remove File</button>
 </div>
 <div class="input-row">
 <textarea id="q" rows="2" placeholder="உங்கள் கேள்வியை எழுதுங்கள்..."></textarea>
 <button id="sendBtn" onclick="send()">Send</button>
-<input id="replyFileInput" type="file" accept="image/*,.pdf,.txt,.doc,.docx" style="display:none">
+<input id="skNewCameraInput" type="file" accept="image/*" capture="environment" style="display:none">
+<input id="skNewUploadInput" type="file" accept="image/*,.pdf,.txt,.doc,.docx" style="display:none">
 </div>
 </div>
 
@@ -1927,10 +1971,17 @@ async function send(){
       clearTimeout(timer);
     }
 
-    if (!r.ok) throw new Error("HTTP " + r.status);
+    const d = await r.json().catch(() => ({}));
 
-    const d = await r.json();
-    if (!d.reply) throw new Error("Empty AI reply");
+    if (!r.ok) {
+      console.error("SASIKUMAR AI API error:", r.status, d);
+      throw new Error((d && d.reply) || ("HTTP " + r.status));
+    }
+
+    if (!d.reply) {
+      console.error("SASIKUMAR AI empty response:", d);
+      throw new Error("Empty AI reply");
+    }
 
     loading.innerText = "🤖 " + d.reply;
 
@@ -3222,118 +3273,30 @@ function shareAppraisalReport(btn){
 function printAppraisalReport(btn){
   const id = btn && btn.dataset ? btn.dataset.id : btn;
   const el = document.getElementById("appraisalReport" + id);
-  if(!el){
+
+  if (!el) {
     alert("Appraisal Report not found");
     return;
   }
+
   const w = window.open("", "_blank");
-  if(!w){
+  if (!w) {
     alert("Please allow pop-ups for SASIKUMAR AI");
     return;
   }
+
   w.document.write(
     "<!doctype html><html><head><meta charset='utf-8'>" +
     "<meta name='viewport' content='width=device-width,initial-scale=1'>" +
     "<title>SASIKUMAR AI - Appraisal Report</title>" +
     "<style>body{font-family:Arial,sans-serif;margin:20px;color:#111;background:#fff}.report-box{max-width:850px;margin:auto}</style>" +
-    "
+    "</head><body>" + el.outerHTML + "</body></html>"
+  );
 
-</head><body>" + el.outerHTML + "
-
-
-
-
-</body></html>"
-);
   w.document.close();
-  setTimeout(function(){ try{ w.print(); }catch(e){} },700);
+  setTimeout(function(){ try { w.print(); } catch(e) {} }, 700);
 }
-</script>
-<script id="sai-clean-runtime">
-(function(){
-  const hideCard=(needle)=>{
-    document.querySelectorAll('.skCard').forEach(el=>{
-      const t=(el.innerText||'').trim();
-      if(t.includes(needle)) el.style.display='none';
-    });
-  };
-  const clean=()=>{
-    hideCard('Live Time');
-    hideCard('Location');
-    hideCard('Weather');
 
-    const d=document.getElementById('saiCleanDate');
-    if(d){
-      const x=new Date();
-      d.textContent=x.toLocaleDateString('en-IN',{
-        day:'2-digit',month:'long',year:'numeric'
-      });
-    }
-
-    document.querySelectorAll('.dash-title').forEach(el=>{
-      if((el.innerText||'').trim()==='SASIKUMAR AI ✨ SASIKUMAR AI'){
-        el.innerHTML=el.innerHTML.replace('SASIKUMAR AI ✨ SASIKUMAR AI','SASIKUMAR AI ✨');
-      }
-    });
-  };
-  clean();
-  setTimeout(clean,500);
-  setTimeout(clean,1500);
-})();
-</script>
-
-<!-- NEW SASIKUMAR AI HOME SERVICES -->
-<section id="newSasikumarHome" style="display:none !important;margin:20px 0;padding:20px;border-radius:24px;background:linear-gradient(135deg,#eef7ff,#fff7ed,#f5efff);box-shadow:0 8px 28px rgba(0,0,0,.12);">
-  <div style="text-align:center;">
-    <div style="font-size:42px;">🏠</div>
-    <h2 class="newSmartHomeTitle">🏠 Smart Home</h2>
-    <p class="newSmartHomeSub">தமிழில் தனித்தனி Smart Home சேவை Cards</p>
-  </div>
-
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">
-    <div class="newSmartHomeGrid">
-      <button type="button" class="newSmartCard" onclick="smartHomeAsk('Smart Lights')">💡<br>Smart Lights</button>
-      <button type="button" class="newSmartCard" onclick="smartHomeAsk('TV & Entertainment')">📺<br>TV & Entertainment</button>
-      <button type="button" class="newSmartCard" onclick="smartHomeAsk('AC / Fan')">❄️<br>AC / Fan</button>
-      <button type="button" class="newSmartCard" onclick="smartHomeAsk('Home Security')">🔒<br>Home Security</button>
-      <button type="button" class="newSmartCard" onclick="smartHomeAsk('CCTV')">📹<br>CCTV</button>
-      <button type="button" class="newSmartCard" onclick="smartHomeAsk('Smart Devices')">🔌<br>Smart Devices</button>
-    </div>
-  </div>
-</section>
-
-
-<section id="newGoldServices" style="margin:20px 0;padding:20px;border-radius:24px;background:linear-gradient(135deg,#fff8df,#f7f0d8,#fffdf4);box-shadow:0 8px 28px rgba(0,0,0,.12);">
-  <div style="text-align:center;">
-    <div style="font-size:42px;">🪙</div>
-    <h2 style="margin:6px 0;font-size:28px;">Gold & Silver</h2>
-    <p style="margin:4px 0 18px;opacity:.78;">Live Rate • Gold Expert • Appraiser Report</p>
-  </div>
-
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">
-    <button type="button" class="newSmartCard" onclick="showNewGoldRate()">🪙<br>Live Gold Rate</button>
-    <button type="button" class="newSmartCard" onclick="goldExpert()">🔬<br>Gold Expert</button>
-    <button type="button" class="newSmartCard" onclick="goldReport()">📋<br>Appraiser Report</button>
-  </div>
-
-  <div id="newGoldRateResult" style="margin-top:14px;"></div>
-</section>
-
-<section id="newQuickServices" style="display:none !important;">
-  <h2 style="text-align:center;font-size:26px;">⚡ Quick Services</h2>
-  <p style="text-align:center;">SASIKUMAR AI முக்கிய சேவைகள்</p>
-
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;">
-    <button type="button" class="skServiceBtn" onclick="liveGoldRate()">🪙 Gold & Silver</button>
-    <button type="button" class="skServiceBtn" onclick="openEducationFolder()">📚 Education</button>
-    <button type="button" class="skServiceBtn" onclick="openJobsFolder()">💼 Jobs</button>
-    <button type="button" class="skServiceBtn" onclick="location.href='/sports/'">🏏 Sports</button>
-    <button type="button" class="skServiceBtn" onclick="document.getElementById('chat')?.scrollIntoView({behavior:'smooth'})">🤖 Ask AI</button>
-  </div>
-</section>
-<!-- END NEW SASIKUMAR AI HOME SERVICES -->
-
-<script>
 function smartHomeAsk(service) {
   const chat = document.getElementById("chat");
   const input = document.querySelector("#chat input, #chat textarea");
@@ -4720,60 +4683,229 @@ window.showEducationFolder=function(){
 
 let replyAttachment = null;
 
-function openReplyFilePicker(camera){
-  const input=document.getElementById("replyFileInput");
-  if(!input)return;
-  input.value="";
-  if(camera){
-    input.accept="image/*";
-    input.setAttribute("capture","environment");
-  }else{
-    input.accept="image/*,.pdf,.txt,.doc,.docx";
-    input.removeAttribute("capture");
-  }
+function skNewCamera(){
+  const input = document.getElementById("skNewCameraInput");
+  if(!input){ alert("Camera input unavailable."); return; }
+  input.value = "";
   input.click();
 }
 
-function noteCamera(){openReplyFilePicker(true);}
-function noteUpload(){openReplyFilePicker(false);}
+function skNewUpload(){
+  const input = document.getElementById("skNewUploadInput");
+  if(!input){ alert("Upload input unavailable."); return; }
+  input.value = "";
+  input.click();
+}
+
+function noteCamera(){ skNewCamera(); }
+function noteUpload(){ skNewUpload(); }
 
 function showReplyAttachment(file){
-  replyAttachment=file;
-  let box=document.getElementById("replyAttachmentPreview");
+  if(!file) return;
+
+  replyAttachment = file;
+
+  const area = document.getElementById("sasikumarAIReplySection");
+  if(!area){
+    alert("Reply area unavailable.");
+    return;
+  }
+
+  let box = document.getElementById("replyAttachmentPreview");
   if(!box){
-    box=document.createElement("div");
-    box.id="replyAttachmentPreview";
-    box.style="margin:6px 0;padding:8px;border:1px solid #ccc;border-radius:10px;background:#f7f7f7;";
-    document.querySelector(".input-area").insertBefore(box,document.querySelector(".input-row"));
+    box = document.createElement("div");
+    box.id = "replyAttachmentPreview";
+    const row = area.querySelector(".input-row");
+    if(row) area.insertBefore(box, row);
+    else area.appendChild(box);
   }
-  box.style.display="block";
-  if(file.type && file.type.startsWith("image/")){
-    const url=URL.createObjectURL(file);
-    box.innerHTML="<div style=\"display:flex;align-items:center;gap:10px\">"+
-      "<img src=\""+url+"\" style=\"width:50px;height:50px;object-fit:cover;border-radius:8px\">"+
-      "<b>📎 "+escapeHtml(file.name)+"</b>"+
-      "<button type=\"button\" onclick=\"removeReplyAttachment()\">✕</button></div>";
-  }else{
-    box.innerHTML="📎 <b>"+escapeHtml(file.name)+"</b> <button type=\"button\" onclick=\"removeReplyAttachment()\">✕</button>";
+
+  box.style.cssText =
+    "display:block;margin:8px 0;padding:10px;border:1px solid #93c5fd;" +
+    "border-radius:12px;background:#eff6ff;color:#111827;";
+
+  const name = escapeHtml(file.name || "Selected attachment");
+  const isImage =
+    (file.type && file.type.toLowerCase().startsWith("image/")) ||
+    /\.(jpe?g|png|gif|webp|bmp|heic|heif|avif)$/i.test(file.name || "");
+
+  box.innerHTML =
+    '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">' +
+    (isImage
+      ? '<img id="skAttachmentPreviewImage" alt="Image preview" ' +
+        'style="width:90px;height:90px;object-fit:contain;border-radius:8px;background:white">'
+      : '<span style="font-size:28px">📎</span>') +
+    '<span style="flex:1;overflow-wrap:anywhere"><b>' + name + '</b>' +
+    '<br><small>' + (isImage ? 'Image selected' : 'File selected') + '</small></span>' +
+    '<button type="button" onclick="removeReplyAttachment()" ' +
+    'style="padding:8px 12px;border:0;border-radius:8px;background:#fecaca">✖ Remove</button>' +
+    '</div>';
+
+  if(isImage){
+    const reader = new FileReader();
+    reader.onload = function(e){
+      const img = document.getElementById("skAttachmentPreviewImage");
+      if(img && e.target && e.target.result) img.src = e.target.result;
+    };
+    reader.onerror = function(){
+      console.error("SASIKUMAR AI: Image preview read failed.", reader.error);
+      const preview = document.getElementById("replyAttachmentPreview");
+      if (preview) {
+        const error = document.createElement("p");
+        error.textContent = "⚠️ Image preview failed. Please select the image again.";
+        error.style.cssText = "color:#b91c1c;font-size:14px;margin-top:8px;";
+        preview.appendChild(error);
+      }
+    };
+    reader.readAsDataURL(file);
   }
+
+  console.log("SASIKUMAR AI attachment selected:", file.name, file.type, file.size);
 }
 
 function removeReplyAttachment(){
-  replyAttachment=null;
-  const input=document.getElementById("replyFileInput");
-  if(input)input.value="";
-  const box=document.getElementById("replyAttachmentPreview");
-  if(box){box.innerHTML="";box.style.display="none";}
-}
-document.addEventListener("DOMContentLoaded",function(){
-  const input=document.getElementById("replyFileInput");
-  if(input){
-    input.addEventListener("change",function(e){
-      const file=e.target.files && e.target.files[0];
-      if(file)showReplyAttachment(file);
-    });
+  replyAttachment = null;
+
+  ["skNewCameraInput", "skNewUploadInput"].forEach(function(id){
+    const input = document.getElementById(id);
+    if(input) input.value = "";
+  });
+
+  const box = document.getElementById("replyAttachmentPreview");
+  if(box){
+    box.innerHTML = "";
+    box.style.display = "none";
   }
-});
+}
+
+function bindNewReplyFileInputs(){
+  ["skNewCameraInput", "skNewUploadInput"].forEach(function(id){
+    const input = document.getElementById(id);
+    if(input && input.dataset.skBound !== "1"){
+      input.dataset.skBound = "1";
+      input.addEventListener("change", function(event){
+        const file = event.target.files && event.target.files[0];
+        if(file) showReplyAttachment(file);
+      });
+    }
+  });
+}
+
+function skReplyCut(){
+  const input = document.getElementById("q");
+  if(!input) return;
+  const start = input.selectionStart;
+  const end = input.selectionEnd;
+  if(start === end){
+    alert("முதலில் Reply Box-ல் text-ஐ select செய்யுங்கள்.");
+    input.focus();
+    return;
+  }
+  const selected = input.value.slice(start, end);
+  function removeSelected(){
+    input.setRangeText("", start, end, "start");
+    input.dispatchEvent(new Event("input", {bubbles:true}));
+    input.focus();
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(selected).then(removeSelected).catch(function(){
+      alert("Clipboard permission இல்லை. Text-ஐ select செய்து Cut செய்ய முடியவில்லை.");
+    });
+  }else{
+    alert("Clipboard வசதி இல்லை. Copy செய்து தேவையான text-ஐ கைமுறையாக நீக்குங்கள்.");
+  }
+}
+
+function skReplySelectAll(){
+  const input = document.getElementById("q");
+  if(!input) return;
+  input.focus();
+  input.select();
+}
+
+function skReplyEdit(){
+  const input = document.getElementById("q");
+  if(!input) return;
+  input.focus();
+  input.setSelectionRange(input.value.length, input.value.length);
+}
+
+function skReplySave(){
+  const input = document.getElementById("q");
+  if(!input) return;
+  const blob = new Blob([input.value], {type:"text/plain;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "SASIKUMAR-AI-Reply.txt";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+}
+
+function skReplyPrint(){
+  const input = document.getElementById("q");
+  if(!input) return;
+  const popup = window.open("", "_blank");
+  if(!popup){
+    alert("Print window blocked. Browser-ல் pop-ups அனுமதிக்கவும்.");
+    return;
+  }
+  const escaped = input.value.replace(/[&<>"]/g, function(ch){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch];
+  });
+  popup.document.open();
+  popup.document.write(
+    '<!doctype html><html><head><meta charset="utf-8">' +
+    '<title>SASIKUMAR AI Reply</title>' +
+    '<style>body{font:16px Arial,sans-serif;padding:24px}' +
+    'pre{white-space:pre-wrap;overflow-wrap:anywhere}</style>' +
+    '</head><body><h2>SASIKUMAR AI Reply</h2><pre>' +
+    escaped + '</pre></body></html>'
+  );
+  popup.document.close();
+  popup.focus();
+  popup.onload = function(){ popup.print(); };
+}
+
+function skReplyCopy(){
+  const input = document.getElementById("q");
+  if(!input) return;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(input.value).catch(function(){
+      input.select();
+      alert("Text selected. Copy it manually.");
+    });
+  }else{
+    input.select();
+    alert("Text selected. Copy it manually.");
+  }
+}
+
+function skReplyPaste(){
+  const input = document.getElementById("q");
+  if(!input) return;
+  if(navigator.clipboard && navigator.clipboard.readText){
+    navigator.clipboard.readText().then(function(text){
+      input.value += text;
+      input.dispatchEvent(new Event("input", {bubbles:true}));
+      input.focus();
+    }).catch(function(){
+      input.focus();
+      alert("Long-press the reply box and choose Paste.");
+    });
+  }else{
+    input.focus();
+    alert("Long-press the reply box and choose Paste.");
+  }
+}
+
+if(document.readyState === "loading"){
+  document.addEventListener("DOMContentLoaded", bindNewReplyFileInputs, {once:true});
+}else{
+  bindNewReplyFileInputs();
+}
 
 function selectAllNotes(){
   const el = document.activeElement;
@@ -5370,19 +5502,18 @@ else skRefreshPay2AllWallet();
   function moveReplyBelowWelcome() {
     const welcome = document.getElementById("skWelcomeHero");
     const heading = document.getElementById("skReplyHeading");
-    const toolbar = document.querySelector(".toolbar");
     const quick = document.getElementById("skAIQuickQuestions");
     const reply = document.getElementById("sasikumarAIReplySection");
     const chat = document.getElementById("chat");
-    const duplicateTools = document.getElementById("skReplyToolsBar");
+    const newBar = document.getElementById("skReplyToolsBar");
 
-    if (!welcome || !heading || !toolbar || !quick || !reply || !chat) {
-      console.warn("SASIKUMAR AI: Reply tool elements not found; no move performed.");
+    if (!welcome || !heading || !quick || !reply || !chat || !newBar) {
+      console.warn("SASIKUMAR AI: Required reply elements not found; no move performed.");
       return;
     }
 
     let anchor = welcome;
-    [heading, toolbar, quick, reply, chat].forEach(function (element) {
+    [heading, quick, reply, chat].forEach(function (element) {
       anchor.insertAdjacentElement("afterend", element);
       anchor = element;
     });
@@ -5391,17 +5522,19 @@ else skRefreshPay2AllWallet();
     heading.style.width = "100%";
     heading.style.boxSizing = "border-box";
 
-    toolbar.style.display = "flex";
-    toolbar.style.flexWrap = "wrap";
-    toolbar.style.gap = "7px";
-    toolbar.style.width = "100%";
-    toolbar.style.boxSizing = "border-box";
+    newBar.style.setProperty("display", "flex", "important");
+    newBar.style.flexWrap = "wrap";
+    newBar.style.alignItems = "center";
+    newBar.style.gap = "7px";
+    newBar.style.width = "100%";
+    newBar.style.visibility = "visible";
+    newBar.style.opacity = "1";
 
     quick.style.display = "flex";
     quick.style.flexWrap = "wrap";
 
-    reply.style.display = "block";
-    reply.style.visibility = "visible";
+    reply.style.setProperty("display", "block", "important");
+    reply.style.setProperty("visibility", "visible", "important");
     reply.style.width = "100%";
     reply.style.maxWidth = "900px";
     reply.style.boxSizing = "border-box";
@@ -5412,20 +5545,13 @@ else skRefreshPay2AllWallet();
     chat.style.display = "block";
     chat.style.visibility = "visible";
 
-    if (duplicateTools) {
-      duplicateTools.style.display = "flex";
-      duplicateTools.style.flexWrap = "wrap";
-      duplicateTools.style.gap = "7px";
-      duplicateTools.style.visibility = "visible";
-    }
-
     const initialGreeting = document.querySelector("#chat .skInitialGreeting");
     if (initialGreeting) initialGreeting.style.display = "none";
 
     const goldButton = document.getElementById("skGoldPriceToggle");
     if (goldButton) goldButton.style.display = "none";
 
-    console.log("SASIKUMAR AI: Full Reply Tool moved below Welcome; duplicate toolbar hidden.");
+    console.log("SASIKUMAR AI: Unified Reply toolbar positioned below Welcome.");
   }
 
   if (document.readyState === "loading") {
@@ -5436,6 +5562,33 @@ else skRefreshPay2AllWallet();
 })();
 </script>
 
+<style>
+
+/* SASIKUMAR AI: force unified Reply toolbar visible */
+#sasikumarAIReplySection,
+#skReplyToolsBar {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+#skReplyToolsBar {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 7px !important;
+  width: 100% !important;
+  position: relative !important;
+  z-index: 20 !important;
+}
+#skReplyToolsBar button {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  min-height: 36px !important;
+  padding: 7px 10px !important;
+}
+
+</style>
 <style id="SK_OPTION_B_REPLY_LIVE_CLEAN_V1">
 /* Keep the main reply, login and three live feature cards */
 #sasikumar-ai-hub-dashboard-card,
@@ -5473,9 +5626,13 @@ section:not(.skMainFeatureCard) {
 }
 
 /* Keep the reply heading and question input; hide extra controls */
-.toolbar,
 #skAIQuickQuestions,
 .daily-ticker {
+  display: none !important;
+}
+
+/* Legacy toolbar is hidden after its buttons move to the unified toolbar. */
+.toolbar {
   display: none !important;
 }
 
@@ -5511,6 +5668,68 @@ section:not(.skMainFeatureCard) {
     document.addEventListener('DOMContentLoaded', cleanOptionB, { once: true });
   } else {
     cleanOptionB();
+  }
+})();
+</script>
+
+<script id="skHideLegacyReplyTools">
+(function () {
+  function hideLegacyReplyTools() {
+    document.querySelectorAll(
+      'button[onclick*="noteCamera"], button[onclick*="noteUpload"]'
+    ).forEach(function (button) {
+      if (!button.closest("#skReplyToolsBar")) {
+        button.style.display = "none";
+      }
+    });
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", hideLegacyReplyTools, {once:true});
+  } else {
+    hideLegacyReplyTools();
+  }
+})();
+</script>
+
+
+<script id="SK_UNIFIED_REPLY_TOOLBAR_V1">
+(function () {
+  function unifyReplyToolbar() {
+    const oldBar = document.querySelector('.toolbar');
+    const newBar = document.getElementById('skReplyToolsBar');
+
+    if (!oldBar || !newBar) {
+      console.warn('Reply toolbar elements not found.');
+      return;
+    }
+
+    const duplicate = /camera|upload|voice|copy|paste|web search|remove file/i;
+    const buttons = Array.from(oldBar.querySelectorAll('button'));
+
+    buttons.forEach(function (button) {
+      const label = (button.innerText || button.textContent || '').trim();
+
+      if (!label || duplicate.test(label)) return;
+
+      button.style.display = 'inline-flex';
+      button.style.flex = '0 0 auto';
+      button.style.margin = '0';
+      newBar.appendChild(button);
+    });
+
+    oldBar.style.display = 'none';
+    newBar.style.display = 'flex';
+    newBar.style.flexWrap = 'wrap';
+    newBar.style.gap = '7px';
+    newBar.style.width = '100%';
+
+    console.log('SASIKUMAR AI: Legacy tools merged into unified reply toolbar.');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', unifyReplyToolbar, { once: true });
+  } else {
+    unifyReplyToolbar();
   }
 })();
 </script>
