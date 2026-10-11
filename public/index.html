@@ -1410,7 +1410,7 @@ style="position:absolute;top:8px;right:8px;padding:9px 13px;border:0;border-radi
 
   <div class="dash-sub">Smart Assistant • Gold • News • Voice</div>
 
-  <div id="skAllServicesCard" class="sk-all-services-card" style="display:block !important;visibility:visible !important;opacity:1 !important;">
+  <div id="skAllServicesCard" class="sk-all-services-card" style="display:none !important;visibility:hidden !important;opacity:0 !important;">
     <div class="sk-all-services-head">
       <div>
         <div class="sk-all-services-title">⚡ ALL SERVICES</div>
@@ -3131,7 +3131,38 @@ function printAppraisalReport(btn){
     "<meta name='viewport' content='width=device-width,initial-scale=1'>" +
     "<title>SASIKUMAR AI - Appraisal Report</title>" +
     "<style>body{font-family:Arial,sans-serif;margin:20px;color:#111;background:#fff}.report-box{max-width:850px;margin:auto}</style>" +
-    "</head><body>" + el.outerHTML + "</body></html>"
+    "</head><body>" + el.outerHTML + "
+<script id="SK_HIDE_ALL_SERVICES_V1">
+(function () {
+  function hideAllServices() {
+    const section = document.getElementById("skAllServicesCard");
+    if (!section) return;
+    if (section.style.getPropertyValue("display") !== "none" ||
+        section.style.getPropertyPriority("display") !== "important") {
+      section.style.setProperty("display", "none", "important");
+    }
+    section.style.setProperty("visibility", "hidden", "important");
+    section.style.setProperty("opacity", "0", "important");
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", hideAllServices, { once: true });
+  } else {
+    hideAllServices();
+  }
+  const observer = new MutationObserver(hideAllServices);
+  function watch() {
+    const section = document.getElementById("skAllServicesCard");
+    if (section) observer.observe(section, { attributes: true, attributeFilter: ["style"] });
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", watch, { once: true });
+  } else {
+    watch();
+  }
+})();
+</script>
+
+</body></html>"
 );
   w.document.close();
   setTimeout(function(){ try{ w.print(); }catch(e){} },700);
