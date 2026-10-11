@@ -134,22 +134,32 @@ async function analyzeImageAttachment(attachment, question) {
   const model = new GoogleGenerativeAI(GEMINI_API_KEY)
     .getGenerativeModel({ model: "gemini-3.8-flash" });
 
-  const result = await model.generateContent([
-    {
-      text: String(question || "Describe this image and explain its important details.")
-        .slice(0, 12000)
-    },
-    {
-      inlineData: {
-        mimeType: attachment.type,
-        data: base64
+  const prompt = String(question || "Describe this image and explain its important details.")
+    .slice(0, 12000);
+
+  const IMAGE_RETRY_MAX = 3;
+  for (let attempt = 1; attempt <= IMAGE_RETRY_MAX; attempt++) {
+    try {
+      const result = await model.generateContent([
+        { text: prompt },
+        { inlineData: { mimeType: attachment.type, data: base64 } }
+      ]);
+      return result.response.text();
+    } catch (e) {
+      const msg = String(e?.message || e);
+      const retryable = /503|429|500|502|504|high demand|temporar|overload|fetch failed/i.test(msg);
+
+      if (!retryable || attempt === IMAGE_RETRY_MAX) {
+        throw e;
       }
+
+      console.warn(`Gemini image attempt ${attempt} failed; retrying.`);
+      await new Promise(resolve => setTimeout(resolve, attempt * 1500));
     }
-  ]);
+  }
 
-  return result.response.text();
+  throw new Error("Image analysis failed after retries.");
 }
-
 // WEB API
 app.post('/api/chat', async(req,res)=>{
  try{
