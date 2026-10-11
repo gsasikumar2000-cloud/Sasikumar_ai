@@ -5257,19 +5257,36 @@ else skRefreshPay2AllWallet();
 (function () {
   function moveReplyBelowWelcome() {
     const welcome = document.getElementById("skWelcomeHero");
-    const chat = document.getElementById("chat");
+    const heading = document.getElementById("skReplyHeading");
+    const toolbar = document.querySelector(".toolbar");
+    const quick = document.getElementById("skAIQuickQuestions");
     const reply = document.getElementById("sasikumarAIReplySection");
+    const chat = document.getElementById("chat");
+    const duplicateTools = document.getElementById("skReplyToolsBar");
 
-    if (!welcome || !chat || !reply) {
-      console.warn("SASIKUMAR AI: Welcome, chat, or reply box not found.");
+    if (!welcome || !heading || !toolbar || !quick || !reply || !chat) {
+      console.warn("SASIKUMAR AI: Reply tool elements not found; no move performed.");
       return;
     }
 
-    welcome.insertAdjacentElement("afterend", reply);
-    reply.insertAdjacentElement("afterend", chat);
+    let anchor = welcome;
+    [heading, toolbar, quick, reply, chat].forEach(function (element) {
+      anchor.insertAdjacentElement("afterend", element);
+      anchor = element;
+    });
 
-    chat.style.display = "block";
-    chat.style.visibility = "visible";
+    heading.style.display = "block";
+    heading.style.width = "100%";
+    heading.style.boxSizing = "border-box";
+
+    toolbar.style.display = "flex";
+    toolbar.style.flexWrap = "wrap";
+    toolbar.style.gap = "7px";
+    toolbar.style.width = "100%";
+    toolbar.style.boxSizing = "border-box";
+
+    quick.style.display = "flex";
+    quick.style.flexWrap = "wrap";
 
     reply.style.display = "block";
     reply.style.visibility = "visible";
@@ -5280,22 +5297,20 @@ else skRefreshPay2AllWallet();
     reply.style.position = "relative";
     reply.style.zIndex = "2";
 
-    const replyHeading = document.getElementById("skReplyHeading");
-    if (replyHeading) replyHeading.style.display = "block";
+    chat.style.display = "block";
+    chat.style.visibility = "visible";
+
+    if (duplicateTools) {
+      duplicateTools.style.display = "none";
+    }
 
     const initialGreeting = document.querySelector("#chat .skInitialGreeting");
     if (initialGreeting) initialGreeting.style.display = "none";
 
-    const tools = document.getElementById("skReplyToolsBar");
-    if (tools) {
-      tools.style.display = "flex";
-      tools.style.flexWrap = "wrap";
-    }
-
     const goldButton = document.getElementById("skGoldPriceToggle");
     if (goldButton) goldButton.style.display = "none";
 
-    console.log("SASIKUMAR AI: Reply box moved below Welcome.");
+    console.log("SASIKUMAR AI: Full Reply Tool moved below Welcome; duplicate toolbar hidden.");
   }
 
   if (document.readyState === "loading") {
