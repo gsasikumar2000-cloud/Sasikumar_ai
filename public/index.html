@@ -3448,6 +3448,80 @@ input, textarea, select, button {
 }
 </style>
 
+
+<style id="SK_LIVE_CARDS_MOBILE_VISIBILITY_FIX">
+/* Keep every live card visible */
+#skLiveBookCardsRow {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: stretch !important;
+  gap: 12px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 12px 10px 18px !important;
+  margin: 12px 0 !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  scroll-snap-type: x mandatory;
+  position: relative !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+#skLiveBookCardsRow > * {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 0 0 270px !important;
+  width: 270px !important;
+  min-width: 0 !important;
+  max-width: 85vw !important;
+  min-height: 220px !important;
+  height: auto !important;
+  max-height: none !important;
+  box-sizing: border-box !important;
+  overflow-wrap: anywhere !important;
+  overflow-y: auto !important;
+  scroll-snap-align: start;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+#skLiveBookCardsRow > #dailyThirukkural,
+#skLiveBookCardsRow > #livePonmozhigal {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+#skLiveBookCardsRow .skLiveBookText {
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  line-height: 1.5 !important;
+}
+#skLiveBookCardsRow a {
+  display: inline-block !important;
+  max-width: 100% !important;
+  overflow-wrap: anywhere !important;
+}
+@media (max-width: 600px) {
+  #skLiveBookCardsRow {
+    gap: 10px !important;
+    padding: 10px 8px 16px !important;
+  }
+  #skLiveBookCardsRow > * {
+    flex: 0 0 min(82vw, 290px) !important;
+    width: min(82vw, 290px) !important;
+    max-width: 82vw !important;
+    min-height: 210px !important;
+    padding: 12px !important;
+  }
+  #skLiveBookCardsRow h2 {
+    font-size: 18px !important;
+    overflow-wrap: anywhere !important;
+  }
+}
+</style>
+
 </head><body>" + el.outerHTML + "</body></html>"
   );
 
