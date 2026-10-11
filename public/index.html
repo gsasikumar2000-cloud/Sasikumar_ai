@@ -3522,6 +3522,139 @@ input, textarea, select, button {
 }
 </style>
 
+
+<style id="SK_LIVE_CARDS_ANCESTOR_VISIBILITY_FIX">
+/* Colorful SASIKUMAR AI welcome board */
+#skWelcomeHero {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  box-sizing: border-box !important;
+  width: calc(100% - 16px) !important;
+  max-width: 1100px !important;
+  margin: 12px auto 18px !important;
+  padding: 22px 12px !important;
+  border: 2px solid #60a5fa !important;
+  border-radius: 22px !important;
+  background: linear-gradient(125deg,#dbeafe,#fce7f3,#fef3c7,#dcfce7) !important;
+  color: #172554 !important;
+  box-shadow: 0 8px 24px rgba(30,64,175,.18) !important;
+  overflow-wrap: anywhere !important;
+}
+#skWelcomeHero > div {
+  max-width: 100% !important;
+  overflow-wrap: anywhere !important;
+}
+#skWelcomeHero > div:nth-of-type(1) {
+  color: #7c3aed !important;
+  text-shadow: 0 1px 0 #fff !important;
+}
+#skWelcomeHero > div:nth-of-type(2) {
+  color: #075985 !important;
+  background: linear-gradient(90deg,#1d4ed8,#7c3aed,#db2777,#ea580c);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+#skLiveBookCardsRow {
+  display: flex !important;
+  flex-flow: row nowrap !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  gap: 12px !important;
+  padding: 10px 4px 16px !important;
+  scroll-snap-type: x mandatory !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+#skLiveBookCardsRow > article,
+#skLiveBookCardsRow > section {
+  display: flex !important;
+  flex: 0 0 270px !important;
+  flex-direction: column !important;
+  box-sizing: border-box !important;
+  width: 270px !important;
+  min-width: 0 !important;
+  max-width: 84vw !important;
+  min-height: 220px !important;
+  max-height: 300px !important;
+  padding: 14px !important;
+  border-radius: 18px !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  overflow-y: auto !important;
+  overflow-wrap: anywhere !important;
+  scroll-snap-align: start !important;
+  box-shadow: 0 5px 18px rgba(15,23,42,.16) !important;
+}
+#skLiveBookCardsRow > :nth-child(1) {
+  background: linear-gradient(145deg,#fee2e2,#fff7ed) !important;
+  border: 2px solid #ef4444 !important;
+  color: #7f1d1d !important;
+}
+#skLiveBookCardsRow > :nth-child(2) {
+  background: linear-gradient(145deg,#dcfce7,#ecfdf5) !important;
+  border: 2px solid #22c55e !important;
+  color: #14532d !important;
+}
+#skLiveBookCardsRow > :nth-child(3) {
+  background: linear-gradient(145deg,#dbeafe,#eff6ff) !important;
+  border: 2px solid #3b82f6 !important;
+  color: #1e3a8a !important;
+}
+#skLiveBookCardsRow > :nth-child(4) {
+  background: linear-gradient(145deg,#f3e8ff,#fdf4ff) !important;
+  border: 2px solid #a855f7 !important;
+  color: #581c87 !important;
+}
+#skLiveBookCardsRow > :nth-child(5) {
+  background: linear-gradient(145deg,#ffedd5,#fef3c7) !important;
+  border: 2px solid #f97316 !important;
+  color: #7c2d12 !important;
+}
+#skLiveBookCardsRow > * h2,
+#skLiveBookCardsRow > * h3 {
+  display: block !important;
+  margin: 0 0 12px !important;
+  padding: 10px 8px !important;
+  border-radius: 11px !important;
+  color: #fff !important;
+  font-size: 17px !important;
+  font-weight: 900 !important;
+  overflow-wrap: anywhere !important;
+}
+#skLiveBookCardsRow > :nth-child(1) h2 { background:#dc2626 !important; }
+#skLiveBookCardsRow > :nth-child(2) h2 { background:#15803d !important; }
+#skLiveBookCardsRow > :nth-child(3) h2 { background:#1d4ed8 !important; }
+#skLiveBookCardsRow > :nth-child(4) h2 { background:#7e22ce !important; }
+#skLiveBookCardsRow > :nth-child(5) h2 { background:#c2410c !important; }
+#skLiveBookCardsRow .skLiveBookText,
+#skLiveBookCardsRow a {
+  overflow-wrap: anywhere !important;
+  white-space: normal !important;
+}
+@media (max-width: 600px) {
+  #skWelcomeHero {
+    width: calc(100% - 12px) !important;
+    margin: 8px auto 14px !important;
+    padding: 16px 8px !important;
+    border-radius: 16px !important;
+  }
+  #skLiveBookCardsRow > article,
+  #skLiveBookCardsRow > section {
+    flex-basis: 82vw !important;
+    width: 82vw !important;
+    max-width: 310px !important;
+    min-height: 210px !important;
+  }
+}
+</style>
+
 </head><body>" + el.outerHTML + "
 <style id="SK_LIVE_CARDS_COLOR_MOBILE_FINAL">
 /* Live cards: force visibility and fit on mobile */
@@ -6214,6 +6347,18 @@ section:not(.skMainFeatureCard) {
     if (!kural || !ponmozhigal || !kural.parentNode) {
       console.warn("SASIKUMAR AI Live Cards: existing Thirukkural/Ponmozhi sections not found.");
       return;
+    }
+
+    /* Keep the card row's section parent visible when legacy CSS hides sections. */
+    var liveHost = kural.parentElement;
+    if (liveHost && liveHost.tagName.toLowerCase() === "section") {
+      liveHost.classList.add("skMainFeatureCard");
+      liveHost.style.setProperty("display", "block", "important");
+      liveHost.style.setProperty("visibility", "visible", "important");
+      liveHost.style.setProperty("opacity", "1", "important");
+      liveHost.style.setProperty("width", "100%", "important");
+      liveHost.style.setProperty("max-width", "100%", "important");
+      liveHost.style.setProperty("box-sizing", "border-box", "important");
     }
 
     var row = document.createElement("div");
