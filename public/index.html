@@ -1725,7 +1725,7 @@ window.skDesignUsePrompt = function(extra){
 <!-- END GLOBAL WEB SEARCH BELOW DESIGN MAKER -->
 
 
-<h2 id="skReplyHeading" style="margin:8px 0 10px;text-align:left;font-size:18px;font-weight:800;color:#14532d;">🤖 SASIKUMAR AI REPLY TOOL</h2>
+<h2 id="skReplyHeading" style="margin:8px 0 10px;text-align:left;font-size:18px;font-weight:800;color:#14532d;">🤖 SASIKUMAR AI REPLY TOOLS</h2>
 <div class="toolbar">
 
 
@@ -5681,14 +5681,16 @@ else skRefreshPay2AllWallet();
     const reply = document.getElementById("sasikumarAIReplySection");
     const chat = document.getElementById("chat");
     const newBar = document.getElementById("skReplyToolsBar");
+    const globalSearch = document.getElementById("skDesignBelowGlobalSearch");
+    const designMaker = document.getElementById("skDesignMakerGlobal");
 
-    if (!welcome || !heading || !quick || !reply || !chat || !newBar) {
+    if (!welcome || !heading || !quick || !reply || !chat || !newBar || !globalSearch || !designMaker) {
       console.warn("SASIKUMAR AI: Required reply elements not found; no move performed.");
       return;
     }
 
     let anchor = welcome;
-    [heading, quick, reply, chat].forEach(function (element) {
+    [heading, quick, reply, chat, globalSearch, designMaker].forEach(function (element) {
       anchor.insertAdjacentElement("afterend", element);
       anchor = element;
     });
