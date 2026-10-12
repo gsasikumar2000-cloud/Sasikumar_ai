@@ -1562,23 +1562,11 @@ font-family:inherit;box-sizing:border-box;">
       🎨 SASIKUMAR AI DESIGN MAKER
     </h2>
     <p style="margin:8px 0;color:#dbeafe;">
-      🌐 GLOBAL WEB • 🧰 ALL TOOLS • ✨ CREATIVE STUDIO
+      🎨 AI DESIGN • 💻 WEBSITE STUDIO • 🧰 CREATIVE TOOLS
     </p>
   </header>
 
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px;">
-
-    <article style="padding:14px;border-radius:16px;background:#ffffff12;border:1px solid #ffffff30;">
-      <h3>🌐 GLOBAL WEB</h3>
-      <label for="skDesignWebQuery">Search the web</label>
-      <input id="skDesignWebQuery" placeholder="Search worldwide..."
-        style="width:100%;box-sizing:border-box;padding:12px;border-radius:10px;margin:8px 0;border:0;">
-      <button type="button" onclick="skDesignGlobalSearch()"
-        style="padding:11px 15px;border:0;border-radius:10px;background:#38bdf8;color:#082f49;font-weight:800;">
-        🔎 Search Web
-      </button>
-      <div id="skDesignWebResults" aria-live="polite" style="margin-top:12px;overflow-wrap:anywhere;"></div>
-    </article>
 
     <article style="padding:14px;border-radius:16px;background:#ffffff12;border:1px solid #ffffff30;">
       <h3>🎨 AI DESIGN PROMPT</h3>
@@ -1675,39 +1663,6 @@ window.skDesignUsePrompt = function(extra){
   }
 };
 
-window.skDesignGlobalSearch = async function(){
-  const input = document.getElementById('skDesignWebQuery');
-  const out = document.getElementById('skDesignWebResults');
-  const query = input?.value.trim();
-  if (!query || !out) return;
-  out.textContent = 'Searching the web...';
-  try {
-    const response = await fetch('/api/global-search?q=' + encodeURIComponent(query));
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || 'Search failed');
-    out.replaceChildren();
-    const heading = document.createElement('p');
-    heading.textContent = 'Results for: ' + (data.query || query);
-    out.appendChild(heading);
-    (data.results || []).forEach(item => {
-      const card = document.createElement('div');
-      card.style.cssText = 'padding:10px;margin:8px 0;border-radius:10px;background:#ffffff18;';
-      const link = document.createElement('a');
-      link.textContent = item.title || item.url || 'Open result';
-      link.href = item.url || '#';
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      link.style.cssText = 'color:#bae6fd;font-weight:800;';
-      const desc = document.createElement('p');
-      desc.textContent = item.content || '';
-      card.append(link, desc);
-      out.appendChild(card);
-    });
-    if (!(data.results || []).length) out.append('No results found.');
-  } catch (err) {
-    out.textContent = 'Web search error: ' + err.message;
-  }
-};
 </script>
 <!-- END SASIKUMAR AI DESIGN MAKER -->
 
