@@ -727,6 +727,132 @@ document.getElementById("dailyScrollingMessage").style.background =
 
 
 <!-- SASIKUMAR_LOGIN_SCREEN -->
+
+<style id="skLoginHorizontalDesignV1">
+#sasikumarLoginScreen{
+  padding:22px!important;
+  background:linear-gradient(135deg,#071a35,#174b63,#8a6415)!important;
+}
+#sasikumarLoginScreen > div:first-of-type{
+  width:100%!important;
+  max-width:850px!important;
+  display:grid!important;
+  grid-template-columns:220px minmax(0,1fr)!important;
+  gap:10px 26px!important;
+  align-items:center!important;
+  padding:30px!important;
+  box-sizing:border-box!important;
+  border:1px solid rgba(255,255,255,.65)!important;
+  border-radius:26px!important;
+  background:linear-gradient(145deg,#ffffff,#f4f8ff)!important;
+  box-shadow:0 22px 65px rgba(0,0,0,.38)!important;
+  text-align:center!important;
+}
+#sasikumarLoginScreen .sk-login-brand-logo{
+  grid-column:1!important;
+  grid-row:1!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:12px 0!important;
+}
+#sasikumarLoginScreen .sk-login-brand-logo img{
+  display:block!important;
+  width:100px!important;
+  height:100px!important;
+  max-width:100%!important;
+  object-fit:contain!important;
+  animation:skLogin360 3s linear infinite!important;
+  transform-style:preserve-3d!important;
+  filter:drop-shadow(0 5px 10px rgba(184,134,11,.25));
+}
+@keyframes skLogin360{
+  from{transform:rotateY(0deg)}
+  to{transform:rotateY(360deg)}
+}
+#sasikumarLoginScreen > div:first-of-type > h1{
+  grid-column:1!important;
+  grid-row:2!important;
+  margin:0!important;
+  font-size:23px!important;
+  overflow-wrap:anywhere!important;
+}
+#sasikumarLoginScreen > div:first-of-type > p{
+  grid-column:1!important;
+  grid-row:3!important;
+  margin:0 0 10px!important;
+  line-height:1.6!important;
+  font-size:14px!important;
+}
+#sasikumarLoginScreen > div:first-of-type > input,
+#sasikumarLoginScreen > div:first-of-type > button,
+#sasikumarLoginScreen > div:first-of-type > #signupBox,
+#sasikumarLoginScreen > div:first-of-type > #loginMessage,
+#sasikumarLoginScreen > div:first-of-type > div:last-child{
+  grid-column:2!important;
+  min-width:0!important;
+}
+#sasikumarLoginScreen > div:first-of-type > input{
+  width:100%!important;
+  margin:5px 0!important;
+  padding:13px!important;
+  border:1px solid #cbd5e1!important;
+  border-radius:12px!important;
+  background:#fff!important;
+}
+#sasikumarLoginScreen > div:first-of-type > button{
+  width:100%!important;
+  box-sizing:border-box!important;
+  transition:transform .2s,filter .2s!important;
+}
+#sasikumarLoginScreen > div:first-of-type > button:hover{
+  filter:brightness(1.06);
+  transform:translateY(-1px);
+}
+#sasikumarLoginScreen #signupBox{
+  width:100%!important;
+  box-sizing:border-box!important;
+}
+#sasikumarLoginScreen #signupBox input{
+  max-width:100%!important;
+}
+@media(max-width:600px){
+  #sasikumarLoginScreen{
+    min-height:100vh!important;
+    padding:14px!important;
+  }
+  #sasikumarLoginScreen > div:first-of-type{
+    max-width:430px!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:8px!important;
+    padding:22px 17px!important;
+  }
+  #sasikumarLoginScreen .sk-login-brand-logo,
+  #sasikumarLoginScreen > div:first-of-type > h1,
+  #sasikumarLoginScreen > div:first-of-type > p,
+  #sasikumarLoginScreen > div:first-of-type > input,
+  #sasikumarLoginScreen > div:first-of-type > button,
+  #sasikumarLoginScreen > div:first-of-type > #signupBox,
+  #sasikumarLoginScreen > div:first-of-type > #loginMessage,
+  #sasikumarLoginScreen > div:first-of-type > div:last-child{
+    grid-column:1!important;
+    grid-row:auto!important;
+  }
+  #sasikumarLoginScreen .sk-login-brand-logo img{
+    width:76px!important;
+    height:76px!important;
+  }
+  #sasikumarLoginScreen > div:first-of-type > h1{
+    font-size:21px!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  #sasikumarLoginScreen .sk-login-brand-logo img{
+    animation:none!important;
+  }
+}
+</style>
+
 <div id="sasikumarLoginScreen" style="
   min-height:100vh;
   display:flex;
@@ -746,7 +872,10 @@ document.getElementById("dailyScrollingMessage").style.background =
     box-shadow:0 15px 45px rgba(0,0,0,.35);
     text-align:center;
   ">
-    <div style="font-size:48px;">🤖</div>
+    <div class="sk-login-brand-logo">
+<img src="/assets/sasikumar-ai-logo.png?v=20261012"
+alt="SASIKUMAR AI Logo">
+</div>
     <h1 style="margin:8px 0;color:#b8860b;">SASIKUMAR AI</h1>
     <p style="margin:0 0 22px;color:#555;">
       Tamil + English • Gold • General Q&A
