@@ -1615,43 +1615,7 @@ font-family:inherit;box-sizing:border-box;">
 (function(){
   const sample = `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font-family:Arial,sans-serif;padding:24px;background:#eff6ff;color:#172554}h1{color:#4338ca}button{padding:10px 16px;border:0;border-radius:10px;background:#4f46e5;color:white}</style></head><body><h1>SASIKUMAR AI</h1><p>Your creative design starts here.</p><button onclick="document.querySelector('p').textContent='Preview is working!'">Test Design</button>
 
-<style id="SK_UNIFIED_CARD_SIZE_SCHEDULE_V1">
-#skLiveBookCardsRow>*,
-#skVideoAdCard {
-  box-sizing:border-box!important;
-  flex:0 0 270px!important;
-  width:270px!important;
-  min-width:270px!important;
-  height:230px!important;
-  min-height:230px!important;
-  max-height:230px!important;
-}
-#skVideoAdCard video {max-height:115px!important;object-fit:contain}
-@media(max-width:420px) {
-  #skLiveBookCardsRow>*,
-  #skVideoAdCard {
-    flex-basis:250px!important;
-    width:250px!important;
-    min-width:250px!important;
-  }
-}
-</style><script id="SK_UNIFIED_CARD_SIZE_SCHEDULE_SCRIPT_V1">
-(function(){
-  function update(){
-    var p=new Intl.DateTimeFormat("en-GB",{
-      timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit",hourCycle:"h23"
-    }).formatToParts(new Date());
-    var t={};p.forEach(function(x){t[x.type]=x.value});
-    var m=Number(t.hour)*60+Number(t.minute);
-    var show=m>=540&&m<1440;
-    [["skLiveBookCardsRow","flex"],["skVideoAdCard","flex"]].forEach(function(x){
-      var e=document.getElementById(x[0]);
-      if(e)e.style.setProperty("display",show?x[1]:"none","important");
-    });
-  }
-  update();setInterval(update,30000);
-})();
-</script>
+
 </body></html>`;
   const code = document.getElementById('skDesignCode');
   if (code && !code.value.trim()) code.value = sample;
@@ -6886,5 +6850,43 @@ input, textarea, select, button {
   }
 }
 </style>
+<style id="SK_UNIFIED_CARD_SIZE_SCHEDULE_V1">
+#skLiveBookCardsRow>*,
+#skVideoAdCard {
+  box-sizing:border-box!important;
+  flex:0 0 270px!important;
+  width:270px!important;
+  min-width:270px!important;
+  height:230px!important;
+  min-height:230px!important;
+  max-height:230px!important;
+}
+#skVideoAdCard video {max-height:115px!important;object-fit:contain}
+@media(max-width:420px) {
+  #skLiveBookCardsRow>*,
+  #skVideoAdCard {
+    flex-basis:250px!important;
+    width:250px!important;
+    min-width:250px!important;
+  }
+}
+</style>
+<script id="SK_UNIFIED_CARD_SIZE_SCHEDULE_SCRIPT_V1">
+(function(){
+  function update(){
+    var p=new Intl.DateTimeFormat("en-GB",{
+      timeZone:"Asia/Kolkata",hour:"2-digit",minute:"2-digit",hourCycle:"h23"
+    }).formatToParts(new Date());
+    var t={};p.forEach(function(x){t[x.type]=x.value});
+    var m=Number(t.hour)*60+Number(t.minute);
+    var show=m>=540&&m<1440;
+    [["skLiveBookCardsRow","flex"],["skVideoAdCard","flex"]].forEach(function(x){
+      var e=document.getElementById(x[0]);
+      if(e)e.style.setProperty("display",show?x[1]:"none","important");
+    });
+  }
+  update();setInterval(update,30000);
+})();
+</script>
 </body>
 </html>
