@@ -6888,5 +6888,224 @@ input, textarea, select, button {
   update();setInterval(update,30000);
 })();
 </script>
+
+<style id="SK_ALL_LIVE_CARDS_BRAND_STYLE_V1">
+/* SASIKUMAR AI: consistent live-card size and branding */
+.skMainLiveGrid{
+  display:flex!important;
+  flex-flow:row nowrap!important;
+  align-items:stretch!important;
+  gap:12px!important;
+  width:100%!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  padding:10px 12px 16px!important;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+}
+.skMainLiveGrid > .skMainFeatureCard{
+  position:relative!important;
+  box-sizing:border-box!important;
+  flex:0 0 270px!important;
+  width:270px!important;
+  min-width:270px!important;
+  max-width:270px!important;
+  height:230px!important;
+  min-height:230px!important;
+  max-height:230px!important;
+  margin:0!important;
+  padding:58px 14px 14px!important;
+  overflow:auto!important;
+  border-radius:18px!important;
+  scroll-snap-align:start;
+}
+#skLiveBookCardsRow > *{
+  position:relative!important;
+  padding-top:58px!important;
+}
+.skMainLiveGrid .skMainFeatureLogo{
+  display:none!important;
+}
+.skCardBrandBadge{
+  position:absolute!important;
+  top:9px!important;
+  right:10px!important;
+  z-index:5!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:40px!important;
+  height:40px!important;
+  min-width:40px!important;
+  border-radius:50%!important;
+  padding:3px!important;
+  box-sizing:border-box!important;
+  background:#fff!important;
+  border:2px solid rgba(255,255,255,.85)!important;
+  box-shadow:0 2px 8px rgba(0,0,0,.2)!important;
+}
+.skCardBrandBadge img{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  border-radius:50%!important;
+}
+.skMainLiveGrid > .skMainFeatureCard h3{
+  margin-top:0!important;
+  max-width:calc(100% - 42px)!important;
+  overflow-wrap:anywhere!important;
+}
+#skVideoAdCard video,
+#skLiveImagesCard img{
+  max-height:100px!important;
+  object-fit:contain!important;
+}
+@media(max-width:420px){
+  .skMainLiveGrid > .skMainFeatureCard,
+  #skLiveBookCardsRow > *{
+    flex-basis:250px!important;
+    width:250px!important;
+    min-width:250px!important;
+    max-width:250px!important;
+    height:230px!important;
+    min-height:230px!important;
+    max-height:230px!important;
+  }
+}
+</style>
+
+
+<script id="SK_ALL_LIVE_CARDS_BRAND_SCRIPT_V1">
+(function(){
+  "use strict";
+  function addBrandLogos(){
+    var cards = document.querySelectorAll(
+      ".skMainLiveGrid > .skMainFeatureCard, #skLiveBookCardsRow > *"
+    );
+    cards.forEach(function(card){
+      if(card.querySelector(":scope > .skCardBrandBadge")) return;
+      var badge = document.createElement("div");
+      badge.className = "skCardBrandBadge";
+      badge.setAttribute("aria-label","SASIKUMAR AI brand");
+      var img = document.createElement("img");
+      img.src = "/assets/sasikumar-ai-logo.png";
+      img.alt = "SASIKUMAR AI";
+      img.loading = "lazy";
+      img.onerror = function(){
+        badge.textContent = "SK";
+        badge.style.color = "#14532d";
+        badge.style.fontWeight = "900";
+        badge.style.fontSize = "16px";
+      };
+      badge.appendChild(img);
+      card.appendChild(badge);
+    });
+  }
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded",addBrandLogos);
+  }else{
+    addBrandLogos();
+  }
+  var observer = new MutationObserver(addBrandLogos);
+  observer.observe(document.documentElement,{childList:true,subtree:true});
+  setTimeout(function(){observer.disconnect();},15000);
+})();
+</script>
+
+
+<style id="SK_DRAGGABLE_CARDS_STYLE_V1">
+/* SASIKUMAR AI logo: 40px with 360-degree rotation */
+.skCardBrandBadge{
+  width:40px!important;
+  height:40px!important;
+  min-width:40px!important;
+  min-height:40px!important;
+}
+.skCardBrandBadge img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  animation:skBrandLogoRotate 3s linear infinite!important;
+}
+@keyframes skBrandLogoRotate{
+  from{transform:rotate(0deg)}
+  to{transform:rotate(360deg)}
+}
+/* Cards can be repositioned by touch or mouse */
+.skMainLiveGrid > .skMainFeatureCard,
+#skLiveBookCardsRow > *,
+.skMainFeatureCard.skDragEnabled{
+  touch-action:pan-y;
+}
+.skDragEnabled.skDragging{
+  opacity:.82!important;
+  z-index:9999!important;
+  outline:2px dashed #16a34a!important;
+  box-shadow:0 10px 28px rgba(0,0,0,.28)!important;
+}
+.skCardMoveHint{
+  display:block;
+  font-size:11px;
+  opacity:.8;
+  margin-top:4px;
+}
+</style>
+
+
+<script id="SK_DRAGGABLE_CARDS_SCRIPT_V1">
+(function(){
+  "use strict";
+  var selectors = ".skMainLiveGrid > .skMainFeatureCard, #skLiveBookCardsRow > *, #skVideoAdCard";
+  var active = null, startX = 0, startY = 0, moved = false;
+
+  function enableCards(){
+    document.querySelectorAll(selectors).forEach(function(card){
+      if(card.dataset.skDragReady === "1") return;
+      card.dataset.skDragReady = "1";
+      card.classList.add("skDragEnabled");
+      card.setAttribute("title","Hold and drag to move this card");
+      card.addEventListener("pointerdown",function(e){
+        if(e.target.closest("button,a,input,textarea,select,video,audio,[contenteditable=true]")) return;
+        if(e.pointerType === "mouse" && e.button !== 0) return;
+        active = card;
+        startX = e.clientX;
+        startY = e.clientY;
+        moved = false;
+      });
+    });
+  }
+
+  document.addEventListener("pointermove",function(e){
+    if(!active) return;
+    if(Math.abs(e.clientX-startX)>8 || Math.abs(e.clientY-startY)>8) moved = true;
+    if(!moved) return;
+    active.classList.add("skDragging");
+    var target = document.elementFromPoint(e.clientX,e.clientY);
+    if(!target) return;
+    var other = target.closest(selectors);
+    if(!other || other === active || other.parentElement !== active.parentElement) return;
+    var r = other.getBoundingClientRect();
+    var before = e.clientX < r.left + r.width/2;
+    other.parentElement.insertBefore(active,before ? other : other.nextSibling);
+  });
+
+  function finish(){
+    if(active) active.classList.remove("skDragging");
+    active = null;
+    moved = false;
+  }
+  document.addEventListener("pointerup",finish);
+  document.addEventListener("pointercancel",finish);
+
+  enableCards();
+  var observer = new MutationObserver(enableCards);
+  observer.observe(document.documentElement,{childList:true,subtree:true});
+  setTimeout(function(){observer.disconnect();},20000);
+})();
+</script>
+
 </body>
 </html>
