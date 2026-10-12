@@ -1666,6 +1666,65 @@ window.skDesignUsePrompt = function(extra){
 </script>
 <!-- END SASIKUMAR AI DESIGN MAKER -->
 
+<!-- GLOBAL WEB SEARCH BELOW SASIKUMAR AI DESIGN MAKER -->
+<section id="skDesignBelowGlobalSearch" style="display:block!important;width:calc(100% - 24px);max-width:1100px;box-sizing:border-box;margin:14px auto;padding:18px;background:linear-gradient(135deg,#0f172a,#164e63,#312e81);color:#fff;border-radius:18px;box-shadow:0 8px 25px #0003;">
+  <h2 style="margin:0 0 8px;font-size:22px;font-weight:900;">🌐 SASIKUMAR AI GLOBAL WEB SEARCH</h2>
+  <p style="margin:0 0 12px;color:#dbeafe;">Search the web and explore results.</p>
+  <form id="skDesignBelowSearchForm" style="display:flex;gap:8px;flex-wrap:wrap;">
+    <input id="skDesignBelowSearchInput" type="search" placeholder="🔎 Search worldwide..." aria-label="Search the web" style="flex:1;min-width:180px;box-sizing:border-box;padding:13px;border:0;border-radius:10px;font-size:16px;">
+    <button type="submit" style="padding:12px 18px;border:0;border-radius:10px;background:#38bdf8;color:#082f49;font-weight:900;">🔎 Search Web</button>
+  </form>
+  <div id="skDesignBelowSearchResults" aria-live="polite" style="margin-top:12px;overflow-wrap:anywhere;"></div>
+</section>
+<script>
+(function(){
+  const form = document.getElementById('skDesignBelowSearchForm');
+  const input = document.getElementById('skDesignBelowSearchInput');
+  const out = document.getElementById('skDesignBelowSearchResults');
+  if (!form || !input || !out || form.dataset.ready) return;
+  form.dataset.ready = '1';
+  form.addEventListener('submit', async function(event){
+    event.preventDefault();
+    const query = input.value.trim();
+    if (!query) {
+      out.textContent = 'Please enter a search query.';
+      input.focus();
+      return;
+    }
+    out.textContent = 'Searching the web...';
+    try {
+      const response = await fetch('/api/global-search?q=' + encodeURIComponent(query));
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Search failed');
+      out.replaceChildren();
+      const heading = document.createElement('p');
+      heading.textContent = 'Results for: ' + (data.query || query);
+      out.appendChild(heading);
+      (data.results || []).forEach(function(item){
+        const card = document.createElement('article');
+        card.style.cssText = 'padding:12px;margin:8px 0;border-radius:10px;background:#ffffff18;border:1px solid #ffffff30;';
+        const link = document.createElement('a');
+        link.textContent = item.title || item.url || 'Open result';
+        link.href = item.url || '#';
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.style.cssText = 'color:#bae6fd;font-weight:800;';
+        card.appendChild(link);
+        const desc = document.createElement('p');
+        desc.textContent = item.content || '';
+        card.appendChild(desc);
+        out.appendChild(card);
+      });
+      if (!(data.results || []).length) out.append('No results found.');
+    } catch (error) {
+      out.textContent = 'Web search error: ' + error.message;
+    }
+  });
+})();
+</script>
+<!-- END GLOBAL WEB SEARCH BELOW DESIGN MAKER -->
+
+
 <h2 id="skReplyHeading" style="margin:8px 0 10px;text-align:left;font-size:18px;font-weight:800;color:#14532d;">🤖 SASIKUMAR AI REPLY TOOL</h2>
 <div class="toolbar">
 
