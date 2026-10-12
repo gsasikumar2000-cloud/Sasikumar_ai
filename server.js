@@ -309,7 +309,7 @@ app.get('/api/global-search', async (req, res) => {
     if (key) {
       const response = await fetch('https://api.tavily.com/search', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
         body: JSON.stringify({
           api_key: key,
           query: q,
@@ -400,7 +400,7 @@ app.get('/api/breaking-news', async (req, res) => {
 
     const response = await fetch('https://api.tavily.com/search', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
       body: JSON.stringify({
         api_key: key,
         query,
