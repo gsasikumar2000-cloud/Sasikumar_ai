@@ -2166,33 +2166,35 @@ async function send(){
 
     if (window.skDesignPending) {
       window.skDesignPending = false;
+
       const rawDesignReply = String(d.reply || "");
-    const designCodeBox = document.getElementById("skDesignCode");
-    const designFrame = document.getElementById("skDesignPreviewFrame");
+      const designCodeBox = document.getElementById("skDesignCode");
+      const designFrame = document.getElementById("skDesignPreviewFrame");
 
-    // Accept HTML inside fences or a complete HTML document in the reply.
-    let generatedHTML = "";
-    const fencedBlocks = [...rawDesignReply.matchAll(/```(?:html)?\s*([\s\S]*?)```/gi)];
+      let generatedHTML = "";
+      const fencedBlocks = [...rawDesignReply.matchAll(/```(?:html)?\s*([\s\S]*?)```/gi)];
 
-    for (const block of fencedBlocks) {
-      const candidate = block[1].trim();
-      if (/<(?:!doctype\s+html|html\b)/i.test(candidate)) {
-        generatedHTML = candidate;
-        break;
+      for (const block of fencedBlocks) {
+        const candidate = block[1].trim();
+        if (/<(?:!doctype\s+html|html\b)/i.test(candidate)) {
+          generatedHTML = candidate;
+          break;
+        }
       }
-    }
 
-    if (!generatedHTML) {
-      const startHTML = rawDesignReply.search(/<!doctype\s+html|<html\b/i);
-      if (startHTML >= 0) generatedHTML = rawDesignReply.slice(startHTML).trim();
-    }
-
-    if (window.skDesignPending) {
-      window.skDesignPending = false;
+      if (!generatedHTML) {
+        const startHTML = rawDesignReply.search(/<!doctype\s+html|<html\b/i);
+        if (startHTML >= 0) {
+          generatedHTML = rawDesignReply.slice(startHTML).trim();
+        }
+      }
 
       if (generatedHTML && designCodeBox) {
         designCodeBox.value = generatedHTML;
-        if (designFrame) designFrame.srcdoc = generatedHTML;
+        if (designFrame) {
+          designFrame.srcdoc = generatedHTML;
+        }
+
         loading.innerText = "🤖 Design generated! Code added and preview updated below.";
         document.getElementById("skDesignMakerGlobal")?.scrollIntoView({
           behavior: "smooth",
