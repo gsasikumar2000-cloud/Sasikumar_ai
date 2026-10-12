@@ -1654,9 +1654,9 @@ window.skDesignUsePrompt = function(extra){
   }
   q.value = 'Help me create this design: ' + prompt +
     '. Provide a complete, responsive HTML/CSS/JavaScript solution.';
-  if (typeof window.send === 'function') {
-    window.send();
+  if (typeof send === 'function') {
     document.getElementById('skReplyHeading')?.scrollIntoView({behavior:'smooth',block:'start'});
+    Promise.resolve().then(() => send());
   } else {
     q.scrollIntoView({behavior:'smooth',block:'center'});
     alert('Your prompt is ready in the existing AI reply input. Press Send.');
