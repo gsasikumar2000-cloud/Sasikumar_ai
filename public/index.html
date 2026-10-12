@@ -1821,6 +1821,9 @@ font-family:inherit;box-sizing:border-box;">
       line-height: 1.35;
     }
     #skYouTubeCreativeCards .sk-yt-video {
+      display: block;
+      height: 220px;
+      flex: 0 0 auto;
       width: 100%;
       aspect-ratio: 16 / 9;
       min-height: 120px;
@@ -1847,19 +1850,21 @@ font-family:inherit;box-sizing:border-box;">
       font-size: 12px;
     }
     @media(max-width:760px) {
-      #skYouTubeCreativeCards .sk-yt-grid {
-        grid-template-columns: repeat(2,minmax(0,1fr));
-        gap: 10px;
-      }
-      #skYouTubeCreativeCards { padding: 16px 9px; }
-      #skYouTubeCreativeCards .sk-yt-card { padding: 8px; }
-      #skYouTubeCreativeCards .sk-yt-video { min-height: 100px; }
-    }
-    @media(max-width:360px) {
-      #skYouTubeCreativeCards .sk-yt-grid { grid-template-columns: 1fr; }
-      #skYouTubeCreativeCards .sk-yt-video { min-height: 180px; }
-    }
-    @media(prefers-reduced-motion:reduce) {
+  #skYouTubeCreativeCards .sk-yt-grid {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: 10px;
+  }
+  #skYouTubeCreativeCards { padding: 16px 9px; }
+  #skYouTubeCreativeCards .sk-yt-card { padding: 8px; }
+  #skYouTubeCreativeCards .sk-yt-video { min-height: 100px; }
+}
+@media(max-width:360px) {
+  #skYouTubeCreativeCards .sk-yt-grid {
+    grid-template-columns: 1fr;
+  }
+  #skYouTubeCreativeCards .sk-yt-video { min-height: 180px; }
+}
+@media(prefers-reduced-motion:reduce) {
       #skYouTubeCreativeCards .sk-yt-logo { animation: none; }
     }
   </style>
