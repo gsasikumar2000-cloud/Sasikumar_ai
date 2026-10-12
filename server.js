@@ -300,81 +300,108 @@ app.post('/api/chat', async(req,res)=>{
 // GLOBAL SEARCH API
 app.get('/api/global-search', async (req, res) => {
   const q = String(req.query.q || '').trim();
+
   if (!q) {
-    return res.status(400).json({ error: 'Please provide a search query using ?q=' });
+    return res.status(400).json({
+      error: 'Please provide a search query using ?q='
+    });
   }
 
   try {
     const key = process.env.TAVILY_API_KEY;
+
     if (key) {
-      const response = await fetch('https://api.tavily.com/search', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-        body: JSON.stringify({
-          api_key: key,
-          query: q,
-          search_depth: 'basic',
-          max_results: 5
-        })
-      });
+      try {
+        const response = await fetch('https://api.tavily.com/search', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${key}`
+          },
+          body: JSON.stringify({
+            api_key: key,
+            query: q,
+            search_depth: 'basic',
+            max_results: 5
+          }),
+          signal: AbortSignal.timeout(12000)
+        });
 
-      const data = await response.json();
-      if (!response.ok) {
-        console.error('Tavily search failed:', response.status, JSON.stringify(data).slice(0, 500));
-        return res.status(502).json({ error: 'Search provider request failed' });
+        const data = await response.json();
+
+        if (response.ok) {
+          return res.json({
+            query: q,
+            provider: 'Tavily',
+            results: (data.results || []).map(x => ({
+              title: x.title,
+              url: x.url,
+              content: x.content
+            }))
+          });
+        }
+
+        console.error(
+          'Tavily search failed; trying Wikipedia fallback:',
+          response.status,
+          JSON.stringify(data).slice(0, 300)
+        );
+      } catch (providerError) {
+        console.error(
+          'Tavily unavailable; trying Wikipedia fallback:',
+          providerError.message
+        );
       }
+    }
 
-      return res.json({
-        query: q,
-        results: (data.results || []).map(x => ({
-          title: x.title,
-          url: x.url,
-          content: x.content
-        }))
+    const wikiUrl =
+      'https://en.wikipedia.org/w/api.php?action=query&list=search&format=json&origin=*&srsearch=' +
+      encodeURIComponent(q);
+
+    const fallback = await fetch(wikiUrl, {
+      headers: { 'User-Agent': 'SasikumarAI/1.0' },
+      signal: AbortSignal.timeout(12000)
+    });
+
+    if (!fallback.ok) {
+      return res.status(502).json({
+        error: 'Search providers are temporarily unavailable.',
+        results: []
       });
     }
 
-    const response = await fetch(
-      'https://en.wikipedia.org/w/api.php?action=query&list=search&format=json&origin=*&srsearch=' +
-      encodeURIComponent(q),
-      { headers: { 'User-Agent': 'SasikumarAI/1.0' } }
-    );
+    const wikiData = await fallback.json();
 
-    if (!response.ok) {
-      return res.status(502).json({ error: 'Fallback search provider failed' });
-    }
-
-    const data = await response.json();
     return res.json({
       query: q,
       provider: 'Wikipedia',
-      results: (data.query?.search || []).map(x => ({
+      results: (wikiData.query?.search || []).map(x => ({
         title: x.title,
-        url: 'https://en.wikipedia.org/wiki/' + encodeURIComponent(x.title.replace(/ /g, '_')),
-        content: x.snippet.replace(/<[^>]*>/g, '')
+        url: 'https://en.wikipedia.org/wiki/' +
+          encodeURIComponent(x.title.replace(/ /g, '_')),
+        content: String(x.snippet || '').replace(/<[^>]*>/g, '')
       }))
     });
   } catch (e) {
     console.error('Global search error:', e.message);
-    return res.status(502).json({ error: 'Search temporarily unavailable' });
+    return res.status(502).json({
+      error: 'Search temporarily unavailable.',
+      results: []
+    });
   }
 });
-
 
 // LIVE BREAKING NEWS API — powered by Tavily
 app.get('/api/breaking-news', async (req, res) => {
   const category = String(req.query.category || 'Tamil Nadu').trim().slice(0, 80);
   const language = String(req.query.language || 'ta').toLowerCase();
-  const languageNames = {
-    ta: 'Tamil',
-    en: 'English',
-    hi: 'Hindi',
-    te: 'Telugu',
-    kn: 'Kannada',
-    ml: 'Malayalam'
+
+  const names = {
+    ta: 'Tamil', en: 'English', hi: 'Hindi',
+    te: 'Telugu', kn: 'Kannada', ml: 'Malayalam'
   };
-  const lang = languageNames[language] || 'Tamil';
-  const queryByLanguage = {
+
+  const queries = {
     ta: 'தமிழ்நாடு இன்றைய முக்கிய செய்திகள்',
     en: 'Tamil Nadu latest breaking news',
     hi: 'तमिलनाडु की ताजा मुख्य खबरें',
@@ -383,64 +410,152 @@ app.get('/api/breaking-news', async (req, res) => {
     ml: 'തമിഴ്നാട്ടിലെ ഏറ്റവും പുതിയ പ്രധാന വാർത്തകൾ'
   };
 
+  const lang = names[language] || 'Tamil';
   const query = category.toLowerCase() === 'tamil nadu'
-    ? queryByLanguage[language] || queryByLanguage.ta
-    : `${category} latest breaking news ${lang}`;
+    ? (queries[language] || queries.ta)
+    : category + ' latest breaking news ' + lang;
+
+  const config = {
+    ta: ['ta-IN', 'IN:ta'],
+    en: ['en-IN', 'IN:en'],
+    hi: ['hi-IN', 'IN:hi'],
+    te: ['te-IN', 'IN:te'],
+    kn: ['kn-IN', 'IN:kn'],
+    ml: ['ml-IN', 'IN:ml']
+  };
+  const locale = config[language] || config.ta;
 
   res.set('Cache-Control', 'no-store');
 
-  try {
-    const key = process.env.TAVILY_API_KEY;
-    if (!key) {
-      return res.status(503).json({
-        error: 'Live news search is not configured.',
-        articles: []
-      });
-    }
+  function decodeXml(value) {
+    return String(value || '')
+      .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
+      .replace(/<[^>]*>/g, '')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;|&apos;/g, "'");
+  }
 
-    const response = await fetch('https://api.tavily.com/search', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
-      body: JSON.stringify({
-        api_key: key,
-        query,
-        topic: 'news',
-        search_depth: 'advanced',
-        max_results: 5,
-        days: 3,
-        include_answer: false
-      })
+  function tag(block, name) {
+    const pattern = new RegExp(
+      '<' + name + '(?:\\s[^>]*)?>([\\s\\S]*?)</' + name + '>',
+      'i'
+    );
+    const match = block.match(pattern);
+    return match ? decodeXml(match[1]).trim() : '';
+  }
+
+  async function googleNews() {
+    const url = 'https://news.google.com/rss/search?q=' +
+      encodeURIComponent(query) +
+      '&hl=' + encodeURIComponent(locale[0]) +
+      '&gl=IN&ceid=' + encodeURIComponent(locale[1]);
+
+    const response = await fetch(url, {
+      headers: { 'User-Agent': 'SasikumarAI/1.0' },
+      signal: AbortSignal.timeout(15000)
     });
 
     if (!response.ok) {
-      const providerError = await response.text().catch(() => '');
-      console.error('Breaking news provider failed:', response.status, providerError.slice(0, 500));
-      return res.status(502).json({
-        error: 'Live news provider is temporarily unavailable.',
-        articles: []
-      });
+      throw new Error('Google News RSS HTTP ' + response.status);
     }
 
-    const data = await response.json();
-    const articles = (data.results || []).map(item => ({
-      title: String(item.title || '').trim(),
-      url: String(item.url || '').trim(),
-      description: String(item.content || '').trim(),
-      published_date: item.published_date || null
-    })).filter(item => item.title && item.url);
+    const xml = await response.text();
+    const articles = [...xml.matchAll(
+      /<item(?:\s[^>]*)?>([\s\S]*?)<\/item>/gi
+    )].slice(0, 5).map(match => {
+      const item = match[1];
+      return {
+        title: tag(item, 'title'),
+        url: tag(item, 'link'),
+        description: tag(item, 'description'),
+        published_date: tag(item, 'pubDate') || null
+      };
+    }).filter(item =>
+      item.title && /^https?:\/\//i.test(item.url)
+    );
+
+    if (!articles.length) {
+      throw new Error('No usable Google News articles returned');
+    }
 
     return res.json({
       category,
       language,
-      provider: 'Tavily News',
+      provider: 'Google News RSS',
       articles,
       news: articles
     });
+  }
+
+  try {
+    const key = process.env.TAVILY_API_KEY;
+
+    if (key) {
+      try {
+        const response = await fetch('https://api.tavily.com/search', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + key
+          },
+          body: JSON.stringify({
+            api_key: key,
+            query,
+            topic: 'news',
+            search_depth: 'advanced',
+            max_results: 5,
+            days: 3,
+            include_answer: false
+          }),
+          signal: AbortSignal.timeout(12000)
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const articles = (data.results || []).map(item => ({
+            title: String(item.title || '').trim(),
+            url: String(item.url || '').trim(),
+            description: String(item.content || '').trim(),
+            published_date: item.published_date || null
+          })).filter(item => item.title && item.url);
+
+          if (articles.length) {
+            return res.json({
+              category,
+              language,
+              provider: 'Tavily News',
+              articles,
+              news: articles
+            });
+          }
+
+          console.error('Tavily returned no news; trying RSS.');
+        } else {
+          const detail = await response.text().catch(() => '');
+          console.error(
+            'Tavily news failed; trying Google News RSS:',
+            response.status,
+            detail.slice(0, 250)
+          );
+        }
+      } catch (providerError) {
+        console.error(
+          'Tavily unavailable; trying Google News RSS:',
+          providerError.message
+        );
+      }
+    }
+
+    return await googleNews();
   } catch (error) {
-    console.error('Breaking news error:', error.message);
+    console.error('Breaking news fallback failed:', error.message);
     return res.status(502).json({
-      error: 'Unable to retrieve live news right now.',
-      articles: []
+      error: 'Live news providers are temporarily unavailable.',
+      articles: [],
+      news: []
     });
   }
 });
