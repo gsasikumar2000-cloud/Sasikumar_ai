@@ -1549,6 +1549,168 @@ style="position:absolute;top:8px;right:8px;padding:9px 13px;border:0;border-radi
 </div>
 
 
+
+<!-- SASIKUMAR AI GLOBAL WEB + DESIGN MAKER -->
+<section id="skDesignMakerGlobal" style="
+margin:20px 0;padding:18px;border-radius:22px;
+background:linear-gradient(135deg,#071b45,#164e63,#312e81);
+color:#fff;box-shadow:0 10px 30px #0003;
+font-family:inherit;box-sizing:border-box;">
+
+  <header style="text-align:center;margin-bottom:18px;">
+    <h2 style="margin:0;font-size:25px;font-weight:900;">
+      🎨 SASIKUMAR AI DESIGN MAKER
+    </h2>
+    <p style="margin:8px 0;color:#dbeafe;">
+      🌐 GLOBAL WEB • 🧰 ALL TOOLS • ✨ CREATIVE STUDIO
+    </p>
+  </header>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px;">
+
+    <article style="padding:14px;border-radius:16px;background:#ffffff12;border:1px solid #ffffff30;">
+      <h3>🌐 GLOBAL WEB</h3>
+      <label for="skDesignWebQuery">Search the web</label>
+      <input id="skDesignWebQuery" placeholder="Search worldwide..."
+        style="width:100%;box-sizing:border-box;padding:12px;border-radius:10px;margin:8px 0;border:0;">
+      <button type="button" onclick="skDesignGlobalSearch()"
+        style="padding:11px 15px;border:0;border-radius:10px;background:#38bdf8;color:#082f49;font-weight:800;">
+        🔎 Search Web
+      </button>
+      <div id="skDesignWebResults" aria-live="polite" style="margin-top:12px;overflow-wrap:anywhere;"></div>
+    </article>
+
+    <article style="padding:14px;border-radius:16px;background:#ffffff12;border:1px solid #ffffff30;">
+      <h3>🎨 AI DESIGN PROMPT</h3>
+      <textarea id="skDesignPrompt" rows="4"
+        placeholder="Describe your logo, poster, banner or website design..."
+        style="width:100%;box-sizing:border-box;padding:12px;border-radius:10px;border:0;"></textarea>
+      <button type="button" onclick="skDesignUsePrompt()"
+        style="margin-top:9px;padding:11px 15px;border:0;border-radius:10px;background:#c4b5fd;color:#312e81;font-weight:800;">
+        🤖 Send Prompt to AI
+      </button>
+      <p style="font-size:12px;color:#e0e7ff;">Uses the existing AI reply tool. Image generation requires a working image-generation service.</p>
+    </article>
+
+    <article style="padding:14px;border-radius:16px;background:#ffffff12;border:1px solid #ffffff30;">
+      <h3>💻 WEBSITE CODE STUDIO</h3>
+      <textarea id="skDesignCode" rows="7"
+        spellcheck="false"
+        placeholder="Write HTML, CSS and JavaScript here..."
+        style="width:100%;box-sizing:border-box;padding:12px;border-radius:10px;border:0;font-family:monospace;"></textarea>
+      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:9px;">
+        <button type="button" onclick="skDesignPreview()">👁️ Preview</button>
+        <button type="button" onclick="skDesignDownload()">📥 Download</button>
+        <button type="button" onclick="document.getElementById('skDesignCode').value='';document.getElementById('skDesignPreviewFrame').srcdoc='';">🧹 Clear</button>
+      </div>
+      <iframe id="skDesignPreviewFrame" title="Design preview"
+        sandbox="allow-scripts"
+        style="width:100%;height:240px;background:white;border-radius:12px;border:1px solid #cbd5e1;margin-top:12px;"></iframe>
+    </article>
+
+    <article style="padding:14px;border-radius:16px;background:#ffffff12;border:1px solid #ffffff30;">
+      <h3>🧰 ALL TOOLS</h3>
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;">
+        <button type="button" onclick="skDesignUsePrompt('Create a professional logo for SASIKUMAR AI')">🪄 Logo</button>
+        <button type="button" onclick="skDesignUsePrompt('Create a colorful promotional poster for SASIKUMAR AI')">🖼️ Poster</button>
+        <button type="button" onclick="skDesignUsePrompt('Create a modern website banner for SASIKUMAR AI')">🌈 Banner</button>
+        <button type="button" onclick="skDesignUsePrompt('Create a YouTube thumbnail design for SASIKUMAR AI')">▶️ Thumbnail</button>
+        <button type="button" onclick="skDesignUsePrompt('Create a mobile-friendly website UI for SASIKUMAR AI')">📱 Website UI</button>
+        <button type="button" onclick="skDesignUsePrompt('Create a 3D-style advertisement concept for SASIKUMAR AI')">✨ 3D Concept</button>
+      </div>
+      <p style="font-size:12px;color:#e0e7ff;">Additional tools: Gold Expert, Education, Jobs, Video, Voice and Appraisal remain in the existing website.</p>
+    </article>
+  </div>
+</section>
+
+<script>
+(function(){
+  const sample = '<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font-family:Arial,sans-serif;padding:24px;background:#eff6ff;color:#172554}h1{color:#4338ca}button{padding:10px 16px;border:0;border-radius:10px;background:#4f46e5;color:white}</style></head><body><h1>SASIKUMAR AI</h1><p>Your creative design starts here.</p><button onclick="document.querySelector(\\'p\\').textContent=\\'Preview is working!\\'">Test Design</button></body></html>';
+  const code = document.getElementById('skDesignCode');
+  if (code && !code.value.trim()) code.value = sample;
+})();
+
+window.skDesignPreview = function(){
+  const code = document.getElementById('skDesignCode');
+  const frame = document.getElementById('skDesignPreviewFrame');
+  if (!code || !frame) return;
+  frame.srcdoc = code.value;
+};
+
+window.skDesignDownload = function(){
+  const code = document.getElementById('skDesignCode');
+  if (!code) return;
+  const blob = new Blob([code.value], {type:'text/html;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'sasikumar-ai-design.html';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+};
+
+window.skDesignUsePrompt = function(extra){
+  const box = document.getElementById('skDesignPrompt');
+  const q = document.getElementById('q');
+  if (!box || !q) {
+    alert('AI reply input was not found. Please use the existing SASIKUMAR AI Reply Tool.');
+    return;
+  }
+  const prompt = typeof extra === 'string' ? extra : box.value.trim();
+  if (!prompt) {
+    alert('Please enter a design prompt first.');
+    box.focus();
+    return;
+  }
+  q.value = 'Help me create this design: ' + prompt +
+    '. Provide a complete, responsive HTML/CSS/JavaScript solution.';
+  if (typeof window.send === 'function') {
+    window.send();
+    document.getElementById('skReplyHeading')?.scrollIntoView({behavior:'smooth',block:'start'});
+  } else {
+    q.scrollIntoView({behavior:'smooth',block:'center'});
+    alert('Your prompt is ready in the existing AI reply input. Press Send.');
+  }
+};
+
+window.skDesignGlobalSearch = async function(){
+  const input = document.getElementById('skDesignWebQuery');
+  const out = document.getElementById('skDesignWebResults');
+  const query = input?.value.trim();
+  if (!query || !out) return;
+  out.textContent = 'Searching the web...';
+  try {
+    const response = await fetch('/api/global-search?q=' + encodeURIComponent(query));
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Search failed');
+    out.replaceChildren();
+    const heading = document.createElement('p');
+    heading.textContent = 'Results for: ' + (data.query || query);
+    out.appendChild(heading);
+    (data.results || []).forEach(item => {
+      const card = document.createElement('div');
+      card.style.cssText = 'padding:10px;margin:8px 0;border-radius:10px;background:#ffffff18;';
+      const link = document.createElement('a');
+      link.textContent = item.title || item.url || 'Open result';
+      link.href = item.url || '#';
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.style.cssText = 'color:#bae6fd;font-weight:800;';
+      const desc = document.createElement('p');
+      desc.textContent = item.content || '';
+      card.append(link, desc);
+      out.appendChild(card);
+    });
+    if (!(data.results || []).length) out.append('No results found.');
+  } catch (err) {
+    out.textContent = 'Web search error: ' + err.message;
+  }
+};
+</script>
+<!-- END SASIKUMAR AI DESIGN MAKER -->
+
 <h2 id="skReplyHeading" style="margin:8px 0 10px;text-align:left;font-size:18px;font-weight:800;color:#14532d;">🤖 SASIKUMAR AI REPLY TOOL</h2>
 <div class="toolbar">
 
