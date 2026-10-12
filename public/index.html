@@ -1652,8 +1652,13 @@ window.skDesignUsePrompt = function(extra){
     box.focus();
     return;
   }
-  q.value = 'Help me create this design: ' + prompt +
-    '. Provide a complete, responsive HTML/CSS/JavaScript solution.';
+  if (typeof skSending !== 'undefined' && skSending) {
+    alert('Please wait for the current AI reply to finish.');
+    return;
+  }
+  window.skDesignPending = true;
+  q.value = 'Create this design: ' + prompt +
+    '. Return ONLY a complete, self-contained HTML document starting with <!doctype html>. Include all CSS and JavaScript inside the HTML. Make it colorful, professional, responsive on mobile, and visually polished. Do not explain the code. Do not wrap it in Markdown fences.';
   if (typeof send === 'function') {
     document.getElementById('skReplyHeading')?.scrollIntoView({behavior:'smooth',block:'start'});
     Promise.resolve().then(() => send());
@@ -2159,7 +2164,35 @@ async function send(){
       throw new Error("Empty AI reply");
     }
 
-    loading.innerText = "🤖 " + d.reply;
+    if (window.skDesignPending) {
+      window.skDesignPending = false;
+      const rawDesignReply = String(d.reply || "");
+      const designCodeBox = document.getElementById("skDesignCode");
+      const designFrame = document.getElementById("skDesignPreviewFrame");
+      let generatedHTML = "";
+
+      const htmlFence = rawDesignReply.match(/```(?:html|HTML)?\s*([\s\S]*?)```/);
+      if (htmlFence && /<(?:!doctype|html|head|body)\b/i.test(htmlFence[1])) {
+        generatedHTML = htmlFence[1].trim();
+      } else {
+        const start = rawDesignReply.search(/<!doctype\s+html|<html\b/i);
+        if (start >= 0) generatedHTML = rawDesignReply.slice(start).trim();
+      }
+
+      if (generatedHTML && designCodeBox) {
+        designCodeBox.value = generatedHTML;
+        if (designFrame) designFrame.srcdoc = generatedHTML;
+        loading.innerText = "🤖 Design generated! Code added and preview updated below.";
+        document.getElementById("skDesignMakerGlobal")?.scrollIntoView({
+          behavior: "smooth", block: "start"
+        });
+      } else {
+        loading.innerText = "🤖 AI replied, but complete HTML code was not detected. Please press Logo/Poster/Website UI again.";
+        console.warn("Design Maker: HTML not detected in AI reply:", rawDesignReply);
+      }
+    } else {
+      loading.innerText = "🤖 " + d.reply;
+    }
 
     if (voiceEnabled && typeof speakTamil === "function") {
       speakTamil(String(d.reply).replace(/^🤖\s*/, ""));
@@ -2169,6 +2202,7 @@ async function send(){
       removeReplyAttachment();
     }
   } catch (e) {
+    window.skDesignPending = false;
     console.error("SASIKUMAR AI reply error:", e);
 
     const messageText = e.name === "AbortError"
