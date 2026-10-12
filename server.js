@@ -549,6 +549,64 @@ app.get('/api/breaking-news', async (req, res) => {
       }
     }
 
+
+    // NewsData.io fallback: use only when an API key is configured.
+    const newsDataKey = process.env.NEWSDATA_API_KEY;
+    if (newsDataKey) {
+      try {
+        const params = new URLSearchParams({
+          apikey: newsDataKey,
+          q: query,
+          country: 'in',
+          language: ['ta', 'en', 'hi', 'te', 'kn', 'ml'].includes(language)
+            ? language : 'ta'
+        });
+
+        const newsDataResponse = await fetch(
+          'https://newsdata.io/api/1/latest?' + params.toString(),
+          { signal: AbortSignal.timeout(12000) }
+        );
+
+        if (newsDataResponse.ok) {
+          const newsData = await newsDataResponse.json();
+          const articles = (newsData.results || [])
+            .filter(item => item.title && item.link)
+            .map(item => ({
+              title: item.title,
+              url: item.link,
+              link: item.link,
+              description: item.description || '',
+              publishedAt: item.pubDate || '',
+              source: item.source_name || item.source_id || 'NewsData.io',
+              image: item.image_url || ''
+            }));
+
+          if (articles.length) {
+            console.log('NewsData.io returned', articles.length, 'articles');
+            return res.json({
+              category,
+              language,
+              provider: 'NewsData.io',
+              articles,
+              news: articles
+            });
+          }
+
+          console.error('NewsData.io returned no articles; trying Google News RSS.');
+        } else {
+          console.error(
+            'NewsData.io failed; trying Google News RSS:',
+            newsDataResponse.status
+          );
+        }
+      } catch (newsDataError) {
+        console.error(
+          'NewsData.io unavailable; trying Google News RSS:',
+          newsDataError.message
+        );
+      }
+    }
+
     return await googleNews();
   } catch (error) {
     console.error('Breaking news fallback failed:', error.message);
