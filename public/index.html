@@ -2167,27 +2167,39 @@ async function send(){
     if (window.skDesignPending) {
       window.skDesignPending = false;
       const rawDesignReply = String(d.reply || "");
-      const designCodeBox = document.getElementById("skDesignCode");
-      const designFrame = document.getElementById("skDesignPreviewFrame");
-      let generatedHTML = "";
+    const designCodeBox = document.getElementById("skDesignCode");
+    const designFrame = document.getElementById("skDesignPreviewFrame");
 
-      const htmlFence = rawDesignReply.match(/```(?:html|HTML)?\s*([\s\S]*?)```/);
-      if (htmlFence && /<(?:!doctype|html|head|body)\b/i.test(htmlFence[1])) {
-        generatedHTML = htmlFence[1].trim();
-      } else {
-        const start = rawDesignReply.search(/<!doctype\s+html|<html\b/i);
-        if (start >= 0) generatedHTML = rawDesignReply.slice(start).trim();
+    // Accept HTML inside fences or a complete HTML document in the reply.
+    let generatedHTML = "";
+    const fencedBlocks = [...rawDesignReply.matchAll(/```(?:html)?\s*([\s\S]*?)```/gi)];
+
+    for (const block of fencedBlocks) {
+      const candidate = block[1].trim();
+      if (/<(?:!doctype\s+html|html\b)/i.test(candidate)) {
+        generatedHTML = candidate;
+        break;
       }
+    }
+
+    if (!generatedHTML) {
+      const startHTML = rawDesignReply.search(/<!doctype\s+html|<html\b/i);
+      if (startHTML >= 0) generatedHTML = rawDesignReply.slice(startHTML).trim();
+    }
+
+    if (window.skDesignPending) {
+      window.skDesignPending = false;
 
       if (generatedHTML && designCodeBox) {
         designCodeBox.value = generatedHTML;
         if (designFrame) designFrame.srcdoc = generatedHTML;
         loading.innerText = "🤖 Design generated! Code added and preview updated below.";
         document.getElementById("skDesignMakerGlobal")?.scrollIntoView({
-          behavior: "smooth", block: "start"
+          behavior: "smooth",
+          block: "start"
         });
       } else {
-        loading.innerText = "🤖 AI replied, but complete HTML code was not detected. Please press Logo/Poster/Website UI again.";
+        loading.innerText = "🤖 AI replied, but complete HTML was not detected. Try Website UI, Poster, or Logo again.";
         console.warn("Design Maker: HTML not detected in AI reply:", rawDesignReply);
       }
     } else {
