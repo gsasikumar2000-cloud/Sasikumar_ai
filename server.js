@@ -320,7 +320,7 @@ app.get('/api/global-search', async (req, res) => {
 
       const data = await response.json();
       if (!response.ok) {
-        console.error('Tavily search failed:', response.status);
+        console.error('Tavily search failed:', response.status, JSON.stringify(data).slice(0, 500));
         return res.status(502).json({ error: 'Search provider request failed' });
       }
 
@@ -413,7 +413,8 @@ app.get('/api/breaking-news', async (req, res) => {
     });
 
     if (!response.ok) {
-      console.error('Breaking news provider failed:', response.status);
+      const providerError = await response.text().catch(() => '');
+      console.error('Breaking news provider failed:', response.status, providerError.slice(0, 500));
       return res.status(502).json({
         error: 'Live news provider is temporarily unavailable.',
         articles: []
