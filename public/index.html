@@ -7640,10 +7640,10 @@ input, textarea, select, button {
     var section = document.getElementById('skYouTubeCreativeCards');
     if (!section) return;
 
-    var target = document.getElementById('skDesignBelowGlobalSearch');
-    if (target && target.parentNode && !target.contains(section)) {
-      target.parentNode.insertBefore(section, target);
-    } else if (!section.isConnected) {
+    var footer = document.querySelector('footer');
+    if (footer && footer.parentNode && !footer.contains(section)) {
+      footer.parentNode.insertBefore(section, footer);
+    } else {
       document.body.appendChild(section);
     }
 
