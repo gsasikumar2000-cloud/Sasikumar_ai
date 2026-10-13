@@ -1223,7 +1223,7 @@ style="position:absolute;top:8px;right:8px;padding:9px 13px;border:0;border-radi
     <div class="sk-live-icon">🪙</div>
     <div class="sk-live-title">LIVE GOLD & SILVER</div>
     <div class="sk-live-text">Today's Gold & Silver Poster</div>
-    <button type="button" onclick="window.location.href='/gold-silver.html?source=image'">
+    <button type="button" onclick="window.skOpenLivePageWindowV1('/gold-silver.html?source=image')">
       Open Live Poster
     </button>
   </div>
@@ -1247,10 +1247,10 @@ style="position:absolute;top:8px;right:8px;padding:9px 13px;border:0;border-radi
     <div class="skMainFeatureLogo">🪙</div>
     <h3>LIVE GOLD & SILVER</h3>
     <p>Today's live market rate</p>
-    <button type="button" onclick="window.location.href='/gold-silver.html'">📊 View Live Rate</button>
+    <button type="button" onclick="window.skOpenLivePageWindowV1('/gold-silver.html')">📊 View Live Rate</button>
   </section>
 
-  <section class="skMainFeatureCard" id="skLiveImagesCard" role="link" tabindex="0" onclick="window.location.href='/gold-silver.html?source=image'" style="cursor:pointer">
+  <section class="skMainFeatureCard" id="skLiveImagesCard" role="link" tabindex="0" onclick="window.skOpenLivePageWindowV1('/gold-silver.html?source=image')" style="cursor:pointer">
     <div class="skMainFeatureLogo">🖼️</div>
     <h3>LIVE IMAGES</h3>
     <p>Live image content</p>
@@ -1455,7 +1455,7 @@ style="position:absolute;top:8px;right:8px;padding:9px 13px;border:0;border-radi
       video.style.display="block";
       status.textContent="SASIKUMAR AI • Video Ad";
       open.style.display="inline-block";
-      open.onclick=()=>window.open(url,"_blank");
+      open.onclick=()=>window.skOpenLivePageWindowV1(url);
     }catch(e){
       console.warn("Video Ad:",e);
       status.textContent="🎬 Video Ad library empty — add a video from HUB → Video Library";
@@ -1543,7 +1543,7 @@ style="position:absolute;top:8px;right:8px;padding:9px 13px;border:0;border-radi
     if(openBtn){
       openBtn.addEventListener("click",function(e){
         e.stopPropagation();
-        window.open(item.url,"_blank");
+        window.skOpenLivePageWindowV1(item.url);
       });
     }
 
@@ -9606,3 +9606,72 @@ iframe[src*="youtube-nocookie.com/embed/e57vD7zZeRw"] {
   }
 }
 </style>
+
+
+<!-- SK_LIVE_CARD_WINDOW_CONTROLS_V1 -->
+<script>
+(function () {
+  if (window.skOpenLivePageWindowV1) return;
+
+  window.skOpenLivePageWindowV1 = function (url) {
+    var target = new URL(url, window.location.origin);
+    if (target.origin !== window.location.origin) {
+      window.open(target.href, "_blank", "noopener");
+      return;
+    }
+
+    var popup = window.open(target.href, "_blank");
+    if (!popup) {
+      alert("Please allow pop-ups to open Live Cards in a new window.");
+      return;
+    }
+
+    function addControls() {
+      try {
+        if (popup.closed || !popup.document.body) return;
+        if (popup.document.getElementById("skLiveWindowControlsV1")) return;
+
+        var bar = popup.document.createElement("div");
+        bar.id = "skLiveWindowControlsV1";
+        bar.style.cssText =
+          "position:sticky;top:0;z-index:2147483647;" +
+          "display:flex;justify-content:center;gap:12px;flex-wrap:wrap;" +
+          "padding:10px;background:#102a43;color:white;" +
+          "box-shadow:0 2px 10px #0004;";
+
+        function makeButton(label, background, action) {
+          var b = popup.document.createElement("button");
+          b.type = "button";
+          b.textContent = label;
+          b.style.cssText =
+            "padding:10px 18px;border:0;border-radius:10px;" +
+            "font-size:15px;font-weight:700;cursor:pointer;" +
+            "background:" + background + ";color:white;";
+          b.addEventListener("click", action);
+          return b;
+        }
+
+        bar.appendChild(makeButton("❌ Close", "#b91c1c", function () {
+          popup.close();
+        }));
+
+        bar.appendChild(makeButton("🏠 Main Page", "#15803d", function () {
+          popup.location.href = "/";
+        }));
+
+        popup.document.body.insertBefore(bar, popup.document.body.firstChild);
+      } catch (e) {
+        /* Some pages may prevent same-origin control injection. */
+      }
+    }
+
+    popup.addEventListener("load", addControls);
+    var attempts = 0;
+    var timer = setInterval(function () {
+      addControls();
+      attempts++;
+      if (attempts >= 40 || popup.closed) clearInterval(timer);
+    }, 250);
+  };
+})();
+</script>
