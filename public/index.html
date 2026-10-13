@@ -1874,6 +1874,40 @@ font-family:inherit;box-sizing:border-box;">
 }
 </style>
 
+
+<style id="SK_REPLY_CREATOR_CARDS_CSS_V1">
+#skReplyCreatorCards{display:block;width:100%;max-width:1200px;margin:24px auto;padding:16px;box-sizing:border-box}
+#skReplyCreatorCards .skCreatorToolsHeading{text-align:center;margin-bottom:18px}
+#skReplyCreatorCards .skCreatorToolsHeading h2{font-size:clamp(20px,3vw,28px);margin:0 0 8px;font-weight:800}
+#skReplyCreatorCards .skCreatorToolsHeading p{margin:0;color:#64748b}
+#skReplyCreatorCards .skCreatorToolsGrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+#skReplyCreatorCards .skCreatorToolCard{box-sizing:border-box;min-width:0;min-height:190px;padding:18px 12px;border-radius:18px;border:1px solid #dbeafe;background:linear-gradient(145deg,#fff,#eff6ff);box-shadow:0 5px 18px #0f172a12;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;text-decoration:none;color:#172554;transition:transform .25s,box-shadow .25s}
+#skReplyCreatorCards .skCreatorToolCard:hover{transform:translateY(-5px);box-shadow:0 12px 26px #0f172a20}
+#skReplyCreatorCards .skCreatorToolIcon{font-size:38px;line-height:1.2}
+#skReplyCreatorCards .skCreatorToolCard strong{font-size:16px;overflow-wrap:anywhere}
+#skReplyCreatorCards .skCreatorToolDesc{font-size:12px;line-height:1.5;color:#475569}
+#skReplyCreatorCards .skCreatorToolOpen{margin-top:auto;padding-top:7px;font-size:12px;font-weight:800;color:#0369a1}
+#skPdfMakerModal{position:fixed;inset:0;z-index:999999;background:#0f172acc;padding:16px;overflow:auto;box-sizing:border-box}
+#skPdfMakerModal .skPdfMakerPanel{max-width:720px;margin:4vh auto;background:#fff;color:#111827;padding:22px;border-radius:16px;box-sizing:border-box}
+#skPdfMakerModal label{display:block;font-weight:700;margin:14px 0 6px}
+#skPdfMakerModal input,#skPdfMakerModal textarea{width:100%;box-sizing:border-box;padding:12px;border:1px solid #cbd5e1;border-radius:8px;font:inherit}
+#skPdfMakerModal textarea{resize:vertical}
+#skPdfMakerModal .skPdfActions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+#skPdfMakerModal button{padding:11px 16px;border:0;border-radius:9px;background:#2563eb;color:white;font-weight:700}
+#skPdfMakerModal .skPdfActions button:last-child{background:#475569}
+@media(max-width:850px){#skReplyCreatorCards .skCreatorToolsGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:380px){#skReplyCreatorCards{padding:8px}#skReplyCreatorCards .skCreatorToolsGrid{gap:8px}#skReplyCreatorCards .skCreatorToolCard{padding:14px 8px;min-height:170px}}
+@media print{
+ body.skPdfPrintMode *{visibility:hidden!important}
+ body.skPdfPrintMode #skPdfMakerModal,body.skPdfPrintMode #skPdfMakerModal *{visibility:visible!important}
+ body.skPdfPrintMode #skPdfMakerModal{display:block!important;position:absolute;inset:0;width:100%;padding:0;background:white;color:black;overflow:visible}
+ body.skPdfPrintMode #skPdfMakerModal .skPdfMakerPanel{max-width:none;margin:0;padding:0;border-radius:0;box-shadow:none}
+ body.skPdfPrintMode #skPdfMakerModal input{border:0;padding:0}
+ body.skPdfPrintMode #skPdfMakerModal textarea{border:0;resize:none;min-height:65vh}
+ body.skPdfPrintMode #skPdfModal .skPdfActions,body.skPdfPrintMode #skPdfMakerModal .skPdfActions,body.skPdfPrintMode #skPdfMakerModal p{display:none!important}
+}
+</style>
+
 </head><body><h1>SASIKUMAR AI</h1><p>Your creative design starts here.</p><button onclick="document.querySelector('p').textContent='Preview is working!'">Test Design</button>
 
 
@@ -2258,6 +2292,63 @@ Tamil + English • Gold • General Q&A</div>
 </div>
 </div>
 
+
+
+<!-- SK_REPLY_CREATOR_CARDS_V1 -->
+<div id="skReplyCreatorCards" aria-label="SASIKUMAR AI Creator tools">
+  <div class="skCreatorToolsHeading">
+    <h2>✨ SASIKUMAR AI – CREATOR TOOLS</h2>
+    <p>Photo • Image • Audio • Video • PDF</p>
+  </div>
+  <div class="skCreatorToolsGrid">
+
+      <a class="skCreatorToolCard" href="/ai-image.html">
+        <span class="skCreatorToolIcon">📸</span>
+        <strong>Photo Maker</strong>
+        <span class="skCreatorToolDesc">Create or edit photos</span>
+        <span class="skCreatorToolOpen">Open Maker →</span>
+      </a>
+      <a class="skCreatorToolCard" href="/ai-image.html">
+        <span class="skCreatorToolIcon">🖼️</span>
+        <strong>AI Image Maker</strong>
+        <span class="skCreatorToolDesc">Create AI images</span>
+        <span class="skCreatorToolOpen">Open Maker →</span>
+      </a>
+      <a class="skCreatorToolCard" href="#" onclick="skCreatorFallback('Help me create audio or voice content.');return false;">
+        <span class="skCreatorToolIcon">🎙️</span>
+        <strong>Audio Maker</strong>
+        <span class="skCreatorToolDesc">Audio and voice creation</span>
+        <span class="skCreatorToolOpen">Open Maker →</span>
+      </a>
+      <a class="skCreatorToolCard" href="/daily-video.html">
+        <span class="skCreatorToolIcon">🎬</span>
+        <strong>Video Maker</strong>
+        <span class="skCreatorToolDesc">Create video content</span>
+        <span class="skCreatorToolOpen">Open Maker →</span>
+      </a><a class="skCreatorToolCard" href="#" onclick="skOpenPdfMaker();return false;">
+        <span class="skCreatorToolIcon">📄</span>
+        <strong>PDF File Maker</strong>
+        <span class="skCreatorToolDesc">Write content and save it as PDF</span>
+        <span class="skCreatorToolOpen">Create PDF →</span>
+      </a>
+  </div>
+</div>
+
+<div id="skPdfMakerModal" role="dialog" aria-modal="true" aria-label="PDF File Maker" style="display:none">
+  <div class="skPdfMakerPanel">
+    <h2>📄 PDF File Maker</h2>
+    <label for="skPdfTitle">Document title</label>
+    <input id="skPdfTitle" type="text" placeholder="Enter document title">
+    <label for="skPdfContent">Document content</label>
+    <textarea id="skPdfContent" rows="10" placeholder="Type or paste your document content here..."></textarea>
+    <div class="skPdfActions">
+      <button type="button" onclick="skPrintPdf()">🖨️ Print / Save as PDF</button>
+      <button type="button" onclick="skClosePdfMaker()">Close</button>
+    </div>
+    <p>Choose “Save as PDF” in the print dialog to save your file.</p>
+  </div>
+</div>
+<!-- /SK_REPLY_CREATOR_CARDS_V1 -->
 
 <section id="skYouTubeCreativeCards" aria-label="SASIKUMAR AI YouTube Videos">
   <style>
@@ -8205,6 +8296,43 @@ input, textarea, select, button {
 
 
 
+
+
+<script id="SK_REPLY_CREATOR_CARDS_SCRIPT_V1">
+window.skCreatorFallback = function(prompt){
+  var q=document.getElementById("q");
+  var reply=document.getElementById("sasikumarAIReplySection") ||
+            document.getElementById("sasikumarMainReply") ||
+            document.getElementById("q");
+  if(q){q.value=prompt;q.focus();}
+  if(reply){reply.scrollIntoView({behavior:"smooth",block:"center"});}
+};
+window.skOpenPdfMaker=function(){
+  var m=document.getElementById("skPdfMakerModal");
+  if(m)m.style.display="block";
+};
+window.skClosePdfMaker=function(){
+  var m=document.getElementById("skPdfMakerModal");
+  if(m)m.style.display="none";
+  document.body.classList.remove("skPdfPrintMode");
+};
+window.skPrintPdf=function(){
+  var title=(document.getElementById("skPdfTitle").value||"SASIKUMAR AI Document").trim();
+  var input=document.getElementById("skPdfContent");
+  if(!input.value.trim()){alert("Please enter document content first.");input.focus();return;}
+  document.title=title;
+  document.body.classList.add("skPdfPrintMode");
+  window.print();
+  setTimeout(function(){
+    document.body.classList.remove("skPdfPrintMode");
+    document.title="SASIKUMAR AI – Smart Digital Services";
+  },1000);
+};
+window.addEventListener("afterprint",function(){
+  document.body.classList.remove("skPdfPrintMode");
+  document.title="SASIKUMAR AI – Smart Digital Services";
+});
+</script>
 
 </body>
 </html>
