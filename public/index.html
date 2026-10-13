@@ -1565,7 +1565,7 @@ style="position:absolute;top:8px;right:8px;padding:9px 13px;border:0;border-radi
 
   <div class="dash-sub">Smart Assistant • Gold • News • Voice</div>
 
-  <div id="skAllServicesCard" class="sk-all-services-card" style="display:none !important;visibility:hidden !important;opacity:0 !important;">
+  <div id="skAllServicesCard" class="sk-all-services-card">
     <div class="sk-all-services-head">
       <div>
         <div class="sk-all-services-title">⚡ ALL SERVICES</div>
@@ -6101,6 +6101,22 @@ html body .sk-extra-details {
     min-width: 180px !important;
   }
 }
+
+/* Restore the service-card parent hidden by old inline styles. */
+html body #skAllServicesCard.sk-all-services-card {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+html body #skAllServicesCard .sk-service-zigzag {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
 </style>
 <!-- /SK_FIX_HOMEPAGE_SERVICE_CARDS_VISIBLE_V2 -->
 
