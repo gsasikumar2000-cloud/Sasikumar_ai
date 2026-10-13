@@ -6797,14 +6797,15 @@ else skRefreshPay2AllWallet();
     const chat = document.getElementById("chat");
     const newBar = document.getElementById("skReplyToolsBar");
     const designMaker = document.getElementById("skDesignMakerGlobal");
+    const creatorCards = document.getElementById("skReplyCreatorCards");
 
-    if (!welcome || !globalSearch || !heading || !quick || !reply || !chat || !newBar || !designMaker) {
+    if (!welcome || !globalSearch || !heading || !quick || !reply || !chat || !newBar || !designMaker || !creatorCards) {
       console.warn("SASIKUMAR AI: Required reply elements not found; no move performed.");
       return;
     }
 
     let anchor = welcome;
-    [globalSearch, heading, quick, reply, chat, designMaker].forEach(function (element) {
+    [globalSearch, heading, quick, reply, chat, designMaker, creatorCards].forEach(function (element) {
       anchor.insertAdjacentElement("afterend", element);
       anchor = element;
     });
