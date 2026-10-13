@@ -6057,7 +6057,43 @@ function skReplyPrint(){
     '<!doctype html><html><head><meta charset="utf-8">' +
     '<title>SASIKUMAR AI Reply</title>' +
     '<style>body{font:16px Arial,sans-serif;padding:24px}pre{white-space:pre-wrap;overflow-wrap:anywhere}</style>' +
-    '</head><body><h2>SASIKUMAR AI Reply</h2><pre>' +
+    '
+<!-- SK_FIX_HOMEPAGE_SERVICE_CARDS_VISIBLE_V1 -->
+<style id="SK_FIX_HOMEPAGE_SERVICE_CARDS_VISIBLE_V1">
+/* Restore only the existing homepage service-card containers. */
+details .dash-grid,
+.sk-more-tools,
+#newEducationServices,
+#allJobs,
+#newGoldServices,
+#skGoldApp {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+details .dash-grid {
+  display: flex !important;
+  flex-flow: row nowrap !important;
+  overflow-x: auto !important;
+  gap: 14px !important;
+}
+details .dash-grid > button {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  flex: 0 0 270px !important;
+  min-width: 270px !important;
+}
+#newEducationServices,
+#allJobs,
+#newGoldServices,
+#skGoldApp {
+  scroll-margin-top: 16px;
+}
+</style>
+<!-- /SK_FIX_HOMEPAGE_SERVICE_CARDS_VISIBLE_V1 -->
+
+</head><body><h2>SASIKUMAR AI Reply</h2><pre>' +
     escaped + '</pre></body></html>'
   );
   popup.document.close();
