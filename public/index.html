@@ -3525,9 +3525,36 @@ const content =
 
 function liveGoldRate(){
   const target = document.getElementById("skGoldApp");
+  const panel = document.getElementById("skGoldDetails");
+  const button = document.getElementById("skGoldPriceToggle");
+
+  if (panel) {
+    panel.style.setProperty("display", "block", "important");
+    panel.style.setProperty("visibility", "visible", "important");
+    panel.style.setProperty("opacity", "1", "important");
+  }
+
+  if (button) {
+    button.textContent = "✖️ HIDE GOLD PRICE";
+    button.setAttribute("aria-expanded", "true");
+    button.style.setProperty("display", "block", "important");
+    button.style.setProperty("visibility", "visible", "important");
+  }
+
   if (target) {
+    target.style.setProperty("display", "block", "important");
     target.scrollIntoView({behavior:"smooth", block:"start"});
   }
+
+  const stateEl = document.getElementById("skState");
+  const districtEl = document.getElementById("skDistrict");
+  const result = document.getElementById("skResult");
+
+  if (!panel || !stateEl || !districtEl || !result) {
+    console.error("Gold/Silver panel elements are missing.");
+    return;
+  }
+
   return skLoadRates();
 }
 
