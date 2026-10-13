@@ -6760,6 +6760,7 @@ else skRefreshPay2AllWallet();
 (function () {
   function moveReplyBelowWelcome() {
     const welcome = document.getElementById("skWelcomeHero");
+    const globalSearch = document.getElementById("skGlobalSearchTop");
     const heading = document.getElementById("skReplyHeading");
     const quick = document.getElementById("skAIQuickQuestions");
     const reply = document.getElementById("sasikumarAIReplySection");
@@ -6767,13 +6768,13 @@ else skRefreshPay2AllWallet();
     const newBar = document.getElementById("skReplyToolsBar");
     const designMaker = document.getElementById("skDesignMakerGlobal");
 
-    if (!welcome || !heading || !quick || !reply || !chat || !newBar || !designMaker) {
+    if (!welcome || !globalSearch || !heading || !quick || !reply || !chat || !newBar || !designMaker) {
       console.warn("SASIKUMAR AI: Required reply elements not found; no move performed.");
       return;
     }
 
     let anchor = welcome;
-    [heading, quick, reply, chat, designMaker].forEach(function (element) {
+    [globalSearch, heading, quick, reply, chat, designMaker].forEach(function (element) {
       anchor.insertAdjacentElement("afterend", element);
       anchor = element;
     });
