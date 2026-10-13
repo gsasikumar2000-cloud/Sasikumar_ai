@@ -1746,6 +1746,66 @@ font-family:inherit;box-sizing:border-box;">
 
 
 
+
+
+</body></html>`;
+  const code = document.getElementById('skDesignCode');
+  if (code && !code.value.trim()) code.value = sample;
+})();
+
+window.skDesignPreview = function(){
+  const code = document.getElementById('skDesignCode');
+  const frame = document.getElementById('skDesignPreviewFrame');
+  if (!code || !frame) return;
+  frame.srcdoc = code.value;
+};
+
+window.skDesignDownload = function(){
+  const code = document.getElementById('skDesignCode');
+  if (!code) return;
+  const blob = new Blob([code.value], {type:'text/html;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'sasikumar-ai-design.html';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+};
+
+window.skDesignUsePrompt = function(extra){
+  const box = document.getElementById('skDesignPrompt');
+  const q = document.getElementById('q');
+  if (!box || !q) {
+    alert('AI reply input was not found. Please use the existing SASIKUMAR AI Reply Tool.');
+    return;
+  }
+  const prompt = typeof extra === 'string' ? extra : box.value.trim();
+  if (!prompt) {
+    alert('Please enter a design prompt first.');
+    box.focus();
+    return;
+  }
+  if (typeof skSending !== 'undefined' && skSending) {
+    alert('Please wait for the current AI reply to finish.');
+    return;
+  }
+  window.skDesignPending = true;
+  q.value = 'Create this design: ' + prompt +
+    '. Return ONLY a complete, self-contained HTML document starting with <!doctype html>. Include all CSS and JavaScript inside the HTML. Make it colorful, professional, responsive on mobile, and visually polished. Do not explain the code. Do not wrap it in Markdown fences.';
+  if (typeof send === 'function') {
+    document.getElementById('skReplyHeading')?.scrollIntoView({behavior:'smooth',block:'start'});
+    Promise.resolve().then(() => send());
+  } else {
+    q.scrollIntoView({behavior:'smooth',block:'center'});
+    alert('Your prompt is ready in the existing AI reply input. Press Send.');
+  }
+};
+
+</script>
+<!-- END SASIKUMAR AI DESIGN MAKER -->
+
 <!-- SASIKUMAR AI YOUTUBE CREATIVE CARDS -->
 <section id="skYouTubeCreativeCards" aria-label="SASIKUMAR AI YouTube Videos">
   <style>
@@ -1954,63 +2014,6 @@ font-family:inherit;box-sizing:border-box;">
 </section>
 <!-- END SASIKUMAR AI YOUTUBE CREATIVE CARDS -->
 
-</body></html>`;
-  const code = document.getElementById('skDesignCode');
-  if (code && !code.value.trim()) code.value = sample;
-})();
-
-window.skDesignPreview = function(){
-  const code = document.getElementById('skDesignCode');
-  const frame = document.getElementById('skDesignPreviewFrame');
-  if (!code || !frame) return;
-  frame.srcdoc = code.value;
-};
-
-window.skDesignDownload = function(){
-  const code = document.getElementById('skDesignCode');
-  if (!code) return;
-  const blob = new Blob([code.value], {type:'text/html;charset=utf-8'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'sasikumar-ai-design.html';
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-};
-
-window.skDesignUsePrompt = function(extra){
-  const box = document.getElementById('skDesignPrompt');
-  const q = document.getElementById('q');
-  if (!box || !q) {
-    alert('AI reply input was not found. Please use the existing SASIKUMAR AI Reply Tool.');
-    return;
-  }
-  const prompt = typeof extra === 'string' ? extra : box.value.trim();
-  if (!prompt) {
-    alert('Please enter a design prompt first.');
-    box.focus();
-    return;
-  }
-  if (typeof skSending !== 'undefined' && skSending) {
-    alert('Please wait for the current AI reply to finish.');
-    return;
-  }
-  window.skDesignPending = true;
-  q.value = 'Create this design: ' + prompt +
-    '. Return ONLY a complete, self-contained HTML document starting with <!doctype html>. Include all CSS and JavaScript inside the HTML. Make it colorful, professional, responsive on mobile, and visually polished. Do not explain the code. Do not wrap it in Markdown fences.';
-  if (typeof send === 'function') {
-    document.getElementById('skReplyHeading')?.scrollIntoView({behavior:'smooth',block:'start'});
-    Promise.resolve().then(() => send());
-  } else {
-    q.scrollIntoView({behavior:'smooth',block:'center'});
-    alert('Your prompt is ready in the existing AI reply input. Press Send.');
-  }
-};
-
-</script>
-<!-- END SASIKUMAR AI DESIGN MAKER -->
 
 <!-- GLOBAL WEB SEARCH BELOW SASIKUMAR AI DESIGN MAKER -->
 <section id="skDesignBelowGlobalSearch" style="display:block!important;width:calc(100% - 24px);max-width:1100px;box-sizing:border-box;margin:14px auto;padding:18px;background:linear-gradient(135deg,#0f172a,#164e63,#312e81);color:#fff;border-radius:18px;box-shadow:0 8px 25px #0003;">
@@ -7559,7 +7562,7 @@ input, textarea, select, button {
 
     section.querySelectorAll('iframe.sk-yt-video').forEach(function(frame){
       var src = frame.getAttribute('src');
-      if(!src || !/youtube(-nocookie)?\.com$/i.test(
+      if(!src || !/(^|\.)youtube(-nocookie)?\.com$/i.test(
         (function(){try{return new URL(src).hostname}catch(e){return ''}})()
       )) return;
 
