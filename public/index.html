@@ -6443,7 +6443,16 @@ section:not(.skMainFeatureCard):not(#skDesignMakerGlobal) {
       '</div>' +
       '<a href="https://www.youtube.com/watch?v=e57vD7zZeRw" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:8px;padding:11px 18px;border-radius:12px;background:#fff;color:#1d4ed8;font-weight:800;text-decoration:none">▶ YouTube-ல் வீடியோ பார்க்க</a>';
 
-    row.insertAdjacentElement("afterend", kuralVideo);
+    var dailyKuralCard = document.getElementById("dailyThirukkural");
+    if (dailyKuralCard) {
+      kuralVideo.style.width = "100%";
+      kuralVideo.style.maxWidth = "100%";
+      kuralVideo.style.margin = "14px auto 0";
+      kuralVideo.style.boxSizing = "border-box";
+      dailyKuralCard.appendChild(kuralVideo);
+    } else {
+      row.insertAdjacentElement("afterend", kuralVideo);
+    }
 
 
     /* Place LIVE NEWS immediately after the Login section. */
