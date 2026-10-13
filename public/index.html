@@ -2337,6 +2337,36 @@ img[src*="sasikumar-ai-logo"] {
 }
 </style>
 
+
+<style id="SK_REPLY_HORIZONTAL_FINAL_V3">
+#sasikumarAIReplySection #skReplyToolsBar {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 6px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+#sasikumarAIReplySection #skReplyToolsBar > button {
+  display: inline-flex !important;
+  flex: 0 0 auto !important;
+  width: max-content !important;
+  min-width: max-content !important;
+  max-width: none !important;
+  align-self: center !important;
+  white-space: nowrap !important;
+  margin: 0 !important;
+}
+</style>
+
 </body></html>`;
   const code = document.getElementById('skDesignCode');
   if (code && !code.value.trim()) code.value = sample;
