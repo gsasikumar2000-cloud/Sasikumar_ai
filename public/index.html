@@ -7980,5 +7980,149 @@ input, textarea, select, button {
 })();
 </script>
 
+
+
+<style id="SK_UNIFORM_YOUTUBE_CARDS_V1">
+#skYouTubeCreativeCards {
+  width:100%;
+  max-width:100%;
+  overflow:hidden;
+  box-sizing:border-box;
+}
+#skYouTubeCreativeCards .sk-yt-grid {
+  display:flex !important;
+  flex-flow:row nowrap !important;
+  align-items:stretch !important;
+  gap:14px !important;
+  width:100%;
+  overflow-x:auto !important;
+  overflow-y:hidden !important;
+  scroll-snap-type:x mandatory;
+  scroll-behavior:smooth;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;
+  padding:8px 3px 16px;
+}
+#skYouTubeCreativeCards .sk-yt-card {
+  box-sizing:border-box !important;
+  flex:0 0 clamp(245px, 31%, 320px) !important;
+  width:clamp(245px, 31%, 320px) !important;
+  min-width:0;
+  height:100%;
+  min-height:370px;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:stretch !important;
+  scroll-snap-align:start;
+  overflow:hidden;
+  border-radius:16px;
+}
+#skYouTubeCreativeCards .sk-yt-card h3 {
+  min-height:48px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+#skYouTubeCreativeCards .sk-yt-center-logo {
+  min-height:82px;
+  flex:0 0 82px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+#skYouTubeCreativeCards .sk-yt-center-logo img {
+  width:60px !important;
+  height:60px !important;
+  object-fit:contain;
+  animation:skYTCardLogo360 3s linear infinite;
+}
+#skYouTubeCreativeCards .sk-yt-video {
+  display:block;
+  width:100% !important;
+  aspect-ratio:16/9;
+  min-height:0 !important;
+  height:auto;
+  flex:0 0 auto;
+}
+#skYouTubeCreativeCards .sk-yt-open {
+  margin-top:auto;
+  min-height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+@media(max-width:600px) {
+  #skYouTubeCreativeCards .sk-yt-card {
+    flex-basis:82vw !important;
+    width:82vw !important;
+    max-width:320px;
+  }
+}
+@media(prefers-reduced-motion:reduce) {
+  #skYouTubeCreativeCards .sk-yt-center-logo img {
+    animation:none !important;
+  }
+}
+</style>
+<script id="SK_UNIFORM_YOUTUBE_CARDS_SCRIPT_V1">
+(function(){
+  if(window.__skUniformYTCardsV1) return;
+  window.__skUniformYTCardsV1=true;
+
+  function setup(){
+    var section=document.getElementById('skYouTubeCreativeCards');
+    var row=section && section.querySelector('.sk-yt-grid');
+    if(!row || row.dataset.skAutoSwipeReady==='1') return;
+    row.dataset.skAutoSwipeReady='1';
+
+    var timer=null;
+    var paused=false;
+
+    function stop(){ if(timer){clearInterval(timer);timer=null;} }
+    function start(){
+      stop();
+      timer=setInterval(function(){
+        if(paused || document.hidden) return;
+        var max=row.scrollWidth-row.clientWidth;
+        if(max<=4) return;
+        if(row.scrollLeft>=max-4){
+          row.scrollTo({left:0,behavior:'smooth'});
+        }else{
+          var card=row.querySelector('.sk-yt-card');
+          row.scrollBy({
+            left:card ? card.getBoundingClientRect().width+14 : 260,
+            behavior:'smooth'
+          });
+        }
+      },3500);
+    }
+
+    row.addEventListener('touchstart',function(){paused=true;},{passive:true});
+    row.addEventListener('touchend',function(){
+      setTimeout(function(){paused=false;},1800);
+    },{passive:true});
+    row.addEventListener('mouseenter',function(){paused=true;});
+    row.addEventListener('mouseleave',function(){paused=false;});
+    row.addEventListener('pointerdown',function(){paused=true;});
+    row.addEventListener('pointerup',function(){
+      setTimeout(function(){paused=false;},1800);
+    });
+    document.addEventListener('visibilitychange',function(){
+      if(document.hidden) stop(); else start();
+    });
+    start();
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',setup);
+  }else{
+    setup();
+  }
+  setTimeout(setup,1500);
+})();
+</script>
+
 </body>
 </html>
