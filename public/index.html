@@ -9561,3 +9561,48 @@ iframe[src*="youtube-nocookie.com/embed/e57vD7zZeRw"] {
   }
 }
 </style>
+
+
+<!-- SK_CREATOR_CARDS_UNIFORM_CENTER_V1 -->
+<style id="SK_CREATOR_CARDS_UNIFORM_CENTER_V1">
+#skReplyCreatorCards .skCreatorToolsGrid {
+  display:grid !important;
+  grid-template-columns:repeat(5,minmax(0,1fr)) !important;
+  align-items:stretch !important;
+  gap:12px !important;
+}
+#skReplyCreatorCards .skCreatorToolCard {
+  box-sizing:border-box !important;
+  width:100% !important;
+  min-width:0 !important;
+  height:220px !important;
+  min-height:220px !important;
+  padding:16px 10px !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+  overflow-wrap:anywhere !important;
+}
+#skReplyCreatorCards .skCreatorToolIcon {
+  display:block !important;
+  margin:0 auto !important;
+  text-align:center !important;
+}
+#skReplyCreatorCards .skCreatorToolOpen {
+  margin-top:auto !important;
+}
+@media(max-width:850px) {
+  #skReplyCreatorCards .skCreatorToolsGrid {
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+}
+@media(max-width:380px) {
+  #skReplyCreatorCards .skCreatorToolCard {
+    height:200px !important;
+    min-height:200px !important;
+    padding:12px 7px !important;
+  }
+}
+</style>
