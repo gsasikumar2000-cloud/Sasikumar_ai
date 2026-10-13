@@ -6600,7 +6600,10 @@ else skRefreshPay2AllWallet();
     if (initialGreeting) initialGreeting.style.display = "none";
 
     const goldButton = document.getElementById("skGoldPriceToggle");
-    if (goldButton) goldButton.style.display = "none";
+    if (goldButton) {
+      goldButton.style.setProperty("display", "block", "important");
+      goldButton.style.setProperty("visibility", "visible", "important");
+    }
 
     console.log("SASIKUMAR AI: Unified Reply toolbar positioned below Welcome.");
   }
