@@ -1748,6 +1748,86 @@ font-family:inherit;box-sizing:border-box;">
 
 
 
+
+<style id="SK_UNIFORM_HORIZONTAL_BOOK_CARDS_V1">
+/* SASIKUMAR AI: uniform horizontal book-style cards */
+.dash-grid,
+.service-grid,
+.newSmartHomeGrid,
+#skYouTubeCreativeCards .sk-yt-grid,
+.skGrid,
+.loan-grid,
+#skLiveBookCardsRow {
+  box-sizing: border-box;
+  display: grid !important;
+  grid-auto-flow: column !important;
+  grid-auto-columns: minmax(240px, 280px) !important;
+  grid-template-columns: unset !important;
+  gap: 14px !important;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto !important;
+  overflow-y: hidden;
+  padding: 10px 6px 16px !important;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  align-items: stretch;
+}
+
+.dash-grid > *,
+.service-grid > *,
+.newSmartHomeGrid > *,
+#skYouTubeCreativeCards .sk-yt-card,
+.skGrid > *,
+.loan-grid > *,
+#skLiveBookCardsRow > * {
+  box-sizing: border-box;
+  width: 100% !important;
+  min-width: 0;
+  min-height: 250px;
+  height: auto;
+  align-self: stretch;
+  scroll-snap-align: start;
+  overflow-wrap: anywhere;
+}
+
+#skYouTubeCreativeCards .sk-yt-card {
+  display: flex;
+  flex-direction: column;
+}
+
+#skYouTubeCreativeCards .sk-yt-video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 150px;
+}
+
+@media (max-width: 600px) {
+  .dash-grid,
+  .service-grid,
+  .newSmartHomeGrid,
+  #skYouTubeCreativeCards .sk-yt-grid,
+  .skGrid,
+  .loan-grid,
+  #skLiveBookCardsRow {
+    grid-auto-columns: minmax(76vw, 82vw) !important;
+    gap: 12px !important;
+  }
+}
+
+@media (min-width: 601px) {
+  .dash-grid,
+  .service-grid,
+  .newSmartHomeGrid,
+  #skYouTubeCreativeCards .sk-yt-grid,
+  .skGrid,
+  .loan-grid,
+  #skLiveBookCardsRow {
+    grid-auto-columns: minmax(240px, 280px) !important;
+  }
+}
+</style>
+
 </body></html>`;
   const code = document.getElementById('skDesignCode');
   if (code && !code.value.trim()) code.value = sample;
