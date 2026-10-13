@@ -1750,7 +1750,7 @@ font-family:inherit;box-sizing:border-box;">
 
 
 <style id="SK_UNIFORM_HORIZONTAL_BOOK_CARDS_V1">
-/* SASIKUMAR AI: uniform horizontal book-style cards */
+/* Uniform book-style horizontal swipe for card groups */
 .dash-grid,
 .service-grid,
 .newSmartHomeGrid,
@@ -1759,19 +1759,20 @@ font-family:inherit;box-sizing:border-box;">
 .loan-grid,
 #skLiveBookCardsRow {
   box-sizing: border-box;
-  display: grid !important;
-  grid-auto-flow: column !important;
-  grid-auto-columns: minmax(240px, 280px) !important;
-  grid-template-columns: unset !important;
+  display: flex !important;
+  flex-flow: row nowrap !important;
   gap: 14px !important;
   width: 100%;
   max-width: 100%;
   overflow-x: auto !important;
-  overflow-y: hidden;
-  padding: 10px 6px 16px !important;
-  scroll-snap-type: x proximity;
+  overflow-y: hidden !important;
+  padding: 10px 8px 18px !important;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
-  align-items: stretch;
+  overscroll-behavior-x: contain;
+  touch-action: pan-x pan-y;
+  scrollbar-width: thin;
 }
 
 .dash-grid > *,
@@ -1782,9 +1783,11 @@ font-family:inherit;box-sizing:border-box;">
 .loan-grid > *,
 #skLiveBookCardsRow > * {
   box-sizing: border-box;
-  width: 100% !important;
-  min-width: 0;
-  min-height: 250px;
+  flex: 0 0 270px !important;
+  width: 270px !important;
+  min-width: 270px !important;
+  max-width: 270px !important;
+  min-height: 260px;
   height: auto;
   align-self: stretch;
   scroll-snap-align: start;
@@ -1810,20 +1813,20 @@ font-family:inherit;box-sizing:border-box;">
   .skGrid,
   .loan-grid,
   #skLiveBookCardsRow {
-    grid-auto-columns: minmax(76vw, 82vw) !important;
     gap: 12px !important;
   }
-}
 
-@media (min-width: 601px) {
-  .dash-grid,
-  .service-grid,
-  .newSmartHomeGrid,
-  #skYouTubeCreativeCards .sk-yt-grid,
-  .skGrid,
-  .loan-grid,
-  #skLiveBookCardsRow {
-    grid-auto-columns: minmax(240px, 280px) !important;
+  .dash-grid > *,
+  .service-grid > *,
+  .newSmartHomeGrid > *,
+  #skYouTubeCreativeCards .sk-yt-card,
+  .skGrid > *,
+  .loan-grid > *,
+  #skLiveBookCardsRow > * {
+    flex-basis: 82vw !important;
+    width: 82vw !important;
+    min-width: 82vw !important;
+    max-width: 82vw !important;
   }
 }
 </style>
