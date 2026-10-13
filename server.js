@@ -1307,5 +1307,36 @@ if (sent) add(from, "assistant", body);
   if(!res.headersSent) res.sendStatus(200);
  }
 });
+
+// SASIKUMAR AI Video Library API
+app.get("/api/video/library", async (req, res) => {
+  try {
+    const { readdir } = await import("node:fs/promises");
+    const dir = path.join(__dirname, "public", "videos");
+    let files = [];
+
+    try {
+      files = await readdir(dir);
+    } catch (err) {
+      if (err.code !== "ENOENT") throw err;
+    }
+
+    const allowed = new Set([".mp4", ".webm", ".mov", ".m4v"]);
+    const items = files
+      .filter(name => allowed.has(path.extname(name).toLowerCase()))
+      .map(name => ({
+        id: name,
+        title: name,
+        videoUrl: "/videos/" + encodeURIComponent(name)
+      }));
+
+    res.set("Cache-Control", "no-store");
+    return res.json({ items });
+  } catch (err) {
+    console.error("Video Library API error:", err);
+    return res.status(500).json({ error: "Video Library unavailable", items: [] });
+  }
+});
+
 app.get('*',(q,r)=>r.sendFile(path.join(__dirname,'public','index.html')));
 app.listen(process.env.PORT||10000,()=>console.log("GLOBAL API FIXED"));
