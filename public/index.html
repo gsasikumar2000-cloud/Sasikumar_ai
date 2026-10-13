@@ -622,18 +622,7 @@ text-decoration:none !important;
        alt="SASIKUMAR AI"
        style="width:60px;height:60px;object-fit:contain;border-radius:50%;display:inline-block;cursor:pointer;animation:sasikumar360 3s linear infinite;" onclick="this.style.animation='sasikumar360 .5s linear 1';setTimeout(()=>this.style.animation='sasikumar360 3s linear infinite',550);">
 </div>
-<!-- SASIKUMAR AI GLOBAL ALL CONTENT SEARCH -->
-<div id="sasikumar-global-search" style="position:relative;margin:12px 0 18px;padding:14px;border-radius:18px;background:linear-gradient(135deg,#111827,#1e3a8a);box-shadow:0 8px 24px rgba(0,0,0,.22);">
-  <input id="sasikumarGlobalSearchInput"
-    type="search"
-    autocomplete="off"
-    placeholder="🔎 Search ALL SASIKUMAR AI content..."
-    aria-label="Search all SASIKUMAR AI website content"
-    style="width:100%;box-sizing:border-box;padding:15px 17px;border:0;border-radius:14px;font-size:16px;font-family:inherit;outline:none;">
-  <div id="sasikumar-search-results"
-    style="position:relative;z-index:100000;left:auto;right:auto;top:auto;width:100%;box-sizing:border-box;max-height:360px;overflow:auto;background:#fff;color:#1f2937;border-radius:14px;box-shadow:0 8px 25px rgba(0,0,0,.2);margin-top:10px;display:none;"></div>
-</div>
-<!-- END SASIKUMAR AI GLOBAL ALL CONTENT SEARCH -->
+<!-- Global Search section removed as requested -->
 
 <style>
 @keyframes sasikumar360 {
@@ -1680,6 +1669,76 @@ style="position:absolute;top:8px;right:8px;padding:9px 13px;border:0;border-radi
 
 
 <!-- SASIKUMAR AI GLOBAL WEB + DESIGN MAKER -->
+
+<section id="skGlobalSearchTop" style="display:block;width:100%;box-sizing:border-box;margin:12px auto;padding:18px;border-radius:18px;background:linear-gradient(135deg,#e0f2fe,#ffffff);border:1px solid #93c5fd;box-shadow:0 6px 18px rgba(0,0,0,.12);">
+  <h2 style="margin:0 0 10px;text-align:center;color:#075985;">🔍 SASIKUMAR AI WEB SEARCH</h2>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <input id="skGlobalSearchTopInput" type="search" placeholder="Search the web..." aria-label="Web Search"
+      style="flex:1;min-width:0;padding:12px;border:1px solid #93c5fd;border-radius:10px;font-size:16px;">
+    <button id="skGlobalSearchTopButton" type="button"
+      style="padding:12px 18px;border:0;border-radius:10px;background:#0369a1;color:white;font-weight:700;">Search</button>
+  </div>
+  <div id="skGlobalSearchTopStatus" role="status" style="margin-top:10px;white-space:pre-wrap;overflow-wrap:anywhere;color:#1e293b;"></div>
+</section>
+<script id="skGlobalSearchTopScript">
+(function(){
+  const input=document.getElementById("skGlobalSearchTopInput");
+  const button=document.getElementById("skGlobalSearchTopButton");
+  const status=document.getElementById("skGlobalSearchTopStatus");
+  if(!input||!button||!status)return;
+
+  async function runSearch(){
+    const query=input.value.trim();
+    if(!query){input.focus();status.textContent="முதலில் தேட வேண்டிய வார்த்தையை உள்ளிடுங்கள்.";return;}
+    button.disabled=true;
+    status.textContent="Searching...";
+    try{
+      const response=await fetch("/api/global-search?q="+encodeURIComponent(query));
+      const data=await response.json();
+      if(!response.ok)throw new Error(data.error||("HTTP "+response.status));
+      status.replaceChildren();
+      const items=Array.isArray(data)?data:
+        (data.results||data.items||data.organic_results||[]);
+      if(items.length){
+        items.forEach(function(item){
+          const card=document.createElement("div");
+          card.style.cssText="padding:10px 0;border-bottom:1px solid #cbd5e1;";
+          const title=document.createElement("div");
+          title.style.cssText="font-weight:700;margin-bottom:4px;";
+          title.textContent=item.title||item.name||"Search result";
+          card.appendChild(title);
+          if(item.url||item.href){
+            const link=document.createElement("a");
+            link.href=item.url||item.href;
+            link.textContent=item.url||item.href;
+            link.target="_blank";
+            link.rel="noopener noreferrer";
+            card.appendChild(link);
+          }
+          if(item.content||item.snippet||item.description){
+            const desc=document.createElement("p");
+            desc.style.margin="5px 0 0";
+            desc.textContent=item.content||item.snippet||item.description;
+            card.appendChild(desc);
+          }
+          status.appendChild(card);
+        });
+      }else{
+        status.textContent=typeof data==="string"?data:JSON.stringify(data,null,2);
+      }
+    }catch(error){
+      status.textContent="Search failed: "+error.message;
+    }finally{
+      button.disabled=false;
+    }
+  }
+  button.addEventListener("click",runSearch);
+  input.addEventListener("keydown",function(event){
+    if(event.key==="Enter"){event.preventDefault();runSearch();}
+  });
+})();
+</script>
+
 <section id="skDesignMakerGlobal" style="
 margin:20px 0;padding:18px;border-radius:22px;
 background:linear-gradient(135deg,#071b45,#164e63,#312e81);
@@ -2121,6 +2180,85 @@ window.skDesignUsePrompt = function(extra){
 <!-- END SASIKUMAR AI DESIGN MAKER -->
 
 <!-- SASIKUMAR AI YOUTUBE CREATIVE CARDS -->
+<h2 id="skReplyHeading" style="margin:8px 0 10px;text-align:left;font-size:18px;font-weight:800;color:#14532d;">🤖 SASIKUMAR AI REPLY TOOLS</h2>
+<div class="toolbar">
+
+
+
+<button onclick="stopAI()">⏹ Stop</button>
+
+
+
+<button onclick="location.reload()">🔄 Refresh</button>
+
+
+
+
+
+
+
+
+<button onclick="findNotes()">🔍 Find</button>
+
+
+
+
+<button onclick="pdfNotes()">📄 PDF</button>
+
+
+
+<button class="luxury-toggle" onclick="toggleDark()">🌙 Dark</button>
+<button onclick="clearChat()">🧹 Clear</button>
+<button onclick="topChat()">⬆️ Up</button>
+<button onclick="bottomChat()">⬇️ Down</button>
+</div>
+
+<div id="skAIQuickQuestions" style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;">
+  <button type="button" class="skBtn" onclick="skAIQuick('இன்றைய தங்க விலை என்ன?')">🪙 Gold Rate</button>
+  <button type="button" class="skBtn" onclick="skAIQuick('இன்றைய வானிலை எப்படி?')">🌦️ Weather</button>
+  <button type="button" class="skBtn" onclick="nationalNews()">📰 News</button>
+  <button type="button" class="skBtn" onclick="skAIQuick('GST எப்படி கணக்கிடுவது?')">📊 GST</button>
+  <button type="button" class="skBtn" onclick="skAIQuick('Class 10 mathematics பற்றி உதவி வேண்டும்')">📚 Education</button>
+</div>
+<div id="chat">
+<div class="msg ai skInitialGreeting"><div class="sasikumar-ai-logo-wrap">
+<img src="/assets/sasikumar-ai-logo.png?v=20261002"
+     alt="SASIKUMAR AI"
+     class="sasikumar-ai-logo" style="width:30px!important;height:30px!important;max-width:30px!important;max-height:30px!important;object-fit:contain!important;display:inline-block!important;">
+</div><div style="font-size:18px;line-height:1.5;font-weight:600;">🤖 வணக்கம்! நான் SASIKUMAR AI.</div>
+
+எதையும் கேளுங்கள்.
+Tamil + English • Gold • General Q&A</div>
+</div>
+
+<div id="sasikumarAIReplySection" class="input-area">
+
+
+<div id="skReplyToolsBar" style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0;">
+  <button type="button" onclick="skNewCamera()">📷 Camera</button>
+  <button type="button" onclick="skNewUpload()">📁 Image / File</button>
+  <button type="button" onclick="startVoice()">🎤 Voice Input</button>
+  <button type="button" onclick="toggleAutoVoice()">🎙️ Auto Voice</button>
+  <button type="button" onclick="toggleVoice()">🔊 AI Voice</button>
+  <button type="button" onclick="skReplyWebSearch()">🌐 Web Search</button>
+  <button id="skReplyCutButton" type="button" onclick="skReplyCut()">✂️ Cut</button>
+  <button id="skReplySelectAllButton" type="button" onclick="skReplySelectAll()">☑️ Select All</button>
+  <button id="skReplyEditButton" type="button" onclick="skReplyEdit()">📝 Edit</button>
+  <button id="skReplySaveButton" type="button" onclick="skReplySave()">💾 Save</button>
+  <button id="skReplyPrintButton" type="button" onclick="skReplyPrint()">🖨️ Print</button>
+  <button type="button" onclick="skReplyCopy()">📋 Copy</button>
+  <button type="button" onclick="skReplyPaste()">📥 Paste</button>
+  <button type="button" onclick="removeReplyAttachment()">✖ Remove File</button>
+</div>
+<div class="input-row">
+<textarea id="q" rows="2" placeholder="உங்கள் கேள்வியை எழுதுங்கள்..."></textarea>
+<button id="sendBtn" onclick="send()">Send</button>
+<input id="skNewCameraInput" type="file" accept="image/*" capture="environment" style="display:none">
+<input id="skNewUploadInput" type="file" accept="image/*,.pdf,.txt,.doc,.docx" style="display:none">
+</div>
+</div>
+
+
 <section id="skYouTubeCreativeCards" aria-label="SASIKUMAR AI YouTube Videos">
   <style>
     #skYouTubeCreativeCards {
@@ -2332,84 +2470,6 @@ window.skDesignUsePrompt = function(extra){
 
 <!-- END GLOBAL WEB SEARCH BELOW DESIGN MAKER -->
 
-
-<h2 id="skReplyHeading" style="margin:8px 0 10px;text-align:left;font-size:18px;font-weight:800;color:#14532d;">🤖 SASIKUMAR AI REPLY TOOLS</h2>
-<div class="toolbar">
-
-
-
-<button onclick="stopAI()">⏹ Stop</button>
-
-
-
-<button onclick="location.reload()">🔄 Refresh</button>
-
-
-
-
-
-
-
-
-<button onclick="findNotes()">🔍 Find</button>
-
-
-
-
-<button onclick="pdfNotes()">📄 PDF</button>
-
-
-
-<button class="luxury-toggle" onclick="toggleDark()">🌙 Dark</button>
-<button onclick="clearChat()">🧹 Clear</button>
-<button onclick="topChat()">⬆️ Up</button>
-<button onclick="bottomChat()">⬇️ Down</button>
-</div>
-
-<div id="skAIQuickQuestions" style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;">
-  <button type="button" class="skBtn" onclick="skAIQuick('இன்றைய தங்க விலை என்ன?')">🪙 Gold Rate</button>
-  <button type="button" class="skBtn" onclick="skAIQuick('இன்றைய வானிலை எப்படி?')">🌦️ Weather</button>
-  <button type="button" class="skBtn" onclick="nationalNews()">📰 News</button>
-  <button type="button" class="skBtn" onclick="skAIQuick('GST எப்படி கணக்கிடுவது?')">📊 GST</button>
-  <button type="button" class="skBtn" onclick="skAIQuick('Class 10 mathematics பற்றி உதவி வேண்டும்')">📚 Education</button>
-</div>
-<div id="chat">
-<div class="msg ai skInitialGreeting"><div class="sasikumar-ai-logo-wrap">
-<img src="/assets/sasikumar-ai-logo.png?v=20261002"
-     alt="SASIKUMAR AI"
-     class="sasikumar-ai-logo" style="width:30px!important;height:30px!important;max-width:30px!important;max-height:30px!important;object-fit:contain!important;display:inline-block!important;">
-</div><div style="font-size:18px;line-height:1.5;font-weight:600;">🤖 வணக்கம்! நான் SASIKUMAR AI.</div>
-
-எதையும் கேளுங்கள்.
-Tamil + English • Gold • General Q&A</div>
-</div>
-
-<div id="sasikumarAIReplySection" class="input-area">
-
-
-<div id="skReplyToolsBar" style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0;">
-  <button type="button" onclick="skNewCamera()">📷 Camera</button>
-  <button type="button" onclick="skNewUpload()">📁 Image / File</button>
-  <button type="button" onclick="startVoice()">🎤 Voice Input</button>
-  <button type="button" onclick="toggleAutoVoice()">🎙️ Auto Voice</button>
-  <button type="button" onclick="toggleVoice()">🔊 AI Voice</button>
-  <button type="button" onclick="skReplyWebSearch()">🌐 Web Search</button>
-  <button id="skReplyCutButton" type="button" onclick="skReplyCut()">✂️ Cut</button>
-  <button id="skReplySelectAllButton" type="button" onclick="skReplySelectAll()">☑️ Select All</button>
-  <button id="skReplyEditButton" type="button" onclick="skReplyEdit()">📝 Edit</button>
-  <button id="skReplySaveButton" type="button" onclick="skReplySave()">💾 Save</button>
-  <button id="skReplyPrintButton" type="button" onclick="skReplyPrint()">🖨️ Print</button>
-  <button type="button" onclick="skReplyCopy()">📋 Copy</button>
-  <button type="button" onclick="skReplyPaste()">📥 Paste</button>
-  <button type="button" onclick="removeReplyAttachment()">✖ Remove File</button>
-</div>
-<div class="input-row">
-<textarea id="q" rows="2" placeholder="உங்கள் கேள்வியை எழுதுங்கள்..."></textarea>
-<button id="sendBtn" onclick="send()">Send</button>
-<input id="skNewCameraInput" type="file" accept="image/*" capture="environment" style="display:none">
-<input id="skNewUploadInput" type="file" accept="image/*,.pdf,.txt,.doc,.docx" style="display:none">
-</div>
-</div>
 
 <script>
 
@@ -6436,7 +6496,7 @@ else skRefreshPay2AllWallet();
 }
 
 /* Hide service sections, but preserve the three main live cards */
-section:not(.skMainFeatureCard):not(#skDesignMakerGlobal) {
+section:not(.skMainFeatureCard):not(#skDesignMakerGlobal):not(#skGlobalSearchTop) {
   display: none !important;
 }
 
