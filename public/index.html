@@ -8718,5 +8718,277 @@ window.addEventListener("afterprint",function(){
 
 </style>
 
+
+<!-- SK_SERVICE_PAGES_OVERLAY_V1 -->
+<style id="SK_SERVICE_PAGES_OVERLAY_V1">
+#skServiceOverlayV1{
+  position:fixed;inset:0;z-index:2147483000;
+  display:none;overflow:auto;box-sizing:border-box;
+  padding:14px;background:#eef4ff;color:#14213d;
+}
+#skServiceOverlayV1.sk-service-visible{display:block}
+#skServiceOverlayV1 .sk-service-shell{
+  width:min(100%,1050px);min-height:90vh;box-sizing:border-box;
+  margin:0 auto;padding:16px;border-radius:20px;
+  background:#fff;box-shadow:0 8px 35px #14213d25;
+}
+#skServiceOverlayV1 .sk-service-header{
+  position:relative;text-align:center;padding:8px 48px 14px;
+  border-bottom:1px solid #dce5f4;margin-bottom:15px;
+}
+#skServiceOverlayV1 .sk-service-logo{
+  width:60px;height:60px;object-fit:contain;
+  animation:skServiceSpinV1 3s linear infinite;
+}
+@keyframes skServiceSpinV1{to{transform:rotate(360deg)}}
+#skServiceOverlayV1 .sk-service-close{
+  position:absolute;right:0;top:8px;border:0;border-radius:12px;
+  padding:10px 13px;background:#dc2626;color:#fff;font-weight:800;
+}
+#skServiceOverlayV1 .sk-service-main{
+  border:0;border-radius:12px;padding:10px 13px;
+  background:#1d4ed8;color:#fff;font-weight:800;margin:5px;
+}
+#skServiceOverlayV1 .skGoldMenuGridV1{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;
+}
+#skServiceOverlayV1 .skGoldMenuCardV1{
+  min-height:115px;border:1px solid #cbd5e1;border-radius:16px;
+  padding:16px 10px;background:linear-gradient(140deg,#eff6ff,#fff7ed);
+  color:#172554;font-weight:800;font-size:17px;
+}
+#skServiceOverlayV1 #allJobs,
+#skServiceOverlayV1 #sasikumarEducationPanel{
+  display:block!important;width:100%;max-width:100%;
+  box-sizing:border-box;margin:0!important;
+}
+#skServiceOverlayV1 img{max-width:100%}
+@media(max-width:520px){
+  #skServiceOverlayV1{padding:7px}
+  #skServiceOverlayV1 .sk-service-shell{padding:10px;border-radius:13px}
+  #skServiceOverlayV1 .skGoldMenuGridV1{grid-template-columns:1fr}
+  #skServiceOverlayV1 .sk-service-header{padding-left:30px;padding-right:40px}
+}
+</style>
+<div id="skServiceOverlayV1" aria-hidden="true">
+  <div class="sk-service-shell">
+    <header class="sk-service-header">
+      <img class="sk-service-logo" src="/assets/sasikumar-ai-logo.png"
+           alt="SASIKUMAR AI">
+      <h2 id="skServiceTitleV1">SASIKUMAR AI</h2>
+      <button type="button" class="sk-service-close"
+              onclick="window.skServiceCloseV1()">✕ Close</button>
+    </header>
+    <div id="skServiceContentV1"></div>
+    <div style="text-align:center;margin-top:18px">
+      <button type="button" class="sk-service-main"
+              onclick="window.skServiceMainV1()">🏠 Main Page</button>
+    </div>
+  </div>
+</div>
+<script id="SK_SERVICE_PAGES_OVERLAY_V1_SCRIPT">
+(function(){
+  if(window.__skServicePagesV1Ready)return;
+  window.__skServicePagesV1Ready=true;
+
+  const overlay=document.getElementById("skServiceOverlayV1");
+  const content=document.getElementById("skServiceContentV1");
+  const title=document.getElementById("skServiceTitleV1");
+  if(!overlay||!content||!title)return;
+
+  let current="home";
+  let goldReturn=null;
+  let jobsLocation=null;
+  let educationLocation=null;
+
+  function show(name,label){
+    current=name;
+    title.textContent=label;
+    overlay.classList.add("sk-service-visible");
+    overlay.setAttribute("aria-hidden","false");
+    document.body.style.overflow="hidden";
+    window.scrollTo(0,0);
+  }
+  function rememberLocation(el){
+    return el ? {parent:el.parentNode,next:el.nextSibling} : null;
+  }
+  function restore(el,loc){
+    if(!el||!loc||!loc.parent)return;
+    if(loc.next&&loc.next.parentNode===loc.parent)
+      loc.parent.insertBefore(el,loc.next);
+    else loc.parent.appendChild(el);
+  }
+  function moveIntoView(el){
+    if(!el)return false;
+    content.replaceChildren(el);
+    el.style.display="";
+    return true;
+  }
+  function closeOverlay(){
+    if(current==="jobs"){
+      restore(document.getElementById("allJobs"),jobsLocation);
+    }
+    if(current==="education"){
+      restore(document.getElementById("sasikumarEducationPanel"),educationLocation);
+    }
+    overlay.classList.remove("sk-service-visible");
+    overlay.setAttribute("aria-hidden","true");
+    content.replaceChildren();
+    document.body.style.overflow="";
+    current="home";
+  }
+  window.skServiceCloseV1=function(){
+    if(current==="gold-detail" && goldReturn){
+      openGoldMenu();
+      return;
+    }
+    closeOverlay();
+  };
+  window.skServiceMainV1=function(){
+    closeOverlay();
+    window.scrollTo({top:0,behavior:"smooth"});
+  };
+
+  const oldJobs=window.openJobsFolder;
+  window.openJobsFolder=function(){
+    const el=document.getElementById("allJobs");
+    if(!el){
+      if(typeof oldJobs==="function")oldJobs();
+      else alert("Jobs section not found.");
+      return;
+    }
+    jobsLocation=jobsLocation||rememberLocation(el);
+    show("jobs","💼 ALL JOBS");
+    moveIntoView(el);
+    if(typeof window.renderSasikumarJobs==="function")
+      window.renderSasikumarJobs();
+  };
+
+  const oldEducation=window.openEducationFolder;
+  window.openEducationFolder=function(){
+    if(typeof oldEducation==="function")oldEducation();
+    const el=document.getElementById("sasikumarEducationPanel");
+    if(!el)return;
+    educationLocation=educationLocation||rememberLocation(el);
+    show("education","📚 EDUCATION");
+    moveIntoView(el);
+    const oldButton=el.querySelector('button[onclick*="Ask SASIKUMAR AI"]');
+    if(oldButton){
+      oldButton.onclick=function(){
+        closeOverlay();
+        const input=document.getElementById("q");
+        if(input){
+          input.value="Education பற்றி உதவி வேண்டும்";
+          input.dispatchEvent(new Event("input",{bubbles:true}));
+          input.focus();
+        }else{
+          alert("Ask SASIKUMAR AI for education help.");
+        }
+      };
+    }
+  };
+
+  const original={
+    expert:window.goldExpert,
+    hallmark:window.goldHallmark,
+    bis:window.goldBISExtra,
+    report:window.goldReport,
+    practical:window.goldPractical,
+    karat:window.goldKaratTool,
+    stone:window.goldStoneTest,
+    risk:window.goldRiskTool
+  };
+
+  function openGoldMenu(){
+    show("gold-menu","💰 GOLD APPRAISER");
+    content.innerHTML=`
+      <div class="skGoldMenuGridV1">
+        <button class="skGoldMenuCardV1" onclick="window.skGoldOpenToolV1('report')">📋<br>Appraisal Report</button>
+        <button class="skGoldMenuCardV1" onclick="window.skGoldOpenToolV1('expert')">🔬<br>Gold Expert</button>
+        <button class="skGoldMenuCardV1" onclick="window.skGoldOpenToolV1('hallmark')">🏷️<br>Hallmark</button>
+        <button class="skGoldMenuCardV1" onclick="window.skGoldOpenToolV1('bis')">🛡️<br>BIS Extra</button>
+      </div>`;
+  }
+  window.openGoldAppraiserPage=openGoldMenu;
+
+  window.skGoldOpenToolV1=function(key){
+    const fn=original[key];
+    if(typeof fn!=="function"){
+      alert("Gold tool is not available: "+key);
+      return;
+    }
+    goldReturn="gold-menu";
+    content.replaceChildren();
+    show("gold-detail",({
+      report:"📋 APPRAISAL REPORT",
+      expert:"🔬 GOLD EXPERT",
+      hallmark:"🏷️ GOLD HALLMARK",
+      bis:"🛡️ BIS EXTRA"
+    })[key]||"GOLD APPRAISER");
+
+    const before=new Set(document.querySelectorAll(".msg.ai"));
+    try{fn();}catch(err){
+      console.error("Gold tool error:",err);
+      content.innerHTML="<p>Tool could not open. Please try again.</p>";
+      return;
+    }
+    const boxes=Array.from(document.querySelectorAll(".msg.ai"))
+      .filter(el=>!before.has(el));
+    const box=boxes[boxes.length-1];
+    if(box){
+      moveIntoView(box);
+      box.style.display="block";
+      box.style.width="100%";
+      box.style.boxSizing="border-box";
+      box.querySelectorAll('button[onclick*="location.reload"]').forEach(btn=>{
+        btn.onclick=function(){openGoldMenu();};
+        btn.textContent="↩️ BACK TO GOLD APPRAISER";
+      });
+    }else{
+      content.innerHTML="<p>The selected tool did not create a visible panel. Please try again.</p>";
+    }
+    const back=document.createElement("button");
+    back.type="button";
+    back.className="sk-service-main";
+    back.textContent="↩️ Back to Gold Appraiser";
+    back.onclick=openGoldMenu;
+    content.appendChild(back);
+  };
+
+  window.goldExpert=function(){window.skGoldOpenToolV1("expert");};
+  window.goldHallmark=function(){window.skGoldOpenToolV1("hallmark");};
+  window.goldBISExtra=function(){window.skGoldOpenToolV1("bis");};
+  window.goldReport=function(){window.skGoldOpenToolV1("report");};
+
+  ["goldPractical","goldKaratTool","goldStoneTest","goldRiskTool"].forEach(key=>{
+    const fn=original[key];
+    if(typeof fn!=="function")return;
+    window[key]=function(){
+      const before=new Set(document.querySelectorAll(".msg.ai"));
+      try{fn();}catch(err){console.error(err);return;}
+      const boxes=Array.from(document.querySelectorAll(".msg.ai"))
+        .filter(el=>!before.has(el));
+      const box=boxes[boxes.length-1];
+      if(box){
+        content.appendChild(box);
+        box.style.display="block";
+        const back=document.createElement("button");
+        back.type="button";
+        back.className="sk-service-main";
+        back.textContent="↩️ Back to Gold Expert";
+        back.onclick=function(){window.skGoldOpenToolV1("expert");};
+        content.appendChild(back);
+      }
+    };
+  });
+
+  window.addEventListener("keydown",function(e){
+    if(e.key==="Escape" && overlay.classList.contains("sk-service-visible"))
+      window.skServiceCloseV1();
+  });
+})();
+</script>
+<!-- /SK_SERVICE_PAGES_OVERLAY_V1 -->
+
 </body>
 </html>
