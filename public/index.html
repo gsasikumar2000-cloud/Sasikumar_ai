@@ -7633,5 +7633,37 @@ input, textarea, select, button {
 }
 </style>
 
+
+<script id="SK_YOUTUBE_SECTION_DOM_RECOVERY_V1">
+(function () {
+  function restoreYouTubeSection() {
+    var section = document.getElementById('skYouTubeCreativeCards');
+    if (!section) return;
+
+    var target = document.getElementById('skDesignBelowGlobalSearch');
+    if (target && target.parentNode && !target.contains(section)) {
+      target.parentNode.insertBefore(section, target);
+    } else if (!section.isConnected) {
+      document.body.appendChild(section);
+    }
+
+    section.hidden = false;
+    section.removeAttribute('hidden');
+    section.style.setProperty('display', 'block', 'important');
+    section.style.setProperty('visibility', 'visible', 'important');
+    section.style.setProperty('opacity', '1', 'important');
+    section.style.setProperty('height', 'auto', 'important');
+    section.style.setProperty('max-height', 'none', 'important');
+    section.style.setProperty('overflow', 'visible', 'important');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', restoreYouTubeSection, { once: true });
+  } else {
+    restoreYouTubeSection();
+  }
+})();
+</script>
+
 </body>
 </html>
