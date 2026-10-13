@@ -2155,6 +2155,79 @@ img[src*="sasikumar-ai-logo"] {
 <\/script>
 <!-- /SK_AUTO_HORIZONTAL_CARDS_V1 -->
 
+
+
+<style id="SK_NEWS_CARD_LOGO_ANIMATION_V1">
+#skLiveNewsBookCard {
+  width: calc(100% - 24px) !important;
+  max-width: 900px !important;
+  min-width: 0 !important;
+  min-height: 250px !important;
+  height: auto !important;
+  box-sizing: border-box !important;
+  padding: clamp(12px, 3vw, 22px) !important;
+  border: 2px solid #ef4444 !important;
+  border-radius: 22px !important;
+  background: linear-gradient(135deg,#fff1f2,#fff7ed,#fef3c7,#eff6ff) !important;
+  box-shadow: 0 8px 24px rgba(127,29,29,.16) !important;
+}
+#skLiveNewsBookCard .skNewsBrandLogo {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  margin: 2px auto 12px !important;
+}
+#skLiveNewsBookCard .skNewsBrandLogo img {
+  display: block !important;
+  width: 64px !important;
+  height: 64px !important;
+  object-fit: contain !important;
+  border-radius: 50% !important;
+  animation: skNewsLogoSpin 3s linear infinite !important;
+}
+@keyframes skNewsLogoSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+#skLiveNewsBookCard h2 {
+  text-align: center !important;
+  font-size: clamp(19px,4vw,25px) !important;
+  background: linear-gradient(90deg,#b91c1c,#ef4444,#f97316) !important;
+  color: white !important;
+  padding: 12px !important;
+  border-radius: 12px !important;
+}
+#skLiveNewsBookCard #skLiveNewsBookText {
+  width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+  overflow-wrap: anywhere !important;
+  line-height: 1.65 !important;
+}
+#skLiveNewsBookCard a {
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  overflow-wrap: anywhere !important;
+}
+@media (max-width: 600px) {
+  #skLiveNewsBookCard {
+    width: calc(100% - 20px) !important;
+    min-height: 220px !important;
+    padding: 12px !important;
+  }
+  #skLiveNewsBookCard .skNewsBrandLogo img {
+    width: 56px !important;
+    height: 56px !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #skLiveNewsBookCard .skNewsBrandLogo img {
+    animation: none !important;
+  }
+}
+</style>
+
 </body></html>`;
   const code = document.getElementById('skDesignCode');
   if (code && !code.value.trim()) code.value = sample;
@@ -6795,6 +6868,7 @@ section:not(.skMainFeatureCard):not(#skDesignMakerGlobal):not(#skGlobalSearchTop
     news.className = "skLiveBookExtra";
     news.id = "skLiveNewsBookCard";
     news.innerHTML =
+      '<div class="skNewsBrandLogo"><img src="/assets/sasikumar-ai-logo-60.png" alt="SASIKUMAR AI Logo" loading="lazy"></div>' +
       '<h2>📰 LIVE NEWS</h2>' +
       '<div class="skLiveBookText" id="skLiveNewsBookText">செய்திகளைப் பெறுகிறது...</div>' +
       '<a class="skLiveBookLink" target="_blank" rel="noopener noreferrer" href="/live-news.html">📰 புதிய window-ல் செய்திகள் பார்க்க ↗</a>';
