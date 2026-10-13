@@ -7587,5 +7587,51 @@ input, textarea, select, button {
 })();
 </script>
 
+
+<!-- SK_YOUTUBE_CARDS_FORCE_VISIBLE_V1 -->
+<style id="SK_YOUTUBE_CARDS_FORCE_VISIBLE_V1">
+#skYouTubeCreativeCards {
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  height:auto !important;
+  max-height:none !important;
+  overflow:visible !important;
+  position:relative !important;
+  width:100% !important;
+}
+#skYouTubeCreativeCards .sk-yt-brand,
+#skYouTubeCreativeCards .sk-yt-grid,
+#skYouTubeCreativeCards .sk-yt-card,
+#skYouTubeCreativeCards .sk-yt-video,
+#skYouTubeCreativeCards .sk-yt-open {
+  visibility:visible !important;
+  opacity:1 !important;
+}
+#skYouTubeCreativeCards .sk-yt-grid {
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:12px !important;
+}
+#skYouTubeCreativeCards .sk-yt-card {
+  display:flex !important;
+  min-width:0 !important;
+  height:auto !important;
+}
+#skYouTubeCreativeCards .sk-yt-video {
+  display:block !important;
+  width:100% !important;
+  min-height:180px !important;
+  height:auto !important;
+  aspect-ratio:16 / 9 !important;
+  border:0 !important;
+}
+@media(max-width:420px) {
+  #skYouTubeCreativeCards .sk-yt-grid {
+    grid-template-columns:minmax(0,1fr) !important;
+  }
+}
+</style>
+
 </body>
 </html>
