@@ -1880,6 +1880,11 @@ font-family:inherit;box-sizing:border-box;">
 
   <div class="sk-yt-grid">
     <article class="sk-yt-card">
+<div class="sk-yt-center-logo">
+  <img src="/assets/sasikumar-ai-logo.png"
+       alt="SASIKUMAR AI" width="60" height="60" loading="lazy">
+</div>
+
       <h3>😂 LIVE TAMIL COMEDY</h3>
       <iframe class="sk-yt-video"
         title="Tamil comedy videos"
@@ -1892,6 +1897,11 @@ font-family:inherit;box-sizing:border-box;">
     </article>
 
     <article class="sk-yt-card">
+<div class="sk-yt-center-logo">
+  <img src="/assets/sasikumar-ai-logo.png"
+       alt="SASIKUMAR AI" width="60" height="60" loading="lazy">
+</div>
+
       <h3>🧒 KIDS ANIMATION</h3>
       <iframe class="sk-yt-video"
         title="Kids animation videos"
@@ -1904,6 +1914,11 @@ font-family:inherit;box-sizing:border-box;">
     </article>
 
     <article class="sk-yt-card">
+<div class="sk-yt-center-logo">
+  <img src="/assets/sasikumar-ai-logo.png"
+       alt="SASIKUMAR AI" width="60" height="60" loading="lazy">
+</div>
+
       <h3>💼 BUSINESS MOTIVATION</h3>
       <iframe class="sk-yt-video"
         title="Business motivation videos"
@@ -1916,6 +1931,11 @@ font-family:inherit;box-sizing:border-box;">
     </article>
 
     <article class="sk-yt-card">
+<div class="sk-yt-center-logo">
+  <img src="/assets/sasikumar-ai-logo.png"
+       alt="SASIKUMAR AI" width="60" height="60" loading="lazy">
+</div>
+
       <h3>🚀 NEW BUSINESS IDEAS</h3>
       <iframe class="sk-yt-video"
         title="New business ideas videos"
@@ -6402,6 +6422,26 @@ section:not(.skMainFeatureCard):not(#skDesignMakerGlobal) {
     row.appendChild(kural);
     row.appendChild(ponmozhigal);
     row.appendChild(kavithai);
+    /* Daily Thirukkural YouTube video */
+    var kuralVideo = document.createElement("section");
+    kuralVideo.id = "skDailyThirukkuralVideoSection";
+    kuralVideo.setAttribute("aria-label", "Daily Thirukkural YouTube video");
+    kuralVideo.style.cssText =
+      "display:block!important;box-sizing:border-box;width:calc(100% - 24px);" +
+      "max-width:900px;margin:20px auto;padding:16px;border-radius:18px;" +
+      "background:linear-gradient(135deg,#172554,#312e81,#0f766e);" +
+      "color:#fff;text-align:center;";
+
+    kuralVideo.innerHTML =
+      '<h2 style="margin:0 0 8px;font-size:clamp(19px,4vw,26px)">📖🎬 DAILY THIRUKKURAL VIDEO</h2>' +
+      '<p style="margin:0 0 12px;line-height:1.6">தினம் ஒரு குறள் — தமிழ் விளக்கத்துடன்</p>' +
+      '<div style="position:relative;width:100%;max-width:720px;margin:12px auto;aspect-ratio:16/9;background:#111;border-radius:12px;overflow:hidden">' +
+      '<iframe title="Daily Thirukkural Tamil video" src="https://www.youtube-nocookie.com/embed/e57vD7zZeRw" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe>' +
+      '</div>' +
+      '<a href="https://www.youtube.com/watch?v=e57vD7zZeRw" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:8px;padding:11px 18px;border-radius:12px;background:#fff;color:#1d4ed8;font-weight:800;text-decoration:none">▶ YouTube-ல் வீடியோ பார்க்க</a>';
+
+    row.insertAdjacentElement("afterend", kuralVideo);
+
 
     /* Place LIVE NEWS immediately after the Login section. */
     var loginSection = document.getElementById("sasikumarLoginScreen");
@@ -7197,7 +7237,7 @@ input, textarea, select, button {
     }).formatToParts(new Date());
     var t={};p.forEach(function(x){t[x.type]=x.value});
     var m=Number(t.hour)*60+Number(t.minute);
-    var show=m>=540&&m<1440;
+    var show=!(m>=1260&&m<1440);
     [["skLiveBookCardsRow","flex"],["skVideoAdCard","flex"]].forEach(function(x){
       var e=document.getElementById(x[0]);
       if(e)e.style.setProperty("display",show?x[1]:"none","important");
@@ -7484,6 +7524,54 @@ input, textarea, select, button {
   });
   observer.observe(document.documentElement,{childList:true,subtree:true});
   setTimeout(function(){observer.disconnect();},20000);
+})();
+</script>
+
+
+<style id="SK_YOUTUBE_CARDS_AUTO_REFRESH_STYLE_V1">
+#skYouTubeCreativeCards .sk-yt-center-logo {
+  width:100%;display:flex;align-items:center;
+  justify-content:center;padding:8px 0 12px;
+}
+#skYouTubeCreativeCards .sk-yt-center-logo img {
+  display:block;width:60px;height:60px;object-fit:contain;
+  animation:skYTCardLogo360 3s linear infinite;
+}
+@keyframes skYTCardLogo360 {
+  from {transform:rotate(0deg)}
+  to {transform:rotate(360deg)}
+}
+@media(prefers-reduced-motion:reduce) {
+  #skYouTubeCreativeCards .sk-yt-center-logo img {animation:none}
+}
+</style>
+
+
+<script id="SK_YOUTUBE_CARDS_AUTO_REFRESH_5MIN_V1">
+(function(){
+  if(window.__skYTCardAutoRefresh5Min) return;
+  window.__skYTCardAutoRefresh5Min = true;
+
+  function refreshCards(){
+    if(document.hidden) return;
+    var section = document.getElementById('skYouTubeCreativeCards');
+    if(!section) return;
+
+    section.querySelectorAll('iframe.sk-yt-video').forEach(function(frame){
+      var src = frame.getAttribute('src');
+      if(!src || !/youtube(-nocookie)?\.com$/i.test(
+        (function(){try{return new URL(src).hostname}catch(e){return ''}})()
+      )) return;
+
+      /* Reload only when the card is on screen to reduce unnecessary data use. */
+      var rect = frame.getBoundingClientRect();
+      if(rect.bottom > 0 && rect.top < window.innerHeight){
+        frame.src = src;
+      }
+    });
+  }
+
+  window.setInterval(refreshCards, 5 * 60 * 1000);
 })();
 </script>
 
