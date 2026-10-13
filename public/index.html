@@ -1223,7 +1223,7 @@ style="position:absolute;top:8px;right:8px;padding:9px 13px;border:0;border-radi
     <div class="sk-live-icon">🪙</div>
     <div class="sk-live-title">LIVE GOLD & SILVER</div>
     <div class="sk-live-text">Today's Gold & Silver Poster</div>
-    <button type="button" onclick="window.open('/daily-gold-poster.svg','_blank')">
+    <button type="button" onclick="window.location.href='/gold-silver.html?source=image'">
       Open Live Poster
     </button>
   </div>
@@ -1247,10 +1247,10 @@ style="position:absolute;top:8px;right:8px;padding:9px 13px;border:0;border-radi
     <div class="skMainFeatureLogo">🪙</div>
     <h3>LIVE GOLD & SILVER</h3>
     <p>Today's live market rate</p>
-    <button type="button" onclick="liveGoldRate()">📊 View Live Rate</button>
+    <button type="button" onclick="window.location.href='/gold-silver.html'">📊 View Live Rate</button>
   </section>
 
-  <section class="skMainFeatureCard" id="skLiveImagesCard">
+  <section class="skMainFeatureCard" id="skLiveImagesCard" role="link" tabindex="0" onclick="window.location.href='/gold-silver.html?source=image'" style="cursor:pointer">
     <div class="skMainFeatureLogo">🖼️</div>
     <h3>LIVE IMAGES</h3>
     <p>Live image content</p>
@@ -1471,7 +1471,7 @@ style="position:absolute;top:8px;right:8px;padding:9px 13px;border:0;border-radi
       icon:"🪙",
       title:"LIVE GOLD & SILVER",
       text:"Today's Gold & Silver Poster",
-      url:"/daily-gold-poster.svg",
+      url:"/gold-silver.html?source=image",
       button:"Open Live Poster"
     },
     {
@@ -1499,7 +1499,7 @@ style="position:absolute;top:8px;right:8px;padding:9px 13px;border:0;border-radi
       icon:"🖼️",
       title:"LIVE IMAGES",
       text:"SASIKUMAR AI Live Images",
-      url:"/daily-gold-poster.svg",
+      url:"/gold-silver.html?source=image",
       button:"Open Live Image"
     },
     {
