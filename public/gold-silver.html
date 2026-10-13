@@ -62,6 +62,16 @@ footer{text-align:center;padding:12px;color:#64748b;font-size:12px}
   <p class="sub">SASIKUMAR AI · Thanjavur</p>
 </section>
 
+
+<section class="panel no-print" id="skGoldSilverControls">
+  <h2 style="margin-top:0">📊 Gold &amp; Silver Data Controls</h2>
+  <div class="actions">
+    <button class="preview" onclick="skOpenAllData()">📂 Open All Data</button>
+    <button class="close" onclick="skCloseAllData()">✖ Close All</button>
+    <button class="save" onclick="skClearDisplay()">🧹 Clear Display</button>
+  </div>
+</section>
+
 <section class="panel no-print">
   <div class="actions">
     <button class="preview" onclick="refreshRates()">🔄 Refresh Rates</button>
@@ -166,6 +176,34 @@ async function sharePoster(){
     else $("status").textContent=text;
   }catch(e){if(e.name!=="AbortError")$("status").textContent="Share was not completed."}
 }
+
+function skOpenAllData(){
+  $("previewPanel").hidden = false;
+  $("g24").closest(".rate").hidden = false;
+  $("g22").closest(".rate").hidden = false;
+  $("silver").closest(".rate").hidden = false;
+  $("status").textContent = "📂 All Gold & Silver data opened.";
+  refreshRates();
+}
+function skCloseAllData(){
+  $("previewPanel").hidden = true;
+  $("g24").closest(".rate").hidden = true;
+  $("g22").closest(".rate").hidden = true;
+  $("silver").closest(".rate").hidden = true;
+  $("status").textContent = "All rate details and preview closed. Use Open All Data to reopen.";
+}
+function skClearDisplay(){
+  if(!confirm("Clear the displayed Gold/Silver rates and poster? Saved files and server data will not be deleted.")) return;
+  latest = {g24:0,g22:0,silver:0};
+  refreshedAt = "";
+  $("g24").textContent = "—";
+  $("g22").textContent = "—";
+  $("silver").textContent = "—";
+  $("updated").textContent = "Display cleared. Tap Refresh Rates to reload.";
+  $("status").textContent = "🧹 Display cleared. Saved files and server data were not deleted.";
+  drawPoster();
+}
+
 function closePreview(){
   $("previewPanel").hidden=true;
   $("status").textContent="Preview closed. Use Preview to show it again.";
