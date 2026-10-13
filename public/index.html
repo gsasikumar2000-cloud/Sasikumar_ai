@@ -6058,40 +6058,51 @@ function skReplyPrint(){
     '<title>SASIKUMAR AI Reply</title>' +
     '<style>body{font:16px Arial,sans-serif;padding:24px}pre{white-space:pre-wrap;overflow-wrap:anywhere}</style>' +
     '
-<!-- SK_FIX_HOMEPAGE_SERVICE_CARDS_VISIBLE_V1 -->
-<style id="SK_FIX_HOMEPAGE_SERVICE_CARDS_VISIBLE_V1">
-/* Restore only the existing homepage service-card containers. */
-details .dash-grid,
-.sk-more-tools,
-#newEducationServices,
-#allJobs,
-#newGoldServices,
-#skGoldApp {
+
+
+
+<!-- SK_FIX_HOMEPAGE_SERVICE_CARDS_VISIBLE_V2 -->
+<style id="SK_FIX_HOMEPAGE_SERVICE_CARDS_VISIBLE_V2">
+/* Restore existing homepage dashboard cards without revealing hidden page sections. */
+html body .dash-grid {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  flex-flow: row nowrap !important;
+  gap: 12px !important;
+  overflow-x: auto !important;
+  max-width: 100% !important;
+  padding: 10px !important;
+  box-sizing: border-box !important;
+}
+html body .dash-grid > button {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  flex: 0 0 220px !important;
+  min-width: 220px !important;
+  min-height: 100px !important;
+  box-sizing: border-box !important;
+}
+html body details.sk-more-tools {
   display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
 }
-details .dash-grid {
+html body details.sk-more-tools > .dash-grid {
   display: flex !important;
-  flex-flow: row nowrap !important;
-  overflow-x: auto !important;
-  gap: 14px !important;
 }
-details .dash-grid > button {
-  display: flex !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  flex: 0 0 270px !important;
-  min-width: 270px !important;
+html body .sk-extra-details {
+  display: none !important;
 }
-#newEducationServices,
-#allJobs,
-#newGoldServices,
-#skGoldApp {
-  scroll-margin-top: 16px;
+@media (max-width: 600px) {
+  html body .dash-grid > button {
+    flex-basis: 180px !important;
+    min-width: 180px !important;
+  }
 }
 </style>
-<!-- /SK_FIX_HOMEPAGE_SERVICE_CARDS_VISIBLE_V1 -->
+<!-- /SK_FIX_HOMEPAGE_SERVICE_CARDS_VISIBLE_V2 -->
 
 </head><body><h2>SASIKUMAR AI Reply</h2><pre>' +
     escaped + '</pre></body></html>'
