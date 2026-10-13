@@ -71,6 +71,24 @@ canvas,video{display:block;width:100%;max-height:520px;background:#0b1020;border
 </div>
 </div>
 
+
+<section id="skAudioTools" style="margin:16px 0;padding:16px;border:1px solid #64748b;border-radius:14px;background:#f1f5f9;color:#0f172a">
+<h3>🎵 Background Music & Tamil Voice-over</h3>
+<label style="display:block;margin:10px 0">🎵 Choose background music
+<input id="skMusicFile" type="file" accept="audio/*" style="display:block;width:100%;margin-top:6px">
+</label>
+<audio id="skMusicPreview" controls style="width:100%;display:none"></audio>
+<label style="display:block;margin:10px 0">🎙️ Choose recorded voice-over
+<input id="skVoiceFile" type="file" accept="audio/*" style="display:block;width:100%;margin-top:6px">
+</label>
+<audio id="skVoicePreview" controls style="width:100%;display:none"></audio>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0">
+<button type="button" id="skStartVoice">🎙️ Record Voice</button>
+<button type="button" id="skStopVoice" disabled>⏹ Stop Recording</button>
+</div>
+<p id="skAudioStatus" role="status">Select music or a voice recording. Microphone access is optional.</p>
+</section>
+
 <button id="create" class="primary">🎞️ Create Video</button>
 <div id="status" role="status">Select one or more photos to begin.</div>
 </section>
@@ -140,6 +158,92 @@ $('ratio').addEventListener('change',()=>{
 photos.addEventListener('change',()=>{
  status.textContent=photos.files.length+' photo(s) selected.';
 });
+
+// SASIKUMAR AI: optional music and voice-over audio mixer
+const skMusicFile = document.getElementById('skMusicFile');
+const skVoiceFile = document.getElementById('skVoiceFile');
+const skMusicPreview = document.getElementById('skMusicPreview');
+const skVoicePreview = document.getElementById('skVoicePreview');
+const skAudioStatus = document.getElementById('skAudioStatus');
+const skStartVoice = document.getElementById('skStartVoice');
+const skStopVoice = document.getElementById('skStopVoice');
+let skAudioContext = null, skAudioDestination = null;
+let skVoiceRecorder = null, skVoiceChunks = [];
+let skMusicURL = '', skVoiceURL = '';
+let skMusicNode = null, skVoiceNode = null;
+
+function skInitAudioMixer() {
+  if (skAudioContext) return;
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) throw new Error('Web Audio is not supported in this browser.');
+  skAudioContext = new AC();
+  skAudioDestination = skAudioContext.createMediaStreamDestination();
+  skMusicNode = skAudioContext.createMediaElementSource(skMusicPreview);
+  skVoiceNode = skAudioContext.createMediaElementSource(skVoicePreview);
+  skMusicNode.connect(skAudioDestination);
+  skVoiceNode.connect(skAudioDestination);
+  skMusicNode.connect(skAudioContext.destination);
+  skVoiceNode.connect(skAudioContext.destination);
+}
+
+function skSetAudioFile(input, audio, kind) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  const urlKey = kind === 'music' ? 'music' : 'voice';
+  if (urlKey === 'music' && skMusicURL) URL.revokeObjectURL(skMusicURL);
+  if (urlKey === 'voice' && skVoiceURL) URL.revokeObjectURL(skVoiceURL);
+  const url = URL.createObjectURL(file);
+  if (urlKey === 'music') skMusicURL = url;
+  else skVoiceURL = url;
+  audio.src = url;
+  audio.style.display = 'block';
+  audio.dataset.hasAudio = '1';
+  audio.load();
+  skAudioStatus.textContent = '✅ ' + file.name + ' selected.';
+}
+
+skMusicFile.addEventListener('change', () =>
+  skSetAudioFile(skMusicFile, skMusicPreview, 'music'));
+skVoiceFile.addEventListener('change', () =>
+  skSetAudioFile(skVoiceFile, skVoicePreview, 'voice'));
+
+skStartVoice.addEventListener('click', async () => {
+  try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia)
+      throw new Error('Microphone recording is not supported. Upload a voice file instead.');
+    const mic = await navigator.mediaDevices.getUserMedia({audio:true});
+    const types = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4'];
+    const mime = types.find(t => MediaRecorder.isTypeSupported(t)) || '';
+    skVoiceChunks = [];
+    skVoiceRecorder = new MediaRecorder(mic, mime ? {mimeType:mime} : undefined);
+    skVoiceRecorder.ondataavailable = e => {
+      if (e.data && e.data.size) skVoiceChunks.push(e.data);
+    };
+    skVoiceRecorder.onstop = () => {
+      mic.getTracks().forEach(t => t.stop());
+      const blob = new Blob(skVoiceChunks, {type: skVoiceRecorder.mimeType || 'audio/webm'});
+      if (skVoiceURL) URL.revokeObjectURL(skVoiceURL);
+      skVoiceURL = URL.createObjectURL(blob);
+      skVoicePreview.src = skVoiceURL;
+      skVoicePreview.style.display = 'block';
+      skVoicePreview.dataset.hasAudio = '1';
+      skAudioStatus.textContent = '✅ Voice recording ready for the video.';
+      skStartVoice.disabled = false;
+      skStopVoice.disabled = true;
+    };
+    skVoiceRecorder.start();
+    skStartVoice.disabled = true;
+    skStopVoice.disabled = false;
+    skAudioStatus.textContent = '🔴 Recording voice… Speak in Tamil, then press Stop Recording.';
+  } catch (e) {
+    skAudioStatus.textContent = '❌ ' + (e.message || 'Microphone unavailable.');
+  }
+});
+
+skStopVoice.addEventListener('click', () => {
+  if (skVoiceRecorder && skVoiceRecorder.state !== 'inactive') skVoiceRecorder.stop();
+});
+
 create.addEventListener('click',async()=>{
  if(working)return;
  const files=Array.from(photos.files).filter(f=>f.type.startsWith('image/'));
@@ -157,6 +261,14 @@ create.addEventListener('click',async()=>{
    const [w,h]=dimensions();canvas.width=w;canvas.height=h;
    const seconds=Number($('seconds').value);
    const stream=canvas.captureStream(25);
+try {
+  skInitAudioMixer();
+  await skAudioContext.resume();
+  skAudioDestination.stream.getAudioTracks().forEach(track => stream.addTrack(track));
+} catch (audioErr) {
+  console.warn('Audio mixer unavailable:', audioErr);
+}
+
    const types=['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'];
    const mime=types.find(t=>MediaRecorder.isTypeSupported(t))||'';
    const recorder=new MediaRecorder(stream,mime?{mimeType:mime}:undefined);
@@ -168,6 +280,11 @@ create.addEventListener('click',async()=>{
      loaded.forEach(x=>URL.revokeObjectURL(x.url));
    };
    recorder.onstop=()=>{
+  [skMusicPreview, skVoicePreview].forEach(audio => {
+    audio.pause();
+    audio.currentTime = 0;
+  });
+
      stream.getTracks().forEach(t=>t.stop());
      loaded.forEach(x=>URL.revokeObjectURL(x.url));
      if(!chunks.length){
@@ -183,7 +300,20 @@ create.addEventListener('click',async()=>{
      working=false;create.disabled=false;
    };
    status.textContent='🎬 Recording video... Please keep this page open.';
-   recorder.start(250);
+
+try {
+  if (skAudioContext) await skAudioContext.resume();
+  for (const audio of [skMusicPreview, skVoicePreview]) {
+    if (audio.dataset.hasAudio === '1') {
+      audio.currentTime = 0;
+      await audio.play();
+    }
+  }
+} catch (audioErr) {
+  console.warn('Could not start optional audio:', audioErr);
+}
+
+recorder.start(250);
    for(let i=0;i<loaded.length;i++){
      drawImageCover(loaded[i].img);
      await new Promise(resolve=>setTimeout(resolve,seconds*1000));
