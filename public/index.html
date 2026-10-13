@@ -9176,6 +9176,98 @@ window.addEventListener("afterprint",function(){
 }
 </style>
 
+
+<style id="SK_SERVICE_MAIN_CLOSE_VISIBLE_V1">
+#skServiceOverlayV1.sk-service-visible {
+  display: block !important;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2147483000 !important;
+  overflow-y: auto !important;
+  box-sizing: border-box !important;
+  background: rgba(15,23,42,.82) !important;
+  padding: 12px !important;
+}
+#skServiceOverlayV1 .sk-service-shell {
+  position: relative !important;
+  width: 100% !important;
+  max-width: 900px !important;
+  min-height: 180px !important;
+  margin: 0 auto !important;
+  box-sizing: border-box !important;
+  padding: 14px !important;
+  padding-bottom: 78px !important;
+  background: #fff !important;
+  border-radius: 16px !important;
+  color: #172033 !important;
+}
+#skServiceOverlayV1 .sk-service-header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 5 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  min-height: 68px !important;
+  padding: 8px 92px 8px 4px !important;
+  background: #fff !important;
+}
+#skServiceOverlayV1 .sk-service-close {
+  position: absolute !important;
+  top: 12px !important;
+  right: 8px !important;
+  z-index: 10 !important;
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  min-height: 40px !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+#skServiceOverlayV1 .sk-service-main {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  min-height: 42px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+}
+#skServiceOverlayV1 .sk-service-shell > div:last-child {
+  position: sticky !important;
+  bottom: 0 !important;
+  z-index: 6 !important;
+  padding: 8px !important;
+  margin-top: 12px !important;
+  text-align: center !important;
+  background: #fff !important;
+  border-top: 1px solid #e2e8f0 !important;
+}
+#skServiceOverlayV1 #skServiceContentV1 {
+  min-width: 0 !important;
+  overflow-wrap: anywhere !important;
+}
+@media(max-width:520px) {
+  #skServiceOverlayV1.sk-service-visible { padding: 5px !important; }
+  #skServiceOverlayV1 .sk-service-shell {
+    padding: 9px 9px 72px !important;
+    border-radius: 12px !important;
+  }
+  #skServiceOverlayV1 .sk-service-header {
+    padding-right: 88px !important;
+  }
+  #skServiceOverlayV1 .sk-service-close {
+    right: 4px !important;
+    padding: 9px 10px !important;
+    font-size: 12px !important;
+  }
+  #skServiceOverlayV1 .sk-service-main {
+    min-height: 40px !important;
+    font-size: 13px !important;
+  }
+}
+</style>
+
 </body>
 </html>
 
