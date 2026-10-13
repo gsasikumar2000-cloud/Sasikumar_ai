@@ -8123,5 +8123,81 @@ input, textarea, select, button {
 })();
 </script>
 
+
+<style id="SK_REAL_HOMEPAGE_UNIFORM_CARDS_V1">
+/* Real homepage card sizing — keep horizontal swipe */
+:is(
+  .dash-grid,
+  .service-grid,
+  .newSmartHomeGrid,
+  .skGrid,
+  .loan-grid,
+  #skYouTubeCreativeCards .sk-yt-grid,
+  #skLiveBookCardsRow
+) {
+  display: flex !important;
+  flex-flow: row nowrap !important;
+  align-items: stretch !important;
+  gap: 14px !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  box-sizing: border-box;
+}
+
+:is(
+  .dash-grid,
+  .service-grid,
+  .newSmartHomeGrid,
+  .skGrid,
+  .loan-grid,
+  #skLiveBookCardsRow
+) > *,
+#skYouTubeCreativeCards .sk-yt-card {
+  box-sizing: border-box !important;
+  flex: 0 0 270px !important;
+  width: 270px !important;
+  min-width: 270px !important;
+  max-width: 270px !important;
+  min-height: 370px !important;
+  height: auto;
+  align-self: stretch !important;
+  scroll-snap-align: start;
+  overflow-wrap: anywhere;
+}
+
+:is(
+  .dash-grid,
+  .service-grid,
+  .newSmartHomeGrid,
+  .skGrid,
+  .loan-grid,
+  #skLiveBookCardsRow
+) > *,
+#skYouTubeCreativeCards .sk-yt-card {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 600px) {
+  :is(
+    .dash-grid,
+    .service-grid,
+    .newSmartHomeGrid,
+    .skGrid,
+    .loan-grid,
+    #skLiveBookCardsRow
+  ) > *,
+  #skYouTubeCreativeCards .sk-yt-card {
+    flex-basis: 82vw !important;
+    width: 82vw !important;
+    min-width: 82vw !important;
+    max-width: 320px !important;
+  }
+}
+</style>
+
 </body>
 </html>
