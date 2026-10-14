@@ -10224,6 +10224,34 @@ html body .skMainLiveGrid > .skMainFeatureCard {
 })();
 </script>
 
+
+<!-- SK_INDIAN_LEADERSHIP_ROW4_V1 -->
+<style id="SK_INDIAN_LEADERSHIP_ROW4_CSS">
+#skIndianLeadershipRow4{display:block!important;visibility:visible!important;opacity:1!important;width:100%;max-width:1200px;margin:22px auto;padding:14px;border:2px solid #f59e0b;border-radius:20px;background:linear-gradient(135deg,#fff7ed,#eff6ff);text-align:center;animation:none!important;transition:none!important}
+#skIndianLeadershipRow4 *{animation:none!important;transition:none!important}
+#skIndianLeadershipRow4 .skLeaderOpen{display:block;width:100%;max-width:360px;margin:12px auto;padding:16px;border:2px solid #f59e0b;border-radius:16px;background:linear-gradient(135deg,#ffedd5,#dbeafe);color:#1e3a8a;font-weight:800;cursor:pointer}
+#skIndianLeadershipRow4 img{width:58px;height:58px;object-fit:contain}
+#skLiveBookCardsRow>.skEditorialCardV1,#skLiveBookCardsRow>.skEditorialCardV1 *{animation:none!important;transition:none!important}
+</style>
+<section id="skIndianLeadershipRow4" class="skMainFeatureCard">
+<img src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI logo">
+<h2>🇮🇳 INDIAN LEADERSHIP</h2>
+<p>Indian leaders • Tamil Nadu leaders • History • Achievements</p>
+<button class="skLeaderOpen" type="button" onclick="location.href='/indian-leadership.html'">📸 OPEN ALL LEADERS &amp; PHOTOS</button>
+</section>
+<script id="SK_INDIAN_LEADERSHIP_ROW4_MOVE">
+(function(){
+ function place(){
+  var card=document.getElementById('skIndianLeadershipRow4');
+  var row=document.getElementById('skLiveBookCardsRow');
+  if(card&&row&&row.parentNode){row.insertAdjacentElement('afterend',card);return true;}
+  return false;
+ }
+ if(!place()){
+  var tries=0, timer=setInterval(function(){tries++;if(place()||tries>80)clearInterval(timer);},250);
+ }
+})();
+</script>
 </body>
 </html>
 

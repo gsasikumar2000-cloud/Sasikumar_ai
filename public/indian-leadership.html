@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Indian Leadership | SASIKUMAR AI</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#fff7ed,#eff6ff,#f0fdf4);color:#172554}
+header{text-align:center;padding:20px 12px;background:linear-gradient(120deg,#ffedd5,#dbeafe,#dcfce7)}
+.logo{width:58px;height:58px;object-fit:contain}
+h1{margin:8px 0;color:#1d4ed8}
+.controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:14px}
+button,input,select{font-size:15px;padding:11px;border-radius:10px;border:1px solid #cbd5e1}
+button{cursor:pointer;font-weight:bold;background:#1d4ed8;color:white;border:0}
+input{width:min(440px,92vw);background:white}
+#leaders{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;padding:12px;max-width:1400px;margin:auto}
+.leader{width:205px;min-width:205px;height:280px;flex:0 0 205px;overflow:hidden;border:2px solid #bfdbfe;border-radius:16px;background:white;text-align:center;padding:10px;cursor:pointer}
+.leader img{width:100%;height:165px;object-fit:cover;border-radius:10px;background:#e2e8f0}
+.leader h3{font-size:16px;margin:8px 0 4px}
+.leader p{font-size:12px;margin:4px;color:#475569}
+#detail{display:none;max-width:900px;margin:18px auto;padding:18px;background:white;border:2px solid #93c5fd;border-radius:18px;line-height:1.65}
+#detail img{display:block;width:min(260px,90%);height:auto;max-height:320px;object-fit:contain;margin:10px auto;border-radius:12px}
+#detail h2{text-align:center;color:#1d4ed8}
+.actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:14px}
+#status{text-align:center;padding:10px;color:#475569}
+footer{text-align:center;padding:22px}
+@media(max-width:600px){
+ #leaders{flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;scroll-snap-type:x mandatory;padding:12px}
+ .leader{scroll-snap-align:start;width:78vw;min-width:78vw;max-width:78vw;flex-basis:78vw;height:270px}
+ .leader img{height:155px}
+ #detail{margin:10px;padding:14px}
+}
+</style>
+</head>
+<body>
+<header>
+<img class="logo" src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI">
+<h1>🇮🇳 Indian Leadership</h1>
+<p>Indian leaders • History • Achievements • Biographies</p>
+</header>
+<div class="controls">
+<input id="search" placeholder="Search leader name..." aria-label="Search leaders">
+<select id="category" aria-label="Filter leaders">
+<option value="All">All categories</option>
+<option>Independence</option><option>Politics</option><option>Social Reform</option>
+<option>Science</option><option>Tamil Nadu</option><option>Space</option>
+</select>
+<button onclick="location.href='/'">MAIN</button>
+</div>
+<div id="status">Loading leader profiles and available photos…</div>
+<div id="leaders"></div>
+<article id="detail">
+<div class="actions">
+<button onclick="closeDetail()">CLOSE</button>
+<button onclick="location.href='/'">MAIN</button>
+</div>
+<div id="detailContent"></div>
+<div class="actions">
+<button onclick="closeDetail()">CLOSE</button>
+<button onclick="location.href='/'">MAIN</button>
+</div>
+</article>
+<footer>SASIKUMAR AI • Indian Leadership Learning Library</footer>
+<script>
+const people=[
+["Mahatma Gandhi","Independence","Mahatma Gandhi"],
+["Subhas Chandra Bose","Independence","Subhas Chandra Bose"],
+["Bhagat Singh","Independence","Bhagat Singh"],
+["Sardar Vallabhbhai Patel","Independence","Vallabhbhai Patel"],
+["Jawaharlal Nehru","Politics","Jawaharlal Nehru"],
+["Rani Lakshmibai","Independence","Rani of Jhansi"],
+["Chandrashekhar Azad","Independence","Chandra Shekhar Azad"],
+["Bal Gangadhar Tilak","Independence","Bal Gangadhar Tilak"],
+["Lala Lajpat Rai","Independence","Lala Lajpat Rai"],
+["Sarojini Naidu","Independence","Sarojini Naidu"],
+["Dr. B. R. Ambedkar","Social Reform","B. R. Ambedkar"],
+["Periyar E. V. Ramasamy","Social Reform","Periyar E. V. Ramasamy"],
+["Jyotirao Phule","Social Reform","Jyotirao Phule"],
+["Savitribai Phule","Social Reform","Savitribai Phule"],
+["Raja Ram Mohan Roy","Social Reform","Raja Ram Mohan Roy"],
+["Dr. Rajendra Prasad","Politics","Rajendra Prasad"],
+["Dr. Sarvepalli Radhakrishnan","Politics","Sarvepalli Radhakrishnan"],
+["Indira Gandhi","Politics","Indira Gandhi"],
+["Atal Bihari Vajpayee","Politics","Atal Bihari Vajpayee"],
+["Dr. Manmohan Singh","Politics","Manmohan Singh"],
+["Narendra Modi","Politics","Narendra Modi"],
+["Droupadi Murmu","Politics","Droupadi Murmu"],
+["Dr. A. P. J. Abdul Kalam","Science","A. P. J. Abdul Kalam"],
+["Vikram Sarabhai","Space","Vikram Sarabhai"],
+["Homi J. Bhabha","Science","Homi J. Bhabha"],
+["C. V. Raman","Science","C. V. Raman"],
+["M. S. Swaminathan","Science","M. S. Swaminathan"],
+["Verghese Kurien","Science","Verghese Kurien"],
+["Kalpana Chawla","Space","Kalpana Chawla"],
+["Sunita Williams","Space","Sunita Williams"],
+["K. Kamaraj","Tamil Nadu","K. Kamaraj"],
+["C. N. Annadurai","Tamil Nadu","C. N. Annadurai"],
+["M. G. Ramachandran","Tamil Nadu","M. G. Ramachandran"],
+["J. Jayalalithaa","Tamil Nadu","Jayalalithaa"],
+["M. Karunanidhi","Tamil Nadu","M. Karunanidhi"],
+["V. O. Chidambaram Pillai","Tamil Nadu","V. O. Chidambaram Pillai"],
+["Tiruppur Kumaran","Tamil Nadu","Tiruppur Kumaran"],
+["Dheeran Chinnamalai","Tamil Nadu","Dheeran Chinnamalai"]
+];
+const cache={};
+const fallback="/assets/sasikumar-ai-logo.png";
+function wiki(title){return "https://en.wikipedia.org/api/rest_v1/page/summary/"+encodeURIComponent(title.replace(/ /g,"_"))}
+async function getInfo(p){
+ if(cache[p[0]])return cache[p[0]];
+ try{
+  const r=await fetch(wiki(p[2]),{headers:{"Accept":"application/json"}});
+  if(!r.ok)throw Error("wiki");
+  const d=await r.json();
+  cache[p[0]]={title:d.title||p[0],extract:d.extract||"A detailed public biography is not available from this source.",image:(d.thumbnail&&d.thumbnail.source)||(d.originalimage&&d.originalimage.source)||fallback,url:d.content_urls?.desktop?.page||("https://en.wikipedia.org/wiki/"+encodeURIComponent(p[2].replace(/ /g,"_")))};
+ }catch(e){cache[p[0]]={title:p[0],extract:"Biography/photo could not be loaded at this time. Please check your internet connection.",image:fallback,url:"https://en.wikipedia.org/wiki/"+encodeURIComponent(p[2].replace(/ /g,"_"))};}
+ return cache[p[0]];
+}
+function render(){
+ const q=document.getElementById("search").value.toLowerCase();
+ const cat=document.getElementById("category").value;
+ const list=people.filter(p=>(cat==="All"||p[1]===cat)&&p[0].toLowerCase().includes(q));
+ const box=document.getElementById("leaders");box.innerHTML="";
+ list.forEach(p=>{
+  const el=document.createElement("article");el.className="leader";
+  const img=document.createElement("img");img.loading="lazy";img.src=fallback;img.alt=p[0];
+  const title=document.createElement("h3");title.textContent=p[0];
+  const sub=document.createElement("p");sub.textContent=p[1];
+  el.append(img,title,sub);el.onclick=()=>showDetail(p);
+  box.appendChild(el);
+  getInfo(p).then(d=>{if(img.isConnected)img.src=d.image||fallback;});
+ });
+ document.getElementById("status").textContent=list.length+" leader profiles • Tap a card to read details";
+}
+async function showDetail(p){
+ const d=await getInfo(p);
+ const box=document.getElementById("detailContent");box.innerHTML="";
+ const title=document.createElement("h2");title.textContent=p[0];
+ const img=document.createElement("img");img.src=d.image||fallback;img.alt=p[0];
+ const category=document.createElement("p");category.innerHTML="<strong>Category:</strong> "+p[1];
+ const bio=document.createElement("p");bio.textContent=d.extract;
+ box.append(title,img,category,bio);
+ if(p[0].includes("Kalam")){
+  const h=document.createElement("h3");h.textContent="A. P. J. Abdul Kalam — Extended Biography";
+  const paragraphs=[
+  "Avul Pakir Jainulabdeen Abdul Kalam was born on 15 October 1931 in Rameswaram, in the then Madras Presidency. He grew up in a family of modest means and developed an early interest in learning and science.",
+  "He studied physics at St. Joseph’s College, Tiruchirappalli, and aerospace engineering at the Madras Institute of Technology. He later worked with India’s Defence Research and Development Organisation (DRDO) and the Indian Space Research Organisation (ISRO).",
+  "At ISRO, Kalam played a major role in the Satellite Launch Vehicle-III programme, which successfully placed the Rohini satellite into orbit in 1980. He later contributed to India’s guided-missile development programmes at DRDO and became widely known as the “Missile Man of India.”",
+  "He served as a scientific adviser and was associated with India’s 1998 Pokhran-II nuclear tests. His public career emphasized scientific capability, education, and technological development.",
+  "Kalam served as the 11th President of India from 2002 to 2007. He was especially popular with students and encouraged young people to pursue education, creativity, and public service. His books include Wings of Fire, Ignited Minds, and India 2020.",
+  "He received the Padma Bhushan in 1981, the Padma Vibhushan in 1990, and the Bharat Ratna in 1997. On 27 July 2015, while delivering a lecture at the Indian Institute of Management Shillong, he became unwell and died. He is remembered for his scientific contributions, humility, and commitment to education."
+  ];
+  box.appendChild(h);paragraphs.forEach(t=>{const el=document.createElement("p");el.textContent=t;box.appendChild(el);});
+ }
+ const source=document.createElement("p");source.append("Reference: ");
+ const a=document.createElement("a");a.href=d.url;a.target="_blank";a.rel="noopener";a.textContent="Read more at Wikipedia";source.appendChild(a);box.appendChild(source);
+ document.getElementById("detail").style.display="block";
+ document.getElementById("detail").scrollIntoView({behavior:"auto",block:"start"});
+}
+function closeDetail(){document.getElementById("detail").style.display="none";document.getElementById("leaders").scrollIntoView({behavior:"auto",block:"start"});}
+document.getElementById("search").addEventListener("input",render);
+document.getElementById("category").addEventListener("change",render);
+render();
+</script>
+</body>
+</html>
