@@ -42,9 +42,62 @@ footer{text-align:center;padding:12px;color:#64748b;font-size:12px}
     <img src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI Logo">
     <div><h1>SASIKUMAR AI</h1><div>Live Gold &amp; Silver Rates</div></div>
   </div>
-  <div class="sub">📍 Thanjavur, Tamil Nadu, India</div>
+  <div class="sub" id="locationLabel">📍 Thanjavur, Tamil Nadu, India</div>
   <div class="meta">📅 <span id="date"></span><br>🕒 <span id="time"></span></div>
 </header>
+
+<section class="panel no-print" id="skLocationControls">
+  <h2 style="margin-top:0">📍 Select State &amp; District</h2>
+  <label for="stateSelect" style="display:block;font-weight:700;margin:10px 0 6px">State / Union Territory</label>
+  <select id="stateSelect" style="width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;font-size:16px">
+    <option>Andaman and Nicobar Islands</option>
+    <option>Andhra Pradesh</option>
+    <option>Arunachal Pradesh</option>
+    <option>Assam</option>
+    <option>Bihar</option>
+    <option>Chandigarh</option>
+    <option>Chhattisgarh</option>
+    <option>Dadra and Nagar Haveli and Daman and Diu</option>
+    <option>Delhi</option>
+    <option>Goa</option>
+    <option>Gujarat</option>
+    <option>Haryana</option>
+    <option>Himachal Pradesh</option>
+    <option>Jammu and Kashmir</option>
+    <option>Jharkhand</option>
+    <option>Karnataka</option>
+    <option>Kerala</option>
+    <option>Ladakh</option>
+    <option>Lakshadweep</option>
+    <option>Madhya Pradesh</option>
+    <option>Maharashtra</option>
+    <option>Manipur</option>
+    <option>Meghalaya</option>
+    <option>Mizoram</option>
+    <option>Nagaland</option>
+    <option>Odisha</option>
+    <option>Puducherry</option>
+    <option>Punjab</option>
+    <option>Rajasthan</option>
+    <option>Sikkim</option>
+    <option selected>Tamil Nadu</option>
+    <option>Telangana</option>
+    <option>Tripura</option>
+    <option>Uttar Pradesh</option>
+    <option>Uttarakhand</option>
+    <option>West Bengal</option>
+  </select>
+
+  <label for="districtSelect" style="display:block;font-weight:700;margin:12px 0 6px">District</label>
+  <input id="districtSelect" list="districtSuggestions" value="Thanjavur"
+    placeholder="Enter district name"
+    style="width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;font-size:16px">
+  <datalist id="districtSuggestions"></datalist>
+  <p style="font-size:12px;color:#64748b;line-height:1.5">
+    Select a suggested district or type the district name.
+  </p>
+  <button class="preview" style="width:100%" onclick="refreshRates(true)">📊 GET LIVE GOLD + SILVER RATE</button>
+</section>
 
 <section class="panel">
   <div class="rates">
@@ -59,7 +112,7 @@ footer{text-align:center;padding:12px;color:#64748b;font-size:12px}
 <section class="panel" id="previewPanel">
   <h2 style="margin-top:0">👁️ Gold &amp; Silver Poster Preview</h2>
   <canvas id="poster" width="900" height="1120" aria-label="Gold and silver rate poster preview"></canvas>
-  <p class="sub">SASIKUMAR AI · Thanjavur</p>
+  <p class="sub" id="posterLocation">SASIKUMAR AI · Thanjavur, Tamil Nadu</p>
 </section>
 
 
@@ -89,6 +142,55 @@ const $ = id => document.getElementById(id);
 let latest = {g24:0,g22:0,silver:0};
 let refreshedAt = "";
 const money = n => Number(n).toLocaleString("en-IN",{maximumFractionDigits:2});
+const districtSuggestions = {
+  "Tamil Nadu": [
+    "Ariyalur","Chengalpattu","Chennai","Coimbatore","Cuddalore",
+    "Dharmapuri","Dindigul","Erode","Kallakurichi","Kancheepuram",
+    "Kanniyakumari","Karur","Krishnagiri","Madurai","Mayiladuthurai",
+    "Nagapattinam","Namakkal","Nilgiris","Perambalur","Pudukkottai",
+    "Ramanathapuram","Ranipet","Salem","Sivaganga","Tenkasi",
+    "Thanjavur","Theni","Thoothukudi","Tiruchirappalli","Tirunelveli",
+    "Tirupathur","Tiruppur","Tiruvallur","Tiruvannamalai",
+    "Tiruvarur","Vellore","Viluppuram","Virudhunagar"
+  ],
+  "Andhra Pradesh": ["Alluri Sitharama Raju","Anakapalli","Anantapur","Chittoor","East Godavari","Eluru","Guntur","Kakinada","Krishna","Kurnool","Nandyal","Nellore","Palnadu","Prakasam","Srikakulam","Tirupati","Visakhapatnam","Vizianagaram","West Godavari"],
+  "Karnataka": ["Bagalkot","Ballari","Belagavi","Bengaluru Rural","Bengaluru Urban","Bidar","Chikkamagaluru","Dakshina Kannada","Davanagere","Dharwad","Hassan","Kalaburagi","Kodagu","Mandya","Mysuru","Raichur","Shivamogga","Tumakuru","Udupi","Uttara Kannada"],
+  "Kerala": ["Alappuzha","Ernakulam","Idukki","Kannur","Kasaragod","Kollam","Kottayam","Kozhikode","Malappuram","Palakkad","Pathanamthitta","Thiruvananthapuram","Thrissur","Wayanad"],
+  "Telangana": ["Adilabad","Hanumakonda","Hyderabad","Karimnagar","Khammam","Mahabubnagar","Medak","Nalgonda","Nizamabad","Rangareddy","Sangareddy","Siddipet","Warangal"],
+  "Maharashtra": ["Ahmednagar","Akola","Amravati","Aurangabad","Kolhapur","Mumbai City","Mumbai Suburban","Nagpur","Nanded","Nashik","Pune","Raigad","Ratnagiri","Satara","Solapur","Thane"],
+  "Delhi": ["Central Delhi","East Delhi","New Delhi","North Delhi","North East Delhi","North West Delhi","Shahdara","South Delhi","South East Delhi","South West Delhi","West Delhi"],
+  "Puducherry": ["Karaikal","Mahe","Puducherry","Yanam"],
+  "West Bengal": ["Bankura","Bardhaman","Birbhum","Darjeeling","Hooghly","Howrah","Jalpaiguri","Kolkata","Malda","Murshidabad","Nadia","North 24 Parganas","Purulia","South 24 Parganas"]
+};
+function updateDistrictSuggestions(){
+  const state = $("stateSelect").value;
+  const list = $("districtSuggestions");
+  list.replaceChildren();
+  (districtSuggestions[state] || []).forEach(name => {
+    const option = document.createElement("option");
+    option.value = name;
+    list.appendChild(option);
+  });
+}
+function selectedLocation(){
+  const state = $("stateSelect").value || "Tamil Nadu";
+  const district = $("districtSelect").value.trim() || "Thanjavur";
+  return {state, district, label: district + ", " + state};
+}
+$("stateSelect").addEventListener("change", () => {
+  const state = $("stateSelect").value;
+  updateDistrictSuggestions();
+  const defaults = {
+    "Tamil Nadu":"Thanjavur", "Karnataka":"Bengaluru Urban",
+    "Kerala":"Thiruvananthapuram", "Andhra Pradesh":"Visakhapatnam",
+    "Telangana":"Hyderabad", "Maharashtra":"Mumbai City",
+    "Delhi":"New Delhi", "Puducherry":"Puducherry",
+    "West Bengal":"Kolkata"
+  };
+  $("districtSelect").value = defaults[state] || "";
+});
+updateDistrictSuggestions();
+
 function clock(){
   const now=new Date();
   $("date").textContent=now.toLocaleDateString("en-IN",{day:"2-digit",month:"long",year:"numeric"});
@@ -109,7 +211,8 @@ async function refreshRates(manual = false){
   if (window.skRatesDisplayCleared && !manual) return;
   $("status").textContent="⏳ Fetching live Gold and Silver rates…";
   try{
-    const qs="?state="+encodeURIComponent("Tamil Nadu")+"&district="+encodeURIComponent("Thanjavur");
+    const place = selectedLocation();
+    const qs="?state="+encodeURIComponent(place.state)+"&district="+encodeURIComponent(place.district);
     const [g,s]=await Promise.all([readJSON("/api/gold-rate"+qs),readJSON("/api/silver-rate"+qs)]);
     const g24=Number(g.rates?.["24K"]??g.gold24k??0);
     const g22=Number(g.rates?.["22K"]??g.gold22k??0);
@@ -120,7 +223,9 @@ async function refreshRates(manual = false){
     $("g24").textContent="₹"+money(g24);
     $("g22").textContent="₹"+money(g22);
     $("silver").textContent="₹"+money(sv);
-    $("updated").textContent="Updated: "+refreshedAt+" · Thanjavur, Tamil Nadu";
+    $("updated").textContent="Updated: "+refreshedAt+" · "+place.label;
+    $("locationLabel").textContent="📍 "+place.label+", India";
+    $("posterLocation").textContent="SASIKUMAR AI · "+place.label;
     $("status").textContent="✅ Live rates loaded.";
     drawPoster();
   }catch(e){
@@ -140,7 +245,8 @@ function drawPoster(){
   function posterText(){
     ctx.fillStyle="#f6d36f";ctx.font="bold 36px Arial";ctx.fillText("SASIKUMAR AI",450,190);
     ctx.fillStyle="#ffffff";ctx.font="bold 30px Arial";ctx.fillText("LIVE GOLD & SILVER",450,230);
-    ctx.fillStyle="#334155";ctx.font="26px Arial";ctx.fillText("THANJAVUR · TAMIL NADU",450,310);
+    const place = selectedLocation();
+    ctx.fillStyle="#334155";ctx.font="26px Arial";ctx.fillText((place.district+" · "+place.state).toUpperCase(),450,310);
     const rows=[
       ["24K GOLD",latest.g24,"#fff0bd"],
       ["22K GOLD",latest.g22,"#ffe2a0"],
@@ -165,7 +271,8 @@ function savePoster(){
     return;
   }
   const a=document.createElement("a");
-  a.download="SASIKUMAR-AI-Thanjavur-Gold-Silver.png";
+  const place = selectedLocation();
+  a.download="SASIKUMAR-AI-"+(place.district+"-"+place.state).replace(/[^a-z0-9-]/gi,"-")+"-Gold-Silver.png";
   a.href=$("poster").toDataURL("image/png");a.click();
 }
 async function sharePoster(){
@@ -173,7 +280,8 @@ async function sharePoster(){
     $("status").textContent="⚠️ Load valid live rates before sharing.";
     return;
   }
-  const text="SASIKUMAR AI · Thanjavur Gold & Silver Rates · 24K ₹"+money(latest.g24)+"/g · 22K ₹"+money(latest.g22)+"/g · Silver ₹"+money(latest.silver)+"/g · "+refreshedAt;
+  const place = selectedLocation();
+  const text="SASIKUMAR AI · "+place.label+" Gold & Silver Rates · 24K ₹"+money(latest.g24)+"/g · 22K ₹"+money(latest.g22)+"/g · Silver ₹"+money(latest.silver)+"/g · "+refreshedAt;
   try{
     if(navigator.share)await navigator.share({title:"SASIKUMAR AI Gold & Silver",text,url:location.href});
     else if(navigator.clipboard){await navigator.clipboard.writeText(text);$("status").textContent="✅ Rate details copied. You can paste and share them."}
