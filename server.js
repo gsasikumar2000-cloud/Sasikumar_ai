@@ -1425,5 +1425,105 @@ app.post("/api/ai/image", async (req, res) => {
   }
 });
 
+
+app.post("/api/any-content", async (req, res) => {
+  try {
+    const content = String(req.body?.content || "SASIKUMAR AI")
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, 500);
+
+    if (!content) {
+      return res.status(400).json({
+        ok: false,
+        error: "Please describe your poster."
+      });
+    }
+
+    const esc = value => String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&apos;");
+
+    const words = content.split(/\s+/);
+    const lines = [];
+    let line = "";
+
+    for (const word of words) {
+      const next = line ? line + " " + word : word;
+      if (next.length > 25 && line) {
+        lines.push(line);
+        line = word;
+      } else {
+        line = next;
+      }
+    }
+    if (line) lines.push(line);
+
+    const visibleLines = lines.slice(0, 8);
+    const textMarkup = visibleLines.map((item, index) =>
+      `<text x="540" y="${540 + index * 66}" text-anchor="middle"
+       font-family="Arial,sans-serif" font-size="40" font-weight="700"
+       fill="#ffffff">${esc(item)}</text>`
+    ).join("");
+
+    const svg = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350"
+           viewBox="0 0 1080 1350">
+        <defs>
+          <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#6a11cb"/>
+            <stop offset="50%" stop-color="#2575fc"/>
+            <stop offset="100%" stop-color="#00c9a7"/>
+          </linearGradient>
+          <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity=".22"/>
+            <stop offset="100%" stop-color="#ffffff" stop-opacity=".06"/>
+          </linearGradient>
+        </defs>
+        <rect width="1080" height="1350" rx="48" fill="url(#bg)"/>
+        <circle cx="100" cy="150" r="180" fill="#ffffff" opacity=".09"/>
+        <circle cx="1000" cy="1150" r="260" fill="#ffffff" opacity=".10"/>
+        <rect x="65" y="65" width="950" height="1220" rx="42"
+              fill="url(#panel)" stroke="#ffffff" stroke-opacity=".5"
+              stroke-width="4"/>
+        <circle cx="540" cy="280" r="105" fill="#ffffff"/>
+        <text x="540" y="265" text-anchor="middle" font-family="Arial"
+              font-size="48" font-weight="900" fill="#4338ca">SK</text>
+        <text x="540" y="320" text-anchor="middle" font-family="Arial"
+              font-size="25" font-weight="700" fill="#4338ca">AI</text>
+        <text x="540" y="435" text-anchor="middle" font-family="Arial"
+              font-size="45" font-weight="900" fill="#ffffff">
+          SASIKUMAR AI
+        </text>
+        <line x1="220" y1="475" x2="860" y2="475"
+              stroke="#ffffff" stroke-width="4" stroke-opacity=".8"/>
+        ${textMarkup}
+        <rect x="185" y="1090" width="710" height="100" rx="50"
+              fill="#ffffff"/>
+        <text x="540" y="1153" text-anchor="middle" font-family="Arial"
+              font-size="31" font-weight="800" fill="#4338ca">
+          SMART DIGITAL SERVICES
+        </text>
+        <text x="540" y="1230" text-anchor="middle" font-family="Arial"
+              font-size="23" fill="#ffffff">Created with SASIKUMAR AI</text>
+      </svg>`;
+
+    const imageUrl =
+      "data:image/svg+xml;base64," +
+      Buffer.from(svg, "utf8").toString("base64");
+
+    return res.json({ ok: true, imageUrl, type: "local-poster" });
+  } catch (err) {
+    console.error("Local poster API error:", err);
+    return res.status(500).json({
+      ok: false,
+      error: "Unable to create local poster."
+    });
+  }
+});
+
 app.get('*',(q,r)=>r.sendFile(path.join(__dirname,'public','index.html')));
 app.listen(process.env.PORT||10000,()=>console.log("GLOBAL API FIXED"));
