@@ -1495,13 +1495,7 @@ style="position:absolute;top:8px;right:8px;padding:9px 13px;border:0;border-radi
       url:"/hub-dashboard.html",
       button:"Open Thirukkural"
     },
-    {
-      icon:"🖼️",
-      title:"LIVE IMAGES",
-      text:"SASIKUMAR AI Live Images",
-      url:"/gold-silver.html?source=image",
-      button:"Open Live Image"
-    },
+
     {
       icon:"🎬",
       title:"LIVE VIDEO",
@@ -2048,6 +2042,13 @@ html body section:has(#skAllServicesCard) {
 }
 </style>
 
+
+<style id="SK_HIDE_LIVE_IMAGES_CARD_V1">
+#skLiveImagesCard {
+  display: none !important;
+  visibility: hidden !important;
+}
+</style>
 </head><body><h1>SASIKUMAR AI</h1><p>Your creative design starts here.</p><button onclick="document.querySelector('p').textContent='Preview is working!'">Test Design</button>
 
 
