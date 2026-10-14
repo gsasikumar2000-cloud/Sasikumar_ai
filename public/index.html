@@ -9792,3 +9792,73 @@ html body .skMainLiveGrid > .skMainFeatureCard {
   }
 }
 </style>
+
+<!-- SK_LARGE_SWIPE_CARDS_V2 -->
+<style id="SK_LARGE_SWIPE_CARDS_V2">
+
+/* Desktop: four cards in one row */
+@media (min-width: 601px) {
+  html body .skMainLiveGrid {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+    overflow: visible !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  html body .skMainLiveGrid > .skMainFeatureCard {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    min-height: 145px !important;
+    height: auto !important;
+    max-height: none !important;
+    padding: 42px 10px 12px !important;
+    box-sizing: border-box !important;
+  }
+}
+
+/* Mobile: larger cards, swipe horizontally */
+@media (max-width: 600px) {
+  html body .skMainLiveGrid {
+    display: flex !important;
+    flex-flow: row nowrap !important;
+    justify-content: flex-start !important;
+    gap: 10px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 12px 0 18px !important;
+    padding: 6px 10px 14px !important;
+    box-sizing: border-box !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior-x: contain !important;
+    scroll-snap-type: x mandatory !important;
+  }
+
+  html body .skMainLiveGrid > .skMainFeatureCard {
+    display: flex !important;
+    flex: 0 0 165px !important;
+    width: 165px !important;
+    min-width: 165px !important;
+    max-width: 165px !important;
+    height: 145px !important;
+    min-height: 145px !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 42px 9px 10px !important;
+    box-sizing: border-box !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overflow-wrap: anywhere !important;
+    scroll-snap-align: start !important;
+  }
+
+  html body .skMainLiveGrid::-webkit-scrollbar {
+    height: 5px !important;
+  }
+}
+
+</style>
