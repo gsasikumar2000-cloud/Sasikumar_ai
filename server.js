@@ -1489,6 +1489,20 @@ app.post("/api/any-content", async (req, res) => {
         <rect x="65" y="65" width="950" height="1220" rx="42"
               fill="url(#panel)" stroke="#ffffff" stroke-opacity=".5"
               stroke-width="4"/>
+        <!-- SASIKUMAR AI MULTICOLOR POSTER DECOR -->
+        <circle cx="115" cy="255" r="58" fill="#ff4d6d" opacity=".48"/>
+        <circle cx="965" cy="300" r="78" fill="#ffd166" opacity=".52"/>
+        <circle cx="115" cy="760" r="92" fill="#06d6a0" opacity=".35"/>
+        <circle cx="970" cy="850" r="105" fill="#00bbf9" opacity=".38"/>
+        <circle cx="180" cy="1030" r="48" fill="#f15bb5" opacity=".55"/>
+        <circle cx="900" cy="1010" r="62" fill="#fee440" opacity=".48"/>
+        <path d="M90 420 L120 365 L150 420 Z" fill="#ffd166" opacity=".8"/>
+        <path d="M930 470 L960 415 L990 470 Z" fill="#06d6a0" opacity=".8"/>
+        <path d="M100 900 L125 875 L150 900 L125 925 Z" fill="#f15bb5" opacity=".8"/>
+        <path d="M930 690 L955 665 L980 690 L955 715 Z" fill="#ffd166" opacity=".8"/>
+        <circle cx="540" cy="145" r="125" fill="none" stroke="#ffbe0b" stroke-width="7" opacity=".8"/>
+        <!-- END MULTICOLOR DECOR -->
+
         <circle cx="540" cy="280" r="105" fill="#ffffff"/>
         <text x="540" y="265" text-anchor="middle" font-family="Arial"
               font-size="48" font-weight="900" fill="#4338ca">SK</text>
