@@ -3172,14 +3172,14 @@ async function send(){
   if (skSending) return;
 
   const message = q.value.trim();
-  if (!message && !replyAttachment) return;
+  if (!message && !window.replyAttachment) return;
 
   skSending = true;
   let attachment = null;
 
   try {
-    if (replyAttachment) {
-      if (replyAttachment.size > 10 * 1024 * 1024) {
+    if (window.replyAttachment) {
+      if (window.replyAttachment.size > 10 * 1024 * 1024) {
         alert("📎 File size 10 MB-க்கு மேல் இருக்கக்கூடாது.");
         skSending = false;
         return;
@@ -3192,18 +3192,18 @@ async function send(){
           const comma = result.indexOf(",");
           resolve({
             data: comma >= 0 ? result.slice(comma + 1) : result,
-            type: replyAttachment.type || "application/octet-stream",
-            name: replyAttachment.name
+            type: window.replyAttachment.type || "application/octet-stream",
+            name: window.replyAttachment.name
           });
         };
         reader.onerror = () => reject(new Error("File read failed"));
-        reader.readAsDataURL(replyAttachment);
+        reader.readAsDataURL(window.replyAttachment);
       });
     }
 
     const userText = message
       ? "👤 " + escapeHtml(message)
-      : "👤 📎 " + escapeHtml(replyAttachment.name);
+      : "👤 📎 " + escapeHtml(window.replyAttachment.name);
 
     chat.innerHTML += '<div class="msg user">' + userText + '</div>';
     q.value = "";
@@ -3303,7 +3303,7 @@ async function send(){
       speakTamil(String(d.reply).replace(/^🤖\s*/, ""));
     }
 
-    if (replyAttachment && typeof removeReplyAttachment === "function") {
+    if (window.replyAttachment && typeof removeReplyAttachment === "function") {
       removeReplyAttachment();
     }
   } catch (e) {
@@ -6033,7 +6033,7 @@ window.showEducationFolder=function(){
   }
 };
 
-let replyAttachment = null;
+window.replyAttachment = null;
 
 function skNewCamera(){
   const input = document.getElementById("skNewCameraInput");
@@ -6055,7 +6055,7 @@ function noteUpload(){ skNewUpload(); }
 function showReplyAttachment(file){
   if(!file) return;
 
-  replyAttachment = file;
+  window.replyAttachment = file;
 
   const area = document.getElementById("sasikumarAIReplySection");
   if(!area){
@@ -6116,7 +6116,7 @@ function showReplyAttachment(file){
 }
 
 function removeReplyAttachment(){
-  replyAttachment = null;
+  window.replyAttachment = null;
 
   ["skNewCameraInput", "skNewUploadInput"].forEach(function(id){
     const input = document.getElementById(id);
