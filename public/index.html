@@ -10037,5 +10037,25 @@ html body .skMainLiveGrid > .skMainFeatureCard {
 }
 </style>
 
+
+<!-- SK_HIDE_GOLD_SILVER_CARDS_V1 -->
+<style id="SK_HIDE_GOLD_SILVER_CARDS_V1">
+  #skAllContentLiveBox,
+  .skMainLiveGrid > section.skMainFeatureCard:has(> .skMainFeatureLogo:first-child + h3),
+  .skMainLiveGrid > section.skMainFeatureCard {
+    /* Preserve unrelated live cards; hide only the gold card below. */
+  }
+  #skAllContentLiveBox:has(.sk-live-title),
+  .skMainLiveGrid > section.skMainFeatureCard:has(h3) {
+    /* Target rules are applied by the specific card selectors below. */
+  }
+  #skAllContentLiveBox:has(.sk-live-title) {
+    display: none !important;
+  }
+  .skMainLiveGrid > section.skMainFeatureCard:first-child {
+    display: none !important;
+  }
+</style>
+
 </body>
 </html>
