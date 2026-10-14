@@ -2491,6 +2491,9 @@ img[src*="sasikumar-ai-logo"] {
 }
 </style>
 
+
+
+
 </body></html>`;
   const code = document.getElementById('skDesignCode');
   if (code && !code.value.trim()) code.value = sample;
@@ -9502,6 +9505,86 @@ html body #sasikumar-ai-hub-dashboard-card #skAllServicesCard .sk-service-zigzag
 </script>
 <!-- /SK_REPLY_IMAGE_PREVIEW_RECOVERY_V1 -->
 
+<!-- SK_SASIKUMAR_UNIFIED_COLOR_CARDS_V1 -->
+<style id="SK_SASIKUMAR_UNIFIED_COLOR_CARDS_V1">
+/* Consistent live-card layout */
+html body .skMainLiveGrid {
+  align-items: stretch !important;
+}
+html body .skMainLiveGrid > .skMainFeatureCard {
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  text-align: center !important;
+  border-radius: 16px !important;
+  box-sizing: border-box !important;
+  overflow-wrap: anywhere !important;
+}
+html body .skMainLiveGrid > .skMainFeatureCard h1,
+html body .skMainLiveGrid > .skMainFeatureCard h2,
+html body .skMainLiveGrid > .skMainFeatureCard h3 {
+  width: 100% !important;
+  text-align: center !important;
+  font-size: clamp(13px, 1.5vw, 18px) !important;
+  line-height: 1.3 !important;
+  font-weight: 800 !important;
+}
+html body .skMainLiveGrid > .skMainFeatureCard p {
+  font-size: 13px !important;
+  line-height: 1.45 !important;
+}
+html body .skMainLiveGrid > .skMainFeatureCard img {
+  object-fit: contain !important;
+  max-width: 100% !important;
+}
+/* Different color accents */
+html body .skMainLiveGrid > .skMainFeatureCard:nth-child(6n+1) {
+  border-top: 4px solid #8b5cf6 !important;
+  background: linear-gradient(145deg,#faf5ff,#ede9fe) !important;
+}
+html body .skMainLiveGrid > .skMainFeatureCard:nth-child(6n+2) {
+  border-top: 4px solid #06b6d4 !important;
+  background: linear-gradient(145deg,#ecfeff,#cffafe) !important;
+}
+html body .skMainLiveGrid > .skMainFeatureCard:nth-child(6n+3) {
+  border-top: 4px solid #f97316 !important;
+  background: linear-gradient(145deg,#fff7ed,#ffedd5) !important;
+}
+html body .skMainLiveGrid > .skMainFeatureCard:nth-child(6n+4) {
+  border-top: 4px solid #22c55e !important;
+  background: linear-gradient(145deg,#f0fdf4,#dcfce7) !important;
+}
+html body .skMainLiveGrid > .skMainFeatureCard:nth-child(6n+5) {
+  border-top: 4px solid #ec4899 !important;
+  background: linear-gradient(145deg,#fdf2f8,#fce7f3) !important;
+}
+html body .skMainLiveGrid > .skMainFeatureCard:nth-child(6n) {
+  border-top: 4px solid #d4a017 !important;
+  background: linear-gradient(145deg,#fffbeb,#fef3c7) !important;
+}
+/* Center SASIKUMAR AI logo when used in these sections */
+#skDesignMakerGlobal > img,
+#skReplyCreatorCards > img,
+#skDesignMakerGlobal .skBrandLogo,
+#skReplyCreatorCards .skBrandLogo {
+  display: block !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+@media (max-width: 600px) {
+  html body .skMainLiveGrid > .skMainFeatureCard h1,
+  html body .skMainLiveGrid > .skMainFeatureCard h2,
+  html body .skMainLiveGrid > .skMainFeatureCard h3 {
+    font-size: 14px !important;
+  }
+  html body .skMainLiveGrid > .skMainFeatureCard p {
+    font-size: 12px !important;
+  }
+}
+</style>
+<!-- END SK_SASIKUMAR_UNIFIED_COLOR_CARDS_V1 -->
 </body>
 </html>
 
