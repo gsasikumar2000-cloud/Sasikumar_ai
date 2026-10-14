@@ -1338,5 +1338,92 @@ app.get("/api/video/library", async (req, res) => {
   }
 });
 
+
+app.post("/api/ai/image", async (req, res) => {
+  const prompt = String(req.body?.prompt || "").trim();
+
+  if (!prompt) {
+    return res.status(400).json({ ok: false, error: "Please describe the image." });
+  }
+
+  if (!GEMINI_API_KEY) {
+    return res.json({
+      ok: false,
+      error: "Gemini API key is not configured on the server."
+    });
+  }
+
+  try {
+    const upstream = await fetch(
+      "https://generativelanguage.googleapis.com/v1/models/gemini-3.1-flash-image:generateContent",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": GEMINI_API_KEY
+        },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { responseModalities: ["IMAGE"] }
+        })
+      }
+    );
+
+    const data = await upstream.json().catch(() => ({}));
+
+    if (!upstream.ok) {
+      console.error(
+        "Gemini image API error:",
+        upstream.status,
+        data?.error?.message || "Unknown API error"
+      );
+
+      let message = "Image generation failed. Please try again.";
+      if (upstream.status === 429) {
+        message = "Gemini image quota or rate limit reached. Please check your API quota and try later.";
+      } else if (upstream.status === 401 || upstream.status === 403) {
+        message = "Gemini API key or image-model access needs to be checked.";
+      } else if (upstream.status === 404) {
+        message = "Gemini image model is unavailable for this API key or endpoint.";
+      }
+
+      return res.json({ ok: false, error: message });
+    }
+
+    const parts = (data?.candidates || [])
+      .flatMap(candidate => candidate?.content?.parts || []);
+
+    const imagePart = parts.find(part =>
+      !part.thought &&
+      (part.inlineData?.data || part.inline_data?.data)
+    );
+
+    if (!imagePart) {
+      console.error("Gemini returned no image data.");
+      return res.json({
+        ok: false,
+        error: "Gemini did not return an image. Try another prompt or check model access."
+      });
+    }
+
+    const imageData = imagePart.inlineData?.data || imagePart.inline_data?.data;
+    const mimeType =
+      imagePart.inlineData?.mimeType ||
+      imagePart.inline_data?.mime_type ||
+      "image/png";
+
+    return res.json({
+      ok: true,
+      imageUrl: `data:${mimeType};base64,${imageData}`
+    });
+  } catch (err) {
+    console.error("Gemini image connection error:", err.message);
+    return res.json({
+      ok: false,
+      error: "Unable to connect to Gemini image service. Please try again."
+    });
+  }
+});
+
 app.get('*',(q,r)=>r.sendFile(path.join(__dirname,'public','index.html')));
 app.listen(process.env.PORT||10000,()=>console.log("GLOBAL API FIXED"));
