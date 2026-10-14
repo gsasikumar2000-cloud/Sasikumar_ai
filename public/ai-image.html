@@ -69,7 +69,31 @@ button{width:100%;margin-top:14px;padding:14px;border:0;border-radius:14px;font-
 
 <script>
 function openCamera(){document.getElementById("cameraInput").click();}
-function openUpload(){document.getElementById("uploadInput").click();}
+function openUpload(){
+  const input = document.getElementById("uploadInput");
+  if (!input) {
+    alert("Image upload input not found. Please refresh the page.");
+    return;
+  }
+
+  // Open Android's file picker directly from the Upload button.
+  input.value = "";
+  try {
+    input.click();
+  } catch (err) {
+    console.error("Image upload error:", err);
+    input.removeAttribute("hidden");
+    input.style.display = "block";
+    input.style.position = "fixed";
+    input.style.left = "10px";
+    input.style.bottom = "10px";
+    input.style.zIndex = "99999";
+    input.style.opacity = "1";
+    input.style.width = "90%";
+    input.style.height = "48px";
+    alert("Tap the file selection control to choose an image.");
+  }
+}
 function selectPrompt(){const e=document.getElementById("prompt");e.focus();e.select();}
 
 function showSelectedImage(input){
