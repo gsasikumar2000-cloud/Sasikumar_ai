@@ -74,7 +74,7 @@ footer{text-align:center;padding:12px;color:#64748b;font-size:12px}
 
 <section class="panel no-print">
   <div class="actions">
-    <button class="preview" onclick="refreshRates()">🔄 Refresh Rates</button>
+    <button class="preview" onclick="refreshRates(true)">🔄 Refresh Rates</button>
     <button class="share" onclick="sharePoster()">📤 Share</button>
     <button class="print" onclick="window.print()">🖨️ Print</button>
     <button class="save" onclick="savePoster()">💾 Save Image</button>
@@ -102,7 +102,9 @@ async function readJSON(url){
   if(!r.ok||d.ok===false)throw new Error("Rate API unavailable");
   return d;
 }
-async function refreshRates(){
+async function refreshRates(manual = false){
+  if (manual) window.skRatesDisplayCleared = false;
+  if (window.skRatesDisplayCleared && !manual) return;
   $("status").textContent="⏳ Fetching live Gold and Silver rates…";
   try{
     const qs="?state="+encodeURIComponent("Tamil Nadu")+"&district="+encodeURIComponent("Thanjavur");
@@ -194,6 +196,7 @@ function skCloseAllData(){
 }
 function skClearDisplay(){
   if(!confirm("Clear the displayed Gold/Silver rates and poster? Saved files and server data will not be deleted.")) return;
+  window.skRatesDisplayCleared = true;
   latest = {g24:0,g22:0,silver:0};
   refreshedAt = "";
   $("g24").textContent = "—";
@@ -216,7 +219,7 @@ function closePreview(){
   }
 }
 refreshRates();
-setInterval(refreshRates,5*60*1000);
+setInterval(()=>{if(!window.skRatesDisplayCleared)refreshRates();},5*60*1000);
 </script>
 </body>
 </html>
