@@ -103,6 +103,8 @@ async function readJSON(url){
   return d;
 }
 async function refreshRates(manual = false){
+  // Refresh must always be able to restore rates after Clear Display.
+  window.skRatesDisplayCleared = false;
   if (manual) window.skRatesDisplayCleared = false;
   if (window.skRatesDisplayCleared && !manual) return;
   $("status").textContent="⏳ Fetching live Gold and Silver rates…";
@@ -196,6 +198,7 @@ function skCloseAllData(){
 }
 function skClearDisplay(){
   if(!confirm("Clear the displayed Gold/Silver rates and poster? Saved files and server data will not be deleted.")) return;
+  // Clear the visible values only; keep Refresh Rates available.
   window.skRatesDisplayCleared = true;
   latest = {g24:0,g22:0,silver:0};
   refreshedAt = "";
