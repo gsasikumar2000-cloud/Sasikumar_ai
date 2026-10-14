@@ -8052,7 +8052,7 @@ input, textarea, select, button {
     var t={};p.forEach(function(x){t[x.type]=x.value});
     var m=Number(t.hour)*60+Number(t.minute);
     var show=!(m>=1260&&m<1440);
-    [["skLiveBookCardsRow","flex"],["skVideoAdCard","flex"]].forEach(function(x){
+    [["skLiveBookCardsRow","flex"]].forEach(function(x){
       var e=document.getElementById(x[0]);
       if(e)e.style.setProperty("display",show?x[1]:"none","important");
     });
@@ -10350,5 +10350,20 @@ html body .skMainLiveGrid > .skMainFeatureCard {
     min-width: 250px !important;
     max-width: 250px !important;
   }
+}
+</style>
+
+
+<!-- SK_VIDEO_AD_ALWAYS_VISIBLE_V1 -->
+<style id="SK_VIDEO_AD_ALWAYS_VISIBLE_V1">
+#skVideoAdCard {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+#skVideoAdCard video {
+  width: 100% !important;
+  max-height: min(55vh, 360px) !important;
+  object-fit: contain !important;
 }
 </style>
