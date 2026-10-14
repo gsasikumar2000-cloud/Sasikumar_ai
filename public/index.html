@@ -2608,8 +2608,8 @@ Tamil + English • Gold • General Q&A</div>
   <button type="button" onclick="document.getElementById('skNewCameraInput').click()">📷 Camera</button>
   <button type="button" onclick="document.getElementById('skNewUploadInput').click()">📁 Image / File</button>
   <button type="button" onclick="startVoice()">🎤 Voice Input</button>
-  <button type="button" onclick="toggleAutoVoice()">🎙️ Auto Voice</button>
-  <button type="button" onclick="toggleVoice()">🔊 AI Voice</button>
+  <button id="autoVoiceBtn" type="button" onclick="toggleAutoVoice()">🎙️ Auto Voice</button>
+  <button id="voiceBtn" type="button" onclick="toggleVoice()">🔊 AI Voice</button>
   <button type="button" onclick="skReplyWebSearch()">🌐 Web Search</button>
   <button id="skReplyCutButton" type="button" onclick="skReplyCut()">✂️ Cut</button>
   <button id="skReplySelectAllButton" type="button" onclick="skReplySelectAll()">☑️ Select All</button>
@@ -2624,8 +2624,8 @@ Tamil + English • Gold • General Q&A</div>
 <textarea id="q" rows="2" placeholder="உங்கள் கேள்வியை எழுதுங்கள்..."></textarea>
 <button id="sendBtn" onclick="send()">Send</button>
 <button id="skReplyGoButton" type="button" onclick="send()" aria-label="Go" style="flex:0 0 auto;min-width:48px;min-height:36px;padding:6px 10px;border:0;border-radius:12px;background:#0369a1;color:white;font-weight:700;">GO ➜</button>
-<input id="skNewCameraInput" type="file" accept="image/*" capture="environment" style="display:none">
-<input id="skNewUploadInput" type="file" accept="image/*,.pdf,.txt,.doc,.docx" style="display:none">
+<input id="skNewCameraInput" type="file" accept="image/*" capture="environment" style="display:none" onchange="if(this.files&&this.files[0]&&typeof showReplyAttachment==='function'){showReplyAttachment(this.files[0]);}">
+<input id="skNewUploadInput" type="file" accept="image/*,.pdf,.txt,.doc,.docx" style="display:none" onchange="if(this.files&&this.files[0]&&typeof showReplyAttachment==='function'){showReplyAttachment(this.files[0]);}">
 </div>
 </div>
 
@@ -6076,7 +6076,9 @@ function showReplyAttachment(file){
     "display:block;margin:8px 0;padding:10px;border:1px solid #93c5fd;" +
     "border-radius:12px;background:#eff6ff;color:#111827;";
 
-  const name = escapeHtml(file.name || "Selected attachment");
+  const name = String(file.name || "Selected attachment").replace(/[&<>"']/g, function(ch){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch];
+    });
   const isImage =
     (file.type && file.type.toLowerCase().startsWith("image/")) ||
     /\.(jpe?g|png|gif|webp|bmp|heic|heif|avif)$/i.test(file.name || "");
@@ -6199,100 +6201,34 @@ function skReplySave(){
 function skReplyPrint(){
   const input = document.getElementById("q");
   if(!input) return;
+
   const popup = window.open("", "_blank");
+
   if(!popup){
     alert("Print window blocked. Browser-ல் pop-ups அனுமதிக்கவும்.");
     return;
   }
+
   const escaped = input.value.replace(/[&<>"]/g, function(ch){
     return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch];
   });
+
+  popup.onload = function(){
+    popup.focus();
+    popup.print();
+  };
+
   popup.document.open();
   popup.document.write(
     '<!doctype html><html><head><meta charset="utf-8">' +
     '<title>SASIKUMAR AI Reply</title>' +
     '<style>body{font:16px Arial,sans-serif;padding:24px}pre{white-space:pre-wrap;overflow-wrap:anywhere}</style>' +
-    '
-
-
-
-<!-- SK_FIX_HOMEPAGE_SERVICE_CARDS_VISIBLE_V2 -->
-<style id="SK_FIX_HOMEPAGE_SERVICE_CARDS_VISIBLE_V2">
-/* Restore existing homepage dashboard cards without revealing hidden page sections. */
-html body .dash-grid {
-  display: flex !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  flex-flow: row nowrap !important;
-  gap: 12px !important;
-  overflow-x: auto !important;
-  max-width: 100% !important;
-  padding: 10px !important;
-  box-sizing: border-box !important;
-}
-html body .dash-grid > button {
-  display: flex !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  flex: 0 0 220px !important;
-  min-width: 220px !important;
-  min-height: 100px !important;
-  box-sizing: border-box !important;
-}
-html body details.sk-more-tools {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-html body details.sk-more-tools > .dash-grid {
-  display: flex !important;
-}
-html body .sk-extra-details {
-  display: none !important;
-}
-@media (max-width: 600px) {
-  html body .dash-grid > button {
-    flex-basis: 180px !important;
-    min-width: 180px !important;
-  }
-}
-
-/* Restore the service-card parent hidden by old inline styles. */
-html body #skAllServicesCard.sk-all-services-card {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  height: auto !important;
-  max-height: none !important;
-  overflow: visible !important;
-}
-html body #skAllServicesCard .sk-service-zigzag {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-
-</style>
-<!-- /SK_FIX_HOMEPAGE_SERVICE_CARDS_VISIBLE_V2 -->
-
-
-<style id="SK_HIDE_DUPLICATE_GOLD_PRICE_V1">
-html body #skGoldApp #skGoldPriceToggle,
-html body #skGoldApp #skGoldDetails,
-html body #skGoldPriceToggle,
-html body #skGoldDetails {
-  display: none !important;
-  visibility: hidden !important;
-}
-</style>
-</head><body><h2>SASIKUMAR AI Reply</h2><pre>' +
-escaped + '</pre></body></html>'
+    '</head><body><h2>SASIKUMAR AI Reply</h2><pre>' +
+    escaped +
+    '</pre></body></html>'
   );
   popup.document.close();
-  popup.focus();
-  popup.onload = function(){ popup.print(); };
 }
-
 function skReplyCopy(){
   const input = document.getElementById("q");
   if(!input) return;
@@ -6925,6 +6861,7 @@ else skRefreshPay2AllWallet();
 (function () {
   function moveReplyBelowWelcome() {
     const welcome = document.getElementById("skWelcomeHero");
+    const loginSection = document.getElementById("sasikumarLoginScreen");
     const globalSearch = document.getElementById("skGlobalSearchTop");
     const heading = document.getElementById("skReplyHeading");
     const quick = document.getElementById("skAIQuickQuestions");
@@ -6934,13 +6871,13 @@ else skRefreshPay2AllWallet();
     const designMaker = document.getElementById("skDesignMakerGlobal");
     const creatorCards = document.getElementById("skReplyCreatorCards");
 
-    if (!welcome || !globalSearch || !heading || !quick || !reply || !chat || !newBar || !designMaker || !creatorCards) {
+    if (!welcome || !loginSection || !globalSearch || !heading || !quick || !reply || !chat || !newBar || !designMaker || !creatorCards) {
       console.warn("SASIKUMAR AI: Required reply elements not found; no move performed.");
       return;
     }
 
     let anchor = welcome;
-    [globalSearch, heading, quick, reply, chat, designMaker, creatorCards].forEach(function (element) {
+    [loginSection, globalSearch, heading, quick, reply, chat, designMaker, creatorCards].forEach(function (element) {
       anchor.insertAdjacentElement("afterend", element);
       anchor = element;
     });
@@ -9444,6 +9381,126 @@ html body #sasikumar-ai-hub-dashboard-card #skAllServicesCard .sk-all-services-t
 html body #sasikumar-ai-hub-dashboard-card #skAllServicesCard .sk-service-zigzag { display:grid!important; grid-template-columns:repeat(auto-fit,minmax(140px,1fr))!important; gap:10px!important; visibility:visible!important; opacity:1!important; height:auto!important; max-height:none!important; }
 html body #sasikumar-ai-hub-dashboard-card #skAllServicesCard .sk-service-zigzag > button { display:flex!important; visibility:visible!important; opacity:1!important; flex-direction:column!important; align-items:center!important; }
 </style>
+
+
+<!-- SK_REPLY_IMAGE_PREVIEW_RECOVERY_V1 -->
+<script id="SK_REPLY_IMAGE_PREVIEW_RECOVERY_V1">
+(function () {
+  if (window.__skReplyPreviewRecoveryV1) return;
+  window.__skReplyPreviewRecoveryV1 = true;
+
+  function recoverPreview(file) {
+    if (!file) return;
+
+    window.replyAttachment = file;
+
+    var area = document.getElementById("sasikumarAIReplySection");
+    if (!area) return;
+
+    var box = document.getElementById("replyAttachmentPreview");
+    if (!box) {
+      box = document.createElement("div");
+      box.id = "replyAttachmentPreview";
+      var row = area.querySelector(".input-row");
+      if (row) area.insertBefore(box, row);
+      else area.appendChild(box);
+    }
+
+    box.style.cssText =
+      "display:block!important;visibility:visible!important;" +
+      "opacity:1!important;position:relative!important;width:100%;" +
+      "box-sizing:border-box;margin:10px 0;padding:12px;" +
+      "border:2px solid #2563eb;border-radius:12px;" +
+      "background:#eff6ff;color:#111827;z-index:5;";
+
+    while (box.firstChild) box.removeChild(box.firstChild);
+
+    var rowBox = document.createElement("div");
+    rowBox.style.cssText =
+      "display:flex;align-items:center;gap:12px;flex-wrap:wrap";
+
+    var isImage = (file.type || "").toLowerCase().indexOf("image/") === 0 ||
+      /\.(jpe?g|png|gif|webp|bmp|heic|heif|avif)$/i.test(file.name || "");
+
+    if (isImage) {
+      var img = document.createElement("img");
+      img.alt = "Selected image preview";
+      img.style.cssText =
+        "display:block!important;width:100px;height:100px;" +
+        "object-fit:contain;background:white;border-radius:8px";
+      img.id = "skRecoveryPreviewImage";
+      rowBox.appendChild(img);
+
+      try {
+        var reader = new FileReader();
+        reader.onload = function (ev) {
+          var current = document.getElementById("skRecoveryPreviewImage");
+          if (current && ev.target && ev.target.result) {
+            current.src = ev.target.result;
+          }
+        };
+        reader.onerror = function () {
+          var msg = document.createElement("p");
+          msg.textContent = "படத்தை Preview செய்ய முடியவில்லை. மீண்டும் தேர்வு செய்யவும்.";
+          box.appendChild(msg);
+        };
+        reader.readAsDataURL(file);
+      } catch (err) {
+        console.error("Preview read error:", err);
+      }
+    }
+
+    var info = document.createElement("div");
+    info.style.cssText = "flex:1;min-width:120px;overflow-wrap:anywhere";
+
+    var name = document.createElement("strong");
+    name.textContent = file.name || "Selected file";
+
+    var detail = document.createElement("div");
+    detail.textContent = (isImage ? "படம் தேர்ந்தெடுக்கப்பட்டது" : "கோப்பு தேர்ந்தெடுக்கப்பட்டது") +
+      " • " + Math.max(1, Math.round(file.size / 1024)) + " KB";
+
+    info.appendChild(name);
+    info.appendChild(detail);
+    rowBox.appendChild(info);
+
+    var remove = document.createElement("button");
+    remove.type = "button";
+    remove.textContent = "✖ Remove";
+    remove.style.cssText =
+      "padding:9px 12px;border:0;border-radius:8px;" +
+      "background:#fecaca;color:#7f1d1d";
+    remove.addEventListener("click", function () {
+      window.replyAttachment = null;
+      ["skNewCameraInput", "skNewUploadInput"].forEach(function (id) {
+        var input = document.getElementById(id);
+        if (input) input.value = "";
+      });
+      box.remove();
+    });
+    rowBox.appendChild(remove);
+    box.appendChild(rowBox);
+  }
+
+  document.addEventListener("change", function (event) {
+    var input = event.target;
+    if (!input || (input.id !== "skNewUploadInput" &&
+                   input.id !== "skNewCameraInput")) return;
+
+    var file = input.files && input.files[0];
+    if (file) {
+      try {
+        recoverPreview(file);
+      } catch (err) {
+        console.error("SASIKUMAR AI preview recovery error:", err);
+      }
+    }
+  }, true);
+
+  console.log("SASIKUMAR AI: Reply preview recovery ready");
+})();
+</script>
+<!-- /SK_REPLY_IMAGE_PREVIEW_RECOVERY_V1 -->
 
 </body>
 </html>
