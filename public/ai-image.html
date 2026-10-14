@@ -193,7 +193,7 @@ async function generateImage(){
     const data=await response.json();
 
     if(!data.ok){
-      if(String(data.error).includes("429")){
+      if(/429|quota|rate limit|limit reached/i.test(String(data.error || ""))){
         status.textContent="⏳ Gemini quota unavailable — creating local poster...";
         try{
           const fallback=await fetch("/api/any-content",{
