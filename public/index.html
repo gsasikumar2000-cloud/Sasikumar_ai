@@ -3312,7 +3312,7 @@ async function send(){
 
     const messageText = e.name === "AbortError"
       ? "⏳ பதில் வர அதிக நேரமாகிறது. மீண்டும் முயற்சிக்கவும்."
-      : "🌐 இணைப்பில் சிக்கல் ஏற்பட்டது. இணையத்தைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.";
+      : "⚠️ பதில் பிழை: " + String(e && e.message ? e.message : e).slice(0, 180);
 
     const last = chat.lastElementChild;
     if (last && last.classList.contains("msg") && last.classList.contains("ai")) {
