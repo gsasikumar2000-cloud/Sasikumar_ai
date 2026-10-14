@@ -2049,6 +2049,98 @@ html body section:has(#skAllServicesCard) {
   visibility: hidden !important;
 }
 </style>
+
+<style id="SK_ALL_CARDS_EQUAL_SIZE_V1">
+/* SK_ALL_CARDS_EQUAL_SIZE_V1 */
+
+/* Main live cards: equal height and aligned content */
+.skMainLiveGrid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  align-items: stretch !important;
+  gap: 14px !important;
+}
+
+.skMainLiveGrid > .skMainFeatureCard,
+.skMainLiveGrid > #skVideoAdCard {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 230px !important;
+  min-height: 230px !important;
+  max-height: 230px !important;
+  overflow: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+}
+
+.skMainLiveGrid > .skMainFeatureCard img,
+.skMainLiveGrid > #skVideoAdCard img {
+  max-width: 100% !important;
+  max-height: 100px !important;
+  object-fit: contain !important;
+}
+
+/* Creator cards: all same height */
+#skReplyCreatorCards .skCreatorToolsGrid {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  align-items: stretch !important;
+  gap: 14px !important;
+}
+
+#skReplyCreatorCards .skCreatorToolCard {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 200px !important;
+  min-height: 200px !important;
+  max-height: 200px !important;
+  overflow: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  text-align: center !important;
+}
+
+#skReplyCreatorCards .skCreatorToolOpen {
+  margin-top: auto !important;
+}
+
+@media (max-width: 850px) {
+  .skMainLiveGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  #skReplyCreatorCards .skCreatorToolsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .skMainLiveGrid,
+  #skReplyCreatorCards .skCreatorToolsGrid {
+    gap: 8px !important;
+  }
+
+  .skMainLiveGrid > .skMainFeatureCard,
+  .skMainLiveGrid > #skVideoAdCard {
+    height: 210px !important;
+    min-height: 210px !important;
+    max-height: 210px !important;
+  }
+
+  #skReplyCreatorCards .skCreatorToolCard {
+    height: 190px !important;
+    min-height: 190px !important;
+    max-height: 190px !important;
+    padding: 10px 6px !important;
+  }
+}
+</style>
+
 </head><body><h1>SASIKUMAR AI</h1><p>Your creative design starts here.</p><button onclick="document.querySelector('p').textContent='Preview is working!'">Test Design</button>
 
 
