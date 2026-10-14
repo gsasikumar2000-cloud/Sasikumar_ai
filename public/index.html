@@ -10043,5 +10043,186 @@ html body .skMainLiveGrid > .skMainFeatureCard {
   /* Do not hide other homepage feature cards. */
 </style>
 
+
+<!-- SK_HOME_EDITORIAL_CARDS_V1 -->
+<style id="SK_HOME_EDITORIAL_CARDS_V1">
+.skEditorialCardV1 {
+  box-sizing:border-box !important;
+  min-width:0 !important;
+  min-height:260px !important;
+  height:auto !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:stretch !important;
+  padding:16px !important;
+  border-radius:20px !important;
+  border:1px solid rgba(255,255,255,.65) !important;
+  box-shadow:0 8px 22px rgba(20,40,70,.13) !important;
+  overflow-wrap:anywhere !important;
+}
+.skEditorialCardV1 .skEditorialLogoV1 {
+  display:block !important;
+  width:60px !important;
+  height:60px !important;
+  max-width:60px !important;
+  object-fit:contain !important;
+  margin:4px auto 12px !important;
+  align-self:center !important;
+  animation:skEditorialSpinV1 8s linear infinite;
+}
+.skEditorialCardV1 .skEditorialExplainV1 {
+  display:block !important;
+  line-height:1.65 !important;
+  margin:8px 0 !important;
+  font-size:14px !important;
+  overflow-wrap:anywhere !important;
+}
+.skEditorialSportsV1 {background:linear-gradient(135deg,#e0f2fe,#dbeafe) !important;color:#153e75 !important;}
+.skEditorialKuralV1 {background:linear-gradient(135deg,#fef3c7,#fde68a) !important;color:#713f12 !important;}
+.skEditorialKavithaiV1 {background:linear-gradient(135deg,#f3e8ff,#fce7f3) !important;color:#701a75 !important;}
+.skEditorialPonmozhiV1 {background:linear-gradient(135deg,#dcfce7,#d1fae5) !important;color:#14532d !important;}
+.skEditorialDesignV1 {background:linear-gradient(135deg,#e0e7ff,#dbeafe) !important;color:#312e81 !important;}
+.skEditorialCreatorV1 {background:linear-gradient(135deg,#ffe4e6,#ffedd5) !important;color:#9a3412 !important;}
+@keyframes skEditorialSpinV1 {from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@media(max-width:600px) {
+ .skEditorialCardV1 {min-height:220px !important;padding:13px !important;width:100% !important;}
+ .skEditorialCardV1 .skEditorialLogoV1 {width:52px !important;height:52px !important;}
+}
+</style>
+
+
+<!-- SK_HOME_EDITORIAL_CARDS_JS_V1 -->
+<script id="SK_HOME_EDITORIAL_CARDS_JS_V1">
+(function () {
+  "use strict";
+
+  const logoSrc = "/assets/sasikumar-ai-logo.png";
+  const cards = [
+    {
+      id: "skLiveSportsBookCard",
+      cls: "skEditorialSportsV1",
+      title: "🏆 SPORTS — விளையாட்டு விளக்கம்",
+      desc: "விளையாட்டு செய்திகள், போட்டிகள், விதிமுறைகள், அணிகள் மற்றும் விளையாட்டு விவரங்களை அறியலாம்."
+    },
+    {
+      id: "dailyThirukkural",
+      cls: "skEditorialKuralV1",
+      title: "📖 DAILY THIRUKKURAL — திருக்குறள் விளக்கம்",
+      desc: "தினமும் ஒரு திருக்குறள், அதன் எளிய தமிழ் பொருள், ஆங்கில விளக்கம் மற்றும் வாழ்க்கைப் பாடத்தை அறியலாம்."
+    },
+    {
+      id: "skLiveKavithaiBookCard",
+      cls: "skEditorialKavithaiV1",
+      title: "✍️ KAVITHAI — கவிதை விளக்கம்",
+      desc: "கவிதையின் பொருள், உணர்வு, கருத்து மற்றும் அதன் வாழ்க்கைச் செய்தியை எளிய முறையில் புரிந்துகொள்ளலாம்."
+    },
+    {
+      id: "livePonmozhigal",
+      cls: "skEditorialPonmozhiV1",
+      title: "💬 PONMOZHIGAL — பொன்மொழி விளக்கம்",
+      desc: "பொன்மொழிகளின் பொருள், வாழ்க்கைப் பாடம் மற்றும் அன்றாட வாழ்வில் அவற்றைப் பயன்படுத்தும் வழிகளை அறியலாம்."
+    },
+    {
+      id: "skDesignMakerGlobal",
+      cls: "skEditorialDesignV1",
+      title: "🎨 SASIKUMAR AI DESIGN MAKER",
+      desc: "Poster, logo மற்றும் பிற டிஜிட்டல் வடிவமைப்புகளை உருவாக்கவும், preview பார்க்கவும் உதவும் வடிவமைப்புக் கருவி."
+    },
+    {
+      id: "skReplyCreatorCards",
+      cls: "skEditorialCreatorV1",
+      title: "✨ SASIKUMAR AI CREATOR",
+      desc: "Photo, AI Image, Audio, Video மற்றும் PDF உருவாக்கும் கருவிகளை ஒரே இடத்தில் பயன்படுத்தலாம்."
+    }
+  ];
+
+  function addCardBrand(card, item) {
+    if (!card || card.dataset.skEditorialApplied === "1") return;
+    card.dataset.skEditorialApplied = "1";
+    card.classList.add("skEditorialCardV1", item.cls);
+
+    /* Remove only SASIKUMAR AI logo images inside this specific target. */
+    const logos = Array.from(card.querySelectorAll("img")).filter(function (img) {
+      const src = (img.getAttribute("src") || "").toLowerCase();
+      const alt = (img.getAttribute("alt") || "").toLowerCase();
+      return src.includes("sasikumar-ai-logo") ||
+             (alt.includes("sasikumar ai") && src.includes("logo"));
+    });
+
+    let brand = card.querySelector(":scope > .skEditorialBrandV1");
+    if (!brand) {
+      brand = document.createElement("div");
+      brand.className = "skEditorialBrandV1";
+      brand.style.cssText =
+        "display:flex;flex-direction:column;align-items:center;" +
+        "justify-content:center;text-align:center;width:100%;margin:0 auto 10px;";
+      card.insertBefore(brand, card.firstChild);
+    }
+
+    logos.forEach(function (img) {
+      if (!brand.contains(img)) img.remove();
+    });
+
+    let logo = brand.querySelector("img.skEditorialLogoV1");
+    if (!logo) {
+      logo = document.createElement("img");
+      logo.className = "skEditorialLogoV1";
+      logo.src = logoSrc;
+      logo.alt = "SASIKUMAR AI Logo";
+      logo.loading = "lazy";
+      logo.style.cssText =
+        "display:block;width:54px;height:54px;max-width:54px;" +
+        "object-fit:contain;margin:0 auto 8px;animation:sasikumar360 3s linear infinite;";
+      brand.appendChild(logo);
+    }
+
+    let brandTitle = brand.querySelector(".skEditorialBrandTitleV1");
+    if (!brandTitle) {
+      brandTitle = document.createElement("div");
+      brandTitle.className = "skEditorialBrandTitleV1";
+      brandTitle.style.cssText =
+        "font-weight:800;font-size:clamp(15px,2.5vw,20px);" +
+        "line-height:1.4;text-align:center;";
+      brand.appendChild(brandTitle);
+    }
+    brandTitle.textContent = item.title;
+
+    let desc = card.querySelector(":scope > .skEditorialDescriptionV1, :scope > .skEditorialExplainV1");
+    if (!desc) {
+      desc = document.createElement("p");
+      desc.className = "skEditorialDescriptionV1";
+      desc.style.cssText =
+        "text-align:center;line-height:1.65;margin:10px auto 14px;" +
+        "max-width:900px;padding:0 8px;";
+      brand.insertAdjacentElement("afterend", desc);
+    }
+    desc.textContent = item.desc;
+  }
+
+  function apply() {
+    cards.forEach(function (item) {
+      const card = document.getElementById(item.id);
+      if (card) addCardBrand(card, item);
+    });
+  }
+
+  function start() {
+    apply();
+    let attempts = 0;
+    const timer = setInterval(function () {
+      apply();
+      attempts++;
+      if (attempts >= 20) clearInterval(timer);
+    }, 500);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", start, { once: true });
+  } else {
+    start();
+  }
+})();
+</script>
+
 </body>
 </html>
