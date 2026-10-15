@@ -1181,7 +1181,68 @@ Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada �
   const match=normalized.match(/^(?:option[\s_-]*)?(20|19|1[0-8]|[1-9])$/);
   const option=match ? match[1] : null;
 
-  // SK_WHATSAPP_TAMIL_NEWS_VIDEO_OPTION20_V1
+
+  // SK_WHATSAPP_BREAKING_NEWS_OPTION10_V1
+  if (option === "10") {
+    try {
+      const newsResponse = await fetch(
+        "https://sasikumar-ai-9wdq.onrender.com/api/breaking-news?category=Tamil%20Nadu&language=ta",
+        { headers: { "Accept": "application/json" } }
+      );
+
+      if (!newsResponse.ok) {
+        throw new Error("Breaking news API HTTP " + newsResponse.status);
+      }
+
+      const newsData = await newsResponse.json();
+      const items = [
+        ...(Array.isArray(newsData.news) ? newsData.news : []),
+        ...(Array.isArray(newsData.videos) ? newsData.videos : [])
+      ];
+
+      const seen = new Set();
+      const uniqueItems = items.filter(item => {
+        const key = item.url || item.link || item.title || "";
+        if (!key || seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      }).slice(0, 5);
+
+      let breakingNewsText = "📰 SASIKUMAR AI — தமிழ் Breaking News\\n";
+      breakingNewsText += "📅 கிடைத்த சமீபத்திய செய்திகள்:\\n\\n";
+
+      if (uniqueItems.length) {
+        uniqueItems.forEach((item, index) => {
+          breakingNewsText += `${index + 1}. ${item.title || "செய்தி"}\\n`;
+          if (item.source) breakingNewsText += `📡 Source: ${item.source}\\n`;
+          if (item.publishedAt) breakingNewsText += `🕒 ${item.publishedAt}\\n`;
+          const url = item.url || item.link;
+          if (url) breakingNewsText += `🔗 ${url}\\n`;
+          breakingNewsText += "\\n";
+        });
+      } else {
+        breakingNewsText +=
+          "தற்போது பட்டியலிடக்கூடிய செய்திகள் கிடைக்கவில்லை. சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.\\n";
+      }
+
+      breakingNewsText += "\\n— SASIKUMAR AI";
+      add(from, "assistant", breakingNewsText);
+      await sendBrandedWAReply(from, pid, breakingNewsText);
+      res.sendStatus(200);
+      return;
+    } catch (error) {
+      console.error("WhatsApp Menu 10 breaking news error:", error);
+      const errorText =
+        "📰 SASIKUMAR AI — Breaking News\\n" +
+        "தற்போது நேரடி செய்திகளைப் பெற முடியவில்லை. சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.";
+      add(from, "assistant", errorText);
+      await sendBrandedWAReply(from, pid, errorText);
+      res.sendStatus(200);
+      return;
+    }
+  }
+
+// SK_WHATSAPP_TAMIL_NEWS_VIDEO_OPTION20_V1
   if (option === "20") {
     const newsVideoMenu = `📰 SASIKUMAR AI — தமிழ் செய்தி வீடியோக்கள்
 
