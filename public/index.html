@@ -1271,13 +1271,14 @@ style="position:absolute;top:8px;right:8px;padding:9px 13px;border:0;border-radi
       title="Sun News Tamil Live"
       allow="autoplay; encrypted-media; picture-in-picture"
       allowfullscreen
-      loading="lazy"
-      style="display:none;width:100%;aspect-ratio:16/9;border:0;border-radius:16px;margin:8px 0;">
+      loading="eager"
+      referrerpolicy="strict-origin-when-cross-origin"
+      style="display:block;width:100%;height:auto;min-height:200px;aspect-ratio:16/9;border:0;border-radius:16px;margin:8px 0;background:#eaf2ff;">
     </iframe>
     <video id="skVideoAd" controls muted playsinline preload="metadata"
       style="display:none;width:100%;max-height:260px;border-radius:16px;margin:8px 0;"></video>
     <p id="skVideoAdStatus">Loading video...</p>
-    <button type="button" id="skVideoAdOpen" style="display:none;">▶️ Open Video</button>
+    <button type="button" id="skVideoAdOpen" style="display:inline-block;">▶️ Open Sun News</button>
   </section>
 </div>
 
