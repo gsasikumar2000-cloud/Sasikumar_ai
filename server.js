@@ -1450,7 +1450,20 @@ https://www.youtube.com/results?search_query=Tamil+Moral+Stories+for+Kids
 7. 🧩 Kids Quiz
 https://www.youtube.com/results?search_query=Kids+Quiz+for+Children
 
-ℹ️ குறிப்பு: இவை YouTube தேடல் இணைப்புகள். குழந்தைகளுக்குப் பொருத்தமான வீடியோக்களை பெற்றோர் அல்லது பாதுகாவலர் தேர்ந்தெடுத்து பார்க்க உதவவும்.
+8. 🧩 Kids Quiz Game
+https://www.youtube.com/results?search_query=Kids+Quiz+Game+for+Children
+
+9. 🎨 Kids Drawing Studio
+https://www.youtube.com/results?search_query=Kids+Drawing+and+Coloring+Tutorial
+
+10. 📚 Kids Learning Videos — Maths & Science
+https://www.youtube.com/results?search_query=Kids+Learning+Videos+Tamil+Maths+Science
+
+11. 🛡️ Kids Safe Mode — Parent-selected content
+பெற்றோர் அல்லது பாதுகாவலர் தேர்ந்தெடுத்த இணைப்புகளை மட்டும் குழந்தைகளுடன் பகிரவும்.
+
+<!-- KIDS_WORLD_EXTRAS_1_TO_4_V1 -->
+ℹ️ குறிப்பு: இவை YouTube தேடல் இணைப்புகள். எல்லா வீடியோக்களும் குழந்தைகளுக்கு ஏற்றவை என்று உறுதி செய்ய முடியாது. பெற்றோர் அல்லது பாதுகாவலர் உள்ளடக்கத்தைச் சரிபார்த்து குழந்தைகளுக்கு உதவவும்.
 
 — SASIKUMAR AI`;
 
