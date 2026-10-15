@@ -1180,6 +1180,43 @@ Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada �
 
   const match=normalized.match(/^(?:option[\s_-]*)?(20|19|1[0-8]|[1-9])$/);
   const option=match ? match[1] : null;
+
+  // SK_WHATSAPP_TAMIL_NEWS_VIDEO_OPTION20_V1
+  if (option === "20") {
+    const newsVideoMenu = `📰 SASIKUMAR AI — தமிழ் செய்தி வீடியோக்கள்
+
+📺 தமிழ் செய்தி சேனல்கள்:
+🔴 Thanthi TV:
+https://www.youtube.com/results?search_query=Thanthi+TV+Tamil+News+Live
+
+🔴 Puthiya Thalaimurai:
+https://www.youtube.com/results?search_query=Puthiya+Thalaimurai+Tamil+News+Live
+
+🔴 Polimer News:
+https://www.youtube.com/results?search_query=Polimer+News+Tamil+Live
+
+🔴 News18 Tamil Nadu:
+https://www.youtube.com/results?search_query=News18+Tamil+Nadu+Live
+
+🚨 Breaking News:
+https://www.youtube.com/results?search_query=Tamil+Breaking+News+Today
+
+💼 Business News:
+https://www.youtube.com/results?search_query=Tamil+Business+News+Today
+
+🏏 Sports News:
+https://www.youtube.com/results?search_query=Tamil+Sports+News+Today
+
+குறிப்பு: இவை YouTube தேடல் இணைப்புகள். கிடைக்கும் வீடியோக்கள் மற்றும் நேரலை நிலை YouTube-ல் சரிபார்க்கப்பட வேண்டும்.
+
+— SASIKUMAR AI`;
+
+    add(from, "assistant", newsVideoMenu);
+    await sendBrandedWAReply(from, pid, newsVideoMenu);
+    res.sendStatus(200);
+    return;
+  }
+
   // Direct live Gold Rate response for WhatsApp
   if (
     option === "1" ||
