@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101b35">
+<title>Free Video Maker - SASIKUMAR AI</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#eef4ff;color:#17233d;font-family:Arial,sans-serif}
+header{background:linear-gradient(120deg,#101b35,#174d91,#6d28d9);color:white;padding:22px 15px;text-align:center}
+header h1{margin:0;font-size:25px}
+header p{margin:8px 0 0;font-size:14px}
+main{max-width:900px;margin:18px auto;padding:12px}
+.card{background:white;border-radius:18px;padding:18px;margin-bottom:16px;box-shadow:0 5px 22px #142b5015}
+label{display:block;font-weight:bold;margin:13px 0 7px}
+input[type=text],textarea,select,input[type=number]{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;font-size:16px;background:white}
+textarea{min-height:75px;resize:vertical}
+input[type=file]{width:100%;padding:12px;background:#f1f5f9;border-radius:10px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+button,.download{display:inline-block;border:0;border-radius:11px;padding:13px 17px;font-size:15px;font-weight:bold;cursor:pointer;text-decoration:none}
+.primary{background:#2563eb;color:white;width:100%;margin-top:16px}
+.secondary{background:#e0e7ff;color:#1e3a8a}
+button:disabled{opacity:.55}
+canvas,video{display:block;width:100%;max-height:520px;background:#0b1020;border-radius:12px;margin-top:12px}
+#status{white-space:pre-wrap;line-height:1.6;margin-top:12px}
+.download{background:#15803d;color:white;margin-top:12px}
+.small{font-size:13px;line-height:1.6;color:#52627a}
+.back{color:white}
+@media(max-width:520px){.row{grid-template-columns:1fr}header h1{font-size:22px}.card{padding:14px}}
+</style>
+</head>
+<body>
+<header>
+<h1>🎬 SASIKUMAR AI</h1>
+<p>Free Photo-to-Video Maker · No API Key Required</p>
+<p><a class="back" href="/">← Back to Home</a></p>
+</header>
+<main>
+<section class="card">
+<h2>✨ Create Your Video</h2>
+<p class="small">Choose photos, add a title, and create a downloadable WebM slideshow video directly in your browser.</p>
+
+<label for="photos">📸 Select photos (multiple allowed)</label>
+<input id="photos" type="file" accept="image/*" multiple>
+
+<label for="title">Video title</label>
+<input id="title" type="text" maxlength="100" value="SASIKUMAR AI">
+
+<label for="subtitle">Subtitle or message</label>
+<textarea id="subtitle" maxlength="300" placeholder="Enter your message"></textarea>
+
+<div class="row">
+<div>
+<label for="ratio">Video orientation</label>
+<select id="ratio">
+<option value="landscape">Landscape 16:9</option>
+<option value="portrait">Portrait 9:16</option>
+<option value="square">Square 1:1</option>
+</select>
+</div>
+<div>
+<label for="seconds">Seconds per photo</label>
+<select id="seconds">
+<option value="2">2 seconds</option>
+<option value="3" selected>3 seconds</option>
+<option value="5">5 seconds</option>
+<option value="8">8 seconds</option>
+<option value="10">10 seconds</option>
+</select>
+</div>
+</div>
+
+<button id="create" class="primary">🎞️ Create Video</button>
+<div id="status" role="status">Select one or more photos to begin.</div>
+</section>
+
+<section class="card">
+<h2>▶️ Preview</h2>
+<canvas id="canvas" width="1280" height="720"></canvas>
+<video id="preview" controls playsinline hidden></video>
+<a id="download" class="download" hidden download="sasikumar-ai-video.webm">⬇️ Download Video</a>
+<p class="small">The generated video is WebM format. Video generation happens on your device; keep this page open until it finishes. Sound is not added.</p>
+</section>
+</main>
+
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const photos=$('photos'),canvas=$('canvas'),ctx=canvas.getContext('2d');
+const status=$('status'),create=$('create'),preview=$('preview'),download=$('download');
+let resultUrl=null,working=false;
+
+function dimensions(){
+ const ratio=$('ratio').value;
+ if(ratio==='portrait')return [720,1280];
+ if(ratio==='square')return [900,900];
+ return [1280,720];
+}
+function drawImageCover(img){
+ const w=canvas.width,h=canvas.height;
+ ctx.fillStyle='#101827';ctx.fillRect(0,0,w,h);
+ const scale=Math.max(w/img.width,h/img.height);
+ const dw=img.width*scale,dh=img.height*scale;
+ ctx.drawImage(img,(w-dw)/2,(h-dh)/2,dw,dh);
+ ctx.fillStyle='rgba(0,0,0,.52)';
+ ctx.fillRect(0,h*.73,w,h*.27);
+ const title=$('title').value.trim();
+ const subtitle=$('subtitle').value.trim();
+ ctx.textAlign='center';ctx.textBaseline='middle';
+ ctx.fillStyle='#fff';
+ ctx.font='bold '+Math.round(w*.045)+'px Arial';
+ if(title)ctx.fillText(title,w/2,h*.81,w*.9);
+ ctx.font=Math.round(w*.026)+'px Arial';
+ if(subtitle){
+   const words=subtitle.split(/\s+/);let lines=[],line='';
+   for(const word of words){
+     const test=line?line+' '+word:word;
+     if(ctx.measureText(test).width>w*.86&&line){lines.push(line);line=word;}
+     else line=test;
+   }
+   if(line)lines.push(line);
+   lines.slice(0,2).forEach((t,i)=>ctx.fillText(t,w/2,h*.89+i*w*.032,w*.88));
+ }
+}
+function loadImage(file){
+ return new Promise((resolve,reject)=>{
+   const url=URL.createObjectURL(file),img=new Image();
+   img.onload=()=>resolve({img,url});
+   img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('Could not open '+file.name));};
+   img.src=url;
+ });
+}
+$('ratio').addEventListener('change',()=>{
+ const [w,h]=dimensions();canvas.width=w;canvas.height=h;
+ ctx.fillStyle='#101827';ctx.fillRect(0,0,w,h);
+ ctx.fillStyle='#fff';ctx.textAlign='center';ctx.font='28px Arial';
+ ctx.fillText('Your video preview will appear here',w/2,h/2);
+});
+photos.addEventListener('change',()=>{
+ status.textContent=photos.files.length+' photo(s) selected.';
+});
+create.addEventListener('click',async()=>{
+ if(working)return;
+ const files=Array.from(photos.files).filter(f=>f.type.startsWith('image/'));
+ if(!files.length){status.textContent='❗ Please select at least one photo.';return;}
+ if(!window.MediaRecorder||!canvas.captureStream){
+   status.textContent='❌ This browser does not support video recording. Try a recent Chrome browser.';
+   return;
+ }
+ working=true;create.disabled=true;download.hidden=true;preview.hidden=true;
+ if(resultUrl){URL.revokeObjectURL(resultUrl);resultUrl=null;}
+ const loaded=[];
+ try{
+   status.textContent='⏳ Loading photos...';
+   for(const file of files)loaded.push(await loadImage(file));
+   const [w,h]=dimensions();canvas.width=w;canvas.height=h;
+   const seconds=Number($('seconds').value);
+   const stream=canvas.captureStream(25);
+   const types=['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'];
+   const mime=types.find(t=>MediaRecorder.isTypeSupported(t))||'';
+   const recorder=new MediaRecorder(stream,mime?{mimeType:mime}:undefined);
+   const chunks=[];
+   recorder.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data);};
+   recorder.onerror=()=>{
+     status.textContent='❌ Recording failed. Please try fewer or smaller photos.';
+     working=false;create.disabled=false;
+     loaded.forEach(x=>URL.revokeObjectURL(x.url));
+   };
+   recorder.onstop=()=>{
+     stream.getTracks().forEach(t=>t.stop());
+     loaded.forEach(x=>URL.revokeObjectURL(x.url));
+     if(!chunks.length){
+       status.textContent='❌ No video data was created. Try again.';
+     }else{
+       const blob=new Blob(chunks,{type:recorder.mimeType||'video/webm'});
+       resultUrl=URL.createObjectURL(blob);
+       preview.src=resultUrl;preview.hidden=false;
+       download.href=resultUrl;download.hidden=false;
+       download.download='sasikumar-ai-video.webm';
+       status.textContent='✅ Video created! '+files.length+' photo(s), '+(files.length*seconds)+' seconds. Tap Download Video to save it.';
+     }
+     working=false;create.disabled=false;
+   };
+   status.textContent='🎬 Recording video... Please keep this page open.';
+   recorder.start(250);
+   for(let i=0;i<loaded.length;i++){
+     drawImageCover(loaded[i].img);
+     await new Promise(resolve=>setTimeout(resolve,seconds*1000));
+   }
+   recorder.stop();
+ }catch(err){
+   status.textContent='❌ '+(err.message||'Unable to create video.');
+   loaded.forEach(x=>URL.revokeObjectURL(x.url));
+   working=false;create.disabled=false;
+ }
+});
+const [w,h]=dimensions();
+ctx.fillStyle='#101827';ctx.fillRect(0,0,w,h);
+ctx.fillStyle='#fff';ctx.textAlign='center';ctx.font='28px Arial';
+ctx.fillText('Your video preview will appear here',w/2,h/2);
+})();
+</script>
+</body>
+</html>
