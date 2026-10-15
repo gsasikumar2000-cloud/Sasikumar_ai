@@ -1178,7 +1178,7 @@ Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada �
     return;
   }
 
-  const match=normalized.match(/^(?:option[\s_-]*)?(20|19|1[0-8]|[1-9])$/);
+  const match=normalized.match(/^(?:option[\s_-]*)?(21|20|19|1[0-8]|[1-9])$/);
   const option=match ? match[1] : null;
 
 
@@ -1425,6 +1425,41 @@ Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada �
   }
 
 // SK_WHATSAPP_TAMIL_NEWS_VIDEO_OPTION20_V1
+  // SK_WHATSAPP_KIDS_WORLD_OPTION21_V1
+  if (option === "21") {
+    const kidsMenu = `🧒 SASIKUMAR AI — KIDS WORLD
+
+1. 📖 தமிழ் சிறுகதைகள்
+https://www.youtube.com/results?search_query=Tamil+Kids+Stories
+
+2. 🎬 Kids Animation Videos
+https://www.youtube.com/results?search_query=Kids+Animation+Videos
+
+3. 🎵 Kids Rhymes
+https://www.youtube.com/results?search_query=Tamil+Kids+Rhymes
+
+4. 🧠 Kids Learning — Tamil, English, Numbers
+https://www.youtube.com/results?search_query=Kids+Learning+Tamil+English+Numbers
+
+5. 🎨 Drawing & Coloring
+https://www.youtube.com/results?search_query=Kids+Drawing+Coloring
+
+6. 🌟 தமிழ் நீதிக்கதைகள்
+https://www.youtube.com/results?search_query=Tamil+Moral+Stories+for+Kids
+
+7. 🧩 Kids Quiz
+https://www.youtube.com/results?search_query=Kids+Quiz+for+Children
+
+ℹ️ குறிப்பு: இவை YouTube தேடல் இணைப்புகள். குழந்தைகளுக்குப் பொருத்தமான வீடியோக்களை பெற்றோர் அல்லது பாதுகாவலர் தேர்ந்தெடுத்து பார்க்க உதவவும்.
+
+— SASIKUMAR AI`;
+
+    add(from, "assistant", kidsMenu);
+    await sendBrandedWAReply(from, pid, kidsMenu);
+    res.sendStatus(200);
+    return;
+  }
+
   if (option === "20") {
     const newsVideoMenu = `📰 SASIKUMAR AI — தமிழ் செய்தி வீடியோக்கள்
 
