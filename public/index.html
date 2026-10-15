@@ -1278,6 +1278,63 @@ style="position:absolute;top:8px;right:8px;padding:9px 13px;border:0;border-radi
     <video id="skVideoAd" controls muted playsinline preload="metadata"
       style="display:none;width:100%;max-height:260px;border-radius:16px;margin:8px 0;"></video>
     <p id="skVideoAdStatus">Loading video...</p>
+<div id="skTamilNewsChannelButtonsV1"
+      style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0;">
+      <button type="button" data-sk-news="Sun News Tamil">🔴 Sun News</button>
+      <button type="button" data-sk-news="Thanthi TV Tamil">📰 Thanthi TV</button>
+      <button type="button" data-sk-news="Puthiya Thalaimurai Tamil">📺 Puthiya Thalaimurai</button>
+      <button type="button" data-sk-news="News18 Tamil Nadu">📰 News18 Tamil Nadu</button>
+      <button type="button" data-sk-news="News7 Tamil">📺 News7 Tamil</button>
+      <button type="button" data-sk-news="Polimer News Tamil">📰 Polimer News</button>
+      <button type="button" data-sk-news="Sathiyam News Tamil">📺 Sathiyam News</button>
+      <button type="button" data-sk-news="Kalaignar Seithigal">📰 Kalaignar Seithigal</button>
+      <button type="button" data-sk-news="Raj News Tamil">📺 Raj News</button>
+      <button type="button" data-sk-news="Malai Murasu News">📰 Malai Murasu</button>
+    </div>
+    <style>
+      #skTamilNewsChannelButtonsV1 button {
+        min-height:42px;padding:9px 6px;border:0;border-radius:12px;
+        background:linear-gradient(135deg,#e8f2ff,#fff0d9);
+        color:#17345b;font-weight:700;font-size:13px;cursor:pointer;
+      }
+      #skTamilNewsChannelButtonsV1 button:focus-visible {
+        outline:3px solid #2878d0;outline-offset:2px;
+      }
+    </style>
+    <script>
+    (() => {
+      const box = document.getElementById("skTamilNewsChannelButtonsV1");
+      if (!box || box.dataset.bound === "1") return;
+      box.dataset.bound = "1";
+
+      box.addEventListener("click", event => {
+        const button = event.target.closest("button[data-sk-news]");
+        if (!button) return;
+
+        const channel = button.dataset.skNews;
+        const status = document.getElementById("skVideoAdStatus");
+
+        if (status) status.textContent = "🔎 Opening " + channel + " Live…";
+
+        if (channel === "Sun News Tamil") {
+          window.open(
+            "https://www.youtube.com/@sunnewstamil/live",
+            "_blank",
+            "noopener"
+          );
+          return;
+        }
+
+        const query = encodeURIComponent(channel + " official live Tamil");
+        window.open(
+          "https://www.youtube.com/results?search_query=" + query,
+          "_blank",
+          "noopener"
+        );
+      });
+    })();
+    </script>
+
     <button type="button" id="skVideoAdOpen" style="display:inline-block;">▶️ Open Sun News</button>
   </section>
 </div>
