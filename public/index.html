@@ -6614,18 +6614,8 @@ section:not(.skMainFeatureCard):not(#skDesignMakerGlobal):not(#skGlobalSearchTop
 
 <script id="SK_OPTION_B_HIDE_INLINE_V1">
 (function () {
-  const selectors = [
-    '#sasikumar-ai-hub-dashboard-card',
-    '#skAllContentLiveCard',
-    '#newSasikumarHome',
-    '#newGoldServices',
-    '#newEducationServices',
-    '#newQuickServices',
-    '#allJobs',
-    '#banking-products',
-    '#upi-bottom-dashboard',
-    '#sk3DAdButton',
-  ];
+  // SK_OPTION_B_HIDE_INLINE_V1: Preserve existing homepage cards.
+  const selectors = [];
 
   function cleanOptionB() {
     selectors.forEach(function (selector) {
