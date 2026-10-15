@@ -1208,24 +1208,24 @@ Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada �
         return true;
       }).slice(0, 5);
 
-      let breakingNewsText = "📰 SASIKUMAR AI — தமிழ் Breaking News\\n";
-      breakingNewsText += "📅 கிடைத்த சமீபத்திய செய்திகள்:\\n\\n";
+      let breakingNewsText = "📰 SASIKUMAR AI — தமிழ் Breaking News\n";
+      breakingNewsText += "📅 கிடைத்த சமீபத்திய செய்திகள்:\n\n";
 
       if (uniqueItems.length) {
         uniqueItems.forEach((item, index) => {
-          breakingNewsText += `${index + 1}. ${item.title || "செய்தி"}\\n`;
-          if (item.source) breakingNewsText += `📡 Source: ${item.source}\\n`;
-          if (item.publishedAt) breakingNewsText += `🕒 ${item.publishedAt}\\n`;
+          breakingNewsText += `${index + 1}. ${item.title || "செய்தி"}\n`;
+          if (item.source) breakingNewsText += `📡 Source: ${item.source}\n`;
+          if (item.publishedAt) breakingNewsText += `🕒 ${item.publishedAt}\n`;
           const url = item.url || item.link;
-          if (url) breakingNewsText += `🔗 ${url}\\n`;
-          breakingNewsText += "\\n";
+          if (url) breakingNewsText += `🔗 ${url}\n`;
+          breakingNewsText += "\n";
         });
       } else {
         breakingNewsText +=
-          "தற்போது பட்டியலிடக்கூடிய செய்திகள் கிடைக்கவில்லை. சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.\\n";
+          "தற்போது பட்டியலிடக்கூடிய செய்திகள் கிடைக்கவில்லை. சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.\n";
       }
 
-      breakingNewsText += "\\n— SASIKUMAR AI";
+      breakingNewsText += "\n— SASIKUMAR AI";
       add(from, "assistant", breakingNewsText);
       await sendBrandedWAReply(from, pid, breakingNewsText);
       res.sendStatus(200);
@@ -1233,7 +1233,7 @@ Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada �
     } catch (error) {
       console.error("WhatsApp Menu 10 breaking news error:", error);
       const errorText =
-        "📰 SASIKUMAR AI — Breaking News\\n" +
+        "📰 SASIKUMAR AI — Breaking News\n" +
         "தற்போது நேரடி செய்திகளைப் பெற முடியவில்லை. சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.";
       add(from, "assistant", errorText);
       await sendBrandedWAReply(from, pid, errorText);
