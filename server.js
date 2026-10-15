@@ -1186,8 +1186,8 @@ Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada �
   if (option === "10") {
     try {
       const categories = [
-        { name: "தமிழ்நாடு", value: "Tamil Nadu" },
-        { name: "இந்தியா", value: "India" }
+        { name: "தமிழ்நாடு", value: "Tamil Nadu", language: "ta" },
+        { name: "இந்தியா", value: "India", language: "en" }
       ];
 
       const results = await Promise.allSettled(
@@ -1195,7 +1195,7 @@ Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada �
           const endpoint =
             "https://sasikumar-ai-9wdq.onrender.com/api/breaking-news" +
             "?category=" + encodeURIComponent(category.value) +
-            "&language=ta";
+            "&language=" + encodeURIComponent(category.language);
 
           const response = await fetch(endpoint, {
             headers: { "Accept": "application/json" },
