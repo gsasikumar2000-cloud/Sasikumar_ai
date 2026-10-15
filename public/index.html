@@ -9869,5 +9869,163 @@ html body .skMainLiveGrid > .skMainFeatureCard {
 }
 </style>
 
+
+<!-- SK_COLORFUL_UNIFORM_CARDS_V1 -->
+<style id="SK_COLORFUL_UNIFORM_CARDS_V1">
+
+/* SASIKUMAR AI: colorful heading */
+#skWelcomeHero h1 {
+  background: linear-gradient(
+    90deg, #e91e63, #7c3aed, #087fce, #008f72, #e09b00
+  ) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+}
+
+/* Creator cards: equal dimensions and colorful backgrounds */
+#skReplyCreatorCards .skCreatorToolsGrid {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  align-items: stretch !important;
+  gap: 12px !important;
+}
+
+#skReplyCreatorCards .skCreatorToolCard {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: 220px !important;
+  min-height: 220px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+  border: 1px solid #dbeafe !important;
+  border-radius: 16px !important;
+  box-shadow: 0 5px 16px #64748b24 !important;
+  overflow-wrap: anywhere !important;
+}
+
+#skReplyCreatorCards .skCreatorToolCard:nth-child(5n+1) {
+  background: linear-gradient(145deg, #fff1f2, #ffe4e6) !important;
+}
+#skReplyCreatorCards .skCreatorToolCard:nth-child(5n+2) {
+  background: linear-gradient(145deg, #eff6ff, #dbeafe) !important;
+}
+#skReplyCreatorCards .skCreatorToolCard:nth-child(5n+3) {
+  background: linear-gradient(145deg, #f5f3ff, #ede9fe) !important;
+}
+#skReplyCreatorCards .skCreatorToolCard:nth-child(5n+4) {
+  background: linear-gradient(145deg, #ecfdf5, #d1fae5) !important;
+}
+#skReplyCreatorCards .skCreatorToolCard:nth-child(5n) {
+  background: linear-gradient(145deg, #fffbeb, #fef3c7) !important;
+}
+#skReplyCreatorCards .skCreatorToolOpen {
+  margin-top: auto !important;
+}
+
+@media (max-width: 850px) {
+  #skReplyCreatorCards .skCreatorToolsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+@media (max-width: 380px) {
+  #skReplyCreatorCards .skCreatorToolCard {
+    height: 200px !important;
+    min-height: 200px !important;
+  }
+}
+
+/* Live cards: same height, with mobile-friendly columns */
+.skMainLiveGrid,
+#skLiveBookCardsRow,
+#skYouTubeCreativeCards .sk-yt-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  align-items: stretch !important;
+  gap: 10px !important;
+}
+
+.skMainLiveGrid > .skMainFeatureCard,
+#skLiveBookCardsRow > *,
+#skYouTubeCreativeCards .sk-yt-card {
+  box-sizing: border-box !important;
+  height: 160px !important;
+  min-height: 160px !important;
+  max-height: 160px !important;
+  border-radius: 14px !important;
+  box-shadow: 0 4px 14px #64748b24 !important;
+}
+
+#skLiveBookCardsRow > :nth-child(4n+1),
+.skMainLiveGrid > .skMainFeatureCard:nth-child(4n+1) {
+  background: linear-gradient(145deg, #fff1f2, #ffe4e6) !important;
+}
+#skLiveBookCardsRow > :nth-child(4n+2),
+.skMainLiveGrid > .skMainFeatureCard:nth-child(4n+2) {
+  background: linear-gradient(145deg, #eff6ff, #dbeafe) !important;
+}
+#skLiveBookCardsRow > :nth-child(4n+3),
+.skMainLiveGrid > .skMainFeatureCard:nth-child(4n+3) {
+  background: linear-gradient(145deg, #f5f3ff, #ede9fe) !important;
+}
+#skLiveBookCardsRow > :nth-child(4n),
+.skMainLiveGrid > .skMainFeatureCard:nth-child(4n) {
+  background: linear-gradient(145deg, #ecfdf5, #d1fae5) !important;
+}
+
+@media (max-width: 700px) {
+  .skMainLiveGrid,
+  #skLiveBookCardsRow,
+  #skYouTubeCreativeCards .sk-yt-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .skMainLiveGrid > .skMainFeatureCard,
+  #skLiveBookCardsRow > *,
+  #skYouTubeCreativeCards .sk-yt-card {
+    height: 160px !important;
+    min-height: 160px !important;
+    max-height: 160px !important;
+  }
+}
+
+/* Service cards: uniform size and alternating colors */
+.sk-service-zigzag > button {
+  box-sizing: border-box !important;
+  min-width: 0 !important;
+  min-height: 130px !important;
+  height: 130px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  border-radius: 14px !important;
+  border: 1px solid #dbeafe !important;
+  box-shadow: 0 4px 12px #64748b20 !important;
+  overflow-wrap: anywhere !important;
+}
+.sk-service-zigzag > button:nth-child(5n+1) {
+  background: linear-gradient(145deg, #fff1f2, #ffe4e6) !important;
+}
+.sk-service-zigzag > button:nth-child(5n+2) {
+  background: linear-gradient(145deg, #eff6ff, #dbeafe) !important;
+}
+.sk-service-zigzag > button:nth-child(5n+3) {
+  background: linear-gradient(145deg, #f5f3ff, #ede9fe) !important;
+}
+.sk-service-zigzag > button:nth-child(5n+4) {
+  background: linear-gradient(145deg, #ecfdf5, #d1fae5) !important;
+}
+.sk-service-zigzag > button:nth-child(5n) {
+  background: linear-gradient(145deg, #fffbeb, #fef3c7) !important;
+}
+
+</style>
+<!-- END SK_COLORFUL_UNIFORM_CARDS_V1 -->
+
 </body>
 </html>
