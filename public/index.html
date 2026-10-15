@@ -2239,6 +2239,74 @@ html body section:has(#skAllServicesCard) {
 }
 </style>
 
+
+<style id="SK_PAY2ALL_CARD_STYLE_V1">
+#sasikumarPay2AllWallet{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  width:min(300px,calc(100% - 24px))!important;
+  max-width:300px!important;
+  min-height:220px!important;
+  box-sizing:border-box!important;
+  margin:14px auto!important;
+  padding:16px!important;
+  border-radius:20px!important;
+  background:linear-gradient(135deg,#d9f99d,#67e8f9,#c4b5fd)!important;
+  color:#10233f!important;
+  border:2px solid rgba(255,255,255,.95)!important;
+  box-shadow:0 8px 24px rgba(30,64,175,.18)!important;
+  cursor:pointer!important;
+}
+#sasikumarPay2AllWallet .skPay2AllCardHeading{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  font-size:16px;font-weight:800;text-align:left;line-height:1.4;
+}
+#sasikumarPay2AllWallet .skPay2AllCardHeading img{
+  width:48px;height:48px;object-fit:contain;border-radius:50%;
+  background:#fff;flex:0 0 auto;
+}
+#sasikumarPay2AllWallet .skPay2AllCardOpen{
+  margin:8px 0;padding:7px;border-radius:10px;
+  background:rgba(255,255,255,.7);text-align:center;font-weight:800;
+}
+#sasikumarPay2AllWallet #skWalletBalance,
+#sasikumarPay2AllWallet #skWalletStatus{overflow-wrap:anywhere}
+#sasikumarPay2AllWallet button,
+#sasikumarPay2AllWallet a{position:relative;z-index:1}
+#skServiceOverlayV1 .skPay2AllServiceIntro{text-align:center;padding:10px}
+#skServiceOverlayV1 .skPay2AllServiceIntro img{
+  width:64px;height:64px;object-fit:contain;border-radius:50%;background:#fff;
+}
+#skServiceOverlayV1 .skPay2AllServiceIntro h2{margin:8px 0;color:#17408b}
+#skServiceOverlayV1 .skPay2AllServiceIntro p{margin:6px 0}
+#skServiceOverlayV1 .skPay2AllServiceGrid{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0;
+}
+#skServiceOverlayV1 .skPay2AllServiceTile{
+  box-sizing:border-box;min-width:0;min-height:105px;padding:12px;
+  border-radius:14px;background:linear-gradient(135deg,#eff6ff,#ecfccb);
+  color:#17324d;border:1px solid #cbd5e1;overflow-wrap:anywhere;
+}
+#skServiceOverlayV1 .skPay2AllServiceTile strong,
+#skServiceOverlayV1 .skPay2AllServiceTile span{display:block}
+#skServiceOverlayV1 .skPay2AllServiceTile strong{margin:5px 0;font-size:14px}
+#skServiceOverlayV1 .skPay2AllServiceTile span{font-size:12px;line-height:1.4}
+#skServiceOverlayV1 .skPay2AllWalletPanel{
+  padding:14px;border-radius:15px;background:#e0f2fe;color:#12324a;
+}
+#skServiceOverlayV1 .skPay2AllAction{
+  display:inline-block;margin:5px;padding:10px 13px;border:0;border-radius:10px;
+  background:#2563eb;color:#fff;font-weight:800;text-decoration:none;cursor:pointer;
+}
+#skServiceOverlayV1 .skPay2AllNotice{font-size:12px;line-height:1.5;color:#475569}
+@media(max-width:480px){
+  #skServiceOverlayV1 .skPay2AllServiceGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  #skServiceOverlayV1 .skPay2AllServiceTile{padding:9px;min-height:110px}
+  #skServiceOverlayV1 .skPay2AllServiceTile strong{font-size:12px}
+}
+</style>
+
 </head><body><h1>SASIKUMAR AI</h1><p>Your creative design starts here.</p><button onclick="document.querySelector('p').textContent='Preview is working!'">Test Design</button>
 
 
@@ -2591,6 +2659,24 @@ img[src*="sasikumar-ai-logo"] {
 
 
 
+
+
+<script id="SK_PAY2ALL_CARD_LAUNCHER_V1">
+(function(){
+  function attach(){
+    const card=document.getElementById("sasikumarPay2AllWallet");
+    if(!card || card.dataset.skPay2AllLauncher==="1")return;
+    card.dataset.skPay2AllLauncher="1";
+    card.addEventListener("click",function(e){
+      if(e.target.closest("button,a,input,select,textarea"))return;
+      if(typeof window.skOpenPay2AllV1==="function")window.skOpenPay2AllV1();
+    });
+  }
+  if(document.readyState==="loading")
+    document.addEventListener("DOMContentLoaded",attach,{once:true});
+  else attach();
+})();
+</script>
 
 </body></html>`;
   const code = document.getElementById('skDesignCode');
@@ -6496,7 +6582,11 @@ aria-label="Open SASIKUMAR AI 3D Advertisement Hub">
 </section>
 
 <section id="sasikumarPay2AllWallet" style="margin:20px auto;max-width:720px;padding:20px;border-radius:22px;background:linear-gradient(135deg,#101827,#182b46);color:#fff;box-shadow:0 10px 30px rgba(0,0,0,.18);">
-  <div style="font-size:22px;font-weight:800;">💰 SASIKUMAR AI — Pay2All Wallet</div>
+  <div class="skPay2AllCardHeading">
+    <img src="/assets/sasikumar-ai-logo-60.png" alt="SASIKUMAR AI Logo">
+    <div>💳 SASIKUMAR AI<br>Pay2All Services</div>
+  </div>
+  <div class="skPay2AllCardOpen">Tap to open all services ↗</div>
   <div style="margin-top:10px;font-size:16px;">Wallet Balance: <b id="skWalletBalance">Checking...</b></div>
   <div id="skWalletStatus" style="margin-top:6px;font-size:14px;">Checking Pay2All connection...</div>
   <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;">
@@ -7159,7 +7249,6 @@ section:not(.skMainFeatureCard):not(#skDesignMakerGlobal):not(#skGlobalSearchTop
     '#newQuickServices',
     '#allJobs',
     '#banking-products',
-    '#sasikumarPay2AllWallet',
     '#upi-bottom-dashboard',
     '#sk3DAdButton',
   ];
@@ -9246,7 +9335,51 @@ window.addEventListener("afterprint",function(){
     };
   });
 
-  window.addEventListener("keydown",function(e){
+
+  window.skOpenPay2AllV1=function(){
+    show("pay2all","💳 PAY2ALL SERVICES");
+    content.innerHTML=`
+      <div class="skPay2AllServiceIntro">
+        <img src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI Logo">
+        <h2>SASIKUMAR AI — Pay2All Service Centre</h2>
+        <p>Recharge, payments, banking and business services.</p>
+      </div>
+      <div class="skPay2AllServiceGrid">
+        <div class="skPay2AllServiceTile">📱<strong>Mobile Recharge</strong><span>Prepaid and supported recharge services.</span></div>
+        <div class="skPay2AllServiceTile">📺<strong>DTH Recharge</strong><span>Supported DTH operator recharge.</span></div>
+        <div class="skPay2AllServiceTile">💡<strong>Bill Payments</strong><span>Electricity, water, gas and supported utility bills.</span></div>
+        <div class="skPay2AllServiceTile">🏦<strong>Banking Services</strong><span>Available services depend on account and provider activation.</span></div>
+        <div class="skPay2AllServiceTile">💳<strong>AEPS</strong><span>Subject to approved retailer access and provider support.</span></div>
+        <div class="skPay2AllServiceTile">💸<strong>Money Transfer</strong><span>Subject to account verification and service activation.</span></div>
+        <div class="skPay2AllServiceTile">🪪<strong>PAN Services</strong><span>Availability depends on authorised service access.</span></div>
+        <div class="skPay2AllServiceTile">✈️<strong>Travel Booking</strong><span>Supported travel services, where enabled.</span></div>
+        <div class="skPay2AllServiceTile">👛<strong>Wallet</strong><span>Current wallet balance and connection status.</span></div>
+        <div class="skPay2AllServiceTile">📊<strong>Transactions & Reports</strong><span>Use the provider dashboard for available transaction records and reports.</span></div>
+        <div class="skPay2AllServiceTile">🧑‍💼<strong>Retailer / Distributor</strong><span>Access depends on your Pay2All account permissions.</span></div>
+        <div class="skPay2AllServiceTile">🧾<strong>Other Services</strong><span>Only services enabled for your account will be available.</span></div>
+      </div>
+      <div class="skPay2AllWalletPanel">
+        <h3>👛 Pay2All Wallet Status</h3>
+        <p>Balance: <strong id="skPay2AllOverlayBalance">Checking...</strong></p>
+        <p id="skPay2AllOverlayStatus">Checking wallet connection...</p>
+        <button type="button" class="skPay2AllAction" onclick="skRefreshPay2AllWallet();setTimeout(window.skPay2AllSyncOverlayBalance,500)">🔄 Refresh Balance</button>
+        <a class="skPay2AllAction" href="https://pay2all.in/" target="_blank" rel="noopener">🌐 Open Official Pay2All</a>
+      </div>
+      <p class="skPay2AllNotice">Service listing only: actual transactions require an authorised Pay2All account and the relevant active API/service access. This page does not itself process payments.</p>
+    `;
+    window.skPay2AllSyncOverlayBalance();
+  };
+
+  window.skPay2AllSyncOverlayBalance=function(){
+    const balance=document.getElementById("skWalletBalance");
+    const status=document.getElementById("skWalletStatus");
+    const out=document.getElementById("skPay2AllOverlayBalance");
+    const state=document.getElementById("skPay2AllOverlayStatus");
+    if(out)out.textContent=balance?balance.textContent:"Unavailable";
+    if(state)state.textContent=status?status.textContent:"Wallet status unavailable";
+  };
+
+window.addEventListener("keydown",function(e){
     if(e.key==="Escape" && overlay.classList.contains("sk-service-visible"))
       window.skServiceCloseV1();
   });
