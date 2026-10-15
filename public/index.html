@@ -10,6 +10,43 @@
 <meta name="author" content="G Sasikumar">
 
 
+<style id="SK_PAY2ALL_HOME_CARD_VISIBLE_V1">
+html body #sasikumarPay2AllWallet {
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  height:auto!important;
+  max-height:none!important;
+  overflow:visible!important;
+  position:relative;
+  z-index:1;
+  box-sizing:border-box;
+  width:calc(100% - 24px);
+  max-width:720px;
+  margin:20px auto!important;
+  padding:20px;
+  cursor:pointer;
+}
+html body #sasikumarPay2AllWallet .skPay2AllCardHeading {
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+html body #sasikumarPay2AllWallet .skPay2AllCardHeading img {
+  width:48px;
+  height:48px;
+  object-fit:contain;
+}
+html body #sasikumarPay2AllWallet .skPay2AllCardOpen {
+  display:block;
+  margin-top:12px;
+  padding:10px;
+  border-radius:10px;
+  background:rgba(255,255,255,.12);
+  text-align:center;
+  font-weight:700;
+}
+</style>
 <style>
 *{box-sizing:border-box}
 
@@ -4039,42 +4076,12 @@ function printAppraisalReport(btn){
     "<title>SASIKUMAR AI - Appraisal Report</title>" +
     "<style>body{font-family:Arial,sans-serif;margin:20px;color:#111;background:#fff}.report-box{max-width:850px;margin:auto}</style>" +
 "
-<style id="SK_PAY2ALL_HOME_CARD_VISIBLE_V1">
-html body #sasikumarPay2AllWallet {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  height: auto !important;
-  max-height: none !important;
-  overflow: visible !important;
-  position: relative;
-  z-index: 1;
-  box-sizing: border-box;
-  width: calc(100% - 24px);
-  max-width: 720px;
-  margin: 20px auto !important;
-  cursor: pointer;
-}
-html body #sasikumarPay2AllWallet .skPay2AllCardHeading {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-html body #sasikumarPay2AllWallet .skPay2AllCardHeading img {
-  width: 48px;
-  height: 48px;
-  object-fit: contain;
-}
-html body #sasikumarPay2AllWallet .skPay2AllCardOpen {
-  display: block;
-  margin-top: 12px;
-  padding: 10px;
-  border-radius: 10px;
-  background: rgba(255,255,255,.12);
-  text-align: center;
-  font-weight: 700;
-}
-</style>
+
+
+
+
+
+
 
 </head><body>" + el.outerHTML + "</body></html>"
   );
