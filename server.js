@@ -1233,8 +1233,41 @@ Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada �
         }
       }
 
+      // Today's calendar date in India Standard Time.
+      const indiaDateParts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Kolkata",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      }).formatToParts(new Date());
+
+      const indiaDate = Object.fromEntries(
+        indiaDateParts.map(part => [part.type, part.value])
+      );
+
+      const todayIndia =
+        `${indiaDate.year}-${indiaDate.month}-${indiaDate.day}`;
+
+      // Keep only articles whose published date is today in India.
+      const todayItems = allItems.filter(item => {
+        const published = String(item.publishedAt || "").trim();
+        if (!published) return false;
+
+        const timestamp = Date.parse(published);
+        if (!Number.isFinite(timestamp)) return false;
+
+        const publishedDateIndia = new Intl.DateTimeFormat("en-CA", {
+          timeZone: "Asia/Kolkata",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit"
+        }).format(new Date(timestamp));
+
+        return publishedDateIndia === todayIndia;
+      });
+
       const seen = new Set();
-      const uniqueItems = allItems.filter(item => {
+      const uniqueItems = todayItems.filter(item => {
         const key = item.url.toLowerCase().replace(/\/$/, "");
         if (seen.has(key)) return false;
         seen.add(key);
@@ -1271,7 +1304,7 @@ Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada �
       }
       let breakingNewsText =
         "📰 SASIKUMAR AI — இந்தியா + தமிழ்நாடு Breaking News\n" +
-        "📅 கிடைத்த சமீபத்திய செய்திகள்\n\n";
+        "📅 இன்று — " + todayIndia + " (IST) செய்திகள்\n\n";
 
       if (selectedItems.length) {
         selectedItems.forEach((item, index) => {
@@ -1287,7 +1320,7 @@ Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada �
         });
       } else {
         breakingNewsText +=
-          "தற்போது செய்திகள் கிடைக்கவில்லை. சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.\n";
+          "இன்று (இந்திய நேரப்படி) வெளியான செய்திகள் தற்போது கிடைக்கவில்லை. பழைய செய்திகளை இன்றைய செய்திகளாகக் காட்டவில்லை. சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.\n";
       }
 
       breakingNewsText += "\n— SASIKUMAR AI";
