@@ -1182,47 +1182,91 @@ Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada �
   const option=match ? match[1] : null;
 
 
-  // SK_WHATSAPP_BREAKING_NEWS_OPTION10_V1
+  // SK_WHATSAPP_BREAKING_NEWS_OPTION10_V2
   if (option === "10") {
     try {
-      const newsResponse = await fetch(
-        "https://sasikumar-ai-9wdq.onrender.com/api/breaking-news?category=Tamil%20Nadu&language=ta",
-        { headers: { "Accept": "application/json" } }
-      );
-
-      if (!newsResponse.ok) {
-        throw new Error("Breaking news API HTTP " + newsResponse.status);
-      }
-
-      const newsData = await newsResponse.json();
-      const items = [
-        ...(Array.isArray(newsData.news) ? newsData.news : []),
-        ...(Array.isArray(newsData.videos) ? newsData.videos : [])
+      const categories = [
+        { name: "தமிழ்நாடு", value: "Tamil Nadu" },
+        { name: "இந்தியா", value: "India" }
       ];
 
+      const results = await Promise.allSettled(
+        categories.map(async category => {
+          const endpoint =
+            "https://sasikumar-ai-9wdq.onrender.com/api/breaking-news" +
+            "?category=" + encodeURIComponent(category.value) +
+            "&language=ta";
+
+          const response = await fetch(endpoint, {
+            headers: { "Accept": "application/json" },
+            signal: AbortSignal.timeout(20000)
+          });
+
+          if (!response.ok) {
+            throw new Error(category.value + " API HTTP " + response.status);
+          }
+
+          const data = await response.json();
+          const items = [
+            ...(Array.isArray(data.articles) ? data.articles : []),
+            ...(Array.isArray(data.news) ? data.news : [])
+          ];
+
+          return items.map(item => ({
+            title: String(item.title || "").trim(),
+            url: String(item.url || item.link || "").trim(),
+            source: String(item.source || item.source_name || "").trim(),
+            publishedAt: String(
+              item.publishedAt || item.published_date || item.pubDate || ""
+            ).trim(),
+            category: category.name
+          })).filter(item => item.title && item.url);
+        })
+      );
+
+      const allItems = [];
+      for (const result of results) {
+        if (result.status === "fulfilled") {
+          allItems.push(...result.value);
+        } else {
+          console.error("Menu 10 news source error:", result.reason?.message || result.reason);
+        }
+      }
+
       const seen = new Set();
-      const uniqueItems = items.filter(item => {
-        const key = item.url || item.link || item.title || "";
-        if (!key || seen.has(key)) return false;
+      const uniqueItems = allItems.filter(item => {
+        const key = item.url.toLowerCase().replace(/\/$/, "");
+        if (seen.has(key)) return false;
         seen.add(key);
         return true;
-      }).slice(0, 5);
+      });
 
-      let breakingNewsText = "📰 SASIKUMAR AI — தமிழ் Breaking News\n";
-      breakingNewsText += "📅 கிடைத்த சமீபத்திய செய்திகள்:\n\n";
+      uniqueItems.sort((a, b) => {
+        const dateA = Date.parse(a.publishedAt) || 0;
+        const dateB = Date.parse(b.publishedAt) || 0;
+        return dateB - dateA;
+      });
 
-      if (uniqueItems.length) {
-        uniqueItems.forEach((item, index) => {
-          breakingNewsText += `${index + 1}. ${item.title || "செய்தி"}\n`;
-          if (item.source) breakingNewsText += `📡 Source: ${item.source}\n`;
-          if (item.publishedAt) breakingNewsText += `🕒 ${item.publishedAt}\n`;
-          const url = item.url || item.link;
-          if (url) breakingNewsText += `🔗 ${url}\n`;
-          breakingNewsText += "\n";
+      const selectedItems = uniqueItems.slice(0, 10);
+      let breakingNewsText =
+        "📰 SASIKUMAR AI — இந்தியா + தமிழ்நாடு Breaking News\n" +
+        "📅 கிடைத்த சமீபத்திய செய்திகள்\n\n";
+
+      if (selectedItems.length) {
+        selectedItems.forEach((item, index) => {
+          breakingNewsText += `${index + 1}. ${item.title}\n`;
+          breakingNewsText += `📍 ${item.category}\n`;
+          if (item.source) {
+            breakingNewsText += `📡 Source: ${item.source}\n`;
+          }
+          if (item.publishedAt) {
+            breakingNewsText += `🕒 ${item.publishedAt}\n`;
+          }
+          breakingNewsText += `🔗 ${item.url}\n\n`;
         });
       } else {
         breakingNewsText +=
-          "தற்போது பட்டியலிடக்கூடிய செய்திகள் கிடைக்கவில்லை. சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.\n";
+          "தற்போது செய்திகள் கிடைக்கவில்லை. சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.\n";
       }
 
       breakingNewsText += "\n— SASIKUMAR AI";
@@ -1234,7 +1278,7 @@ Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada �
       console.error("WhatsApp Menu 10 breaking news error:", error);
       const errorText =
         "📰 SASIKUMAR AI — Breaking News\n" +
-        "தற்போது நேரடி செய்திகளைப் பெற முடியவில்லை. சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.";
+        "தற்போது செய்திகளைப் பெற முடியவில்லை. சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.";
       add(from, "assistant", errorText);
       await sendBrandedWAReply(from, pid, errorText);
       res.sendStatus(200);
