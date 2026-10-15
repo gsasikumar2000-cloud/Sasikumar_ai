@@ -1265,6 +1265,15 @@ style="position:absolute;top:8px;right:8px;padding:9px 13px;border:0;border-radi
   <section class="skMainFeatureCard" id="skVideoAdCard">
     <div class="skMainFeatureLogo">🎬</div>
     <h3>VIDEO AD</h3>
+    <iframe
+      id="skSunNewsLiveFrame"
+      src="https://www.youtube.com/embed/live_stream?channel=UCYlh4lH762HvHt6mmiecyWQ&autoplay=1&mute=1"
+      title="Sun News Tamil Live"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      allowfullscreen
+      loading="lazy"
+      style="display:none;width:100%;aspect-ratio:16/9;border:0;border-radius:16px;margin:8px 0;">
+    </iframe>
     <video id="skVideoAd" controls muted playsinline preload="metadata"
       style="display:none;width:100%;max-height:260px;border-radius:16px;margin:8px 0;"></video>
     <p id="skVideoAdStatus">Loading video...</p>
@@ -1441,6 +1450,24 @@ style="position:absolute;top:8px;right:8px;padding:9px 13px;border:0;border-radi
     const status=document.getElementById("skVideoAdStatus");
     const open=document.getElementById("skVideoAdOpen");
     if(!video)return;
+
+    const sunNews=document.getElementById("skSunNewsLiveFrame");
+    const status=document.getElementById("skVideoAdStatus");
+    const open=document.getElementById("skVideoAdOpen");
+
+    if(sunNews){
+      video.style.display="none";
+      sunNews.style.display="block";
+      status.textContent="🔴 SUN NEWS TAMIL LIVE";
+      open.style.display="inline-block";
+      open.textContent="▶️ Open Sun News";
+      open.onclick=()=>window.open(
+        "https://www.youtube.com/@sunnewstamil/live",
+        "_blank","noopener"
+      );
+      return;
+    }
+
     try{
       const r=await fetch("/api/video/library",{cache:"no-store"});
       if(!r.ok)throw new Error("Video library HTTP "+r.status);
