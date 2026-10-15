@@ -1451,11 +1451,26 @@ style="position:absolute;top:8px;right:8px;padding:9px 13px;border:0;border-radi
       const url=item.videoUrl || item.url || item.file ||
         (item.id ? "/api/video/file/"+encodeURIComponent(item.id) : "");
       if(!url)throw new Error("Video URL missing");
-      video.src=url;
-      video.style.display="block";
-      status.textContent="SASIKUMAR AI • Video Ad";
-      open.style.display="inline-block";
-      open.onclick=()=>window.skOpenLivePageWindowV1(url);
+      video.pause();
+      video.loop = true;
+      video.muted = true;
+      video.autoplay = true;
+      video.playsInline = true;
+      video.setAttribute("loop", "");
+      video.setAttribute("muted", "");
+      video.setAttribute("autoplay", "");
+      video.setAttribute("playsinline", "");
+      video.src = url;
+      video.style.display = "block";
+      status.textContent = "SASIKUMAR AI • Video Ad";
+      open.style.display = "inline-block";
+      open.onclick = () => window.skOpenLivePageWindowV1(url);
+
+      video.load();
+      video.play().catch(err => {
+        console.warn("Video autoplay blocked:", err);
+        status.textContent = "🎬 Tap Play to watch SASIKUMAR AI Video Ad";
+      });
     }catch(e){
       console.warn("Video Ad:",e);
       status.textContent="🎬 Video Ad library empty — add a video from HUB → Video Library";
