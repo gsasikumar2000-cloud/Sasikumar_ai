@@ -1266,6 +1266,90 @@ Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada �
         return publishedDateIndia === todayIndia;
       });
 
+      // SK_MENU10_GOOGLE_RSS_TODAY_FALLBACK_V1
+      // If the existing API has no articles from today, try Google News RSS
+      // directly. Keep only articles published today in India Standard Time.
+      if (todayItems.length === 0) {
+        const rssQueries = [
+          { q: "Tamil Nadu breaking news", name: "தமிழ்நாடு", lang: "ta-IN" },
+          { q: "India breaking news", name: "இந்தியா", lang: "en-IN" }
+        ];
+
+        for (const rssQuery of rssQueries) {
+          try {
+            const rssUrl =
+              "https://news.google.com/rss/search?q=" +
+              encodeURIComponent(rssQuery.q + " when:1d") +
+              "&hl=" + encodeURIComponent(rssQuery.lang) +
+              "&gl=IN&ceid=" + encodeURIComponent(
+                rssQuery.lang === "ta-IN" ? "IN:ta" : "IN:en"
+              );
+
+            const rssResponse = await fetch(rssUrl, {
+              headers: { "User-Agent": "SasikumarAI/1.0" },
+              signal: AbortSignal.timeout(12000)
+            });
+
+            if (!rssResponse.ok) {
+              throw new Error("Google News RSS HTTP " + rssResponse.status);
+            }
+
+            const xml = await rssResponse.text();
+            const rssItems = [...xml.matchAll(
+              /<item(?:\s[^>]*)?>([\s\S]*?)<\/item>/gi
+            )].map(match => {
+              const block = match[1];
+              const readTag = name => {
+                const tagMatch = block.match(new RegExp(
+                  "<" + name + "(?:\\s[^>]*)?>([\\s\\S]*?)</" + name + ">",
+                  "i"
+                ));
+                return tagMatch
+                  ? tagMatch[1]
+                      .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1")
+                      .replace(/&amp;/g, "&")
+                      .replace(/&quot;/g, '"')
+                      .replace(/&#39;|&apos;/g, "'")
+                      .replace(/&lt;/g, "<")
+                      .replace(/&gt;/g, ">")
+                      .trim()
+                  : "";
+              };
+
+              return {
+                title: readTag("title"),
+                url: readTag("link"),
+                source: readTag("source"),
+                publishedAt: readTag("pubDate"),
+                category: rssQuery.name
+              };
+            });
+
+            for (const item of rssItems) {
+              const timestamp = Date.parse(item.publishedAt);
+              if (!item.title || !/^https?:\/\//i.test(item.url) ||
+                  !Number.isFinite(timestamp)) continue;
+
+              const publishedDateIndia = new Intl.DateTimeFormat("en-CA", {
+                timeZone: "Asia/Kolkata",
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit"
+              }).format(new Date(timestamp));
+
+              if (publishedDateIndia === todayIndia) {
+                todayItems.push(item);
+              }
+            }
+          } catch (rssError) {
+            console.error(
+              "Menu 10 Google News RSS fallback error:",
+              rssError.message
+            );
+          }
+        }
+      }
+
       const seen = new Set();
       const uniqueItems = todayItems.filter(item => {
         const key = item.url.toLowerCase().replace(/\/$/, "");
