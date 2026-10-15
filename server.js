@@ -1428,29 +1428,32 @@ Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada �
   if (option === "20") {
     const newsVideoMenu = `📰 SASIKUMAR AI — தமிழ் செய்தி வீடியோக்கள்
 
-📺 தமிழ் செய்தி சேனல்கள்:
-🔴 Thanthi TV:
-https://www.youtube.com/results?search_query=Thanthi+TV+Tamil+News+Live
+📺 தமிழ் செய்தி சேனல்கள் — LIVE / VIDEOS
 
-🔴 Puthiya Thalaimurai:
-https://www.youtube.com/results?search_query=Puthiya+Thalaimurai+Tamil+News+Live
+🔴 Thanthi TV — Official Live
+https://www.youtube.com/@thanthitv/live
 
-🔴 Polimer News:
-https://www.youtube.com/results?search_query=Polimer+News+Tamil+Live
+🔴 Puthiya Thalaimurai — Official Website
+https://www.puthiyathalaimurai.com/
 
-🔴 News18 Tamil Nadu:
-https://www.youtube.com/results?search_query=News18+Tamil+Nadu+Live
+🔴 Polimer News — Live / Videos
+https://www.youtube.com/@polimernews/live
 
-🚨 Breaking News:
+🔴 News18 Tamil Nadu — Live / Videos
+https://www.youtube.com/news18tamilnadu/live
+
+🚨 Breaking News — Latest Videos
 https://www.youtube.com/results?search_query=Tamil+Breaking+News+Today
 
-💼 Business News:
+💼 Business News — Latest Videos
 https://www.youtube.com/results?search_query=Tamil+Business+News+Today
 
-🏏 Sports News:
+🏏 Sports News — Latest Videos
 https://www.youtube.com/results?search_query=Tamil+Sports+News+Today
 
-குறிப்பு: இவை YouTube தேடல் இணைப்புகள். கிடைக்கும் வீடியோக்கள் மற்றும் நேரலை நிலை YouTube-ல் சரிபார்க்கப்பட வேண்டும்.
+ℹ️ குறிப்பு:
+• Live இணைப்பில் ஒளிபரப்பு இல்லாவிட்டால், சேனலில் உள்ள மற்ற வீடியோக்களைப் பார்க்கலாம்.
+• Breaking, Business, Sports இணைப்புகள் YouTube தேடல் முடிவுகளைக் காட்டும்.
 
 — SASIKUMAR AI`;
 
