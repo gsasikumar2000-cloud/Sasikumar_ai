@@ -4075,7 +4075,133 @@ function printAppraisalReport(btn){
     "<meta name='viewport' content='width=device-width,initial-scale=1'>" +
     "<title>SASIKUMAR AI - Appraisal Report</title>" +
     "<style>body{font-family:Arial,sans-serif;margin:20px;color:#111;background:#fff}.report-box{max-width:850px;margin:auto}</style>" +
-    "</head><body>" + el.outerHTML + "</body></html>"
+    "</head><body>" + el.outerHTML + "
+<!-- SK_ALL_CONTENT_CARD_BUTTONS_V1 -->
+<style id="SK_ALL_CONTENT_CARD_BUTTONS_V1">
+/* Colorful buttons for existing content cards; preserve their handlers. */
+:root {
+  --sk-card-radius: 14px;
+}
+
+/* Shared button appearance */
+.skBtn,
+.skCreatorToolCard button,
+.skGoldMenuCardV1,
+.sk-service-zigzag > button,
+#skReplyCreatorCards button,
+#skLiveBookCardsRow button,
+#skYouTubeCreativeCards button {
+  border-radius: var(--sk-card-radius) !important;
+  font-weight: 700 !important;
+  transition: transform .18s ease, box-shadow .18s ease,
+              filter .18s ease !important;
+}
+
+/* Existing service buttons: different pastel colors */
+.sk-service-zigzag > button:nth-child(6n+1) {
+  background: linear-gradient(135deg,#dbeafe,#bfdbfe) !important;
+  border: 1px solid #60a5fa !important;
+  color: #1e3a8a !important;
+}
+.sk-service-zigzag > button:nth-child(6n+2) {
+  background: linear-gradient(135deg,#fce7f3,#fbcfe8) !important;
+  border: 1px solid #f472b6 !important;
+  color: #831843 !important;
+}
+.sk-service-zigzag > button:nth-child(6n+3) {
+  background: linear-gradient(135deg,#d1fae5,#a7f3d0) !important;
+  border: 1px solid #34d399 !important;
+  color: #064e3b !important;
+}
+.sk-service-zigzag > button:nth-child(6n+4) {
+  background: linear-gradient(135deg,#ede9fe,#ddd6fe) !important;
+  border: 1px solid #a78bfa !important;
+  color: #4c1d95 !important;
+}
+.sk-service-zigzag > button:nth-child(6n+5) {
+  background: linear-gradient(135deg,#fef3c7,#fde68a) !important;
+  border: 1px solid #f59e0b !important;
+  color: #78350f !important;
+}
+.sk-service-zigzag > button:nth-child(6n) {
+  background: linear-gradient(135deg,#ffedd5,#fed7aa) !important;
+  border: 1px solid #fb923c !important;
+  color: #7c2d12 !important;
+}
+
+/* Creator cards: distinct soft colors */
+#skReplyCreatorCards .skCreatorToolCard:nth-child(6n+1) {
+  background: linear-gradient(145deg,#eff6ff,#dbeafe) !important;
+}
+#skReplyCreatorCards .skCreatorToolCard:nth-child(6n+2) {
+  background: linear-gradient(145deg,#fdf2f8,#fce7f3) !important;
+}
+#skReplyCreatorCards .skCreatorToolCard:nth-child(6n+3) {
+  background: linear-gradient(145deg,#ecfdf5,#d1fae5) !important;
+}
+#skReplyCreatorCards .skCreatorToolCard:nth-child(6n+4) {
+  background: linear-gradient(145deg,#f5f3ff,#ede9fe) !important;
+}
+#skReplyCreatorCards .skCreatorToolCard:nth-child(6n+5) {
+  background: linear-gradient(145deg,#fffbeb,#fef3c7) !important;
+}
+#skReplyCreatorCards .skCreatorToolCard:nth-child(6n) {
+  background: linear-gradient(145deg,#fff7ed,#ffedd5) !important;
+}
+
+/* Gold tools: colorful, easy-to-read buttons */
+.skGoldMenuCardV1:nth-child(4n+1) {
+  background: linear-gradient(135deg,#fef3c7,#fde68a) !important;
+  color: #78350f !important;
+}
+.skGoldMenuCardV1:nth-child(4n+2) {
+  background: linear-gradient(135deg,#dbeafe,#bfdbfe) !important;
+  color: #1e3a8a !important;
+}
+.skGoldMenuCardV1:nth-child(4n+3) {
+  background: linear-gradient(135deg,#d1fae5,#a7f3d0) !important;
+  color: #064e3b !important;
+}
+.skGoldMenuCardV1:nth-child(4n) {
+  background: linear-gradient(135deg,#fce7f3,#fbcfe8) !important;
+  color: #831843 !important;
+}
+
+/* Clear visual feedback without changing click behavior */
+.skBtn:hover,
+.skCreatorToolCard button:hover,
+.skGoldMenuCardV1:hover,
+.sk-service-zigzag > button:hover,
+#skReplyCreatorCards button:hover,
+#skLiveBookCardsRow button:hover,
+#skYouTubeCreativeCards button:hover {
+  filter: brightness(1.03) saturate(1.08) !important;
+  box-shadow: 0 5px 14px rgba(59,130,246,.18) !important;
+}
+.skBtn:active,
+.skCreatorToolCard button:active,
+.skGoldMenuCardV1:active,
+.sk-service-zigzag > button:active,
+#skReplyCreatorCards button:active,
+#skLiveBookCardsRow button:active,
+#skYouTubeCreativeCards button:active {
+  transform: scale(.98) !important;
+}
+
+/* Mobile-friendly tap targets */
+@media (max-width: 600px) {
+  .skBtn,
+  .skGoldMenuCardV1,
+  .sk-service-zigzag > button {
+    min-height: 44px;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+}
+</style>
+<!-- END SK_ALL_CONTENT_CARD_BUTTONS_V1 -->
+
+</body></html>"
   );
 
   w.document.close();
