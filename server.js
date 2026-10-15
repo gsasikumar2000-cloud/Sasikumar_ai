@@ -1247,7 +1247,28 @@ Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada �
         return dateB - dateA;
       });
 
-      const selectedItems = uniqueItems.slice(0, 10);
+      // Keep both Tamil Nadu and India represented in the final list.
+      const tamilItems = uniqueItems.filter(
+        item => item.category === "தமிழ்நாடு"
+      );
+      const indiaItems = uniqueItems.filter(
+        item => item.category === "இந்தியா"
+      );
+
+      const selectedItems = [];
+      let ti = 0;
+      let ii = 0;
+
+      // Alternate categories so one feed cannot crowd out the other.
+      while (selectedItems.length < 10 &&
+             (ti < tamilItems.length || ii < indiaItems.length)) {
+        if (ti < tamilItems.length && selectedItems.length < 10) {
+          selectedItems.push(tamilItems[ti++]);
+        }
+        if (ii < indiaItems.length && selectedItems.length < 10) {
+          selectedItems.push(indiaItems[ii++]);
+        }
+      }
       let breakingNewsText =
         "📰 SASIKUMAR AI — இந்தியா + தமிழ்நாடு Breaking News\n" +
         "📅 கிடைத்த சமீபத்திய செய்திகள்\n\n";
