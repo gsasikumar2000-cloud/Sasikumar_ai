@@ -1086,6 +1086,7 @@ Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada �
 1️⃣7️⃣ 📞 Contact / Communication
 1️⃣8️⃣ ⭐ Feedback
 1️⃣9️⃣ ℹ️ About SASIKUMAR AI
+20️⃣ 📰 Tamil News Channel Videos
 
 🗣️ Any Language — Ask Freely
 
@@ -1116,6 +1117,7 @@ Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada �
    "16":"Help the user plan a video and guide them to https://sasikumar-ai-9wdq.onrender.com/daily-video.html. Do not claim a video was generated unless it actually was.",
    "17":"Help the user find SASIKUMAR AI contact and communication options. Website: https://sasikumar-ai-9wdq.onrender.com",
    "18":"Ask the user for their feedback or suggestions about SASIKUMAR AI and help them phrase it clearly.",
+   "20":"Provide Tamil news channel video links and help the user find breaking news, business news and sports news videos. Share verified sources and dates when available. Only claim a video was sent if an actual accessible video was sent.",
    "19":"Explain SASIKUMAR AI and its available services. Website: https://sasikumar-ai-9wdq.onrender.com"
   };
 
@@ -1176,7 +1178,7 @@ Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada �
     return;
   }
 
-  const match=normalized.match(/^(?:option[\s_-]*)?(19|1[0-8]|[1-9])$/);
+  const match=normalized.match(/^(?:option[\s_-]*)?(20|19|1[0-8]|[1-9])$/);
   const option=match ? match[1] : null;
   // Direct live Gold Rate response for WhatsApp
   if (
