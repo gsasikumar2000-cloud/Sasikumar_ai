@@ -1270,7 +1270,23 @@ section:not(.skMainFeatureCard):not(#skDesignMakerGlobal):not(#skGlobalSearchTop
     news.className = "skLiveBookExtra";
     news.id = "skLiveNewsBookCard";
     news.innerHTML =
-      '<div class="skNewsBrandLogo"><img src="/assets/sasikumar-ai-logo-60.png" alt="SASIKUMAR AI Logo" loading="lazy"></div>' +
+      '<div class="skNewsBrandLogo"><img src="/assets/sasikumar-ai-logo-60.png" alt="SASIKUMAR AI Logo" loading="lazy"></div>
+
+<!-- LOGIN MOVED TOP - BELOW WELCOME -->
+<div id="loginTopWelcome" style="display:flex;justify-content:center;gap:10px;padding:12px;background:linear-gradient(135deg,#0f172a,#1e3a8a);flex-wrap:wrap;position:sticky;top:0;z-index:99;">
+  <span style="color:#fff;font-weight:bold;padding:6px 10px;">🙏 Welcome SASIKUMAR AI</span>
+  <button id="topLoginBtn" onclick="document.getElementById('loginBox')?.scrollIntoView({behavior:'smooth'}) || (document.querySelector('[id*=login]')?.scrollIntoView({behavior:'smooth'})) || alert('Login: WhatsApp 95850 80842')" style="background:#fbbf24;color:#000;padding:8px 18px;border-radius:25px;border:none;font-weight:bold;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.2);">🔐 LOGIN</button>
+  <button id="topSignupBtn" onclick="document.getElementById('signupBox')?.scrollIntoView({behavior:'smooth'}) || alert('Sign Up: 98944 40400')" style="background:#22c55e;color:#fff;padding:8px 18px;border-radius:25px;border:none;font-weight:bold;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.2);">🆕 SIGN UP</button>
+  <span id="skTopDateTime" style="color:#e2e8f0;font-size:11px;padding:6px;"></span>
+</div>
+<script>
+function updateTopTime(){
+  var el=document.getElementById('skTopDateTime');
+  if(el){ el.textContent=new Date().toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}); }
+}
+setInterval(updateTopTime,60000); updateTopTime();
+</script>
+' +
       '<h2>📰 LIVE NEWS</h2>' +
       '<div class="skLiveBookText" id="skLiveNewsBookText">செய்திகளைப் பெறுகிறது...</div>' +
       '<a class="skLiveBookLink" target="_blank" rel="noopener noreferrer" href="/live-news.html">📰 புதிய window-ல் செய்திகள் பார்க்க ↗</a>';
