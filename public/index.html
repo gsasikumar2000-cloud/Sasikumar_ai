@@ -289,7 +289,123 @@ function loadPPT(){let s=pptSlides[pptIdx];document.getElementById('pptTitle').v
 function addPPTSlide(){savePPT();pptSlides.push({title:'New Slide '+(pptSlides.length+1),content:''});pptIdx=pptSlides.length-1;loadPPT();}
 function nextPPT(){savePPT();if(pptIdx<pptSlides.length-1){pptIdx++;loadPPT();}}
 function prevPPT(){savePPT();if(pptIdx>0){pptIdx--;loadPPT();}}
-function presentPPT(){savePPT();let w=window.open('','_blank');let h=pptSlides.map((s,i)=>'<div style="height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:40px;border-bottom:5px solid #0f172a"><h1>'+s.title+'</h1><p>'+s.content+'</p><small>'+(i+1)+'</small></div>').join('');w.document.write('<body style="margin:0;font-family:Poppins">'+h+'</body>');}
+function presentPPT(){savePPT();let w=window.open('','_blank');let h=pptSlides.map((s,i)=>'<div style="height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:40px;border-bottom:5px solid #0f172a"><h1>'+s.title+'</h1><p>'+s.content+'</p><small>'+(i+1)+'</small></div>').join('');w.document.write('<body style="margin:0;font-family:Poppins">'+h+'
+<!-- SASIKUMAR AI CODE MAKER - CSS JAVASCRIPT -->
+<div id="skCodeMaker" style="margin:14px;padding:14px;background:#0f172a;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,0.2)">
+  <div style="text-align:center">
+    <div style="font-size:16px;font-weight:800;color:#fbbf24">💻 SASIKUMAR AI CODE MAKER</div>
+    <div style="font-size:10px;color:#94a3b8">HTML | CSS | JavaScript - Live Preview + Run</div>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:12px 0">
+    <button onclick="showCodeTab('html')" id="cbtn-html" style="padding:8px 14px;background:#fbbf24;color:#000;border:none;border-radius:20px;font-size:11px;font-weight:bold">🧡 HTML</button>
+    <button onclick="showCodeTab('css')" id="cbtn-css" style="padding:8px 14px;background:#1e293b;color:#fff;border:1px solid #334155;border-radius:20px;font-size:11px">💙 CSS</button>
+    <button onclick="showCodeTab('js')" id="cbtn-js" style="padding:8px 14px;background:#1e293b;color:#fff;border:1px solid #334155;border-radius:20px;font-size:11px">💛 JavaScript</button>
+    <button onclick="runCode()" style="padding:8px 16px;background:#22c55e;color:#fff;border:none;border-radius:20px;font-size:11px;font-weight:bold">▶️ Run Preview</button>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div>
+      <div id="code-html" class="codeTab">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <b style="color:#fbbf24;font-size:11px">HTML</b>
+          <button onclick="copyCode('htmlCode')" style="padding:3px 8px;background:#1e293b;color:#fff;border-radius:6px;font-size:10px">📋 Copy</button>
+        </div>
+        <textarea id="htmlCode" style="width:100%;height:140px;padding:8px;background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:8px;font-family:monospace;font-size:12px"><div class="box">
+  <h1>Hello SASIKUMAR AI!</h1>
+  <p>CSS + JS Maker</p>
+  <button onclick="sayHi()">Click Me</button>
+</div></textarea>
+      </div>
+
+      <div id="code-css" class="codeTab" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <b style="color:#60a5fa;font-size:11px">CSS</b>
+          <div style="display:flex;gap:4px">
+            <input type="color" id="cssColorPick" value="#fbbf24" style="width:28px;height:20px" onchange="let c=document.getElementById('cssCode');c.value+='\n/* color: '+this.value+' */\n.box{background:'+this.value+'}'">
+            <button onclick="copyCode('cssCode')" style="padding:3px 8px;background:#1e293b;color:#fff;border-radius:6px;font-size:10px">📋 Copy</button>
+          </div>
+        </div>
+        <textarea id="cssCode" style="width:100%;height:140px;padding:8px;background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:8px;font-family:monospace;font-size:12px">.box{
+  background:#0f172a;
+  color:#fbbf24;
+  padding:20px;
+  border-radius:12px;
+  text-align:center;
+  border:2px solid #fbbf24;
+  font-family:Poppins;
+}
+button{
+  background:#fbbf24;
+  color:#000;
+  padding:8px 16px;
+  border:none;
+  border-radius:20px;
+  font-weight:bold;
+  cursor:pointer;
+}</textarea>
+      </div>
+
+      <div id="code-js" class="codeTab" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <b style="color:#facc15;font-size:11px">JavaScript</b>
+          <button onclick="copyCode('jsCode')" style="padding:3px 8px;background:#1e293b;color:#fff;border-radius:6px;font-size:10px">📋 Copy</button>
+        </div>
+        <textarea id="jsCode" style="width:100%;height:140px;padding:8px;background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:8px;font-family:monospace;font-size:12px">function sayHi(){
+  alert('Vanakkam Anna! SASIKUMAR AI Code Maker Work Aaguthu! 🔥');
+  document.querySelector('.box').style.transform='scale(1.05)';
+  setTimeout(()=>document.querySelector('.box').style.transform='scale(1)',200);
+}
+console.log('SASIKUMAR AI Ready!');</textarea>
+      </div>
+
+      <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+        <button onclick="saveCode()" style="padding:6px 12px;background:#fbbf24;color:#000;border:none;border-radius:6px;font-size:11px;font-weight:bold">💾 Save</button>
+        <button onclick="clearCode()" style="padding:6px 12px;background:#ef4444;color:#fff;border:none;border-radius:6px;font-size:11px">🧹 Clear</button>
+        <button onclick="downloadCode()" style="padding:6px 12px;background:#fff;color:#000;border:none;border-radius:6px;font-size:11px">⬇️ Download HTML</button>
+        <button onclick="beautifyCode()" style="padding:6px 12px;background:#1e293b;color:#fff;border:1px solid #334155;border-radius:6px;font-size:11px">✨ Format</button>
+      </div>
+    </div>
+
+    <div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <b style="color:#22c55e;font-size:11px">👁️ LIVE PREVIEW</b>
+        <button onclick="runCode()" style="padding:3px 8px;background:#22c55e;color:#fff;border-radius:6px;font-size:10px">🔄 Refresh</button>
+      </div>
+      <iframe id="codePreview" style="width:100%;height:180px;background:#fff;border-radius:8px;border:1px solid #334155"></iframe>
+      <div style="margin-top:6px;background:#000;color:#22c55e;padding:6px;border-radius:6px;font-family:monospace;font-size:10px;min-height:40px" id="codeConsole">Console ready...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showCodeTab(name){
+  document.querySelectorAll('.codeTab').forEach(p=>p.style.display='none');
+  document.getElementById('code-'+name).style.display='block';
+  document.querySelectorAll('[id^=cbtn-]').forEach(b=>{b.style.background='#1e293b';b.style.color='#fff';});
+  document.getElementById('cbtn-'+name).style.background='#fbbf24';document.getElementById('cbtn-'+name).style.color='#000';
+}
+function runCode(){
+  let html=document.getElementById('htmlCode').value;
+  let css='<style>'+document.getElementById('cssCode').value+'</style>';
+  let js=document.getElementById('jsCode').value;
+  let code=html+css+'<script>'+js+'<\/script>';
+  let iframe=document.getElementById('codePreview');
+  iframe.srcdoc=code;
+  document.getElementById('codeConsole').innerHTML='> Running... ✅<br>> '+new Date().toLocaleTimeString();
+  localStorage.setItem('skCode_html',html);
+  localStorage.setItem('skCode_css',document.getElementById('cssCode').value);
+  localStorage.setItem('skCode_js',js);
+}
+function copyCode(id){navigator.clipboard.writeText(document.getElementById(id).value);alert('Copied!');}
+function saveCode(){localStorage.setItem('skCode_html',document.getElementById('htmlCode').value);localStorage.setItem('skCode_css',document.getElementById('cssCode').value);localStorage.setItem('skCode_js',document.getElementById('jsCode').value);alert('Saved! 💾');}
+function clearCode(){if(confirm('Clear all?')){document.getElementById('htmlCode').value='';document.getElementById('cssCode').value='';document.getElementById('jsCode').value='';runCode();}}
+function downloadCode(){let html=document.getElementById('htmlCode').value;let css=document.getElementById('cssCode').value;let js=document.getElementById('jsCode').value;let full='<!DOCTYPE html><html><head><style>'+css+'</style></head><body>'+html+'<script>'+js+'<\/script></body></html>';let a=document.createElement('a');a.href='data:[STRIPPED]-8,'+encodeURIComponent(full);a.download='sasikumar-code.html';a.click();}
+function beautifyCode(){['htmlCode','cssCode','jsCode'].forEach(id=>{let el=document.getElementById(id);el.value=el.value.trim();});runCode();}
+window.addEventListener('load',()=>{let h=localStorage.getItem('skCode_html');let c=localStorage.getItem('skCode_css');let j=localStorage.getItem('skCode_js');if(h)document.getElementById('htmlCode').value=h;if(c)document.getElementById('cssCode').value=c;if(j)document.getElementById('jsCode').value=j;runCode();});
+</script>
+
+</body>');}
 loadPPT();
 let saved=localStorage.getItem('skNotepad');if(saved){document.getElementById('notepadArea').value=saved;updateNotepadCount();}
 </script>
