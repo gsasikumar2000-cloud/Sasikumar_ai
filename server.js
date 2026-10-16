@@ -19,109 +19,149 @@ const WA_TOKEN = process.env.WHATSAPP_TOKEN || '';
 const WA_PHONE_ID = process.env.WHATSAPP_PHONE_ID || '';
 const WA_VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || 'sasikumar_ai_verify_2026';
 
-function detectLang(q){
-  try{
-    if(/[\u0B80-\u0BFF]/.test(q)) return 'ta';
-    if(/[\u0900-\u097F]/.test(q)) return 'hi';
-    const lower=q.toLowerCase();
-    if(lower.includes('vanakkam')||lower.includes('thangam')||lower.includes('velai')) return 'ta';
-    if(lower.includes('namaste')) return 'hi';
-    return 'en';
-  }catch(e){return 'en';}
-}
+const WELCOME_MENU = `🤖 Welcome 🙏
+SASIKUMAR AI
 
-function getGeneralReply(question, lang){
-  const q = question.toLowerCase();
-  const time = new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'});
-  const timeTa = new Date().toLocaleString('ta-IN',{timeZone:'Asia/Kolkata'});
-  const isTa = lang==='ta';
-  if(q.includes('tamil history')||q.includes('chola')||q.includes('varalaru')){
-    return isTa ? '📜 தமிழ் வரலாறு\n\n🏛️ சோழ வம்சம் 850-1279 - ராஜ ராஜ சோழன் தஞ்சை பெரிய கோவில்!\n• திருக்குறள் 1330 குறள்\n• தமிழ் 2000+ வருட பழமை!' : '📜 TAMIL HISTORY - Chola 850-1279 Raja Raja Big Temple! Thirukkural 1330 couplets!';
-  }
-  if(q.includes('gold')||q.includes('thangam')){
-    const p=14748+Math.floor(Math.random()*80)-40;
-    return isTa ? `💰 தங்க விலை - ${timeTa}\n24K: Rs ${p}/கிராம்` : `💰 GOLD LIVE - ${time}\n24K: Rs ${p}/g`;
-  }
-  if(q.includes('cricket')||q.includes('ipl')||q.includes('csk')) return isTa ? '🏏 IPL 2026 CSK vs MI இன்று! CSK முதலிடம்!' : '🏏 IPL 2026 CSK vs MI today! CSK top!';
-  if(q.includes('job')||q.includes('velai')) return isTa ? '💼 வேலை 2026 - AI Engineer 12L+, TNPSC!' : '💼 JOBS 2026 - AI Engineer 12L+, TNPSC!';
-  if(q.includes('who are you')||q.includes('who r u')) return isTa ? '🤖 நான் சசிகுமார் AI! WhatsApp API + பன்மொழி AI!' : '🤖 I am Sasikumar AI! WhatsApp API + Multi-Language!';
-  if(q.length<20 && (q.includes('hi')||q.includes('hello')||q.includes('vanakkam'))) return isTa ? '🙏 வணக்கம்! WhatsApp API Ready! என்ன வேணும்?' : '🙏 Vanakkam! Hello! WhatsApp API Ready! Ask anything!';
-  if(isTa) return `🤖 வணக்கம்! "${question}"\n💡 தமிழ் வரலாறு, தங்க விலை, வேலை, கிரிக்கெட் - 【entity-WhatsApp¦canonical_name=WhatsApp】 la kooda!`;
-  return `🌍 GENERAL AI - ${time}\nYou: "${question}"\nAll Knowledge + 【entity-WhatsApp¦canonical_name=WhatsApp】 API Ready!`;
-}
+🖼️ Logo: SASIKUMAR AI
+🌐 Website: https://sasikumar-ai-9wdq.onrender.com
 
-app.get('/api/status',(req,res)=>{
-  res.json({status:'MULTI-LANG + 【entity-WHATSAPP¦canonical_name=WhatsApp】 API LIVE OK',version:'6.0 【entity-WhatsApp¦canonical_name=WhatsApp】',whatsapp_api: WA_TOKEN ? 'Configured ✅' : 'Demo mode - Set WHATSAPP_TOKEN',place:'Thanjavur',time:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})});
-});
+🎁 Visit Bonus • ▶️ Continue
+Website: https://sasikumar-ai-9wdq.onrender.com
 
-app.get('/api/gold',(req,res)=>{
-  const p=14748+Math.floor(Math.random()*80)-40;
-  res.json({'24k_per_g':p,'22k_per_g':Math.floor(p*0.916),trend:p>14748?'up':'down',last_updated:new Date().toISOString(),live:true});
-});
+🌍 MULTI-LANGUAGE AI
+Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada • Bengali • Marathi • Gujarati • Punjabi • Urdu • Odia • Assamese • More Languages
 
-app.get('/api/services',(req,res)=>{
-  res.json({services:[{id:1,name:'Gold Price',ta:'தங்க விலை',icon:'💰'},{id:2,name:'AI Reply',ta:'AI பதில்',icon:'🤖'},{id:3,name:'Education',ta:'கல்வி',icon:'📚'},{id:4,name:'Jobs',ta:'வேலை',icon:'💼'},{id:5,name:'Health',ta:'உடல்நலம்',icon:'🏥'},{id:6,name:'Sports',ta:'விளையாட்டு',icon:'⚽'},{id:7,name:'Maker',ta:'உருவாக்கு',icon:'🎨'},{id:8,name:'Code Maker',ta:'கோட்',icon:'💻'},{id:9,name:'Science',ta:'அறிவியல்',icon:'🔬'},{id:10,name:'Math',ta:'கணிதம்',icon:'🔢'},{id:11,name:'History',ta:'வரலாறு',icon:'📜'},{id:12,name:'WhatsApp API',ta:'வாட்ஸ்அப் API',icon:'📱'},{id:13,name:'General AI',ta:'பொது AI',icon:'🧠'},{id:14,name:'Multi Language',ta:'பன்மொழி',icon:'🗣️'},{id:15,name:'Status',ta:'நிலை',icon:'📡'}]});
-});
+1️⃣ Gold Rate
+2️⃣ Gold Loan / EMI
+3️⃣ Banking
+4️⃣ Gold Expert
+5️⃣ Appraisal
+6️⃣ Education
+7️⃣ Jobs
+8️⃣ Business / Tech News
+9️⃣ General AI
+🔟 🚨 Breaking News
+1️⃣1️⃣ 💼 Business News
+1️⃣2️⃣ 🏏 Sports
+1️⃣3️⃣ 🔎 Web Search
+1️⃣4️⃣ 🎨 Poster / Creative
+1️⃣5️⃣ 📸 Image AI
+1️⃣6️⃣ 🎬 Video Maker
+1️⃣7️⃣ 📞 Contact / Communication
+1️⃣8️⃣ ⭐ Feedback
+1️⃣9️⃣ ℹ️ About SASIKUMAR AI
+2️⃣0️⃣ 📰 Tamil News Channel Videos
+
+🗣️ Any Language — Ask Freely
+
+ஒரு option number அனுப்புங்கள்.
+உதாரணம்: 1
+
+அல்லது எந்த மொழியிலும் உங்கள் கேள்வியை நேரடியாக அனுப்பலாம்.
+
+— SASIKUMAR AI`;
+
+const MENU_REPLIES = {
+  '1': () => { const p=14748+Math.floor(Math.random()*80)-40; return `1️⃣ Gold Rate - LIVE\n\n💰 Thanjavur Gold:\n24K: Rs ${p}/g\n22K: Rs ${Math.floor(p*0.916)}/g\nTrend: ${p>14748?'Up ⬆️':'Down ⬇️'}\nLive: /api/gold\n\nType 0 for Menu`; },
+  '2': () => `2️⃣ Gold Loan / EMI\nLoan 75% = Rs 1,01,250, Interest 12%, EMI Rs 8,500\nBanks: SBI, HDFC, Muthoot\nType 0 for Menu`,
+  '3': () => `3️⃣ Banking\nSavings 3.5%, Gold Loan Instant, Personal Loan 11%\nType 0 for Menu`,
+  '4': () => `4️⃣ Gold Expert\n24K Investment best, 22K Jewellery best, BIS 916 must!\nShops: Lalithaa, GRT\nType 0 for Menu`,
+  '5': () => `5️⃣ Appraisal\nPurity test, Weight, Value, Certificate\nCharge Rs 100-300\nType 0 for Menu`,
+  '6': () => `6️⃣ Education\nTop: AI & Data Science, B.Tech, MBBS, TNPSC UPSC\nType 0 for Menu`,
+  '7': () => `7️⃣ Jobs\nAI Engineer 12L+, Full Stack Remote 8-15L, TNPSC Govt\nType 0 for Menu`,
+  '8': () => `8️⃣ Business / Tech News\nAI boom, Gold up 5%, Sensex 75k+\nType 0 for Menu`,
+  '9': () => `9️⃣ General AI\nAsk Anything: Tamil history, Gold, Jobs, Science, Math, Coding, 20+ languages!\nType 0 for Menu`,
+  '10': () => `🔟 Breaking News\nGold Rs 14748/g LIVE, Thanjavur festival, 【entity-IPL¦canonical_name=IPL】 CSK Top\nType 0 for Menu`,
+  '11': () => `11️⃣ Business News\nGold market strong, RBI 6.5%, Startups funding up\nType 0 for Menu`,
+  '12': () => `12️⃣ Sports\nIPL CSK vs MI today! CSK Top! Football Euro\nType 0 for Menu`,
+  '13': () => `13️⃣ Web Search\nSearch: "【entity-ISRO¦canonical_name=ISRO】", "Thanjavur"\nType 0 for Menu`,
+  '14': () => `14️⃣ Poster / Creative\nFestival posters Pongal Diwali, Business posters\nSend "Poster Pongal"\nType 0 for Menu`,
+  '15': () => `15️⃣ Image AI\nGenerate: "Thanjavur temple", "Gold jewellery"\nType 0 for Menu`,
+  '16': () => `16️⃣ Video Maker\nFestival videos, Business promo\nSend "Video Pongal"\nType 0 for Menu`,
+  '17': () => `17️⃣ Contact\nWebsite: https://sasikumar-ai-9wdq.onrender.com\nWhatsApp: This number!\nThanjavur\nType 0 for Menu`,
+  '18': () => `18️⃣ Feedback\nRate 1-5 stars, Send idea\n"Feedback 5 star - Super AI!"\nType 0 for Menu`,
+  '19': () => `19️⃣ About SASIKUMAR AI\nFrom Thanjavur, Multi-Language 20+ langs, 20 Services, Version 7.0\nType 0 for Menu`,
+  '20': () => `20️⃣ Tamil News Videos\nThanjavur news, Sun News, 【entity-Thanthi TV¦canonical_name=Thanthi TV】\nSend "Tamil news"\nType 0 for Menu`,
+};
+
+function getMenuReply(num){const fn=MENU_REPLIES[num];return fn?fn():null;}
+function detectLang(q){try{if(/[\u0B80-\u0BFF]/.test(q))return 'ta';return 'en';}catch(e){return 'en';}}
+function getGeneralReply(q,lang){const time=new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'});if(q.toLowerCase().includes('gold')){const p=14748+Math.floor(Math.random()*80)-40;return `💰 GOLD LIVE - ${time}\n24K: Rs ${p}/g\nType 0 for Menu`;}return `🌍 General AI - ${time}\nYou: "${q}"\nType 0 for Menu or 1-20`; }
+
+app.get('/api/status',(req,res)=>{res.json({status:'WHATSAPP MENU 20 OPTIONS LIVE OK',version:'7.0 Menu',options:20,time:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})});});
+app.get('/api/whatsapp/menu',(req,res)=>{res.json({welcome:WELCOME_MENU,total:20});});
+app.get('/api/gold',(req,res)=>{const p=14748+Math.floor(Math.random()*80)-40;res.json({'24k_per_g':p,'22k_per_g':Math.floor(p*0.916),trend:p>14748?'up':'down',last_updated:new Date().toISOString()});});
+app.get('/api/services',(req,res)=>{res.json({services:[{id:1,name:'Gold Rate',ta:'தங்க விலை',icon:'💰'},{id:2,name:'Gold Loan',ta:'தங்க கடன்',icon:'🏦'},{id:3,name:'Banking',ta:'வங்கி',icon:'🏧'},{id:4,name:'Gold Expert',ta:'தங்க நிபுணர்',icon:'👨‍🏫'},{id:5,name:'Appraisal',ta:'மதிப்பீடு',icon:'🔍'},{id:6,name:'Education',ta:'கல்வி',icon:'📚'},{id:7,name:'Jobs',ta:'வேலை',icon:'💼'},{id:8,name:'Business Tech News',ta:'வணிக செய்தி',icon:'💼'},{id:9,name:'General AI',ta:'பொது AI',icon:'🧠'},{id:10,name:'Breaking News',ta:'முக்கிய செய்தி',icon:'🚨'},{id:11,name:'Business News',ta:'வணிக செய்தி',icon:'💼'},{id:12,name:'Sports',ta:'விளையாட்டு',icon:'🏏'},{id:13,name:'Web Search',ta:'இணைய தேடல்',icon:'🔎'},{id:14,name:'Poster Creative',ta:'போஸ்டர்',icon:'🎨'},{id:15,name:'Image AI',ta:'பட AI',icon:'📸'},{id:16,name:'Video Maker',ta:'வீடியோ',icon:'🎬'},{id:17,name:'Contact',ta:'தொடர்பு',icon:'📞'},{id:18,name:'Feedback',ta:'கருத்து',icon:'⭐'},{id:19,name:'About',ta:'பற்றி',icon:'ℹ️'},{id:20,name:'Tamil News Videos',ta:'தமிழ் செய்தி',icon:'📰'}]});});
 
 app.post('/api/ai-reply',(req,res)=>{
   try{
-    const {question,lang}=req.body;
-    if(!question||!question.trim()) return res.json({answer:'🙏 வணக்கம்! Hello! WhatsApp API Ready!',api:'/api/ai-reply'});
-    const detected=lang||detectLang(question);
-    const answer=getGeneralReply(question.trim(),detected);
-    res.json({answer,api:'/api/ai-reply - WhatsApp + Multi-Lang OK',lang:detected});
-  }catch(e){res.json({answer:'🌍 General AI + WhatsApp API Ready!',api:'/api/ai-reply fallback'});}
+    const q=(req.body.question||'').trim();
+    if(!q) return res.json({answer:WELCOME_MENU,api:'Welcome Menu'});
+    if(q==='0' || q.toLowerCase()==='menu' || ['hi','hello','vanakkam','start'].includes(q.toLowerCase())) return res.json({answer:WELCOME_MENU,api:'Welcome Menu'});
+    const direct=q.match(/^\s*(1[0-9]|20|[0-9])\s*$/);
+    let num=direct?direct[1]:q.replace(/[^0-9]/g,'');
+    if(num && parseInt(num)>=1 && parseInt(num)<=20 && q.length<=3){
+      const reply=getMenuReply(num);
+      if(reply) return res.json({answer:reply,api:`Option ${num}`,option:num});
+    }
+    // Check 11-20 explicitly
+    if(q.includes('11')) return res.json({answer:getMenuReply('11'),option:'11'});
+    if(q.includes('12')) return res.json({answer:getMenuReply('12'),option:'12'});
+    if(q.includes('13')) return res.json({answer:getMenuReply('13'),option:'13'});
+    if(q.includes('14')) return res.json({answer:getMenuReply('14'),option:'14'});
+    if(q.includes('15')) return res.json({answer:getMenuReply('15'),option:'15'});
+    if(q.includes('16')) return res.json({answer:getMenuReply('16'),option:'16'});
+    if(q.includes('17')) return res.json({answer:getMenuReply('17'),option:'17'});
+    if(q.includes('18')) return res.json({answer:getMenuReply('18'),option:'18'});
+    if(q.includes('19')) return res.json({answer:getMenuReply('19'),option:'19'});
+    if(q.includes('20')) return res.json({answer:getMenuReply('20'),option:'20'});
+    res.json({answer:getGeneralReply(q,detectLang(q)),api:'General'});
+  }catch(e){res.json({answer:WELCOME_MENU});}
 });
 
-// WHATSAPP API
-app.get('/api/whatsapp/webhook',(req,res)=>{
-  const mode=req.query['hub.mode'];const token=req.query['hub.verify_token'];const challenge=req.query['hub.challenge'];
-  if(mode==='subscribe' && token===WA_VERIFY_TOKEN){res.status(200).send(challenge);}else{res.sendStatus(403);}
-});
-
+app.get('/api/whatsapp/webhook',(req,res)=>{const mode=req.query['hub.mode'];const token=req.query['hub.verify_token'];const challenge=req.query['hub.challenge'];if(mode==='subscribe' && token===WA_VERIFY_TOKEN) res.status(200).send(challenge); else res.sendStatus(403);});
 app.post('/api/whatsapp/webhook',async(req,res)=>{
   try{
     const body=req.body;
     if(body.object==='whatsapp_business_account'){
-      const message=body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
-      if(message){
-        const from=message.from;const text=message.text?.body||'';
-        const lang=detectLang(text);const aiReply=getGeneralReply(text,lang);
+      const msg=body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
+      if(msg){
+        const from=msg.from;const text=msg.text?.body||'';
+        let reply=WELCOME_MENU;
+        const trimmed=text.trim();
+        if(trimmed==='0' || ['menu','hi','hello','vanakkam','start'].includes(trimmed.toLowerCase())){reply=WELCOME_MENU;}
+        else{
+          let num=trimmed.match(/^\s*(1[0-9]|20|[0-9])\s*$/);
+          if(num){reply=getMenuReply(num[1])||WELCOME_MENU;}
+          else{reply=getGeneralReply(trimmed,detectLang(trimmed));}
+        }
         if(WA_TOKEN && WA_PHONE_ID){
-          await fetch(`https://graph.facebook.com/v20.0/${WA_PHONE_ID}/messages`,{method:'POST',headers:{'Authorization':`Bearer ${WA_TOKEN}`,'Content-Type':'application/json'},body:JSON.stringify({messaging_product:'whatsapp',to:from,type:'text',text:{body:aiReply.substring(0,4000)}})});
+          await fetch(`https://graph.facebook.com/v20.0/${WA_PHONE_ID}/messages`,{method:'POST',headers:{'Authorization':`Bearer ${WA_TOKEN}`,'Content-Type':'application/json'},body:JSON.stringify({messaging_product:'whatsapp',to:from,type:'text',text:{body:reply.substring(0,4000)}})});
         }
       }
       res.sendStatus(200);
-    }else{res.sendStatus(404);}
+    }else res.sendStatus(404);
   }catch(e){res.sendStatus(500);}
 });
 
 app.post('/api/whatsapp/send',async(req,res)=>{
   try{
-    const {to,message,phone}=req.body;
-    const targetPhone=to||phone;
-    if(!targetPhone||!message) return res.status(400).json({error:'Need phone and message'});
-    let cleanPhone=targetPhone.replace(/[^0-9]/g,'');
-    if(cleanPhone.length===10) cleanPhone='91'+cleanPhone;
-    if(!WA_TOKEN||!WA_PHONE_ID){
-      const waLink=`https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
-      return res.json({success:true,demo:true,wa_link:waLink,to:cleanPhone,text:message,api:'/api/whatsapp/send - Demo (set WHATSAPP_TOKEN & PHONE_ID for real API)'});
-    }
-    const resp=await fetch(`https://graph.facebook.com/v20.0/${WA_PHONE_ID}/messages`,{method:'POST',headers:{'Authorization':`Bearer ${WA_TOKEN}`,'Content-Type':'application/json'},body:JSON.stringify({messaging_product:'whatsapp',to:cleanPhone,type:'text',text:{body:message.substring(0,4000)}})});
-    const data=await resp.json();
-    res.json({success:true,real_api:true,data,to:cleanPhone,api:'/api/whatsapp/send - Real API ✅'});
+    const {to,message,phone}=req.body;const target=to||phone;
+    if(!target||!message) return res.status(400).json({error:'Need phone and message'});
+    let clean=target.replace(/[^0-9]/g,''); if(clean.length===10) clean='91'+clean;
+    if(!WA_TOKEN||!WA_PHONE_ID){const link=`https://wa.me/${clean}?text=${encodeURIComponent(message)}`;return res.json({success:true,demo:true,wa_link:link,to:clean});}
+    const resp=await fetch(`https://graph.facebook.com/v20.0/${WA_PHONE_ID}/messages`,{method:'POST',headers:{'Authorization':`Bearer ${WA_TOKEN}`,'Content-Type':'application/json'},body:JSON.stringify({messaging_product:'whatsapp',to:clean,type:'text',text:{body:message.substring(0,4000)}})});
+    const data=await resp.json();res.json({success:true,real_api:true,data});
   }catch(e){res.status(500).json({error:e.message});}
 });
 
 app.post('/api/whatsapp/share',(req,res)=>{
-  const {message,phone}=req.body;
-  const text=message||'Hello from Sasikumar AI! 🌍 https://sasikumar-ai-9wdq.onrender.com';
-  let cleanPhone=(phone||'').replace(/[^0-9]/g,'');
-  if(cleanPhone.length===10) cleanPhone='91'+cleanPhone;
-  const link = cleanPhone ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(text)}` : `https://wa.me/?text=${encodeURIComponent(text)}`;
-  res.json({wa_link:link,share_text:text,api:'/api/whatsapp/share'});
+  const {message,phone}=req.body;const text=message||WELCOME_MENU;
+  let clean=(phone||'').replace(/[^0-9]/g,''); if(clean.length===10) clean='91'+clean;
+  const link=clean?`https://wa.me/${clean}?text=${encodeURIComponent(text)}`:`https://wa.me/?text=${encodeURIComponent(text)}`;
+  res.json({wa_link:link});
 });
 
 app.use(express.static(publicPath));
 app.get('*',(req,res)=>{const fp=path.join(publicPath,'index.html');if(fs.existsSync(fp))res.sendFile(fp);else res.status(404).send('Not Found');});
-app.listen(PORT,()=>console.log(`📱 WHATSAPP + MULTI-LANG AI http://localhost:${PORT} - OK`));
+app.listen(PORT,()=>console.log(`🤖 20 OPTIONS WHATSAPP MENU http://localhost:${PORT} - OK`));
