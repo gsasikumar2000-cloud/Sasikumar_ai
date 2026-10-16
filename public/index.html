@@ -4123,7 +4123,30 @@ document.addEventListener('click', function(e){
   }
 });
 </script>
-</head><body>" + el.outerHTML + "
+
+<style id="finalPopupFix">
+/* Hide only floating popup buttons - safe */
+button[style*="position: fixed"][style*="bottom"],
+div[style*="position: fixed"][style*="bottom"] {
+  display: none !important;
+}
+</style>
+<script>
+setTimeout(function(){
+  document.querySelectorAll('*').forEach(function(el){
+    try{
+      var txt = (el.innerText||'').trim();
+      var st = el.getAttribute('style')||'';
+      if(st.includes('fixed')){
+        if(txt.includes('3D AD HUB') && txt.length < 25) el.style.display='none';
+        if(txt === '⚡ ALL' && st.includes('fixed')) el.style.display='none';
+        if(txt === 'X' && st.includes('fixed') && el.offsetWidth < 80) el.style.display='none';
+      }
+    }catch(e){}
+  });
+}, 1000);
+</script>
+</head><body>
 <!-- SK_ALL_CONTENT_CARD_BUTTONS_V1 -->
 <style id="SK_ALL_CONTENT_CARD_BUTTONS_V1">
 /* Colorful buttons for existing content cards; preserve their handlers. */
@@ -4565,7 +4588,7 @@ function printAppraisalReport(id){
     "button,input,textarea,select{display:none}" +
     "img{max-width:100%;height:auto}" +
     "@media print{body{margin:10mm}}</style>" +
-"</head><body>" + el.outerHTML + "
+
   );
   w.document.close();
   w.focus();
@@ -5881,7 +5904,30 @@ function skReplyPrint(){
     '<!doctype html><html><head><meta charset="utf-8">' +
     '<title>SASIKUMAR AI Reply</title>' +
     '<style>body{font:16px Arial,sans-serif;padding:24px}pre{white-space:pre-wrap;overflow-wrap:anywhere}</style>' +
-    '</head><body><h2>SASIKUMAR AI Reply</h2><pre>' +
+    '
+<style id="finalPopupFix">
+/* Hide only floating popup buttons - safe */
+button[style*="position: fixed"][style*="bottom"],
+div[style*="position: fixed"][style*="bottom"] {
+  display: none !important;
+}
+</style>
+<script>
+setTimeout(function(){
+  document.querySelectorAll('*').forEach(function(el){
+    try{
+      var txt = (el.innerText||'').trim();
+      var st = el.getAttribute('style')||'';
+      if(st.includes('fixed')){
+        if(txt.includes('3D AD HUB') && txt.length < 25) el.style.display='none';
+        if(txt === '⚡ ALL' && st.includes('fixed')) el.style.display='none';
+        if(txt === 'X' && st.includes('fixed') && el.offsetWidth < 80) el.style.display='none';
+      }
+    }catch(e){}
+  });
+}, 1000);
+</script>
+</head><body><h2>SASIKUMAR AI Reply</h2><pre>' +
     escaped +
     '</pre>
   );
