@@ -4847,3 +4847,66 @@ html body .skMainLiveGrid > .skMainFeatureCard {
 })();
 </script>
 <!-- END SK_ALL_CARD_ICONS_V1 -->
+
+<!-- FINAL RED X KILLER - PERMANENT -->
+<style>
+/* Kill all fixed red X buttons */
+div[style*="fixed"][style*="red"], 
+button[style*="fixed"][style*="red"],
+div[style*="fixed"]:has(> span:contains("X")),
+#popup, .popup, [id*="popup"][style*="fixed"] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+/* Red circle X */
+div[style*="background: red"][style*="border-radius: 50%"],
+div[style*="background-color: red"][style*="border-radius"],
+div[style*="width: 40px"][style*="height: 40px"][style*="fixed"] {
+  display: none !important;
+}
+/* Fix LIVE GOLD & SILVER truncation */
+div:has(> div:contains("LIVE GOLD")), div:has(> div:contains("LIVE IMAG")) {
+  min-width: 140px !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+}
+</style>
+<script>
+(function(){
+  // ULTIMATE RED X KILLER
+  function nukeRedX(){
+    document.querySelectorAll('div, button, span').forEach(function(el){
+      try{
+        var txt = (el.textContent||'').trim();
+        var style = (el.getAttribute('style')||'').toLowerCase();
+        var html = el.outerHTML||'';
+        // Is this a red X fixed popup?
+        var isFixed = style.includes('fixed');
+        var isRed = style.includes('red') || style.includes('#ff') || style.includes('rgb(255');
+        var isSmallRound = style.includes('border-radius') && (style.includes('40px') || style.includes('50%'));
+        var isX = txt === 'X' || txt === '❌' || txt === '✕' || txt === '✖';
+        
+        if(isFixed && isX && el.offsetWidth < 80){
+          el.remove();
+        }
+        if(isFixed && isRed && isSmallRound){
+          el.remove();
+        }
+        // Also kill any element with red background and X inside and fixed
+        if(isFixed && html.includes('background: red') && html.includes('>X<')){
+          el.remove();
+        }
+      }catch(e){}
+    });
+  }
+  // Run every 500ms forever
+  setInterval(nukeRedX, 500);
+  // Run on load
+  window.addEventListener('load', function(){ setTimeout(nukeRedX, 100); setTimeout(nukeRedX, 1000); });
+  document.addEventListener('DOMContentLoaded', nukeRedX);
+  // Watch for new popups
+  var obs = new MutationObserver(nukeRedX);
+  obs.observe(document.body, {childList:true, subtree:true});
+})();
+</script>
