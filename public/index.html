@@ -1,52 +1,22 @@
 
 <style id="skOriginalLogo360">
 @keyframes spin360{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-@keyframes glow{0%,100%{box-shadow:0 4px 12px rgba(251,191,36,0.4)}50%{box-shadow:0 6px 20px rgba(251,191,36,0.8)}}
+@keyframes glowGold{0%,100%{box-shadow:0 0 12px #fbbf24,0 0 25px rgba(251,191,36,0.3)}50%{box-shadow:0 0 20px #fbbf24,0 0 40px rgba(251,191,36,0.6)}}
 .sk-original-logo{
-  width:50px;height:50px;border-radius:50%;border:3px solid #fbbf24;
-  animation:spin360 4s linear infinite, glow 2s ease-in-out infinite;
-  vertical-align:middle;margin-right:10px;background:#fff;object-fit:cover;
+  width:56px;height:56px;border-radius:50%;
+  border:3px solid #fbbf24;background:#fff;
+  object-fit:cover;vertical-align:middle;margin-right:12px;
+  animation:spin360 5s linear infinite, glowGold 2.5s ease-in-out infinite;
+  display:inline-block;
 }
-.sk-original-logo-small{width:36px;height:36px;border-width:2px;animation-duration:3s}
-.sk-kidai-mattam{display:flex;flex-wrap:wrap;gap:10px}
-@media(max-width:768px){.sk-kidai-mattam{flex-direction:column}.sk-original-logo{width:42px;height:42px}}
+.sk-original-logo-small{width:38px;height:38px;border-width:2px;animation-duration:4s}
+.sk-kidai-mattam{display:flex;flex-wrap:wrap;gap:12px}
+@media(max-width:768px){.sk-kidai-mattam{flex-direction:column}.sk-original-logo{width:46px;height:46px}}
 </style>
 
-<style id="skLogo360Horizontal">
-/* SASIKUMAR AI - LOGO 360 SPIN + KIDAI MATTAM HORIZONTAL */
-@keyframes spin360{0%{transform:rotate(0deg) scale(1)}50%{transform:rotate(180deg) scale(1.1)}100%{transform:rotate(360deg) scale(1)}}
-@keyframes floatH{0%,100%{transform:translateX(0)}50%{transform:translateX(6px)}}
-.sk-logo-spin{
-  width:42px;height:42px;border-radius:50%;
-  background:linear-gradient(135deg,#0f172a,#fbbf24);
-  display:inline-flex;align-items:center;justify-content:center;
-  color:#fff;font-weight:800;font-size:18px;
-  border:2px solid #fbbf24;box-shadow:0 4px 12px rgba(251,191,36,0.4);
-  animation:spin360 3s linear infinite;
-  vertical-align:middle;margin-right:8px;
-}
-.sk-logo-spin-small{width:32px;height:32px;font-size:14px;animation:spin360 2.5s linear infinite}
-.sk-logo-text{font-weight:800;background:linear-gradient(90deg,#fbbf24,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 
-/* KIDAI MATTAM - HORIZONTAL LAYOUT */
-.sk-horizontal-bar{
-  display:flex;flex-direction:row;overflow-x:auto;gap:10px;
-  padding:10px 6px;scroll-snap-type:x mandatory;
-  scrollbar-width:thin; -webkit-overflow-scrolling:touch;
-}
-.sk-horizontal-bar::-webkit-scrollbar{height:6px}
-.sk-horizontal-bar::-webkit-scrollbar-thumb{background:#fbbf24;border-radius:10px}
-.sk-h-card{
-  min-width:280px;flex:0 0 280px;
-  scroll-snap-align:start;
-  border-radius:14px;padding:12px;
-}
-@media (max-width:768px){
-  .sk-horizontal-bar{flex-direction:column;overflow-x:visible}
-  .sk-h-card{min-width:100%;flex:1 1 100%}
-  .sk-logo-spin{width:36px;height:36px;font-size:16px}
-}
-</style>
+
+
 
 <style id="skMobileFitAll">
 /* SASIKUMAR AI - MOBILE FIT COLORFUL ALL */
