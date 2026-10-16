@@ -1,41 +1,26 @@
 
 <style id="skCenterLogo360">
-@keyframes spin360Center{0%{transform:rotate(0deg) scale(1)}50%{transform:rotate(180deg) scale(1.1)}100%{transform:rotate(360deg) scale(1)}}
-@keyframes glowCenter{0%,100%{box-shadow:0 0 15px #fbbf24,0 0 30px rgba(59,130,246,0.3)}50%{box-shadow:0 0 25px #fbbf24,0 0 50px rgba(59,130,246,0.6)}}
-.sk-center-logo{
-  text-align:center;
+@keyframes spin360Center{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes glowSuper{0%,100%{box-shadow:0 0 20px #fbbf24,0 0 40px rgba(59,130,246,0.5)}50%{box-shadow:0 0 30px #fbbf24,0 0 70px rgba(59,130,246,0.8),0 0 90px rgba(16,185,129,0.5)}}
+.sk-center-single{
   display:flex;justify-content:center;align-items:center;
-  margin:14px auto;
-  width:100%;
+  margin:18px auto;width:100%;text-align:center;
 }
-.sk-original-logo-center{
-  width:72px;height:72px;border-radius:50%;
-  border:4px solid #fbbf24;
-  background:#fff;object-fit:cover;
-  animation:spin360Center 4s linear infinite, glowCenter 2s ease-in-out infinite;
-  box-shadow:0 4px 20px rgba(0,0,0,0.2);
+.sk-logo-super-clear{
+  width:85px;height:85px;border-radius:50%;
+  border:4px solid transparent;
+  background:linear-gradient(#fff,#fff) padding-box, linear-gradient(45deg,#fbbf24,#3b82f6,#10b981,#fbbf24) border-box;
+  object-fit:cover;
+  animation:spin360Center 6s linear infinite, glowSuper 3s ease-in-out infinite;
+  image-rendering:-webkit-optimize-contrast;
+  image-rendering:crisp-edges;
 }
-.sk-original-logo-center-small{width:58px;height:58px;border-width:3px}
-@media(max-width:768px){
-  .sk-original-logo-center{width:62px;height:62px}
-  .sk-original-logo-center-small{width:50px;height:50px}
-}
+@media(max-width:768px){.sk-logo-super-clear{width:75px;height:75px}}
 </style>
 
-<style id="skOriginalLogo360">
-@keyframes spin360{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-@keyframes glowGold{0%,100%{box-shadow:0 0 12px #fbbf24,0 0 25px rgba(251,191,36,0.3)}50%{box-shadow:0 0 20px #fbbf24,0 0 40px rgba(251,191,36,0.6)}}
-.sk-original-logo{
-  width:56px;height:56px;border-radius:50%;
-  border:3px solid #fbbf24;background:#fff;
-  object-fit:cover;vertical-align:middle;margin-right:12px;
-  animation:spin360 5s linear infinite, glowGold 2.5s ease-in-out infinite;
-  display:inline-block;
-}
-.sk-original-logo-small{width:38px;height:38px;border-width:2px;animation-duration:4s}
-.sk-kidai-mattam{display:flex;flex-wrap:wrap;gap:12px}
-@media(max-width:768px){.sk-kidai-mattam{flex-direction:column}.sk-original-logo{width:46px;height:46px}}
-</style>
+
+
+
 
 
 
@@ -112,7 +97,8 @@ button:hover{transform:translateY(-1px)!important;box-shadow:0 4px 12px rgba(0,0
 
 <!-- SASIKUMAR AI TOP - CLEAN NO POPUP -->
 <div id="skTop" style="background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;padding:12px 15px;position:sticky;top:0;z-index:9999;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px">
-  <div><span style="font-size:18px;font-weight:bold">🙏  <img src="logo.png" class="sk-original-logo" alt="SASIKUMAR AI" onerror="this.style.display='none'"> <div class="sk-center-logo"><img src="logo.png" class="sk-original-logo-center" alt="SASIKUMAR AI Logo" onerror="this.src='logo.jpg'"></div>
+  <div><span style="font-size:18px;font-weight:bold">🙏   
+<div class="sk-center-single"><img src="logo.png" class="sk-logo-super-clear" alt="SASIKUMAR AI" loading="eager" style="image-rendering:high-quality"></div>
 Welcome SASIKUMAR AI</span> <span id="skDT" style="font-size:11px;opacity:0.9;margin-left:8px;background:rgba(255,255,255,0.15);padding:3px 8px;border-radius:12px"></span></div>
   <div style="display:flex;gap:6px"><button style="background:#fbbf24;color:#000;padding:6px 14px;border-radius:20px;border:none;font-weight:bold;cursor:pointer">🔐 SIGN IN / LOGIN</button><button style="background:#22c55e;color:#fff;padding:6px 14px;border-radius:20px;border:none;font-weight:bold;cursor:pointer">🆕 SIGN UP</button></div>
 </div>
@@ -159,7 +145,8 @@ Welcome SASIKUMAR AI</span> <span id="skDT" style="font-size:11px;opacity:0.9;ma
 document.addEventListener('DOMContentLoaded',()=>{let s=localStorage.getItem('skReplySave'); let el=document.querySelector('#skReplySearch textarea, #skReplyInput, textarea'); if(s && el &&!el.value){el.value=s;}});
 </script>
 
-  <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px"><b>💬  <img src="logo.png" class="sk-original-logo" alt="SASIKUMAR AI" onerror="this.style.display='none'"> <div class="sk-center-logo"><img src="logo.png" class="sk-original-logo-center" alt="SASIKUMAR AI Logo" onerror="this.src='logo.jpg'"></div>
+  <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px"><b>💬   
+<div class="sk-center-single"><img src="logo.png" class="sk-logo-super-clear" alt="SASIKUMAR AI" loading="eager" style="image-rendering:high-quality"></div>
 SASIKUMAR AI REPLY BOX</b><span style="font-size:11px;background:#0f172a;color:#fff;padding:2px 8px;border-radius:10px">TOOL WEB ALL</span></div>
   <textarea id="skIn" placeholder="Ask anything to SASIKUMAR AI..." style="width:100%;min-height:85px;margin-top:10px;padding:12px;border:1px solid #cbd5e1;border-radius:10px;font-size:14px"></textarea>
   <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
@@ -170,7 +157,8 @@ SASIKUMAR AI REPLY BOX</b><span style="font-size:11px;background:#0f172a;color:#
   <div id="skOut" style="display:none;margin-top:10px;padding:12px;background:#f1f5f9;border-radius:8px;font-size:13px"></div>
 
   <div style="margin-top:14px;border-top:1px solid #e2e8f0;padding-top:12px">
-    <b>🔍  <img src="logo.png" class="sk-original-logo" alt="SASIKUMAR AI" onerror="this.style.display='none'"> <div class="sk-center-logo"><img src="logo.png" class="sk-original-logo-center" alt="SASIKUMAR AI Logo" onerror="this.src='logo.jpg'"></div>
+    <b>🔍   
+<div class="sk-center-single"><img src="logo.png" class="sk-logo-super-clear" alt="SASIKUMAR AI" loading="eager" style="image-rendering:high-quality"></div>
 SASIKUMAR AI WEB SEARCH BOX</b>
     <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
       <input id="skS" placeholder="Search anything on web..." style="flex:1;min-width:200px;padding:11px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px">
@@ -179,7 +167,8 @@ SASIKUMAR AI WEB SEARCH BOX</b>
     </div>
   </div>
 
-<!--  <img src="logo.png" class="sk-original-logo" alt="SASIKUMAR AI" onerror="this.style.display='none'"> <div class="sk-center-logo"><img src="logo.png" class="sk-original-logo-center" alt="SASIKUMAR AI Logo" onerror="this.src='logo.jpg'"></div>
+<!--   
+<div class="sk-center-single"><img src="logo.png" class="sk-logo-super-clear" alt="SASIKUMAR AI" loading="eager" style="image-rendering:high-quality"></div>
 SASIKUMAR AI MAKER STUDIO - BELOW WEB SEARCH -->
 <div id="skMakerTools" style="margin:14px;padding:16px;background:#fff;border:2px solid #0f172a;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,0.08)">
   <div style="text-align:center">
@@ -232,7 +221,7 @@ SASIKUMAR AI MAKER STUDIO - BELOW WEB SEARCH -->
 
   </div>
 
-<!--  <img src="logo.png" class="sk-original-logo" alt="SASIKUMAR AI" onerror="this.style.display='none'"> <div class="sk-center-logo"><img src="logo.png" class="sk-original-logo-center" alt="SASIKUMAR AI Logo" onerror="this.src='logo.jpg'"></div>
+<!--   
 SASIKUMAR AI MINI OFFICE -->
 
   </div>
@@ -918,7 +907,8 @@ else skRefreshPay2AllWallet();
 
 <!-- SASIKUMAR AI BOTTOM INFO MERGED -->
 <footer id="sasikumarBottomInfo" style="margin:28px 12px 20px;padding:18px;border-radius:18px;background:rgba(15,23,42,.92);border:1px solid rgba(148,163,184,.25);text-align:center;color:#e2e8f0;">
-  <h3 style="margin:0 0 14px;"><img src="logo.png" class="sk-original-logo sk-original-logo-small" alt="Logo"> <div class="sk-center-logo"><img src="logo.png" class="sk-original-logo-center" alt="SASIKUMAR AI Logo" onerror="this.src='logo.jpg'"></div>
+  <h3 style="margin:0 0 14px;"> 
+<div class="sk-center-single"><img src="logo.png" class="sk-logo-super-clear" alt="SASIKUMAR AI" loading="eager" style="image-rendering:high-quality"></div>
 ⚙️ SASIKUMAR AI</h3>
 
   
@@ -2276,7 +2266,8 @@ html body .skMainLiveGrid > .skMainFeatureCard {
 </style>
 <section id="skIndianLeadershipRow4" class="skMainFeatureCard">
 <img src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI logo">
-<h2>🇮🇳 <div class="sk-center-logo"><img src="logo.png" class="sk-original-logo-center" alt="SASIKUMAR AI Logo" onerror="this.src='logo.jpg'"></div>
+<h2>🇮🇳 
+<div class="sk-center-single"><img src="logo.png" class="sk-logo-super-clear" alt="SASIKUMAR AI" loading="eager" style="image-rendering:high-quality"></div>
 INDIAN LEADERSHIP</h2>
 <p>Indian leaders • Tamil Nadu leaders • History • Achievements</p>
 <button class="skLeaderOpen" type="button" onclick="location.href='/indian-leadership.html'">📸 OPEN ALL LEADERS &amp; PHOTOS</button>
