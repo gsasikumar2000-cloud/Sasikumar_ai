@@ -1,3 +1,35 @@
+
+<!-- SASIKUMAR AI TOP BAR - CLEAN -->
+<div id="sasikumarTopBar" style="background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;padding:10px 15px;position:sticky;top:0;z-index:100;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;">
+  <div style="display:flex;align-items:center;gap:10px;">
+    <span style="font-size:18px;font-weight:bold;">🙏 SASIKUMAR AI</span>
+    <span id="skDateTime" style="font-size:12px;opacity:0.9;"></span>
+  </div>
+  <div style="display:flex;gap:8px;">
+    <button onclick="document.getElementById('loginBox')?.scrollIntoView({behavior:'smooth'})" style="background:#fbbf24;color:#000;padding:6px 12px;border-radius:20px;border:none;font-weight:bold;cursor:pointer;">🔐 LOGIN</button>
+    <button onclick="document.getElementById('signupBox')?.scrollIntoView({behavior:'smooth'})" style="background:#22c55e;color:#fff;padding:6px 12px;border-radius:20px;border:none;font-weight:bold;cursor:pointer;">🆕 SIGN UP</button>
+  </div>
+</div>
+
+<script>
+// DATE AND TIME - LIVE
+function updateSKDateTime(){
+  var el = document.getElementById('skDateTime');
+  if(el){
+    var now = new Date();
+    el.textContent = now.toLocaleString('en-IN',{weekday:'short',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'}) + " | " + Intl.DateTimeFormat().resolvedOptions().timeZone;
+  }
+}
+setInterval(updateSKDateTime,1000);
+updateSKDateTime();
+</script>
+
+<!-- SASIKUMAR AI REPLY BOX TOOLS - TOP -->
+<style>
+.sk-tools-bar{display:flex;flex-wrap:wrap;gap:6px;padding:10px;background:#f8fafc;border-radius:12px;margin:10px 0;}
+.sk-tool-btn{background:#fff;border:1px solid #e2e8f0;padding:6px 10px;border-radius:8px;font-size:12px;cursor:pointer;}
+.sk-tool-btn:hover{background:#0f172a;color:#fff;}
+</style>
 <!DOCTYPE html>
 <html lang="ta">
 <head>
