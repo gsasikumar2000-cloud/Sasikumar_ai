@@ -1,37 +1,56 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SASIKUMAR AI</title><script src="https://cdn.tailwindcss.com"></script><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet"><style>body{font-family:Outfit,sans-serif} @keyframes spin360{from{transform:rotateY(0deg)}to{transform:rotateY(360deg)}} @keyframes glow{0%{box-shadow:0 0 10px #fbbf24}50%{box-shadow:0 0 30px #fbbf24,0 0 50px #3b82f6}100%{box-shadow:0 0 10px #fbbf24}}.logo-360{animation:spin360 4s linear infinite,glow 2s ease-in-out infinite;transform-style:preserve-3d}.logo-360:hover{animation:spin360 1.5s linear infinite}</style></head><body class="bg-slate-50">
 <div style="text-align:center;padding:12px;background:linear-gradient(90deg,#0f172a,#1e3a8a,#0f172a)"><img src="./logo.png" class="logo-360" style="width:110px;height:110px;border-radius:50%;border:3px solid #fbbf24;margin:0 auto;display:block"><div style="color:#fbbf24;font-weight:800;margin-top:6px">SASIKUMAR AI</div><div style="color:#93c5fd;font-size:10px">SMART SOLUTIONS • BRIGHTER FUTURE</div></div>
 <div class="sticky top-0 z-[9999] bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 text-white p-3 shadow-xl"><div class="max-w-6xl mx-auto flex justify-between items-center flex-wrap gap-2"><h1 class="text-xl font-extrabold text-yellow-300 flex items-center gap-2"><img src="./logo.png" class="logo-360" style="width:42px;height:42px;border-radius:50%;border:2px solid #fbbf24"> 🙏 SASIKUMAR AI</h1><div class="flex gap-2 items-center"><button class="bg-yellow-400 text-black px-5 py-2 rounded-full font-bold">🔐 LOGIN</button><button class="bg-green-500 text-white px-5 py-2 rounded-full font-bold">🆕 SIGN UP</button></div></div><div class="text-xs text-cyan-200 text-center mt-1">Cell: 98944 40400 | WA: 95850 80842 | <span id="liveTime"></span> | 📍 Chennai</div></div>
-<div class="max-w-4xl mx-auto p-4"><div class="bg-white rounded-2xl shadow-lg p-4 border-2 border-blue-200"><h2 class="font-bold text-blue-900 mb-2">🔍 SASIKUMAR AI WEB SEARCH BOX</h2><div class="flex gap-2"><input id="aiSearch" placeholder="Ask SASIKUMAR AI anything..." class="flex-1 p-3 border-2 border-blue-300 rounded-xl outline-none"><button onclick="doSearch()" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold">GO 🚀</button></div></div></div>
-<div class="max-w-4xl mx-auto px-4"><div class="bg-white rounded-2xl shadow p-4"><h2 class="font-bold text-indigo-900 mb-2">💬 REPLY BOX + WEB TOOLS</h2><div class="flex gap-2 flex-wrap mb-3 p-2 bg-blue-50 rounded-xl text-xs"><button onclick="webTool('google')" class="bg-white border px-3 py-1.5 rounded-full">🔍 Google</button><button onclick="webTool('youtube')" class="bg-white border px-3 py-1.5 rounded-full">▶️ YouTube</button><button onclick="webTool('maps')" class="bg-white border px-3 py-1.5 rounded-full">🗺️ Maps</button><button onclick="webTool('translate')" class="bg-white border px-3 py-1.5 rounded-full">🌐 Tamil</button><button onclick="webTool('gold')" class="bg-yellow-100 border px-3 py-1.5 rounded-full">🪙 Gold</button><button onclick="webTool('job')" class="bg-green-100 border px-3 py-1.5 rounded-full">💼 Jobs</button></div><div id="replyBox" class="min-h-[120px] bg-slate-50 rounded-xl p-3 border text-sm">Vanakkam! 🙏 Model gallery below la 360 spin logo parunga!</div></div></div>
-<div class="max-w-6xl mx-auto px-4 py-6"><h2 class="text-2xl font-extrabold text-center mb-4">🖼️ MODEL IMAGE GALLERY - 360° SPIN</h2><div class="grid grid-cols-2 md:grid-cols-4 gap-3"><div class="bg-white rounded-xl p-3 text-center border shadow"><img src="./logo.png" class="logo-360" class="logo-360 w-full h-32 object-contain bg-slate-900 rounded-lg mb-2"><h4 class="font-bold text-xs">BRAND LOGO 360°</h4><p class="text-[10px] text-green-600">● Spinning</p></div><div class="bg-white rounded-xl p-3 text-center border"><img src="./logo.png" class="logo-360" class="logo-360 w-full h-32 object-contain bg-gradient-to-br from-blue-50 to-indigo-100 rounded-lg mb-2"><h4 class="font-bold text-xs">AI MODEL</h4></div><div class="bg-white rounded-xl p-3 text-center border"><img src="./logo.png" class="logo-360" class="logo-360 w-full h-32 object-contain bg-yellow-50 rounded-lg mb-2"><h4 class="font-bold text-xs">BUSINESS MODEL</h4></div><div class="bg-white rounded-xl p-3 text-center border"><img src="./logo.png" class="logo-360" class="logo-360 w-full h-32 object-contain bg-green-50 rounded-lg mb-2"><h4 class="font-bold text-xs">GOLD MODEL</h4></div></div></div>
-<div class="max-w-6xl mx-auto px-4 pb-6"><div class="grid grid-cols-2 md:grid-cols-4 gap-3"><div class="bg-white rounded-xl shadow border p-3 text-center"><div class="text-2xl">📰</div><h4 class="font-bold text-sm">NEWS</h4><button class="mt-2 bg-blue-600 text-white text-xs px-4 py-1 rounded-full">OPEN</button></div><div class="bg-white rounded-xl shadow border p-3 text-center"><div class="text-2xl">🎓</div><h4 class="font-bold text-sm">EDUCATION</h4><button class="mt-2 bg-green-600 text-white text-xs px-4 py-1 rounded-full">OPEN</button></div><div class="bg-white rounded-xl shadow border p-3 text-center"><div class="text-2xl">💼</div><h4 class="font-bold text-sm">JOB</h4><button class="mt-2 bg-indigo-600 text-white text-xs px-4 py-1 rounded-full">OPEN</button></div><div class="bg-slate-900 text-white rounded-xl shadow border p-3 text-center"><div class="text-2xl">⚙️</div><h4 class="font-bold text-sm">SETTINGS</h4><button onclick="document.getElementById('settingsBox').scrollIntoView({behavior:'smooth'})" class="mt-2 bg-white text-black text-xs px-4 py-1 rounded-full">OPEN</button></div></div></div>
-<div id="settingsBox" class="max-w-2xl mx-auto px-4 pb-20"><div class="bg-slate-900 text-white rounded-3xl p-6 text-center"><img src="./logo.png" class="logo-360" style="width:80px;height:80px;border-radius:50%;border:3px solid #fbbf24;margin:0 auto 10px;display:block"><h2 class="font-bold text-xl mb-4">⚙️ SASIKUMAR AI SETTINGS</h2><div class="flex flex-wrap gap-3 justify-center text-sm text-blue-400"><span>⚙️ Settings</span><span>📞 Communication</span><span>💬 WhatsApp</span><span>📧 Email</span><span>⚠️ Disclaimer</span><span>🔒 Privacy Policy</span><span>🎯 Mission</span><span>👁️ Vision</span><span>👥 Following</span><span class="text-purple-400">💬 Customer Feedback</span></div><p class="text-xs text-gray-400 mt-4">Cell: 98944 40400 | WA: 95850 80842<br>gsasikumar2000@gmail.com</p></div></div>
-<script>function updateTime(){document.getElementById('liveTime').textContent=new Date().toLocaleString('en-IN')}setInterval(updateTime,1000);updateTime();function doSearch(){let q=document.getElementById('aiSearch').value;if(!q)return alert('Type something');document.getElementById('replyBox').innerHTML='🔍 Searching: <b>'+q+'</b><br><br>🤖 SASIKUMAR AI Result for '+q}function webTool(t){const q=document.getElementById('aiSearch').value||'Sasikumar AI';const rb=document.getElementById('replyBox');let url='';if(t=='google')url='https://www.google.com/search?q='+encodeURIComponent(q);if(t=='youtube')url='https://www.youtube.com/results?search_query='+encodeURIComponent(q);if(t=='maps')url='https://www.google.com/maps/search/'+encodeURIComponent(q);if(t=='translate')url='https://translate.google.com/?sl=auto&tl=ta&text='+encodeURIComponent(q);if(t=='gold'){rb.innerHTML='🪙 GOLD LIVE: Chennai 22K ₹6,850/g<br><a href=https://www.goodreturns.in/gold-rates/chennai.html target=_blank>View Live</a>';return}if(url)rb.innerHTML='<b>'+t.toUpperCase()+'</b><br><iframe src='+url+' style=width:100%;height:420px;border-radius:12px></iframe>'}setInterval(()=>{document.querySelectorAll('*').forEach(el=>{if(el.textContent=='×'){let r=el.getBoundingClientRect();if(r.width<70&&r.height<70&&r.top<120&&r.left>window.innerWidth-120)el.remove()}})},1000);</script>
-<!-- KELA REPLY BOX - BOTTOM FIXED -->
-<div id="kelaReplyBoxWrap" style="position:fixed;bottom:0;left:0;right:0;z-index:9998;background:linear-gradient(90deg,#0f172a,#1e3a8a);padding:8px;box-shadow:0 -4px 20px rgba(0,0,0,.3);border-top:3px solid #fbbf24">
-<div class="max-w-6xl mx-auto">
-<div class="flex gap-2 items-center">
-<img src="./logo.png" class="logo-360" style="width:36px;height:36px;border-radius:50%;border:2px solid #fbbf24;flex-shrink:0">
-<div style="flex:1;background:white;border-radius:12px;padding:6px 10px;display:flex;gap:4px;align-items:center">
-<input id="kelaInput" placeholder="💬 Sasikumar AI Reply... Type here..." style="flex:1;border:none;outline:none;font-size:13px" onkeypress="if(event.key==='Enter') kelaSend()">
-<button onclick="kelaSend()" class="bg-blue-600 text-white px-4 py-1.5 rounded-full text-xs font-bold">SEND 🚀</button>
+<!-- TOP SEARCH + REPLY -->
+
+<div class="max-w-4xl mx-auto p-4">
+<div class="bg-white rounded-2xl shadow-lg p-4 border-2 border-blue-200">
+<h2 class="font-bold text-blue-900 mb-2 flex items-center gap-2"><img src="./logo.png" class="logo-360" style="width:28px;height:28px;border-radius:50%"> 🔍 SASIKUMAR AI WEB SEARCH BOX</h2>
+<div class="flex gap-2">
+<input id="aiSearch" placeholder="Ask SASIKUMAR AI anything - Tamil/English..." class="flex-1 p-3 border-2 border-blue-300 rounded-xl outline-none text-sm">
+<button onclick="doSearch()" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700">GO 🚀</button>
+<button onclick="startMic()" class="bg-red-500 text-white px-3 py-3 rounded-xl">🎤</button>
 </div>
-<button onclick="toggleKelaReply()" class="bg-yellow-400 text-black w-8 h-8 rounded-full font-bold text-xs">↕️</button>
+
+<!-- REPLY BOX KEELA - TOP SEARCH KEELA DIRECT -->
+<div class="mt-4 bg-gradient-to-br from-slate-50 to-blue-50 rounded-2xl p-4 border-2 border-indigo-200 shadow-inner">
+<h2 class="font-bold text-indigo-900 mb-2 flex items-center gap-2">💬 SASIKUMAR AI REPLY BOX <span class="text-xs bg-green-500 text-white px-2 py-0.5 rounded-full">LIVE</span></h2>
+
+<div class="flex gap-2 flex-wrap mb-3 p-2 bg-blue-50 rounded-xl text-[11px]">
+<button onclick="webTool('google')" class="bg-white border px-3 py-1.5 rounded-full shadow-sm">🔍 Google</button>
+<button onclick="webTool('youtube')" class="bg-white border px-3 py-1.5 rounded-full shadow-sm">▶️ YouTube</button>
+<button onclick="webTool('maps')" class="bg-white border px-3 py-1.5 rounded-full shadow-sm">🗺️ Maps</button>
+<button onclick="webTool('translate')" class="bg-white border px-3 py-1.5 rounded-full shadow-sm">🌐 Tamil Translate</button>
+<button onclick="webTool('calc')" class="bg-white border px-3 py-1.5 rounded-full shadow-sm">🧮 Calc</button>
+<button onclick="webTool('news')" class="bg-white border px-3 py-1.5 rounded-full shadow-sm">📰 News</button>
+<button onclick="webTool('gold')" class="bg-yellow-100 border px-3 py-1.5 rounded-full shadow-sm">🪙 Gold</button>
+<button onclick="webTool('job')" class="bg-green-100 border px-3 py-1.5 rounded-full shadow-sm">💼 Jobs</button>
 </div>
-<div id="kelaReplyContent" style="margin-top:6px;background:white;border-radius:12px;padding:10px;max-height:200px;overflow-y:auto;display:none">
-<div id="kelaReplyText" style="font-size:13px;min-height:40px">🙏 Vanakkam! Kela Reply Box - Inga type pannunga. Cut Copy Paste tools ready!</div>
-<div class="flex gap-1 flex-wrap mt-2">
-<button onclick="copyKela()" class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-[10px] font-bold">📋 COPY</button>
-<button onclick="cutKela()" class="bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-[10px] font-bold">✂️ CUT</button>
-<button onclick="pasteKela()" class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-[10px] font-bold">📄 PASTE</button>
-<button onclick="selectAllKela()" class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-[10px] font-bold">SELECT ALL</button>
-<button onclick="clearKela()" class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-[10px] font-bold">CLEAR</button>
-<button onclick="speakKela()" class="bg-yellow-100 px-2 py-1 rounded-full text-[10px] font-bold">🔊 SPEAK</button>
-<button onclick="shareKela()" class="bg-indigo-100 px-2 py-1 rounded-full text-[10px] font-bold">📤 SHARE</button>
+
+<div id="replyBox" class="min-h-[140px] bg-white rounded-xl p-4 border shadow-inner text-sm leading-relaxed">
+🙏 Vanakkam! <b>SASIKUMAR AI REPLY BOX</b> - Top Web Search keela irukku!<br><br>
+💡 Type pannunga mela search box la, result inga varum!<br>
+✂️ Cut Copy Paste tools keela irukku!
+</div>
+
+<!-- CUT COPY TOOLS KEELA REPLY BOX LA -->
+<div class="flex gap-2 mt-3 flex-wrap">
+<button onclick="copyReply()" class="bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full text-xs font-bold">📋 COPY</button>
+<button onclick="cutReply()" class="bg-orange-100 text-orange-800 px-3 py-1.5 rounded-full text-xs font-bold">✂️ CUT</button>
+<button onclick="pasteReply()" class="bg-green-100 text-green-800 px-3 py-1.5 rounded-full text-xs font-bold">📄 PASTE</button>
+<button onclick="selectAllReply()" class="bg-purple-100 text-purple-800 px-3 py-1.5 rounded-full text-xs font-bold">🔘 SELECT ALL</button>
+<button onclick="clearReply()" class="bg-red-100 text-red-800 px-3 py-1.5 rounded-full text-xs font-bold">🗑️ CLEAR</button>
+<button onclick="shareReply()" class="bg-indigo-100 text-indigo-800 px-3 py-1.5 rounded-full text-xs font-bold">📤 SHARE</button>
+<button onclick="speakReply()" class="bg-yellow-100 text-yellow-800 px-3 py-1.5 rounded-full text-xs font-bold">🔊 SPEAK</button>
+<button onclick="translateReply()" class="bg-cyan-100 text-cyan-800 px-3 py-1.5 rounded-full text-xs font-bold">🌐 TAMIL</button>
+<button onclick="downloadReply()" class="bg-slate-800 text-white px-3 py-1.5 rounded-full text-xs font-bold">💾 SAVE</button>
 </div>
 </div>
 </div>
 </div>
+
+
+
 <div style="height:80px"></div>
 
 <script>
