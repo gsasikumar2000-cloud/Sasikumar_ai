@@ -4146,6 +4146,48 @@ setTimeout(function(){
   });
 }, 1000);
 </script>
+
+<style>
+/* FORCE HIDE ALL FLOATING POPUPS */
+[style*="position: fixed"] { z-index: 1 !important; }
+button[style*="fixed"], div[style*="fixed"] {
+  max-width: 90% !important;
+}
+</style>
+<script>
+(function(){
+  function killPopups(){
+    document.querySelectorAll('*').forEach(function(el){
+      try{
+        var txt = (el.innerText||'').trim();
+        var st = (el.getAttribute('style')||'');
+        if(st.includes('fixed')){
+          // Kill 3D AD HUB
+          if(txt.includes('3D AD HUB')) { el.remove(); return; }
+          // Kill ALL floating
+          if(txt === '⚡ ALL' || txt === 'ALL' && el.offsetWidth < 200) {
+            if(!el.closest('#chat') && !el.id.includes('Services')) el.remove();
+            return;
+          }
+          // Kill red X
+          if((txt === 'X' || txt === '×') && el.offsetWidth < 100) {
+            el.remove(); return;
+          }
+        }
+        // Kill leaked JS text nodes
+        if(txt.includes('skReplyCopy') || txt.includes('skReplyPaste') || txt.includes('selectAllNotes')){
+          if(txt.length > 200 && txt.includes('function')){
+            el.style.display='none';
+            el.textContent='';
+          }
+        }
+      }catch(e){}
+    });
+  }
+  setInterval(killPopups, 1000);
+  document.addEventListener('DOMContentLoaded', killPopups);
+})();
+</script>
 </head><body>
 <!-- SK_ALL_CONTENT_CARD_BUTTONS_V1 -->
 <style id="SK_ALL_CONTENT_CARD_BUTTONS_V1">
@@ -5927,107 +5969,52 @@ setTimeout(function(){
   });
 }, 1000);
 </script>
+
+<style>
+/* FORCE HIDE ALL FLOATING POPUPS */
+[style*="position: fixed"] { z-index: 1 !important; }
+button[style*="fixed"], div[style*="fixed"] {
+  max-width: 90% !important;
+}
+</style>
+<script>
+(function(){
+  function killPopups(){
+    document.querySelectorAll('*').forEach(function(el){
+      try{
+        var txt = (el.innerText||'').trim();
+        var st = (el.getAttribute('style')||'');
+        if(st.includes('fixed')){
+          // Kill 3D AD HUB
+          if(txt.includes('3D AD HUB')) { el.remove(); return; }
+          // Kill ALL floating
+          if(txt === '⚡ ALL' || txt === 'ALL' && el.offsetWidth < 200) {
+            if(!el.closest('#chat') && !el.id.includes('Services')) el.remove();
+            return;
+          }
+          // Kill red X
+          if((txt === 'X' || txt === '×') && el.offsetWidth < 100) {
+            el.remove(); return;
+          }
+        }
+        // Kill leaked JS text nodes
+        if(txt.includes('skReplyCopy') || txt.includes('skReplyPaste') || txt.includes('selectAllNotes')){
+          if(txt.length > 200 && txt.includes('function')){
+            el.style.display='none';
+            el.textContent='';
+          }
+        }
+      }catch(e){}
+    });
+  }
+  setInterval(killPopups, 1000);
+  document.addEventListener('DOMContentLoaded', killPopups);
+})();
+</script>
 </head><body><h2>SASIKUMAR AI Reply</h2><pre>' +
     escaped +
     '</pre>
-  );
-  popup.document.close();
-}
-function skReplyCopy(){
-  const input = document.getElementById("q");
-  if(!input) return;
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(input.value).catch(function(){
-      input.select();
-      alert("Text selected. Copy it manually.");
-    });
-  }else{
-    input.select();
-    alert("Text selected. Copy it manually.");
-  }
-}
-
-function skReplyPaste(){
-  const input = document.getElementById("q");
-  if(!input) return;
-  if(navigator.clipboard && navigator.clipboard.readText){
-    navigator.clipboard.readText().then(function(text){
-      input.value += text;
-      input.dispatchEvent(new Event("input", {bubbles:true}));
-      input.focus();
-    }).catch(function(){
-      input.focus();
-      alert("Long-press the reply box and choose Paste.");
-    });
-  }else{
-    input.focus();
-    alert("Long-press the reply box and choose Paste.");
-  }
-}
-
-if(document.readyState === "loading"){
-  document.addEventListener("DOMContentLoaded", bindNewReplyFileInputs, {once:true});
-}else{
-  bindNewReplyFileInputs();
-}
-
-function selectAllNotes(){
-  const el = document.activeElement;
-  if(el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA")){
-    el.select();
-  } else {
-    window.getSelection().selectAllChildren(document.body);
-  }
-}
-
-function undoNotes(){
-  document.execCommand("undo");
-}
-
-function redoNotes(){
-  document.execCommand("redo");
-}
-
-function findNotes(){
-  const q = prompt("Find:");
-  if(q) window.find(q);
-}
-
-function editNotes(){
-  document.body.contentEditable =
-    document.body.contentEditable === "true" ? "false" : "true";
-  alert(document.body.contentEditable === "true"
-    ? "Edit mode ON"
-    : "Edit mode OFF");
-}
-
-function saveNotes(){
-  const text = document.body.innerText;
-  const blob = new Blob([text], {type:"text/plain;charset=utf-8"});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "SASIKUMAR-AI-Notes.txt";
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-
-function printNotes(){
-  window.print();
-}
-
-function pdfNotes(){
-  window.print();
-}
-
-
-
-
-
-
-
-
-
-</script>
+  </script>
 
 <style id="sk3DAdButtonStyle">
 #sk3DAdButton{
