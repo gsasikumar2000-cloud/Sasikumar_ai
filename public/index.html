@@ -1,3 +1,39 @@
+
+<!-- SASIKUMAR AI TOP - CLEAN NO POPUP -->
+<div id="skTop" style="background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;padding:12px 15px;position:sticky;top:0;z-index:9999;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px">
+  <div><span style="font-size:18px;font-weight:bold">🙏 Welcome SASIKUMAR AI</span> <span id="skDT" style="font-size:11px;opacity:0.9;margin-left:8px;background:rgba(255,255,255,0.15);padding:3px 8px;border-radius:12px"></span></div>
+  <div style="display:flex;gap:6px"><button style="background:#fbbf24;color:#000;padding:6px 14px;border-radius:20px;border:none;font-weight:bold;cursor:pointer">🔐 SIGN IN / LOGIN</button><button style="background:#22c55e;color:#fff;padding:6px 14px;border-radius:20px;border:none;font-weight:bold;cursor:pointer">🆕 SIGN UP</button></div>
+</div>
+
+<div id="skReplySearch" style="margin:12px;padding:14px;background:#fff;border:1px solid #e2e8f0;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,0.04)">
+  <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px"><b>💬 SASIKUMAR AI REPLY BOX</b><span style="font-size:11px;background:#0f172a;color:#fff;padding:2px 8px;border-radius:10px">TOOL WEB ALL</span></div>
+  <textarea id="skIn" placeholder="Ask anything to SASIKUMAR AI..." style="width:100%;min-height:85px;margin-top:10px;padding:12px;border:1px solid #cbd5e1;border-radius:10px;font-size:14px"></textarea>
+  <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+    <button onclick="var v=document.getElementById('skIn').value.trim(); var o=document.getElementById('skOut'); if(!v){alert('Type Anna!');return} o.style.display='block'; o.innerHTML='<b>🤖 SASIKUMAR AI:</b><br>'+v+'<br><br>✅ Received!';" style="background:#0f172a;color:#fff;padding:9px 16px;border:none;border-radius:8px;font-weight:bold;cursor:pointer">🚀 GO SEND</button>
+    <button onclick="navigator.clipboard.writeText(document.getElementById('skIn').value)" style="padding:7px 12px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;cursor:pointer">📋 Copy</button>
+    <button onclick="document.getElementById('skIn').value='';document.getElementById('skOut').style.display='none'" style="padding:7px 12px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;cursor:pointer">🧹 Clear</button>
+  </div>
+  <div id="skOut" style="display:none;margin-top:10px;padding:12px;background:#f1f5f9;border-radius:8px;font-size:13px"></div>
+
+  <div style="margin-top:14px;border-top:1px solid #e2e8f0;padding-top:12px">
+    <b>🔍 SASIKUMAR AI WEB SEARCH BOX</b>
+    <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+      <input id="skS" placeholder="Search anything on web..." style="flex:1;min-width:200px;padding:11px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px">
+      <button onclick="var q=document.getElementById('skS').value.trim(); if(q) window.open('https://www.google.com/search?q='+encodeURIComponent(q),'_blank')" style="padding:11px 16px;background:#0f172a;color:#fff;border:none;border-radius:8px;font-weight:bold;cursor:pointer">🔍 Search</button>
+      <button onclick="var q=document.getElementById('skS').value.trim(); if(q) window.open('https://www.youtube.com/results?search_query='+encodeURIComponent(q),'_blank')" style="padding:11px 12px;background:#ff0000;color:#fff;border:none;border-radius:8px;cursor:pointer">▶️ YouTube</button>
+    </div>
+  </div>
+</div>
+
+<style>
+body{overflow-x:hidden!important}
+.sk-card{transition:0.2s}
+.sk-card:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(0,0,0,0.08)!important}
+@media(max-width:768px){#skTop{flex-direction:column;text-align:center}#skReplySearch{margin:8px 6px!important}}
+</style>
+<script>
+function updDT(){var el=document.getElementById('skDT'); if(el){var n=new Date(); el.textContent=n.toLocaleString('en-IN',{weekday:'short',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})+' | Chennai'}} setInterval(updDT,1000); updDT();
+</script>
 <!DOCTYPE html>
 <html lang="ta">
 <head>
