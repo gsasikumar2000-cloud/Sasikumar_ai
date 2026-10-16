@@ -57,36 +57,70 @@ button:hover{transform:translateY(-1px)!important;box-shadow:0 4px 12px rgba(0,0
     </div>
   </div>
 
-<!-- SASIKUMAR AI DESIGN CREATOR - BELOW WEB SEARCH -->
-<div id="skDesignCreator" style="margin:14px;padding:18px;background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 50%,#3730a3 100%);color:#fff;border-radius:16px;box-shadow:0 8px 25px rgba(15,23,42,0.25);border:2px solid #fbbf24">
+<!-- SASIKUMAR AI MAKER STUDIO - BELOW WEB SEARCH -->
+<div id="skMakerTools" style="margin:14px;padding:16px;background:#fff;border:2px solid #0f172a;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,0.08)">
   <div style="text-align:center">
-    <div style="font-size:22px;font-weight:800;background:linear-gradient(90deg,#fff,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">👨‍💻 SASIKUMAR AI DESIGN CREATOR</div>
-    <div style="margin-top:10px;display:flex;flex-wrap:wrap;justify-content:center;gap:8px">
-      <span style="background:rgba(255,255,255,0.15);padding:6px 12px;border-radius:20px;font-size:12px">👤 <b>Sasikumar G</b></span>
-      <span style="background:rgba(255,255,255,0.15);padding:6px 12px;border-radius:20px;font-size:12px">📍 Chennai, Tamil Nadu</span>
-      <span style="background:rgba(255,255,255,0.15);padding:6px 12px;border-radius:20px;font-size:12px">🇮🇳 Indian</span>
+    <div style="font-size:17px;font-weight:800;color:#0f172a">🎨 SASIKUMAR AI MAKER STUDIO</div>
+    <div style="font-size:11px;color:#64748b;margin-top:2px">Photo | Image | Audio | Video | PDF - Create & Download</div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px;margin-top:12px">
+
+    <!-- PHOTO MAKER -->
+    <div style="padding:12px;background:linear-gradient(135deg,#dbeafe,#bfdbfe);border-radius:12px;border:1px solid #60a5fa">
+      <div style="text-align:center;font-size:20px">📸</div><b style="display:block;text-align:center;font-size:12px">PHOTO MAKER</b>
+      <input type="file" id="photoFile" accept="image/*" style="width:100%;margin-top:6px;font-size:10px">
+      <select id="photoFilter" style="width:100%;margin-top:5px;padding:4px;border-radius:6px;font-size:11px"><option value="none">Normal</option><option value="grayscale(100%)">Black & White</option><option value="sepia(100%)">Sepia</option><option value="contrast(150%)">High Contrast</option><option value="blur(2px)">Blur</option></select>
+      <button onclick="let f=document.getElementById('photoFile').files[0]; if(!f){alert('Photo select pannunga Anna!');return} let r=new FileReader(); r.onload=e=>{let img=new Image(); img.onload=()=>{let c=document.getElementById('makerCanvas'); let ctx=c.getContext('2d'); c.width=400; c.height=250; ctx.filter=document.getElementById('photoFilter').value; ctx.drawImage(img,0,0,400,250); ctx.filter='none';}; img.src=e.target.result}; r.readAsDataURL(f)" style="width:100%;margin-top:6px;background:#1e3a8a;color:#fff;padding:6px;border:none;border-radius:6px;font-size:11px;cursor:pointer">✨ Make Photo</button>
     </div>
-    <div style="margin-top:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;text-align:left">
-      <div style="background:rgba(255,255,255,0.08);padding:10px;border-radius:10px">
-        <div style="font-size:11px;opacity:0.8">📞 Cell</div><div style="font-weight:bold">98944 40400</div>
-      </div>
-      <div style="background:rgba(255,255,255,0.08);padding:10px;border-radius:10px">
-        <div style="font-size:11px;opacity:0.8">💬 WhatsApp</div><div style="font-weight:bold">95850 80842</div>
-      </div>
-      <div style="background:rgba(255,255,255,0.08);padding:10px;border-radius:10px">
-        <div style="font-size:11px;opacity:0.8">📧 Email</div><div style="font-weight:bold;font-size:11px">gsasikumar2000@gmail.com</div>
-      </div>
+
+    <!-- IMAGE MAKER -->
+    <div style="padding:12px;background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:12px;border:1px solid #fbbf24">
+      <div style="text-align:center;font-size:20px">🖼️</div><b style="display:block;text-align:center;font-size:12px">IMAGE MAKER</b>
+      <input id="imgText" placeholder="SASIKUMAR AI Text" style="width:100%;margin-top:6px;padding:6px;border-radius:6px;border:1px solid #e2e8f0;font-size:11px">
+      <input id="imgColor" type="color" value="#0f172a" style="width:100%;margin-top:5px;height:28px;border-radius:6px">
+      <button onclick="let c=document.getElementById('makerCanvas'); let ctx=c.getContext('2d'); c.width=400; c.height=250; ctx.fillStyle=document.getElementById('imgColor').value; ctx.fillRect(0,0,400,250); ctx.fillStyle='#fbbf24'; ctx.font='bold 18px Poppins'; ctx.textAlign='center'; ctx.fillText(document.getElementById('imgText').value||'SASIKUMAR AI',200,125);" style="width:100%;margin-top:6px;background:#0f172a;color:#fff;padding:6px;border:none;border-radius:6px;font-size:11px;cursor:pointer">🎨 Create Image</button>
     </div>
-    <div style="margin-top:12px;display:flex;flex-wrap:wrap;justify-content:center;gap:6px">
-      <span style="background:#fbbf24;color:#000;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:bold">⚙️ Settings</span>
-      <span style="background:#22c55e;color:#fff;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:bold">🎯 Mission</span>
-      <span style="background:#7c3aed;color:#fff;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:bold">👁️ Vision</span>
-      <span style="background:rgba(255,255,255,0.15);padding:5px 12px;border-radius:20px;font-size:11px">🔒 Privacy Policy</span>
-      <span style="background:rgba(255,255,255,0.15);padding:5px 12px;border-radius:20px;font-size:11px">⚠️ Disclaimer</span>
+
+    <!-- AUDIO MAKER -->
+    <div style="padding:12px;background:linear-gradient(135deg,#dcfce7,#bbf7d0);border-radius:12px;border:1px solid #4ade80">
+      <div style="text-align:center;font-size:20px">🎵</div><b style="display:block;text-align:center;font-size:12px">AUDIO MAKER</b>
+      <div id="audioStat" style="font-size:10px;text-align:center;color:#166534;margin-top:4px">Ready</div>
+      <button id="audBtn" onclick="let b=this; if(b.innerText.includes('Record')){navigator.mediaDevices.getUserMedia({audio:true}).then(s=>{window.aRec=new MediaRecorder(s);window.aChunks=[];aRec.ondataavailable=e=>aChunks.push(e.data);aRec.onstop=()=>{let blob=new Blob(aChunks,{type:'audio/webm'}); let url=URL.createObjectURL(blob); let au=document.getElementById('audioPlay'); au.src=url; au.style.display='block'; document.getElementById('audioDown').href=url;}; aRec.start(); b.innerText='⏹️ Stop'; document.getElementById('audioStat').innerText='Recording...'}).catch(()=>alert('Mic allow pannunga'))}else{aRec.stop(); b.innerText='🎤 Record'; document.getElementById('audioStat').innerText='Done - Play below'}" style="width:100%;margin-top:6px;background:#16a34a;color:#fff;padding:6px;border:none;border-radius:6px;font-size:11px;cursor:pointer">🎤 Record</button>
+      <audio id="audioPlay" controls style="width:100%;margin-top:5px;display:none"></audio>
+      <a id="audioDown" download="sasikumar-audio.webm" style="display:block;text-align:center;font-size:10px;margin-top:4px;color:#16a34a">⬇️ Download Audio</a>
     </div>
-    <div style="margin-top:10px;font-size:10px;opacity:0.7">Design © 2026 SASIKUMAR AI | All Services - Education | Gold | Jobs | Booking | Banking | Crorepati | Referral | Lifestyle</div>
+
+    <!-- VIDEO MAKER -->
+    <div style="padding:12px;background:linear-gradient(135deg,#fce7f3,#fbcfe8);border-radius:12px;border:1px solid #f472b6">
+      <div style="text-align:center;font-size:20px">🎥</div><b style="display:block;text-align:center;font-size:12px">VIDEO MAKER</b>
+      <div id="videoStat" style="font-size:10px;text-align:center;color:#831843;margin-top:4px">Canvas 3s Video</div>
+      <button onclick="let c=document.getElementById('makerCanvas'); let s=c.captureStream(30); let mr=new MediaRecorder(s,{mimeType:'video/webm'}); let ch=[]; mr.ondataavailable=e=>ch.push(e.data); mr.onstop=()=>{let blob=new Blob(ch,{type:'video/webm'}); let url=URL.createObjectURL(blob); let v=document.getElementById('videoPrev'); v.src=url; v.style.display='block'; document.getElementById('videoDown').href=url;}; mr.start(); setTimeout(()=>mr.stop(),3000); document.getElementById('videoStat').innerText='Recording 3s...'" style="width:100%;margin-top:6px;background:#be185d;color:#fff;padding:6px;border:none;border-radius:6px;font-size:11px;cursor:pointer">🎬 Record 3s</button>
+      <video id="videoPrev" controls style="width:100%;margin-top:5px;display:none;border-radius:6px"></video>
+      <a id="videoDown" download="sasikumar-video.webm" style="display:block;text-align:center;font-size:10px;margin-top:4px;color:#be185d">⬇️ Download Video</a>
+    </div>
+
+    <!-- PDF MAKER -->
+    <div style="padding:12px;background:linear-gradient(135deg,#ffedd5,#fed7aa);border-radius:12px;border:1px solid #fb923c;grid-column:span 2">
+      <div style="text-align:center;font-size:20px">📄</div><b style="display:block;text-align:center;font-size:12px">PDF MAKER</b>
+      <textarea id="pdfText" placeholder="Type text for PDF..." style="width:100%;margin-top:6px;padding:6px;border-radius:6px;border:1px solid #e2e8f0;font-size:11px;min-height:50px"></textarea>
+      <div style="display:flex;gap:5px;margin-top:5px"><button onclick="let t=document.getElementById('pdfText').value||'SASIKUMAR AI PDF'; let w=window.open('','_blank'); w.document.write('<pre>'+t+'</pre>'); w.print();" style="flex:1;background:#ea580c;color:#fff;padding:6px;border:none;border-radius:6px;font-size:11px;cursor:pointer">🖨️ Print PDF</button><button onclick="let c=document.getElementById('makerCanvas'); let img=c.toDataURL('image/png'); let w=window.open('','_blank'); w.document.write('<img src=\''+img+'\' style=\'width:100%\'><br><p>'+ (document.getElementById('pdfText').value||'') +'</p>'); w.print();" style="flex:1;background:#0f172a;color:#fff;padding:6px;border:none;border-radius:6px;font-size:11px;cursor:pointer">📷 Canvas to PDF</button></div>
+    </div>
+
+  </div>
+
+  <div style="margin-top:14px;text-align:center;border-top:1px dashed #e2e8f0;padding-top:12px">
+    <canvas id="makerCanvas" width="400" height="250" style="max-width:100%;border:2px dashed #cbd5e1;border-radius:10px;background:#f8fafc"></canvas>
+    <div style="margin-top:8px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap">
+      <button onclick="let c=document.getElementById('makerCanvas'); c.getContext('2d').clearRect(0,0,c.width,c.height)" style="padding:6px 12px;border:1px solid #e2e8f0;border-radius:8px;background:#fff;font-size:11px;cursor:pointer">🧹 Clear Canvas</button>
+      <button onclick="let c=document.getElementById('makerCanvas'); let a=document.createElement('a'); a.download='sasikumar-ai-image.png'; a.href=c.toDataURL(); a.click()" style="padding:6px 12px;background:#0f172a;color:#fff;border:none;border-radius:8px;font-size:11px;cursor:pointer">⬇️ Download PNG</button>
+    </div>
   </div>
 </div>
+
+
+
+
 
 </div>
 
