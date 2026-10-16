@@ -4910,3 +4910,56 @@ div:has(> div:contains("LIVE GOLD")), div:has(> div:contains("LIVE IMAG")) {
   obs.observe(document.body, {childList:true, subtree:true});
 })();
 </script>
+
+<!-- SAFE LOGIN TOP + RED X KILLER - END OF BODY -->
+<script>
+(function(){
+  // 1. KILL RED X forever
+  function nukeRedX(){
+    document.querySelectorAll('*').forEach(el=>{
+      if(el.textContent==='×' || el.textContent==='✕' || el.innerText==='X'){
+        let s=getComputedStyle(el);
+        if(s.position==='fixed' || s.position==='absolute' || el.style.position==='fixed'){
+          if(parseInt(s.top)<100 && parseInt(s.right)<100 || el.getBoundingClientRect().top<80){
+            el.style.display='none'; el.remove();
+          }
+        }
+      }
+      if(el.style && (el.style.backgroundColor==='red' || el.id && el.id.toLowerCase().includes('close'))){
+         if(el.getBoundingClientRect().width<60 && el.getBoundingClientRect().height<60){
+           let r=el.getBoundingClientRect();
+           if(r.top<100 && r.right>window.innerWidth-100) { el.style.display='none'; el.remove(); }
+         }
+      }
+    });
+    // Kill any element with X in top-right corner
+    document.querySelectorAll('div,span,button').forEach(el=>{
+      let rect=el.getBoundingClientRect();
+      if(rect.width>=30 && rect.width<=60 && rect.height>=30 && rect.height<=60 && rect.top<100 && rect.left>window.innerWidth-100){
+         if(el.textContent.trim()==='X' || el.textContent.trim()==='×' || el.innerHTML.includes('×')){
+           el.style.display='none'; el.remove();
+         }
+      }
+    });
+  }
+  setInterval(nukeRedX,1000);
+  nukeRedX();
+
+  // 2. ADD LOGIN TOP BAR - SAFE
+  if(!document.getElementById('skLoginTopFinal')){
+    let topBar=document.createElement('div');
+    topBar.id='skLoginTopFinal';
+    topBar.style.cssText='display:flex;justify-content:center;align-items:center;gap:12px;padding:10px;background:linear-gradient(90deg,#0f172a,#1e3a8a);position:sticky;top:0;z-index:999999;flex-wrap:wrap;box-shadow:0 2px 10px rgba(0,0,0,0.3)';
+    topBar.innerHTML=`
+      <span style="color:#fbbf24;font-weight:bold;font-size:14px;">🙏 SASIKUMAR AI</span>
+      <button onclick="document.getElementById('sasikumarLogin')?.scrollIntoView({behavior:'smooth',block:'center'}) || document.querySelector('[id*=Login]')?.scrollIntoView({behavior:'smooth'}) || window.scrollTo({top:800,behavior:'smooth'})" style="background:#fbbf24;color:#000;padding:7px 18px;border-radius:20px;border:none;font-weight:bold;cursor:pointer;">🔐 LOGIN</button>
+      <button onclick="document.getElementById('sasikumarSignup')?.scrollIntoView({behavior:'smooth'}) || alert('Sign Up: 98944 40400')" style="background:#22c55e;color:#fff;padding:7px 18px;border-radius:20px;border:none;font-weight:bold;cursor:pointer;">🆕 SIGN UP</button>
+      <span style="color:#e2e8f0;font-size:11px;">Cell: 98944 40400 | WA: 95850 80842</span>
+      <span id="skTopTime" style="color:#94a3b8;font-size:11px;"></span>
+    `;
+    document.body.insertBefore(topBar, document.body.firstChild);
+    setInterval(()=>{ let e=document.getElementById('skTopTime'); if(e) e.textContent=new Date().toLocaleString('en-IN',{hour:'2-digit',minute:'2-digit'}); },60000);
+    let e=document.getElementById('skTopTime'); if(e) e.textContent=new Date().toLocaleString('en-IN',{hour:'2-digit',minute:'2-digit'});
+  }
+})();
+</script>
