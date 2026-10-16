@@ -4086,7 +4086,14 @@ function printAppraisalReport(btn){
     "<meta name='viewport' content='width=device-width,initial-scale=1'>" +
     "<title>SASIKUMAR AI - Appraisal Report</title>" +
     "<style>body{font-family:Arial,sans-serif;margin:20px;color:#111;background:#fff}.report-box{max-width:850px;margin:auto}</style>" +
-    "</head><body>" + el.outerHTML + "
+    "</head><body>" + el.outerHTML + "</body></html>"
+  );
+
+  w.document.close();
+  setTimeout(function(){ try { w.print(); } catch(e) {} }, 700);
+}
+</script>
+
 <!-- SK_ALL_CONTENT_CARD_BUTTONS_V1 -->
 <style id="SK_ALL_CONTENT_CARD_BUTTONS_V1">
 /* Colorful buttons for existing content cards; preserve their handlers. */
@@ -4212,13 +4219,7 @@ function printAppraisalReport(btn){
 </style>
 <!-- END SK_ALL_CONTENT_CARD_BUTTONS_V1 -->
 
-</body></html>"
-  );
-
-  w.document.close();
-  setTimeout(function(){ try { w.print(); } catch(e) {} }, 700);
-}
-
+<script>
 function smartHomeAsk(service) {
   const chat = document.getElementById("chat");
   const input = document.querySelector("#chat input, #chat textarea");
@@ -10282,6 +10283,7 @@ html body .skMainLiveGrid > .skMainFeatureCard {
       else if (action === 'hallmark' && typeof window.goldHallmark === 'function') window.goldHallmark();
       else if (action === 'jobs' && typeof window.openJobsFolder === 'function') window.openJobsFolder();
       else if (action === 'education' && typeof window.openEducationFolder === 'function') window.openEducationFolder();
+      else if (action === 'banking' && typeof window.bankingServices === 'function') window.bankingServices();
       else if (action === 'wallet' && typeof window.skOpenPay2AllV1 === 'function') window.skOpenPay2AllV1();
       else if (action === 'reply') {
         var input = document.getElementById('q');
