@@ -4086,7 +4086,44 @@ function printAppraisalReport(btn){
     "<meta name='viewport' content='width=device-width,initial-scale=1'>" +
     "<title>SASIKUMAR AI - Appraisal Report</title>" +
     "<style>body{font-family:Arial,sans-serif;margin:20px;color:#111;background:#fff}.report-box{max-width:850px;margin:auto}</style>" +
-    "</head><body>" + el.outerHTML + "
+    "
+<style>
+#skListBtn{position:fixed;top:12px;right:12px;z-index:9999999;background:#000;color:#FFD700;border:2px solid #FFD700;border-radius:50%;width:48px;height:48px;font-size:24px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.5);}
+#allServicesBox{display:block;}
+</style>
+<button id="skListBtn" onclick="toggleAllServices()" title="All Services">☰</button>
+<script>
+function toggleAllServices(){
+  var els = document.querySelectorAll('[id*="ALL"], [class*="ALL SERVICES"], [id*="allServices"]');
+  var box = null;
+  // find ALL SERVICES section by text
+  var all = document.body.innerHTML;
+  var target = document.querySelector('section, div, main, article');
+  // try find by content
+  var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT);
+  var found=null;
+  while(walker.nextNode()){
+    var n=walker.currentNode;
+    if(n.textContent && n.textContent.includes('ALL SERVICES') && n.children.length>5){ found=n; break; }
+  }
+  if(found){
+    if(found.style.display==='none'){ found.style.display='block'; found.scrollIntoView({behavior:'smooth'}); }
+    else{ found.scrollIntoView({behavior:'smooth', block:'start'}); found.style.display='block'; found.style.border='3px solid #FFD700'; setTimeout(()=>found.style.border='',2000); }
+  } else {
+    window.scrollTo({top: document.body.scrollHeight/2, behavior:'smooth'});
+    alert('ALL SERVICES - Scroll down to see all cards');
+  }
+}
+// Make ALL SERVICES cards clickable
+document.addEventListener('click', function(e){
+  var card = e.target.closest('div, a, section');
+  if(card && card.textContent && (card.textContent.includes('Main Home') || card.textContent.includes('Gold & Silver'))){
+    card.style.transform='scale(0.95)';
+    setTimeout(()=>card.style.transform='',150);
+  }
+});
+</script>
+</head><body>" + el.outerHTML + "
 <!-- SK_ALL_CONTENT_CARD_BUTTONS_V1 -->
 <style id="SK_ALL_CONTENT_CARD_BUTTONS_V1">
 /* Colorful buttons for existing content cards; preserve their handlers. */
