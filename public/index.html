@@ -1,55 +1,53 @@
 
-<style id="skMobileFitColorFont">
-/* SASIKUMAR AI - MOBILE FIT + COLOR + FONT SIZE */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;600&display=swap');
-:root{--fs-sm:clamp(11px, 2.5vw, 13px);--fs-md:clamp(13px, 3vw, 15px);--fs-lg:clamp(16px, 4vw, 20px);--fs-xl:clamp(20px, 5vw, 26px)}
-body{font-size:var(--fs-md)!important;line-height:1.5!important}
-#skTop{padding:12px 10px!important}
-#skTop b{font-size:var(--fs-lg)!important}
-#skMakerTools b,#skAllContent b{font-size:var(--fs-md)!important}
+<style id="skMobileFitAll">
+/* SASIKUMAR AI - MOBILE FIT COLORFUL ALL */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
+*{box-sizing:border-box}
+body{font-family:'Poppins',sans-serif!important;background:linear-gradient(135deg,#f8fafc,#e2e8f0)!important}
 
-/* COLOR DIFFERENT FOR EACH CARD */
-#skAllContent > div > div:nth-child(1){background:linear-gradient(135deg,#dbeafe,#bfdbfe)!important;border-color:#60a5fa!important}
-#skAllContent > div > div:nth-child(2){background:linear-gradient(135deg,#fef3c7,#fde68a)!important;border-color:#fbbf24!important}
-#skAllContent > div > div:nth-child(3){background:linear-gradient(135deg,#dcfce7,#bbf7d0)!important;border-color:#4ade80!important}
-#skAllContent > div > div:nth-child(4){background:linear-gradient(135deg,#fce7f3,#fbcfe8)!important;border-color:#f472b6!important}
-#skAllContent > div > div:nth-child(5){background:linear-gradient(135deg,#ffedd5,#fed7aa)!important;border-color:#fb923c!important}
-#skAllContent > div > div:nth-child(6){background:linear-gradient(135deg,#e0e7ff,#c7d2ff)!important;border-color:#818cf8!important}
-#skAllContent > div > div:nth-child(7){background:linear-gradient(135deg,#f0fdf4,#bbf7d0)!important;border-color:#22c55e!important}
-#skAllContent > div > div:nth-child(8){background:linear-gradient(135deg,#fdf4ff,#f5d0fe)!important;border-color:#e879f9!important}
+/* COLORFUL ALL SECTIONS */
+#skTop{background:linear-gradient(135deg,#0f172a,#1e3a8a)!important;color:#fff!important;border-radius:16px!important;border:2px solid #fbbf24!important}
+#skTop b{color:#fbbf24!important}
+#skFontControls{background:linear-gradient(135deg,#fef3c7,#fde68a)!important;border:2px solid #fbbf24!important;border-radius:12px!important;padding:8px!important}
+#skReplySearch{background:linear-gradient(135deg,#dbeafe,#bfdbfe)!important;border:2px solid #60a5fa!important;border-radius:16px!important}
+#skReplyTools{background:linear-gradient(135deg,#f0fdf4,#bbf7d0)!important;border:2px solid #22c55e!important;border-radius:12px!important}
+#skMakerTools{background:linear-gradient(135deg,#fff,#f8fafc)!important;border:2px solid #0f172a!important}
+#skMiniOffice{background:linear-gradient(135deg,#fdf4ff,#f5d0fe)!important;border:2px solid #c084fc!important}
+#skCodeMaker{background:linear-gradient(135deg,#0f172a,#1e293b)!important;border:2px solid #fbbf24!important}
+#skAllContent > div > div{border-radius:12px!important;transition:transform 0.2s!important}
+#skAllContent > div > div:active{transform:scale(0.97)}
 
-/* MAKER COLORS */
-#skMakerTools > div > div > div:nth-child(1){background:linear-gradient(135deg,#dbeafe,#bfdbfe)!important}
-#skMakerTools > div > div > div:nth-child(2){background:linear-gradient(135deg,#fef3c7,#fde68a)!important}
-#skMakerTools > div > div > div:nth-child(3){background:linear-gradient(135deg,#dcfce7,#bbf7d0)!important}
-#skMakerTools > div > div > div:nth-child(4){background:linear-gradient(135deg,#fce7f3,#fbcfe8)!important}
-#skMakerTools > div > div > div:nth-child(5){background:linear-gradient(135deg,#ffedd5,#fed7aa)!important}
-
-/* MOBILE FIT - 100% */
+/* MOBILE FIT 100% */
 @media (max-width: 768px){
-  body{padding:0 6px!important}
-  #skTop{flex-direction:column!important;gap:8px!important;text-align:center!important}
-  #skReplySearch{margin:10px 6px!important;padding:12px!important}
-  #skAllContent{margin:10px 6px!important}
-  #skAllContent > div{grid-template-columns:1fr 1fr!important;gap:8px!important}
-  #skMakerTools{margin:10px 6px!important;padding:12px!important}
-  #skMakerTools > div > div{grid-template-columns:1fr 1fr!important}
-  #makerCanvas{width:100%!important;height:auto!important;max-width:340px!important}
-  button{font-size:var(--fs-sm)!important;padding:8px 12px!important}
-  input,textarea,select{font-size:16px!important} /* prevent zoom on iOS */
+  body{padding:4px!important;margin:0!important}
+  #skTop{padding:12px 8px!important;flex-direction:column!important;text-align:center!important}
+  #skTop b{font-size:18px!important}
+  #skFontControls{flex-wrap:wrap!important;gap:4px!important}
+  #skFontControls button{flex:1 1 45%!important;font-size:11px!important;padding:8px!important}
+  #skReplySearch{margin:8px 4px!important;padding:10px!important}
+  #skReplySearch textarea{font-size:16px!important;min-height:90px!important}
+  #skReplyTools{margin:6px 4px!important;padding:8px!important;gap:4px!important}
+  #skReplyTools button{flex:1 1 30%!important;font-size:10px!important;padding:6px 8px!important}
+  #skMakerTools{margin:8px 4px!important;padding:10px!important}
+  #skMakerTools > div{grid-template-columns:1fr 1fr!important;gap:8px!important}
+  #skMiniOffice{margin:8px 4px!important;padding:10px!important}
+  #skCodeMaker{margin:8px 4px!important;padding:10px!important}
+  #skCodeMaker > div{grid-template-columns:1fr!important}
+  #makerCanvas,#paintCanvas{width:100%!important;max-width:100%!important;height:auto!important}
+  #codePreview{height:200px!important}
+  button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+  input,textarea,select{font-size:16px!important}
 }
 @media (max-width: 480px){
-  #skAllContent > div{grid-template-columns:1fr!important}
-  #skMakerTools > div > div{grid-template-columns:1fr!important}
-  #skMakerTools > div > div > div:last-child{grid-column:span 1!important}
-  #skTop b{font-size:18px!important}
+  #skMakerTools > div{grid-template-columns:1fr!important}
+  #skTop b{font-size:16px!important}
+  #skReplyTools button{flex:1 1 45%!important}
+  #skMiniOffice > div > div{grid-template-columns:1fr!important}
 }
-
-/* FONT SIZE CONTROLS */
-.sk-font-controls{display:flex;gap:6px;justify-content:center;margin:10px 0;flex-wrap:wrap}
-.sk-font-controls button{padding:6px 12px;border-radius:20px;border:1px solid #e2e8f0;background:#fff;font-size:11px;cursor:pointer;font-weight:600}
-.sk-font-controls button.active{background:#0f172a;color:#fff}
 </style>
+
+
+
 
 <style id="skDesignUpgrade">
 /* SASIKUMAR AI PREMIUM DESIGN */
