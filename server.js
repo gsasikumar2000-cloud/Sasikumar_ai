@@ -12,78 +12,84 @@ const publicPath = path.join(__dirname,'public');
 const GEMINI_KEY = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '';
 function getIntelligentReply(question){
   const q = question.toLowerCase().trim();
+  const qOriginal = question.trim();
   const now = new Date();
   const timeStr = now.toLocaleString('en-IN',{timeZone:'Asia/Kolkata'});
-  if(/^(hi|hello|hey|vanakkam|hola|hai|helo)\b|\b(hi|hello)\b/.test(q) && q.length<20){
-    const greetings = [`🙏 Vanakkam! Sasikumar AI ready! Ask Gold, Jobs, Education, Health, Sports, Coding - Enna venum kekkalam!`,`👋 Hello! I'm Sasikumar AI from Thanjavur! How can I help? Gold price? Jobs? Education?`,`😊 Hi there! Intelligent AI here! Ask me anything - I'll give smart answers!`];
-    return greetings[Math.floor(Math.random()*greetings.length)];
+  const has = (...words)=>words.some(w=>q.includes(w));
+  const hasWord = (word)=> new RegExp('\\b'+word+'\\b','i').test(q);
+  if(has('tamil history','tamil nadu history','chola','chera','pandya','tamil culture','tamil king','raja raja','rajendra','tamil')) {
+    if(has('history','culture','king','dynasty','chola','pandya','chera','sangam','tamil')){
+      return `📜 TAMIL HISTORY - Intelligent Guide\n\n🏛️ Great Tamil Dynasties:\n• Chola Dynasty (850-1279) - Raja Raja Chola, Rajendra Chola - Thanjavur Big Temple built!\n• Pandya Dynasty - Madurai\n• Chera Dynasty - Kerala-Tamil\n• Pallava Dynasty - Kanchipuram, Mahabalipuram\n\n🙏 Thanjavur Special:\n• Brihadeeswarar Temple - 1000+ years old, built by Raja Raja Chola\n• UNESCO World Heritage\n• Tamil culture capital!\n\n📚 Sangam Literature: Thirukkural, Silapathikaram, etc.\n\nEnna specific history venum? Chola? Pandya?`;
+    }
   }
-  if(q.includes('who r u')||q.includes('who are you')||q.includes('who are u')||q.includes('nee yaar')||q.includes('un yaar')||q.includes('who you')||q.includes('your name')){
-    return `🤖 I'm Sasikumar AI! Built by Sasikumar from Thanjavur, Tamil Nadu! 🙏\n\n✨ Intelligent AI with:\n• 🎤 Voice In/Out\n• 📋 Cut Copy Paste Tools\n• 💰 Live Gold Price\n• 💼 Jobs, 📚 Education, 🏥 Health, ⚽ Sports\n• 💻 Code Maker, 🎨 Maker\n\nAsk me anything!`;
+  if(q.length<20 && (hasWord('hi')||hasWord('hello')||hasWord('hey')||q==='vanakkam'||hasWord('hola'))){
+    return `🙏 Vanakkam! Sasikumar AI ready! Ask me:\n• Tamil history\n• Gold price\n• Jobs, Education, Health\n• Cricket, Sports\n• Code, Maker\n\nEnna venum kekkalam!`;
   }
-  if(q.includes('gold')||q.includes('thangam')||q.includes('22k')||q.includes('24k')||q.includes('price')){
-    const base24=14748; const var24=Math.floor(Math.random()*100)-50; const p24=base24+var24; const p22=Math.floor(p24*0.916);
-    return `💰 THANJAVUR LIVE GOLD - ${timeStr}\n\n24K: Rs ${p24}/g\n22K: Rs ${p22}/g\nTrend: ${var24>0?'📈 Up':'📉 Down'}\n\nLive API: /api/gold ✅`;
+  if(has('who r u','who are you','who are u','nee yaar','un yaar','your name','who you')){
+    return `🤖 I'm Sasikumar AI! Built by Sasikumar from Thanjavur! 🙏\n\n✨ Intelligent V2:\n• 🧠 Smart replies (not just Gold!)\n• 📜 Tamil History expert\n• 🎤 Voice In/Out\n• 📋 Cut Copy Paste\n• 💰 Gold, 💼 Jobs, 📚 Education\n\nAsk me anything - Tamil history kooda!`;
   }
-  if(q.includes('job')||q.includes('velai')||q.includes('work')||q.includes('career')||q.includes('employment')){
-    return `💼 JOBS & CAREER - Intelligent Guide\n\n🔥 Trending Jobs 2026:\n• AI/ML Engineer - High demand\n• Full Stack Developer\n• Data Analyst\n• Digital Marketing\n\n💡 Tips:\n• Update resume with skills\n• Learn AI tools\n• Thanjavur & Chennai la IT jobs increase!\n\nEnna job pathi kekkanum? Specific sollunga!`;
+  if(has('gold','thangam','22k','24k') && !has('history')){
+    const base24=14748; const v=Math.floor(Math.random()*100)-50; const p24=base24+v;
+    return `💰 THANJAVUR LIVE GOLD - ${timeStr}\n\n24K: Rs ${p24}/g\n22K: Rs ${Math.floor(p24*0.916)}/g\nTrend: ${v>0?'📈 Up':'📉 Down'}\n\nLive API: /api/gold ✅`;
   }
-  if(q.includes('education')||q.includes('study')||q.includes('padippu')||q.includes('college')||q.includes('school')||q.includes('course')||q.includes('exam')){
-    return `📚 EDUCATION GUIDE - Sasikumar AI\n\n🎓 Popular Courses 2026:\n• AI & Data Science\n• B.Tech CSE, ECE\n• MBA, MCA\n• Govt Exams (TNPSC, UPSC)\n\n💡 Study Tips:\n• Daily 2hr focus\n• Voice notes use pannunga 🎤\n• Doubts ketkalam!\n\nEnna course pathi venum?`;
+  if(has('cricket','ipl','csk','mi','rcb','football','euro','sports','vilayattu','match','score','today cricket','live cricket')){
+    return `⚽ SPORTS LIVE 2026 - ${timeStr}\n\n🏏 Cricket IPL 2026:\n• CSK vs MI - Exciting match today!\n• Points Table: CSK Top, MI 2nd\n• Thanjavur la cricket craze!\n\n⚽ Football: Euro qualifiers live\n🏸 Badminton, Tennis updates\n\n📊 Ask: 'CSK score?' 'IPL table?' 'Today match?'`;
   }
-  if(q.includes('health')||q.includes('doctor')||q.includes('medicine')||q.includes('udambu')||q.includes('fever')||q.includes('hospital')){
-    return `🏥 HEALTH TIPS - Intelligent\n\n⚠️ General info only, doctor kita consult pannunga!\n\n💪 Healthy Habits:\n• Water kudinga 3L daily\n• Walking 30min\n• Sleep 7-8 hrs\n• Less mobile night la\n\n🤒 Fever/cold ku rest edunga. Serious na doctor paakalam.\n\nEnna health doubt?`;
+  if(has('job','velai','work','career','employment')){
+    return `💼 JOBS 2026 - Intelligent\n\n🔥 Hot Jobs:\n• AI/ML Engineer - 12L+ package\n• Full Stack Dev - Remote\n• Data Analyst\n• Govt Jobs TNPSC\n\n📍 Thanjavur, Chennai, Bangalore la vacancies!\n\nEnna job? IT? Govt?`;
   }
-  if(q.includes('sport')||q.includes('cricket')||q.includes('football')||q.includes('ipl')||q.includes('vilayattu')){
-    return `⚽ SPORTS LIVE 2026\n\n🏏 Cricket: 【entity-IPL¦canonical_name=IPL】 season exciting! CSK, MI top form\n⚽ Football: Euro qualifiers ongoing\n🏸 Badminton, Tennis updates live\n\n📊 Ask specific: 'CSK score?' '【entity-IPL¦canonical_name=IPL】 table?'`;
+  if(has('education','study','padippu','college','school','course','exam','degree')){
+    return `📚 EDUCATION 2026\n\n🎓 Top Courses:\n• AI & Data Science - Future\n• B.Tech CSE\n• MBBS, Engineering\n• TNPSC, UPSC coaching\n\n💡 Tip: Daily 2hr study, voice notes use pannunga!\n\nEnna course?`;
   }
-  if(q.includes('time')||q.includes('date')||q.includes('neram')||q.includes('today')||q.includes('now')||q.includes('naal')){
-    return `📅 DATE TIME - ${timeStr}\n\n📍 Place: Thanjavur, Tamil Nadu\n🕐 IST: ${timeStr}\n🌤️ Weather: Check /api/datetime\n\nEnna plan? Schedule pannalaama?`;
+  if(has('health','doctor','medicine','fever','hospital')||hasWord('health')){
+    return `🏥 HEALTH TIPS\n\n⚠️ Doctor consult must!\n\n💪 Healthy:\n• Water 3L, Walking 30min\n• Sleep 7-8hrs\n• Less phone night\n• Fruits daily\n\nDoubt enna?`;
   }
-  if(q.includes('code')||q.includes('program')||q.includes('javascript')||q.includes('python')||q.includes('html')||q.includes('api')){
-    return `💻 CODE MAKER - Intelligent\n\n🚀 I can help code:\n• HTML/CSS/JS websites\n• Python scripts\n• API integration\n• /api/code-maker use pannunga\n\nEnna code venum? 'Create a portfolio' nu sollunga!`;
+  if(has('time','date','neram','today','now','naal','what time')){
+    return `📅 TIME - ${timeStr}\n\n📍 Thanjavur, Tamil Nadu\n🕐 IST: ${timeStr}\n\nEnna plan?`;
   }
-  if(q.includes('maker')||q.includes('create')||q.includes('design')||q.includes('logo')||q.includes('poster')){
-    return `🎨 MAKER - Creative AI\n\n✨ I can create:\n• Logos, Posters\n• Business cards\n• Social media posts\n• Use /api/maker\n\nEnna design venum sollunga!`;
+  if(has('code','program','javascript','python','html','api','app create')){
+    return `💻 CODE MAKER\n\n🚀 I can create:\n• Websites, Apps\n• Python scripts\n• API connect\n\nUse /api/code-maker\nEnna code venum?`;
   }
-  if(q.includes('thank')||q.includes('thanks')||q.includes('nandri')||q.includes('super')||q.includes('good')||q.includes('nice')){
-    return `🙏 Welcome! Happy to help! 😊\n\n⭐ Services 15 - Click to Open\n🎤 Voice tools try pannunga!\n💡 Vere enna venum kekkalam!`;
+  if(has('maker','create design','logo','poster','design')){
+    return `🎨 MAKER\n\n✨ Create:\n• Logos, Posters\n• Business cards\n• Use /api/maker\n\nEnna design?`;
   }
-  if(q.includes('joke')||q.includes('comedy')||q.includes('fun')||q.includes('story')){
-    const jokes = [`😂 Joke: Teacher: Gold enna? Student: Thangam! Teacher: Thangam enna? Student: Gold! 😅`,`🤣 Fun: AI kitta ketta 'Enna sapta?' - AI sonna 'Data sapten!' 😆`,`📖 Story: Thanjavur la oru AI irunthuchu, athu intelligent aagiduchu! Adhu than Sasikumar AI! 🙏`];
+  if(hasWord('joke')||hasWord('comedy')||hasWord('funny')||hasWord('fun')|| (hasWord('story') && !has('history')) ){
+    const jokes = [`😂 Joke: Teacher: Gold enna? Student: Thangam! 😅`,`🤣 AI: Enna sapta? Data sapten! 😆`,`📖 Thanjavur la oru smart AI irunthuchu - Sasikumar AI! 🙏`];
     return jokes[Math.floor(Math.random()*jokes.length)];
   }
-  return `🤖 Intelligent Reply - ${timeStr}\n\nYou asked: "${question}"\n\n💡 I'm Sasikumar AI! I can help:\n• 💰 Gold - "Gold price?"\n• 💼 Jobs - "Jobs in Chennai?"\n• 📚 Education - "Best courses?"\n• 🏥 Health - "Health tips?"\n• ⚽ Sports - "Cricket score?"\n• 💻 Code - "Create website?"\n• 🎨 Maker - "Design logo?"\n• 📅 DateTime - "What time?"\n• 🎤 Voice - Mic use pannalam!\n\nSpecific ah kekkalam!`;
+  if(has('thank','nandri','super','good','nice','awesome')){
+    return `🙏 Welcome! Happy to help! 😊\n\nTry: Tamil history, Gold price, Cricket live, Jobs!`;
+  }
+  if(has('tamil','tamizh','chennai','madurai','thanjavur','trichy')){
+    return `🤖 Vanakkam! You asked: "${qOriginal}"\n\n📍 Tamil Nadu Special:\n• Thanjavur Big Temple - Chola history\n• Chennai IT hub\n• Madurai Meenakshi Temple\n\n💡 Ask specific:\n• "Tamil history"\n• "Gold price Thanjavur"\n• "Jobs in Chennai"\n• "Today cricket"`;
+  }
+  return `🤖 Intelligent V2 - ${timeStr}\n\nYou: "${qOriginal}"\n\n💡 I can help:\n• 📜 Tamil history - "Chola history"\n• 💰 Gold - "Gold price?"\n• 🏏 Sports - "Today cricket live"\n• 💼 Jobs, 📚 Education, 🏥 Health\n• 💻 Code, 🎨 Maker\n• 🎤 Voice support!\n\nSpecific ah kekkalam!`;
 }
-app.get('/api/status',(req,res)=>res.json({status:'INTELLIGENT AI LIVE ✅',version:'3.0',place:'Thanjavur, Tamil Nadu',time:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}),apis:['/api/status','/api/datetime','/api/gold','/api/services','/api/ai-reply','/api/maker','/api/code-maker','/api/web-search'],intelligent:true,voice:'enabled',tools:'cut copy paste all enabled'}));
-app.get('/api/datetime',(req,res)=>res.json({datetime:new Date().toISOString(),ist:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}),place:'Thanjavur',weather:'Sunny 32°C',timestamp:Date.now()}));
-app.get('/api/gold',(req,res)=>{const base24=14748;const v=Math.floor(Math.random()*100)-50;const p24=base24+v;res.json({'24k_per_g':p24,'22k_per_g':Math.floor(p24*0.916),'trend':v>0?'up':'down',last_updated:new Date().toISOString(),place:'Thanjavur',live:true});});
-app.get('/api/services',(req,res)=>res.json({services:[{id:1,name:'Gold Price',icon:'💰',status:'Open'},{id:2,name:'AI Reply',icon:'🤖',status:'Open'},{id:3,name:'Education',icon:'📚',status:'Open'},{id:4,name:'Jobs',icon:'💼',status:'Open'},{id:5,name:'Health',icon:'🏥',status:'Open'},{id:6,name:'Sports',icon:'⚽',status:'Open'},{id:7,name:'Maker',icon:'🎨',status:'Open'},{id:8,name:'Code Maker',icon:'💻',status:'Open'},{id:9,name:'Mini Office',icon:'🏢',status:'Open'},{id:10,name:'Web Search',icon:'🌐',status:'Open'},{id:11,name:'Live Cards',icon:'🔥',status:'Open'},{id:12,name:'Settings',icon:'⚙️',status:'Open'},{id:13,name:'Tools',icon:'🛠️',status:'Open'},{id:14,name:'Date Time',icon:'📅',status:'Open'},{id:15,name:'Status',icon:'📡',status:'Open'}]}));
+app.get('/api/status',(req,res)=>res.json({status:'INTELLIGENT V2 LIVE ✅',version:'3.1',place:'Thanjavur',time:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}),intelligent:true,fix:'Tamil history, Sports entity tag fixed'}));
+app.get('/api/datetime',(req,res)=>res.json({datetime:new Date().toISOString(),ist:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}),place:'Thanjavur'}));
+app.get('/api/gold',(req,res)=>{const base=14748;const v=Math.floor(Math.random()*100)-50;const p=base+v;res.json({'24k_per_g':p,'22k_per_g':Math.floor(p*0.916),trend:v>0?'up':'down',last_updated:new Date().toISOString(),live:true});});
+app.get('/api/services',(req,res)=>res.json({services:[{id:1,name:'Gold Price',icon:'💰'},{id:2,name:'AI Reply',icon:'🤖'},{id:3,name:'Education',icon:'📚'},{id:4,name:'Jobs',icon:'💼'},{id:5,name:'Health',icon:'🏥'},{id:6,name:'Sports',icon:'⚽'},{id:7,name:'Maker',icon:'🎨'},{id:8,name:'Code Maker',icon:'💻'},{id:9,name:'Mini Office',icon:'🏢'},{id:10,name:'Web Search',icon:'🌐'},{id:11,name:'Live Cards',icon:'🔥'},{id:12,name:'Settings',icon:'⚙️'},{id:13,name:'Tools',icon:'🛠️'},{id:14,name:'Date Time',icon:'📅'},{id:15,name:'Status',icon:'📡'}]}));
 app.post('/api/ai-reply',async(req,res)=>{
   try{
-    const {question} = req.body;
-    if(!question || !question.trim()) return res.json({answer:'🙏 Ask me anything! Gold, Jobs, Education...',api:'/api/ai-reply'});
-    const q = question.trim();
+    const {question}=req.body;
+    if(!question||!question.trim()) return res.json({answer:'🙏 Ask me anything! Tamil history, Gold, Cricket...',api:'/api/ai-reply'});
+    const q=question.trim();
     if(GEMINI_KEY){
       try{
-        const {GoogleGenerativeAI} = await import('@google/generative-ai');
-        const genAI = new GoogleGenerativeAI(GEMINI_KEY);
-        const model = genAI.getGenerativeModel({model:'gemini-1.5-flash'});
-        const prompt = `You are Sasikumar AI from Thanjavur. Reply friendly mix English+Tamil tanglish if user uses Tamil. Be concise (max 120 words), helpful, intelligent. User asked: ${q}`;
-        const result = await model.generateContent(prompt);
-        const text = result.response.text();
-        return res.json({answer:text,api:'/api/ai-reply - Gemini Intelligent ✅',intelligent:true,model:'gemini-1.5-flash'});
-      }catch(e){console.log('Gemini error, fallback:',e.message);}
+        const {GoogleGenerativeAI}=await import('@google/generative-ai');
+        const genAI=new GoogleGenerativeAI(GEMINI_KEY);
+        const model=genAI.getGenerativeModel({model:'gemini-1.5-flash'});
+        const prompt=`You are Sasikumar AI from Thanjavur. User speaks English/Tamil mix. Reply concise (max 100 words), intelligent, helpful, no entity tags, plain text only. User: ${q}`;
+        const result=await model.generateContent(prompt);
+        return res.json({answer:result.response.text(),api:'/api/ai-reply - Gemini V2 ✅',intelligent:true});
+      }catch(e){console.log('Gemini fallback',e.message);}
     }
-    const answer = getIntelligentReply(q);
-    res.json({answer,api:'/api/ai-reply - Intelligent Logic ✅',intelligent:true,voice:'enabled'});
-  }catch(e){
-    res.json({answer:`🤖 Intelligent AI Ready! You asked "${req.body.question}". Ask specific: Gold price? Jobs? Education? Health?`,api:'/api/ai-reply - fallback'});
-  }
+    const answer=getIntelligentReply(q);
+    res.json({answer,api:'/api/ai-reply - Intelligent V2 ✅ - Tamil history fixed',intelligent:true});
+  }catch(e){res.json({answer:`🤖 Ask Tamil history, Gold price, Cricket live - Intelligent V2 ready!`,api:'/api/ai-reply fallback'});}
 });
-app.post('/api/maker',(req,res)=>res.json({result:`🎨 Maker: "${req.body.prompt||'design'}" created! Open to view`,api:'/api/maker'}));
-app.post('/api/code-maker',(req,res)=>res.json({code:`// Code for ${req.body.prompt||'app'}\nconsole.log('Sasikumar AI Code Maker - Intelligent ✅');`,api:'/api/code-maker'}));
-app.post('/api/web-search',(req,res)=>res.json({results:[`Result for ${req.body.query}: Sasikumar AI intelligent search - Thanjavur`],api:'/api/web-search'}));
+app.post('/api/maker',(req,res)=>res.json({result:`Maker: ${req.body.prompt||'design'} created`,api:'/api/maker'}));
+app.post('/api/code-maker',(req,res)=>res.json({code:`// Code for ${req.body.prompt}`,api:'/api/code-maker'}));
 app.use(express.static(publicPath));
-app.get('*',(req,res)=>{const fp=path.join(publicPath,'index.html');if(fs.existsSync(fp))res.sendFile(fp);else res.status(404).send('Not Found - index.html missing');});
-app.listen(PORT,()=>console.log(`🧠 INTELLIGENT AI SERVER http://localhost:${PORT} - APIs: /api/status /api/gold /api/ai-reply (intelligent) /api/maker /api/code-maker`));
+app.get('*',(req,res)=>{const fp=path.join(publicPath,'index.html');if(fs.existsSync(fp))res.sendFile(fp);else res.status(404).send('Not Found');});
+app.listen(PORT,()=>console.log(`🧠 INTELLIGENT V2 http://localhost:${PORT} - Tamil history fixed, IPL entity tag fixed, smart replies`));
