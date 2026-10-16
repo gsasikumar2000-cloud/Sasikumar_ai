@@ -4212,6 +4212,59 @@ function printAppraisalReport(btn){
 </style>
 <!-- END SK_ALL_CONTENT_CARD_BUTTONS_V1 -->
 
+
+<script id="sk-all-window">
+(function(){
+var st=document.createElement('style');
+st.textContent='#skAllFab{position:fixed;right:14px;bottom:14px;z-index:99998;background:#d4a017;color:#000;border:0;border-radius:30px;padding:12px 18px;font-weight:700;font-size:15px}#skAllOv{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.75)}#skAllBox{position:absolute;left:8px;right:8px;top:30px;bottom:30px;background:#111;color:#fff;border:2px solid #d4a017;border-radius:16px;display:flex;flex-direction:column;overflow:hidden}#skAllHead{display:flex;justify-content:space-between;padding:12px 14px;background:#1c1c1c;color:#d4a017}#skAllX{cursor:pointer;font-size:20px}#skAllGrid{flex:1;overflow-y:auto;padding:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-content:start}.skTile{height:96px;background:#222;border:1px solid #444;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:4px;cursor:pointer}.skTile .i{font-size:30px}.skTile .t{font-size:11px;margin-top:6px;overflow:hidden;max-height:26px}';
+document.head.appendChild(st);
+var fab=document.createElement('button');fab.id='skAllFab';fab.textContent='⚡ ALL';
+var ov=document.createElement('div');ov.id='skAllOv';
+ov.innerHTML='<div id="skAllBox"><div id="skAllHead"><b>⚡ ALL SERVICES</b><span id="skAllX">✖</span></div><div id="skAllGrid"></div></div>';
+document.body.appendChild(fab);document.body.appendChild(ov);
+var grid=ov.querySelector('#skAllGrid');
+function tile(ic,ti,fn){
+var d=document.createElement('div');d.className='skTile';
+d.innerHTML='<div class="i"></div><div class="t"></div>';
+d.firstChild.textContent=ic||'✨';d.lastChild.textContent=ti;
+d.onclick=function(){ov.style.display='none';fn();};
+grid.appendChild(d);
+}
+function build(){
+grid.innerHTML='';var seen={};
+document.querySelectorAll('.service-card, button').forEach(function(el){
+if(ov.contains(el)||el===fab)return;
+var ic,ti;
+if(el.classList.contains('service-card')){
+var a=el.querySelector('.service-icon'),b=el.querySelector('.service-title');
+if(!a||!b)return;ic=a.textContent.trim();ti=b.textContent.trim();
+}else{
+var sp=el.querySelector('span'),sm=el.querySelector('small');
+if(!sp||!sm||!el.getAttribute('onclick'))return;
+ic=(el.firstChild&&el.firstChild.nodeType===3)?el.firstChild.textContent.trim():'✨';
+ti=sp.textContent.trim();
+}
+if(!ti||seen[ti])return;seen[ti]=1;
+tile(ic,ti,function(){el.click();});
+});
+[["🏏","Sports","/sports/"],["🇮🇳","Indian Leadership","/indian-leadership.html"]].forEach(function(x){
+tile(x[0],x[1],function(){location.href=x[2];});
+});
+[["📖","Thirukkural","#dailyThirukkural"],["💬","Ponmozhigal","#livePonmozhigal"],["✍️","Kavithai","#skLiveKavithaiBookCard"]].forEach(function(x){
+tile(x[0],x[1],function(){var t=document.querySelector(x[2]);if(t)t.scrollIntoView({behavior:'smooth',block:'center'});});
+});
+document.querySelectorAll('a.sk-yt-open').forEach(function(a){
+var art=a.closest('article');var h=art?art.querySelector('h3'):null;
+var raw=h?h.textContent.trim():a.textContent.trim();
+var parts=raw.split(' ');
+tile(parts[0],parts.slice(1).join(' ')||raw,function(){window.open(a.href,'_blank');});
+});
+}
+fab.onclick=function(){build();ov.style.display='block';};
+ov.querySelector('#skAllX').onclick=function(){ov.style.display='none';};
+})();
+
+</script>
 </body></html>"
   );
 
@@ -4476,7 +4529,8 @@ function printAppraisalReport(id){
     "button,input,textarea,select{display:none}" +
     "img{max-width:100%;height:auto}" +
     "@media print{body{margin:10mm}}</style>" +
-"</head><body>" + el.outerHTML + "</body></html>"
+"</head><body>" + el.outerHTML + "
+</body></html>"
   );
   w.document.close();
   w.focus();
@@ -5794,7 +5848,8 @@ function skReplyPrint(){
     '<style>body{font:16px Arial,sans-serif;padding:24px}pre{white-space:pre-wrap;overflow-wrap:anywhere}</style>' +
     '</head><body><h2>SASIKUMAR AI Reply</h2><pre>' +
     escaped +
-    '</pre></body></html>'
+    '</pre>
+</body></html>'
   );
   popup.document.close();
 }
@@ -10153,6 +10208,7 @@ html body .skMainLiveGrid > .skMainFeatureCard {
 
 </style>
 <!-- END SK_COLORFUL_UNIFORM_CARDS_V1 -->
+
 
 </body>
 </html>
