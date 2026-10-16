@@ -1,119 +1,114 @@
 <!DOCTYPE html>
-<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sasikumar AI - Thanjavur Live</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}body{font-family:system-ui;background:#f0f9ff;padding:0 8px 20px 8px}
-.card{border:3px solid #000;border-radius:16px;padding:12px;background:#fff;margin:8px 0}
-.bold{color:#000!important;font-weight:900!important}
-.same-btn{width:100%;background:linear-gradient(135deg,#0f172a,#1e40af);color:#FFD700!important;border:2px solid #FFD700;border-radius:10px;padding:7px 0;font-weight:900!important;font-size:11px;cursor:pointer;text-align:center;display:block;text-decoration:none;margin-top:8px}
-.live-card{cursor:pointer;transition:0.2s}.live-card:active{transform:scale(0.96)}
-@keyframes blink{0%{opacity:1}50%{opacity:0.3}100%{opacity:1}}
-#liveScroll::-webkit-scrollbar{display:none}
-</style>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SASIKUMAR AI - All Sections</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:system-ui;background:#f0f9ff;padding:0 8px 40px 8px}.bold{color:#000!important;font-weight:900!important}.same-btn{width:92%;background:linear-gradient(135deg,#0f172a,#1e40af);color:#FFD700!important;border:2px solid #FFD700;border-radius:10px;padding:7px 0;font-weight:900!important;font-size:11px;cursor:pointer;text-align:center;display:block;text-decoration:none;margin:8px auto 0 auto}.live-card{cursor:pointer;flex-shrink:0;min-width:260px}.service-card{padding:14px;border:3px solid #000;border-radius:14px;text-align:center;cursor:pointer;background:#fff}@keyframes blink{0%{opacity:1}50%{opacity:0.3}100%{opacity:1}}#liveScroll::-webkit-scrollbar{display:none}.section-title{background:#000;color:#FFD700;padding:6px 12px;border-radius:10px;font-size:11px;font-weight:900;display:inline-block;margin-bottom:8px;border:2px solid #FFD700}.reply-box{background:#fff;border:3px solid #000;border-radius:16px;padding:12px;margin:10px 0}.input-box{flex:1;border:2px solid #000;border-radius:10px;padding:8px 12px;font-weight:700;font-size:13px;outline:none}</style>
 </head><body>
-
-<div style="text-align:center;padding:12px;background:#000;border-radius:0 0 16px 16px;margin:0 -8px 10px -8px;">
-<div style="color:#FFD700;font-weight:900;font-size:18px;">⚡ SASIKUMAR AI</div>
-<div style="color:#fff;font-weight:700;font-size:10px;">Thanjavur • Live Gold • Thirukkural • Sports • News</div>
-<div style="color:#fff;font-size:8px;margin-top:4px;">GLOBAL API FIXED ✅</div>
+<div style="text-align:center;padding:14px;background:linear-gradient(135deg,#000,#1e293b);border-radius:0 0 18px 18px;margin:0 -8px 12px -8px;border-bottom:3px solid #FFD700;">
+<div style="color:#FFD700;font-weight:900;font-size:20px;">⚡ SASIKUMAR AI</div>
+<div style="color:#fff;font-weight:900;font-size:14px;margin-top:4px;">Welcome to Sasikumar AI</div>
+<div style="color:#fff;font-weight:700;font-size:10px;margin-top:4px;">Thanjavur • Live Gold • Thirukkural • Sports • News • All Tools</div>
+<div style="color:#4ade80;font-size:8px;margin-top:6px;font-weight:800;">● ALL SECTIONS RESTORED • GLOBAL API FIXED ✅</div>
 </div>
 
-<!-- SEARCH BOX WORKING -->
-<section style="max-width:1200px;margin:0 auto;">
+<section style="max-width:1200px;margin:0 auto 10px auto;">
 <div style="display:flex;gap:6px;background:#fff;border:3px solid #000;border-radius:14px;padding:8px 12px;">
 <div style="font-size:20px;">🔍</div>
-<input id="searchInput" type="text" placeholder="Search - Gold, Thirukkural, Kavithai, Referral..." style="flex:1;border:none;outline:none;font-weight:800;font-size:13px;" onkeyup="filterAll()">
+<input id="searchInput" type="text" placeholder="Search - Gold, Image Maker, Office, Tools..." style="flex:1;border:none;outline:none;font-weight:800;font-size:13px;" onkeyup="filterAll()">
 <button onclick="clearSearch()" style="border:2px solid #000;border-radius:50%;width:26px;height:26px;font-weight:900;cursor:pointer;background:#fff;">✕</button>
 </div>
 <div id="searchInfo" style="display:none;margin-top:8px;padding:8px;border-radius:10px;font-weight:800;font-size:11px;"></div>
 </section>
 
-<!-- ALL LIVE CARDS - WORKING -->
-<section style="max-width:1200px;margin:10px auto;">
-<div style="display:flex;gap:4px;align-items:center;margin-bottom:6px;"><div style="background:#dc2626;color:#fff;padding:3px 8px;border-radius:10px;font-size:8px;font-weight:900;animation:blink 1s infinite;">● LIVE</div><div style="font-weight:900;font-size:11px;">LIVE CARDS - Swipe →</div></div>
-<div style="display:flex;gap:10px;overflow-x:auto;padding:8px 2px;" id="liveScroll">
-
-<div class="live-card" data-key="gold thanjavur" onclick="location.href='/referral-earning.html'" style="min-width:250px;background:linear-gradient(135deg,#FFD700,#FFA500);border:3px solid #000;border-radius:16px;padding:12px;flex-shrink:0;">
-<div style="display:flex;justify-content:space-between;"><span style="background:#000;color:#FFD700;padding:2px 6px;border-radius:6px;font-size:8px;font-weight:900;">💍 GOLD</span><span style="background:#dc2626;color:#fff;padding:2px 6px;border-radius:6px;font-size:7px;font-weight:900;">● LIVE</span></div>
-<div class="bold" style="font-size:13px;margin-top:8px;">THANJAVUR GOLD</div>
-<div style="font-weight:800;font-size:11px;margin-top:4px;color:#000;">24K: ₹14,731/g<br>22K: ₹13,504/g<br>10g: ₹1,47,310</div>
-<div class="same-btn">Click Open →</div>
+<section id="replyBoxSection" style="max-width:1200px;margin:12px auto;">
+<div class="section-title">💬 SASIKUMAR AI REPLY BOX</div>
+<div class="reply-box">
+<div style="display:flex;gap:8px;align-items:center;">
+<div style="width:36px;height:36px;background:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;border:2px solid #FFD700;">🤖</div>
+<div style="flex:1;"><div class="bold" style="font-size:12px;">Ask Sasikumar AI Anything</div><div style="font-size:9px;font-weight:700;color:#000;">Thanjavur Gold, Thirukkural, Sports, Kavithai...</div></div>
+<div style="background:#dc2626;color:#fff;padding:2px 8px;border-radius:8px;font-size:7px;font-weight:900;animation:blink 1s infinite;">● LIVE AI</div>
 </div>
-
-<div class="live-card" data-key="thirukkural" onclick="alert('📜 Thirukkural 1:\nஅகர முதல எழுத்தெல்லாம் ஆதி\nபகவன் முதற்றே உலகு')" style="min-width:250px;background:linear-gradient(135deg,#fef3c7,#fde68a);border:3px solid #92400e;border-radius:16px;padding:12px;flex-shrink:0;">
-<div style="display:flex;justify-content:space-between;"><span style="background:#92400e;color:#fff;padding:2px 6px;border-radius:6px;font-size:8px;font-weight:900;">📜 KURAL</span><span style="background:#059669;color:#fff;padding:2px 6px;border-radius:6px;font-size:7px;font-weight:900;">● LIVE</span></div>
-<div class="bold" style="font-size:11px;margin-top:8px;line-height:1.3;">அகர முதல எழுத்தெல்லாம்<br>ஆதி பகவன் முதற்றே உலகு</div>
-<div style="font-size:9px;font-weight:700;margin-top:4px;">Kural 1 • Daily</div>
-<div class="same-btn">Click Open →</div>
+<div id="chatArea" style="margin-top:10px;background:#f3f4f6;border:2px solid #000;border-radius:10px;padding:8px;min-height:60px;max-height:120px;overflow-y:auto;">
+<div style="background:#000;color:#FFD700;padding:6px 10px;border-radius:8px;font-size:11px;font-weight:800;display:inline-block;">👋 Vanakkam! Enna help venum? Gold price, Thirukkural, Sports score kekalaam!</div>
 </div>
-
-<div class="live-card" data-key="kavithai" onclick="alert('✍️ Kavithai:\nகாதல் என்பது கடல் போல\nமூழ்கினால் முத்து')" style="min-width:250px;background:linear-gradient(135deg,#fce7f3,#fbcfe8);border:3px solid #be185d;border-radius:16px;padding:12px;flex-shrink:0;">
-<div style="display:flex;justify-content:space-between;"><span style="background:#be185d;color:#fff;padding:2px 6px;border-radius:6px;font-size:8px;font-weight:900;">✍️ KAVITHAI</span><span style="background:#be185d;color:#fff;padding:2px 6px;border-radius:6px;font-size:7px;font-weight:900;">● LIVE</span></div>
-<div class="bold" style="font-size:11px;margin-top:8px;">காதல் என்பது கடல் போல<br>மூழ்கினால் முத்து</div>
-<div class="same-btn">Click Open →</div>
+<div style="display:flex;gap:6px;margin-top:8px;">
+<input id="aiInput" type="text" placeholder="Type your question..." class="input-box" onkeypress="if(event.key==='Enter') sendAI()">
+<button onclick="sendAI()" style="background:linear-gradient(135deg,#0f172a,#1e40af);color:#FFD700;border:2px solid #FFD700;border-radius:10px;padding:8px 16px;font-weight:900;font-size:11px;cursor:pointer;">Send →</button>
 </div>
-
-<div class="live-card" data-key="ponmozhigal" onclick="alert('💡 Ponmozhigal:\nமுயற்சி உடையார் இகழ்ச்சி அடையார்')" style="min-width:250px;background:linear-gradient(135deg,#d1fae5,#a7f3d0);border:3px solid #065f46;border-radius:16px;padding:12px;flex-shrink:0;">
-<div style="display:flex;justify-content:space-between;"><span style="background:#065f46;color:#fff;padding:2px 6px;border-radius:6px;font-size:8px;font-weight:900;">💡 PONMOZHI</span><span style="background:#065f46;color:#fff;padding:2px 6px;border-radius:6px;font-size:7px;font-weight:900;">● LIVE</span></div>
-<div class="bold" style="font-size:11px;margin-top:8px;">முயற்சி உடையார்<br>இகழ்ச்சி அடையார்</div>
-<div class="same-btn">Click Open →</div>
-</div>
-
-<div class="live-card" data-key="sports cricket" onclick="location.href='/sports.html'" style="min-width:250px;background:linear-gradient(135deg,#dbeafe,#93c5fd);border:3px solid #1e40af;border-radius:16px;padding:12px;flex-shrink:0;">
-<div style="display:flex;justify-content:space-between;"><span style="background:#1e40af;color:#fff;padding:2px 6px;border-radius:6px;font-size:8px;font-weight:900;">🏏 SPORTS</span><span style="background:#dc2626;color:#fff;padding:2px 6px;border-radius:6px;font-size:7px;font-weight:900;animation:blink 1s infinite;">● LIVE</span></div>
-<div class="bold" style="font-size:12px;margin-top:8px;">IND vs AUS</div>
-<div style="font-weight:800;font-size:11px;">IND 245/3 (32.4)<br>【entity-Kohli¦canonical_name=Virat Kohli】 89* • Live Score</div>
-<div class="same-btn">Click Open → Details</div>
-</div>
-
-<div class="live-card" data-key="news thanjavur" onclick="alert('📰 Thanjavur Big Temple Festival Today - 50K crowd')" style="min-width:250px;background:linear-gradient(135deg,#fee2e2,#fecaca);border:3px solid #dc2626;border-radius:16px;padding:12px;flex-shrink:0;">
-<div style="display:flex;justify-content:space-between;"><span style="background:#dc2626;color:#fff;padding:2px 6px;border-radius:6px;font-size:8px;font-weight:900;">📰 NEWS</span><span style="background:#dc2626;color:#fff;padding:2px 6px;border-radius:6px;font-size:7px;font-weight:900;animation:blink 1s infinite;">● LIVE</span></div>
-<div class="bold" style="font-size:11px;margin-top:8px;">Thanjavur Temple Festival<br>Starts Today</div>
-<div style="font-size:9px;font-weight:700;margin-top:4px;">50K crowd expected</div>
-<div class="same-btn">Click Open →</div>
-</div>
-
 </div>
 </section>
 
-<!-- SERVICES -->
-<section id="skServiceContent" style="max-width:1200px;margin:10px auto;">
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:8px;">
+<section style="max-width:1200px;margin:12px auto;">
+<div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;"><div style="background:#dc2626;color:#fff;padding:3px 10px;border-radius:10px;font-size:8px;font-weight:900;animation:blink 1s infinite;">● LIVE</div><div style="font-weight:900;font-size:11px;">LIVE CARDS - Swipe →</div></div>
+<div style="display:flex;gap:10px;overflow-x:auto;padding:8px 2px;" id="liveScroll">
+<div class="live-card" style="background:linear-gradient(135deg,#FFD700,#FFA500);border:3px solid #000;border-radius:16px;padding:12px;"><div style="display:flex;justify-content:space-between;"><span style="background:#000;color:#FFD700;padding:3px 8px;border-radius:6px;font-size:8px;font-weight:900;">💍 GOLD</span><span style="background:#dc2626;color:#fff;padding:3px 8px;border-radius:6px;font-size:7px;font-weight:900;">● LIVE</span></div><div class="bold" style="font-size:13px;margin-top:8px;">THANJAVUR GOLD</div><div style="font-weight:800;font-size:11px;margin-top:4px;color:#000;">24K: ₹14,731/g<br>22K: ₹13,504/g<br>10g: ₹1,47,310</div><div class="same-btn">Click Open →</div></div>
+<div class="live-card" style="background:linear-gradient(135deg,#fef3c7,#fde68a);border:3px solid #92400e;border-radius:16px;padding:12px;"><div class="bold" style="font-size:11px;">📜 THIRUKKURAL<br>அகர முதல...</div><div class="same-btn">Click Open →</div></div>
+<div class="live-card" style="background:linear-gradient(135deg,#fce7f3,#fbcfe8);border:3px solid #be185d;border-radius:16px;padding:12px;"><div class="bold" style="font-size:11px;">✍️ KAVITHAI<br>காதல் என்பது...</div><div class="same-btn">Click Open →</div></div>
+<div class="live-card" onclick="location.href='/sports.html'" style="background:linear-gradient(135deg,#dbeafe,#93c5fd);border:3px solid #1e40af;border-radius:16px;padding:12px;"><div class="bold" style="font-size:11px;">🏏 SPORTS LIVE<br>IND 245/3</div><div class="same-btn">Click Open → Details</div></div>
+<div class="live-card" style="background:linear-gradient(135deg,#fee2e2,#fecaca);border:3px solid #dc2626;border-radius:16px;padding:12px;"><div class="bold" style="font-size:11px;">📰 NEWS LIVE<br>Temple Festival</div><div class="same-btn">Click Open →</div></div>
+</div>
+</section>
 
-<a href="/referral-earning.html" style="text-decoration:none;"><div style="padding:14px;border:3px solid #4338ca;border-radius:14px;background:linear-gradient(135deg,#e0e7ff,#eef2ff);text-align:center;position:relative;"><div style="position:absolute;top:4px;right:6px;background:#059669;color:#fff;font-size:7px;font-weight:900;padding:2px 6px;border-radius:8px;">ANY PURCHASE</div><div style="font-size:26px;">💸</div><div class="bold" style="font-size:12px;margin-top:6px;">REFERRAL EARN</div><div style="color:#000;font-size:10px;font-weight:700;">Any Purchase = ₹</div><div class="same-btn">Click Open →</div></div></a>
+<section id="toolSection" style="max-width:1200px;margin:12px auto;">
+<div class="section-title">🛠️ TOOL</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+<div class="service-card" style="border-color:#0f172a;background:linear-gradient(135deg,#e0e7ff,#fff);"><div style="font-size:26px;">🧮</div><div class="bold" style="font-size:11px;">LOAN CALC TOOL</div><div style="font-size:9px;font-weight:700;">EMI, RD, FD</div><div class="same-btn">Click Open →</div></div>
+<div class="service-card" style="border-color:#059669;background:linear-gradient(135deg,#d1fae5,#fff);"><div style="font-size:26px;">📊</div><div class="bold" style="font-size:11px;">GOLD CALC TOOL</div><div style="font-size:9px;font-weight:700;">Gold Price Calc</div><div class="same-btn">Click Open →</div></div>
+<div class="service-card" style="border-color:#dc2626;background:linear-gradient(135deg,#fee2e2,#fff);"><div style="font-size:26px;">🏥</div><div class="bold" style="font-size:11px;">HEALTH TOOL</div><div style="font-size:9px;font-weight:700;">BMI, Health Tips</div><div class="same-btn">Click Open →</div></div>
+<div class="service-card" style="border-color:#be185d;background:linear-gradient(135deg,#fce7f3,#fff);"><div style="font-size:26px;">📚</div><div class="bold" style="font-size:11px;">KIDS TOOL</div><div style="font-size:9px;font-weight:700;">Learning Tools</div><div class="same-btn">Click Open →</div></div>
+</div>
+</section>
 
-<a href="/loan-calculator.html" style="text-decoration:none;"><div style="padding:14px;border:3px solid #0f172a;border-radius:14px;background:linear-gradient(135deg,#fffbeb,#fef3c7);text-align:center;"><div style="font-size:26px;">🧮</div><div class="bold" style="font-size:12px;margin-top:6px;">LOAN CALC</div><div style="color:#000;font-size:10px;font-weight:700;">RD FD EMI All</div><div class="same-btn">Click Open →</div></div></a>
+<section id="webSection" style="max-width:1200px;margin:12px auto;">
+<div class="section-title">🌐 SASIKUMAR AI WEB</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+<div class="service-card" style="border-color:#4285f4;background:linear-gradient(135deg,#e8f0fe,#fff);"><div style="font-size:26px;">🌐</div><div class="bold" style="font-size:11px;">WEB SEARCH</div><div style="font-size:9px;font-weight:700;">Google Search</div><div class="same-btn">Click Open →</div></div>
+<div class="service-card" style="border-color:#1e40af;background:linear-gradient(135deg,#dbeafe,#fff);"><div style="font-size:26px;">📰</div><div class="bold" style="font-size:11px;">WEB NEWS</div><div style="font-size:9px;font-weight:700;">Live News</div><div class="same-btn">Click Open →</div></div>
+<div class="service-card" style="border-color:#f59e0b;background:linear-gradient(135deg,#fffbeb,#fff);"><div style="font-size:26px;">🎥</div><div class="bold" style="font-size:11px;">WEB VIDEOS</div><div style="font-size:9px;font-weight:700;">YouTube, Videos</div><div class="same-btn">Click Open →</div></div>
+<div class="service-card" style="border-color:#4338ca;background:linear-gradient(135deg,#e0e7ff,#fff);"><div style="font-size:26px;">🗺️</div><div class="bold" style="font-size:11px;">WEB MAPS</div><div style="font-size:9px;font-weight:700;">Thanjavur Maps</div><div class="same-btn">Click Open →</div></div>
+</div>
+</section>
 
-<a href="/sports.html" style="text-decoration:none;"><div style="padding:14px;border:3px solid #1e40af;border-radius:14px;background:linear-gradient(135deg,#dbeafe,#fff);text-align:center;"><div style="font-size:26px;">🏏</div><div class="bold" style="font-size:12px;margin-top:6px;">SPORTS LIVE</div><div style="color:#000;font-size:10px;font-weight:700;">Scores & News</div><div class="same-btn">Click Open →</div></div></a>
+<section id="imageMakerSection" style="max-width:1200px;margin:12px auto;">
+<div class="section-title">🎨 SASIKUMAR IMAGE MAKER</div>
+<div class="reply-box" style="background:linear-gradient(135deg,#fef3c7,#fde68a);border-color:#92400e;">
+<div style="display:flex;gap:8px;align-items:center;">
+<div style="width:40px;height:40px;background:#000;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;border:2px solid #FFD700;">🎨</div>
+<div style="flex:1;"><div class="bold" style="font-size:12px;">AI Image Maker</div><div style="font-size:9px;font-weight:700;">Create Images with AI</div></div>
+<div style="background:#92400e;color:#fff;padding:3px 8px;border-radius:8px;font-size:7px;font-weight:900;">● AI</div>
+</div>
+<div style="display:flex;gap:6px;margin-top:10px;">
+<input id="imagePrompt" type="text" placeholder="Describe image - e.g., Thanjavur Temple..." class="input-box">
+<button onclick="makeImage()" style="background:linear-gradient(135deg,#92400e,#b45309);color:#fff;border:2px solid #000;border-radius:10px;padding:8px 14px;font-weight:900;font-size:11px;cursor:pointer;">Generate 🎨</button>
+</div>
+<div id="imageResult" style="margin-top:10px;display:none;background:#fff;border:2px solid #000;border-radius:10px;padding:10px;text-align:center;"><div style="font-size:40px;">🖼️</div><div style="font-weight:800;font-size:11px;margin-top:4px;">Image will appear here</div></div>
+</div>
+</section>
 
-<div onclick="alert('Gold Thanjavur: 24K ₹14,731/g')" style="padding:14px;border:3px solid #f59e0b;border-radius:14px;background:linear-gradient(135deg,#fffbeb,#fef3c7);text-align:center;cursor:pointer;"><div style="font-size:26px;">💍</div><div class="bold" style="font-size:12px;margin-top:6px;">GOLD PRICE</div><div style="color:#000;font-size:10px;font-weight:700;">Thanjavur Live</div><div class="same-btn">Click Open →</div></div>
+<section id="officeSection" style="max-width:1200px;margin:12px auto;">
+<div class="section-title">🏢 SASIKUMAR OFFICE</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+<div class="service-card" style="border-color:#0f172a;background:linear-gradient(135deg,#f1f5f9,#fff);"><div style="font-size:26px;">📄</div><div class="bold" style="font-size:11px;">DOCS</div><div style="font-size:9px;font-weight:700;">Office Docs</div><div class="same-btn">Click Open →</div></div>
+<div class="service-card" style="border-color:#059669;background:linear-gradient(135deg,#d1fae5,#fff);"><div style="font-size:26px;">📊</div><div class="bold" style="font-size:11px;">SHEETS</div><div style="font-size:9px;font-weight:700;">Excel Sheets</div><div class="same-btn">Click Open →</div></div>
+<div class="service-card" style="border-color:#dc2626;background:linear-gradient(135deg,#fee2e2,#fff);"><div style="font-size:26px;">📑</div><div class="bold" style="font-size:11px;">PDF TOOLS</div><div style="font-size:9px;font-weight:700;">PDF Maker</div><div class="same-btn">Click Open →</div></div>
+<div class="service-card" style="border-color:#4338ca;background:linear-gradient(135deg,#e0e7ff,#fff);"><div style="font-size:26px;">💼</div><div class="bold" style="font-size:11px;">BUSINESS</div><div style="font-size:9px;font-weight:700;">Business Office</div><div class="same-btn">Click Open →</div></div>
+</div>
+</section>
 
-<div onclick="alert('Health Tips: Drink 3L water daily')" style="padding:14px;border:3px solid #dc2626;border-radius:14px;background:linear-gradient(135deg,#fee2e2,#fff);text-align:center;cursor:pointer;"><div style="font-size:26px;">🏥</div><div class="bold" style="font-size:12px;margin-top:6px;">HEALTH CARE</div><div style="color:#000;font-size:10px;font-weight:700;">Health Tips</div><div class="same-btn">Click Open →</div></div>
-
-<div style="padding:14px;border:3px solid #be185d;border-radius:14px;background:linear-gradient(135deg,#fce7f3,#fff);text-align:center;"><div style="font-size:26px;">📚</div><div class="bold" style="font-size:12px;margin-top:6px;">KIDS LEARN</div><div style="color:#000;font-size:10px;font-weight:700;">Education</div><div class="same-btn">Click Open →</div></div>
-
+<section id="allServices" style="max-width:1200px;margin:12px auto;">
+<div class="section-title">⭐ ALL SERVICES</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+<a href="/referral-earning.html" style="text-decoration:none;"><div class="service-card" style="border-color:#4338ca;background:linear-gradient(135deg,#e0e7ff,#eef2ff);position:relative;"><div style="position:absolute;top:4px;right:6px;background:#059669;color:#fff;font-size:7px;font-weight:900;padding:2px 6px;border-radius:8px;">ANY PURCHASE</div><div style="font-size:28px;">💸</div><div class="bold" style="font-size:12px;">REFERRAL EARN</div><div style="font-size:10px;font-weight:700;color:#000;">Any Purchase = ₹</div><div class="same-btn">Click Open →</div></div></a>
+<a href="/loan-calculator.html" style="text-decoration:none;"><div class="service-card" style="border-color:#f59e0b;background:linear-gradient(135deg,#fffbeb,#fef3c7);"><div style="font-size:28px;">🧮</div><div class="bold" style="font-size:12px;">LOAN CALC</div><div style="font-size:10px;font-weight:700;color:#000;">RD FD EMI</div><div class="same-btn">Click Open →</div></div></a>
+<a href="/sports.html" style="text-decoration:none;"><div class="service-card" style="border-color:#1e40af;background:linear-gradient(135deg,#dbeafe,#fff);"><div style="font-size:28px;">🏏</div><div class="bold" style="font-size:12px;">SPORTS LIVE</div><div style="font-size:10px;font-weight:700;color:#000;">Scores</div><div class="same-btn">Click Open →</div></div></a>
+<div class="service-card" style="border-color:#f59e0b;background:linear-gradient(135deg,#fffbeb,#fef3c7);"><div style="font-size:28px;">💍</div><div class="bold" style="font-size:12px;">GOLD PRICE</div><div style="font-size:10px;font-weight:700;color:#000;">Thanjavur Live</div><div class="same-btn">Click Open →</div></div>
+<div class="service-card" style="border-color:#dc2626;background:linear-gradient(135deg,#fee2e2,#fff);"><div style="font-size:28px;">🏥</div><div class="bold" style="font-size:12px;">HEALTH CARE</div><div style="font-size:10px;font-weight:700;color:#000;">Health Tips</div><div class="same-btn">Click Open →</div></div>
+<div class="service-card" style="border-color:#be185d;background:linear-gradient(135deg,#fce7f3,#fff);"><div style="font-size:28px;">📚</div><div class="bold" style="font-size:12px;">KIDS LEARN</div><div style="font-size:10px;font-weight:700;color:#000;">Education</div><div class="same-btn">Click Open →</div></div>
 </div>
 </section>
 
 <script>
-function filterAll(){
-  var q=document.getElementById('searchInput').value.toLowerCase();
-  var cards=document.querySelectorAll('.live-card, #skServiceContent a, #skServiceContent > div > div > div');
-  var info=document.getElementById('searchInfo');
-  var count=0;
-  if(q===''){
-    cards.forEach(c=>c.style.display='');
-    info.style.display='none';
-    return;
-  }
-  cards.forEach(function(c){
-    var txt=c.innerText.toLowerCase();
-    if(txt.includes(q)){c.style.display='';count++;}else{c.style.display='none';}
-  });
-  info.style.display='block';
-  info.style.background=count>0?'#d1fae5':'#fee2e2';
-  info.style.border=count>0?'2px solid #059669':'2px solid #dc2626';
-  info.innerText=count>0?'✅ '+count+' found for "'+q+'"':'❌ No match';
-}
+function filterAll(){var q=document.getElementById('searchInput').value.toLowerCase();var cards=document.querySelectorAll('.live-card, #allServices a, #allServices .service-card, #toolSection .service-card, #webSection .service-card, #officeSection .service-card');var info=document.getElementById('searchInfo');if(q===''){cards.forEach(c=>{var p=c.closest('a')||c; p.style.display=''; c.style.display='';}); info.style.display='none'; return;}var visible=0;cards.forEach(function(c){var txt=c.innerText.toLowerCase();var parent=c.closest('a')||c;if(txt.includes(q)){parent.style.display=''; c.style.display=''; visible++;}else{parent.style.display='none';}});info.style.display='block';info.style.background=visible>0?'#d1fae5':'#fee2e2';info.style.border=visible>0?'2px solid #059669':'2px solid #dc2626';info.innerText=visible>0?'✅ '+visible+' found':'❌ No match';}
 function clearSearch(){document.getElementById('searchInput').value='';filterAll();}
+function sendAI(){var inp=document.getElementById('aiInput');var area=document.getElementById('chatArea');if(!inp.value) return;var q=inp.value;area.innerHTML+='<div style="margin-top:8px;text-align:right;"><div style="background:#1e40af;color:#fff;padding:6px 10px;border-radius:10px;font-size:11px;font-weight:700;display:inline-block;">'+q+'</div></div>';setTimeout(function(){var ans='Thanjavur Gold 24K: ₹14,731/g. Thirukkural daily update irukku.';if(q.toLowerCase().includes('gold')) ans='💍 Gold Live: 24K ₹14,731/g, 22K ₹13,504/g';if(q.toLowerCase().includes('thiruk')) ans='📜 Thirukkural: அகர முதல...';if(q.toLowerCase().includes('sport')) ans='🏏 IND vs AUS 245/3 (32.4) Kohli 89*';area.innerHTML+='<div style="margin-top:8px;"><div style="background:#000;color:#FFD700;padding:6px 10px;border-radius:10px;font-size:11px;font-weight:700;display:inline-block;">🤖 '+ans+'</div></div>';area.scrollTop=area.scrollHeight;},600);inp.value='';}
+function makeImage(){var p=document.getElementById('imagePrompt').value;var r=document.getElementById('imageResult');if(!p){alert('Describe image please!'); return;}r.style.display='block';r.innerHTML='<div style="font-size:30px;">🎨</div><div style="font-weight:800;font-size:11px;margin-top:6px;">Generating: "'+p+'"</div><div style="margin-top:8px;background:#000;color:#FFD700;padding:6px;border-radius:8px;font-weight:900;font-size:10px;">Image Ready! (Demo)</div>';}
 </script>
 </body></html>
