@@ -188,6 +188,113 @@ document.addEventListener('DOMContentLoaded',()=>{let s=localStorage.getItem('sk
 
   </div>
 
+<!-- SASIKUMAR AI MINI OFFICE -->
+<div id="skMiniOffice" style="margin:14px;padding:14px;background:#fff;border:2px solid #0f172a;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,0.08)">
+  <div style="text-align:center">
+    <div style="font-size:16px;font-weight:800;color:#0f172a">📝 SASIKUMAR AI MINI OFFICE STUDIO</div>
+    <div style="font-size:10px;color:#64748b">Notepad | Paint Brush | Word | Excel | PowerPoint</div>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:12px 0">
+    <button onclick="showMiniTool('notepad')" id="btn-notepad" class="miniTab" style="padding:8px 14px;background:#0f172a;color:#fff;border:none;border-radius:20px;font-size:11px;font-weight:bold">📝 Notepad</button>
+    <button onclick="showMiniTool('paint')" id="btn-paint" class="miniTab" style="padding:8px 14px;background:#fff;border:1px solid #e2e8f0;border-radius:20px;font-size:11px">🎨 Paint</button>
+    <button onclick="showMiniTool('word')" id="btn-word" class="miniTab" style="padding:8px 14px;background:#fff;border:1px solid #e2e8f0;border-radius:20px;font-size:11px">📄 Word</button>
+    <button onclick="showMiniTool('excel')" id="btn-excel" class="miniTab" style="padding:8px 14px;background:#fff;border:1px solid #e2e8f0;border-radius:20px;font-size:11px">📊 Excel</button>
+    <button onclick="showMiniTool('ppt')" id="btn-ppt" class="miniTab" style="padding:8px 14px;background:#fff;border:1px solid #e2e8f0;border-radius:20px;font-size:11px">📽️ PPT</button>
+  </div>
+
+  <div id="tool-notepad" class="toolPanel">
+    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px">
+      <button onclick="document.getElementById('notepadArea').value='';updateNotepadCount()" style="padding:5px 10px;background:#ef4444;color:#fff;border:none;border-radius:6px;font-size:11px">🧹 New</button>
+      <button onclick="let v=document.getElementById('notepadArea').value;let a=document.createElement('a');a.href='data:[STRIPPED]-8,'+encodeURIComponent(v);a.download='sasikumar-notepad.txt';a.click()" style="padding:5px 10px;background:#0f172a;color:#fff;border:none;border-radius:6px;font-size:11px">💾 Save TXT</button>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('notepadArea').value)" style="padding:5px 10px;background:#fff;border:1px solid #e2e8f0;border-radius:6px;font-size:11px">📋 Copy</button>
+      <span id="notepadCount" style="font-size:11px;color:#64748b;padding:5px">0 words</span>
+    </div>
+    <textarea id="notepadArea" oninput="updateNotepadCount()" placeholder="Type here Anna..." style="width:100%;min-height:180px;padding:10px;border:1px solid #cbd5e1;border-radius:10px;font-size:13px"></textarea>
+  </div>
+
+  <div id="tool-paint" class="toolPanel" style="display:none">
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;background:#f8fafc;padding:8px;border-radius:8px">
+      <input type="color" id="paintColor" value="#0f172a" style="width:36px;height:28px">
+      <input type="range" id="brushSize" min="1" max="30" value="4" style="width:80px"><span id="brushSizeVal" style="font-size:11px">4px</span>
+      <button onclick="paintMode='brush'" style="padding:5px 10px;background:#0f172a;color:#fff;border:none;border-radius:6px;font-size:11px">🖌️ Brush</button>
+      <button onclick="paintMode='eraser'" style="padding:5px 10px;background:#fff;border:1px solid #e2e8f0;border-radius:6px;font-size:11px">🧽 Eraser</button>
+      <button onclick="document.getElementById('paintCanvas').getContext('2d').clearRect(0,0,600,320)" style="padding:5px 10px;background:#ef4444;color:#fff;border:none;border-radius:6px;font-size:11px">Clear</button>
+      <button onclick="let c=document.getElementById('paintCanvas');let a=document.createElement('a');a.download='paint.png';a.href=c.toDataURL();a.click()" style="padding:5px 10px;background:#16a34a;color:#fff;border:none;border-radius:6px;font-size:11px">⬇️ PNG</button>
+    </div>
+    <canvas id="paintCanvas" width="600" height="320" style="width:100%;border:2px dashed #cbd5e1;border-radius:10px;background:#fff;touch-action:none"></canvas>
+  </div>
+
+  <div id="tool-word" class="toolPanel" style="display:none">
+    <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;background:#f8fafc;padding:8px;border-radius:8px">
+      <button onclick="document.execCommand('bold')" style="padding:5px 10px;background:#fff;border:1px solid #e2e8f0;border-radius:6px;font-size:11px;font-weight:bold">B</button>
+      <button onclick="document.execCommand('italic')" style="padding:5px 10px;background:#fff;border:1px solid #e2e8f0;border-radius:6px;font-size:11px;font-style:italic">I</button>
+      <button onclick="document.execCommand('underline')" style="padding:5px 10px;background:#fff;border:1px solid #e2e8f0;border-radius:6px;font-size:11px">U</button>
+      <button onclick="document.execCommand('insertUnorderedList')" style="padding:5px 10px;background:#fff;border:1px solid #e2e8f0;border-radius:6px;font-size:11px">• List</button>
+      <button onclick="let c=document.getElementById('wordArea').innerHTML;let w=window.open('','_blank');w.document.write(c);w.print()" style="padding:5px 10px;background:#0f172a;color:#fff;border:none;border-radius:6px;font-size:11px">🖨️ Print</button>
+    </div>
+    <div id="wordArea" contenteditable="true" style="width:100%;min-height:180px;padding:12px;border:1px solid #cbd5e1;border-radius:10px;background:#fff">Welcome to <b>SASIKUMAR AI</b> Word Mini...</div>
+  </div>
+
+  <div id="tool-excel" class="toolPanel" style="display:none">
+    <div style="display:flex;gap:5px;margin-bottom:8px;background:#f8fafc;padding:8px;border-radius:8px">
+      <button onclick="addExcelRow()" style="padding:5px 10px;background:#16a34a;color:#fff;border:none;border-radius:6px;font-size:11px">+ Row</button>
+      <button onclick="addExcelCol()" style="padding:5px 10px;background:#16a34a;color:#fff;border:none;border-radius:6px;font-size:11px">+ Col</button>
+      <button onclick="calcExcelSum()" style="padding:5px 10px;background:#0f172a;color:#fff;border:none;border-radius:6px;font-size:11px">∑ Sum</button>
+      <span id="excelSum" style="font-size:11px;color:#16a34a;font-weight:bold"></span>
+    </div>
+    <div style="overflow:auto;border:1px solid #cbd5e1;border-radius:10px"><table id="excelTable" style="width:100%;border-collapse:collapse;font-size:12px"><tbody id="excelBody"></tbody></table></div>
+  </div>
+
+  <div id="tool-ppt" class="toolPanel" style="display:none">
+    <div style="display:flex;gap:5px;margin-bottom:8px;background:#f8fafc;padding:8px;border-radius:8px">
+      <button onclick="addPPTSlide()" style="padding:5px 10px;background:#be185d;color:#fff;border:none;border-radius:6px;font-size:11px">+ New</button>
+      <button onclick="prevPPT()" style="padding:5px 10px;background:#fff;border:1px solid #e2e8f0;border-radius:6px;font-size:11px">◀️</button>
+      <span id="pptCounter" style="padding:5px 10px;background:#0f172a;color:#fff;border-radius:6px;font-size:11px">1 / 1</span>
+      <button onclick="nextPPT()" style="padding:5px 10px;background:#fff;border:1px solid #e2e8f0;border-radius:6px;font-size:11px">▶️</button>
+      <button onclick="presentPPT()" style="padding:5px 10px;background:#7c3aed;color:#fff;border:none;border-radius:6px;font-size:11px">📽️ Present</button>
+    </div>
+    <div id="pptSlide" style="padding:16px;border:2px solid #e2e8f0;border-radius:12px;background:#fff;text-align:center">
+      <input id="pptTitle" placeholder="Title" style="width:100%;padding:8px;border:1px dashed #cbd5e1;border-radius:6px;font-size:16px;font-weight:bold;text-align:center;margin-bottom:8px">
+      <textarea id="pptContent" placeholder="Content..." style="width:100%;min-height:100px;padding:8px;border:1px dashed #cbd5e1;border-radius:6px;font-size:13px;text-align:center"></textarea>
+    </div>
+  </div>
+</div>
+
+<script>
+let paintMode='brush';
+function showMiniTool(name){
+  document.querySelectorAll('.toolPanel').forEach(p=>p.style.display='none');
+  document.getElementById('tool-'+name).style.display='block';
+  document.querySelectorAll('.miniTab').forEach(b=>{b.style.background='#fff';b.style.color='#000';b.style.border='1px solid #e2e8f0'});
+  let ab=document.getElementById('btn-'+name);ab.style.background='#0f172a';ab.style.color='#fff';
+}
+function updateNotepadCount(){let t=document.getElementById('notepadArea').value;let w=t.trim()?t.trim().split(/\s+/).length:0;document.getElementById('notepadCount').innerText=w+' words | '+t.length+' chars';localStorage.setItem('skNotepad',t);}
+(function(){
+  let c=document.getElementById('paintCanvas');if(!c)return;let ctx=c.getContext('2d');let d=false,last={x:0,y:0};
+  function pos(e){let r=c.getBoundingClientRect();let t=e.touches?e.touches[0]:e;return{x:(t.clientX-r.left)*(c.width/r.width),y:(t.clientY-r.top)*(c.height/r.height)};}
+  c.addEventListener('mousedown',e=>{d=true;last=pos(e);});c.addEventListener('touchstart',e=>{d=true;last=pos(e);e.preventDefault();});
+  function draw(e){if(!d)return;let p=pos(e);ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(p.x,p.y);ctx.strokeStyle=paintMode==='eraser'?'#fff':document.getElementById('paintColor').value;ctx.lineWidth=paintMode==='eraser'?20:document.getElementById('brushSize').value;ctx.lineCap='round';ctx.stroke();last=p;}
+  c.addEventListener('mousemove',draw);c.addEventListener('touchmove',e=>{draw(e);e.preventDefault();},{passive:false});
+  window.addEventListener('mouseup',()=>d=false);window.addEventListener('touchend',()=>d=false);
+  document.getElementById('brushSize').addEventListener('input',e=>document.getElementById('brushSizeVal').innerText=e.target.value+'px');
+})();
+let excelRows=8,excelCols=6;
+function buildExcel(){let tb=document.getElementById('excelBody');tb.innerHTML='';for(let r=0;r<excelRows;r++){let tr=document.createElement('tr');for(let col=0;col<excelCols;col++){let td=document.createElement('td');td.style.border='1px solid #e2e8f0';td.style.padding='4px';td.contentEditable='true';td.style.minWidth='60px';if(r==0){td.style.background='#f1f5f9';td.style.fontWeight='bold';td.innerText=col==0?'':String.fromCharCode(64+col);}else if(col==0){td.style.background='#f1f5f9';td.style.fontWeight='bold';td.innerText=r;}tr.appendChild(td);}tb.appendChild(tr);}}
+function addExcelRow(){excelRows++;buildExcel();}function addExcelCol(){excelCols++;buildExcel();}
+function calcExcelSum(){let s=0;document.querySelectorAll('#excelBody td[contenteditable=true]').forEach(td=>{let v=parseFloat(td.innerText);if(!isNaN(v))s+=v;});document.getElementById('excelSum').innerText='Sum: '+s;}
+buildExcel();
+let pptSlides=[{title:'SASIKUMAR AI',content:'Welcome'}],pptIdx=0;
+function savePPT(){pptSlides[pptIdx]={title:document.getElementById('pptTitle').value,content:document.getElementById('pptContent').value};}
+function loadPPT(){let s=pptSlides[pptIdx];document.getElementById('pptTitle').value=s.title;document.getElementById('pptContent').value=s.content;document.getElementById('pptCounter').innerText=(pptIdx+1)+' / '+pptSlides.length;}
+function addPPTSlide(){savePPT();pptSlides.push({title:'New Slide '+(pptSlides.length+1),content:''});pptIdx=pptSlides.length-1;loadPPT();}
+function nextPPT(){savePPT();if(pptIdx<pptSlides.length-1){pptIdx++;loadPPT();}}
+function prevPPT(){savePPT();if(pptIdx>0){pptIdx--;loadPPT();}}
+function presentPPT(){savePPT();let w=window.open('','_blank');let h=pptSlides.map((s,i)=>'<div style="height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:40px;border-bottom:5px solid #0f172a"><h1>'+s.title+'</h1><p>'+s.content+'</p><small>'+(i+1)+'</small></div>').join('');w.document.write('<body style="margin:0;font-family:Poppins">'+h+'</body>');}
+loadPPT();
+let saved=localStorage.getItem('skNotepad');if(saved){document.getElementById('notepadArea').value=saved;updateNotepadCount();}
+</script>
+
+
   <div style="margin-top:14px;text-align:center;border-top:1px dashed #e2e8f0;padding-top:12px">
     <canvas id="makerCanvas" width="400" height="250" style="max-width:100%;border:2px dashed #cbd5e1;border-radius:10px;background:#f8fafc"></canvas>
     <div style="margin-top:8px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap">
