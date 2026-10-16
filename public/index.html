@@ -166,6 +166,30 @@ SASIKUMAR AI WEB SEARCH BOX</b>
       <button onclick="var q=document.getElementById('skS').value.trim(); if(q) window.open('https://www.google.com/search?q='+encodeURIComponent(q),'_blank')" style="padding:11px 16px;background:#0f172a;color:#fff;border:none;border-radius:8px;font-weight:bold;cursor:pointer">🔍 Search</button>
       <button onclick="var q=document.getElementById('skS').value.trim(); if(q) window.open('https://www.youtube.com/results?search_query='+encodeURIComponent(q),'_blank')" style="padding:11px 12px;background:#ff0000;color:#fff;border:none;border-radius:8px;cursor:pointer">▶️ YouTube</button>
     </div>
+
+<!-- LIVE CARDS - Direct Below Web Search Box - Same Size Swipe Auto 5min -->
+<section id="skLiveCards" style="display:block!important;visibility:visible!important;width:100%;max-width:1200px;margin:12px auto;padding:12px;border:3px solid #0f172a;border-radius:18px;background:#fff;box-shadow:0 6px 18px rgba(0,0,0,0.1);">
+  <div style="text-align:center;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:10px;">
+    <div style="width:38px;height:38px;background:linear-gradient(135deg,#0f172a,#1e40af);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#FFD700;font-weight:900;font-size:16px;border:2px solid #FFD700;">S</div>
+    <div><div style="color:#000!important;font-weight:900!important;font-size:16px;">🔴 LIVE</div><div style="color:#000!important;font-size:10px;font-weight:700;">Tanjavur Gold • Kural • Kavithai • Sports • Games • Auto 5min</div></div>
+  </div>
+  <div id="liveCardsWrapper" style="display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:10px;padding:8px 4px;scroll-behavior:smooth;">
+    <div class="live-card" style="min-width:250px;max-width:250px;height:190px;flex-shrink:0;scroll-snap-align:center;border:2px solid #FFD700;border-radius:14px;background:linear-gradient(135deg,#fffbeb,#fef3c7);padding:10px;text-align:center;"><div style="width:32px;height:32px;background:linear-gradient(135deg,#FFD700,#FFA500);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 5px;border:2px solid #000;font-size:16px;">💰</div><div style="color:#000!important;font-weight:900!important;font-size:12px;">GOLD - TANJAVUR</div><div style="color:#000!important;font-weight:800!important;font-size:10px;background:#000;color:#FFD700!important;padding:2px 6px;border-radius:8px;display:inline-block;margin:3px 0;">DEFAULT</div><div id="goldPriceVal" style="color:#000!important;font-weight:900!important;font-size:14px;margin-top:4px;">22K ₹7,450/g<br>24K ₹8,120/g</div><div style="color:#059669!important;font-size:9px;font-weight:800;">● LIVE</div></div>
+    <div class="live-card" style="min-width:250px;max-width:250px;height:190px;flex-shrink:0;scroll-snap-align:center;border:2px solid #dc2626;border-radius:14px;background:linear-gradient(135deg,#fee2e2,#fef2f2);padding:10px;text-align:center;"><div style="width:32px;height:32px;background:#dc2626;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 5px;border:2px solid #000;font-size:16px;color:#fff;">📜</div><div style="color:#000!important;font-weight:900!important;font-size:12px;">THIRUKKURAL</div><div id="kuralText" style="color:#000!important;font-weight:700!important;font-size:10px;margin-top:6px;">அகர முதல எழுத்தெல்லாம் ஆதி<br>பகவன் முதற்றே உலகு<br><span style="font-size:9px;">#1</span></div></div>
+    <div class="live-card" style="min-width:250px;max-width:250px;height:190px;flex-shrink:0;scroll-snap-align:center;border:2px solid #7c3aed;border-radius:14px;background:linear-gradient(135deg,#ede9fe,#f5f3ff);padding:10px;text-align:center;"><div style="width:32px;height:32px;background:#7c3aed;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 5px;border:2px solid #000;font-size:16px;color:#fff;">✍️</div><div style="color:#000!important;font-weight:900!important;font-size:12px;">KAVITHAI</div><div id="kavithaiText" style="color:#000!important;font-weight:700!important;font-size:10px;margin-top:6px;">வாழ்க்கை ஒரு கவிதை<br>வாசிக்க தெரிந்தால் இன்பம்!</div></div>
+    <div class="live-card" style="min-width:250px;max-width:250px;height:190px;flex-shrink:0;scroll-snap-align:center;border:2px solid #059669;border-radius:14px;background:linear-gradient(135deg,#d1fae5,#ecfdf5);padding:10px;text-align:center;"><div style="width:32px;height:32px;background:#059669;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 5px;border:2px solid #000;font-size:16px;color:#fff;">💡</div><div style="color:#000!important;font-weight:900!important;font-size:12px;">PONMOZHIGAL</div><div id="ponmozhiText" style="color:#000!important;font-weight:700!important;font-size:10px;margin-top:6px;">"முயற்சி திருவினை ஆக்கும்"</div></div>
+    <div class="live-card" style="min-width:250px;max-width:250px;height:190px;flex-shrink:0;scroll-snap-align:center;border:2px solid #0f172a;border-radius:14px;background:linear-gradient(135deg,#e0f2fe,#f0f9ff);padding:10px;text-align:center;"><div style="width:32px;height:32px;background:#0f172a;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 5px;border:2px solid #FFD700;font-size:16px;color:#fff;">⚽</div><div style="color:#000!important;font-weight:900!important;font-size:12px;">SPORT LIVE</div><div style="color:#000!important;font-weight:800!important;font-size:10px;margin-top:6px;">IND vs AUS<br>186/3 (24.2)<br><span style="color:#dc2626;">● LIVE</span></div></div>
+    <div class="live-card" style="min-width:250px;max-width:250px;height:190px;flex-shrink:0;scroll-snap-align:center;border:2px solid #ea580c;border-radius:14px;background:linear-gradient(135deg,#ffedd5,#fff7ed);padding:10px;text-align:center;"><div style="width:32px;height:32px;background:#ea580c;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 5px;border:2px solid #000;font-size:16px;color:#fff;">🏏</div><div style="color:#000!important;font-weight:900!important;font-size:12px;">SPORTS</div><div style="color:#000!important;font-weight:700!important;font-size:10px;margin-top:6px;">Cricket | Football<br>Kabaddi | Live</div></div>
+    <div class="live-card" style="min-width:250px;max-width:250px;height:190px;flex-shrink:0;scroll-snap-align:center;border:2px solid #db2777;border-radius:14px;background:linear-gradient(135deg,#fce7f3,#fdf2f8);padding:10px;text-align:center;"><div style="width:32px;height:32px;background:#db2777;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 5px;border:2px solid #000;font-size:16px;color:#fff;">🎮</div><div style="color:#000!important;font-weight:900!important;font-size:12px;">GAMES</div><div style="color:#000!important;font-weight:700!important;font-size:10px;margin-top:6px;">Mini Games<br>Puzzle | Memory</div></div>
+  </div>
+</section>
+<script id="liveCardsScript">
+let cIdx=0;setInterval(()=>{const w=document.getElementById('liveCardsWrapper');if(!w)return;const cs=w.querySelectorAll('.live-card');if(!cs.length)return;cIdx=(cIdx+1)%cs.length;w.scrollTo({left:cs[cIdx].offsetLeft-10,behavior:'smooth'});},3500);
+const kurals=["அகர முதல எழுத்தெல்லாம் ஆதி<br>பகவன் முதற்றே உலகு<br><span style='font-size:9px'>#1</span>","கற்க கசடற<br>நிற்க அதற்குத் தக<br><span style='font-size:9px'>#391</span>"];const kavis=["வாழ்க்கை ஒரு கவிதை<br>வாசிக்க தெரிந்தால் இன்பம்!","கனவு காண்<br>வெற்றி உனதே!"];const pon=[""முயற்சி திருவினை ஆக்கும்"",""காலம் பொன் போன்றது""];
+function updLive(){const n=new Date();const g=document.getElementById('goldPriceVal');if(g){const b22=7450+Math.floor(Math.random()*40-20);const b24=8120+Math.floor(Math.random()*40-20);g.innerHTML=`22K ₹${b22}/g<br>24K ₹${b24}/g<br><span style='font-size:8px'>${n.toLocaleTimeString()}</span>`;}const k=document.getElementById('kuralText');if(k)k.innerHTML=kurals[Math.floor(Math.random()*kurals.length)];const kv=document.getElementById('kavithaiText');if(kv)kv.innerHTML=kavis[Math.floor(Math.random()*kavis.length)];const pm=document.getElementById('ponmozhiText');if(pm)pm.innerHTML=pon[Math.floor(Math.random()*pon.length)];}
+setInterval(updLive,300000);
+</script>
+
   </div>
 
 <!--   
@@ -734,114 +758,6 @@ text-decoration:none !important;
 </section>
 
 <!-- LIVE CARDS - Below Web Search - Auto 5min Update -->
-<section id="skLiveCards" style="display:block!important;visibility:visible!important;width:100%;max-width:1200px;margin:18px auto;padding:14px;border:3px solid #0f172a;border-radius:20px;background:#fff;box-shadow:0 8px 20px rgba(0,0,0,0.1);">
-  <div style="text-align:center;margin-bottom:12px;">
-    <div style="width:48px;height:48px;background:linear-gradient(135deg,#0f172a,#1e40af);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#FFD700;font-weight:900;font-size:20px;border:2px solid #FFD700;box-shadow:0 2px 10px gold;">S</div>
-    <h3 style="color:#000!important;font-weight:900!important;font-size:18px;margin:8px 0 2px;">🔴 LIVE CARDS</h3>
-    <p style="color:#000!important;font-size:11px;font-weight:700;">Auto Update Every 5 Min • Swipe →</p>
-  </div>
-
-  <div id="liveCardsWrapper" style="display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:12px;padding:10px 6px;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;">
-
-    <!-- Gold Price - Tanjavur Default -->
-    <div class="live-card" style="min-width:260px;max-width:260px;height:200px;flex-shrink:0;scroll-snap-align:center;border:2px solid #FFD700;border-radius:16px;background:linear-gradient(135deg,#fffbeb,#fef3c7);padding:12px;position:relative;text-align:center;">
-      <div style="width:36px;height:36px;background:linear-gradient(135deg,#FFD700,#FFA500);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;border:2px solid #000;font-size:18px;">💰</div>
-      <div style="color:#000!important;font-weight:900!important;font-size:13px;">GOLD PRICE</div>
-      <div style="color:#000!important;font-weight:800!important;font-size:11px;background:#000;color:#FFD700!important;padding:2px 8px;border-radius:10px;display:inline-block;margin:4px 0;">TANJAVUR DEFAULT</div>
-      <div id="goldPriceVal" style="color:#000!important;font-weight:900!important;font-size:16px;margin-top:6px;">22K: ₹7,450/g<br>24K: ₹8,120/g</div>
-      <div style="color:#059669!important;font-size:10px;font-weight:800;margin-top:4px;">● LIVE • Auto 5min</div>
-    </div>
-
-    <!-- Thirukkural -->
-    <div class="live-card" style="min-width:260px;max-width:260px;height:200px;flex-shrink:0;scroll-snap-align:center;border:2px solid #dc2626;border-radius:16px;background:linear-gradient(135deg,#fee2e2,#fef2f2);padding:12px;text-align:center;">
-      <div style="width:36px;height:36px;background:linear-gradient(135deg,#dc2626,#991b1b);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;border:2px solid #000;font-size:18px;color:#fff;">📜</div>
-      <div style="color:#000!important;font-weight:900!important;font-size:13px;">THIRUKKURAL</div>
-      <div id="kuralText" style="color:#000!important;font-weight:700!important;font-size:11px;margin-top:8px;line-height:1.4;">அகர முதல எழுத்தெல்லாம் ஆதி<br>பகவன் முதற்றே உலகு<br><br><span style="font-size:10px;color:#666;">குறள் #1</span></div>
-    </div>
-
-    <!-- Kavithai -->
-    <div class="live-card" style="min-width:260px;max-width:260px;height:200px;flex-shrink:0;scroll-snap-align:center;border:2px solid #7c3aed;border-radius:16px;background:linear-gradient(135deg,#ede9fe,#f5f3ff);padding:12px;text-align:center;">
-      <div style="width:36px;height:36px;background:linear-gradient(135deg,#7c3aed,#4c1d95);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;border:2px solid #000;font-size:18px;color:#fff;">✍️</div>
-      <div style="color:#000!important;font-weight:900!important;font-size:13px;">KAVITHAI</div>
-      <div id="kavithaiText" style="color:#000!important;font-weight:700!important;font-size:11px;margin-top:8px;line-height:1.4;">வாழ்க்கை ஒரு கவிதை<br>வாசிக்க தெரிந்தால் இன்பம்<br>எழுத தெரிந்தால் அர்த்தம்!</div>
-    </div>
-
-    <!-- Ponmozhigal -->
-    <div class="live-card" style="min-width:260px;max-width:260px;height:200px;flex-shrink:0;scroll-snap-align:center;border:2px solid #059669;border-radius:16px;background:linear-gradient(135deg,#d1fae5,#ecfdf5);padding:12px;text-align:center;">
-      <div style="width:36px;height:36px;background:linear-gradient(135deg,#059669,#047857);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;border:2px solid #000;font-size:18px;color:#fff;">💡</div>
-      <div style="color:#000!important;font-weight:900!important;font-size:13px;">PONMOZHIGAL</div>
-      <div id="ponmozhiText" style="color:#000!important;font-weight:700!important;font-size:11px;margin-top:8px;line-height:1.4;">"முயற்சி திருவினை ஆக்கும்"<br><br>முயற்சி செய்தால்<br>வெற்றி நிச்சயம்!</div>
-    </div>
-
-    <!-- Sport Live -->
-    <div class="live-card" style="min-width:260px;max-width:260px;height:200px;flex-shrink:0;scroll-snap-align:center;border:2px solid #0f172a;border-radius:16px;background:linear-gradient(135deg,#e0f2fe,#f0f9ff);padding:12px;text-align:center;">
-      <div style="width:36px;height:36px;background:linear-gradient(135deg,#0f172a,#1e40af);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;border:2px solid #FFD700;font-size:18px;color:#fff;">⚽</div>
-      <div style="color:#000!important;font-weight:900!important;font-size:13px;">SPORT LIVE</div>
-      <div id="sportLive" style="color:#000!important;font-weight:800!important;font-size:11px;margin-top:8px;">IND vs AUS<br>Live Score: 186/3 (24.2)<br><span style="color:#dc2626;">● LIVE</span></div>
-    </div>
-
-    <!-- Sports -->
-    <div class="live-card" style="min-width:260px;max-width:260px;height:200px;flex-shrink:0;scroll-snap-align:center;border:2px solid #ea580c;border-radius:16px;background:linear-gradient(135deg,#ffedd5,#fff7ed);padding:12px;text-align:center;">
-      <div style="width:36px;height:36px;background:linear-gradient(135deg,#ea580c,#9a3412);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;border:2px solid #000;font-size:18px;color:#fff;">🏏</div>
-      <div style="color:#000!important;font-weight:900!important;font-size:13px;">SPORTS</div>
-      <div style="color:#000!important;font-weight:700!important;font-size:11px;margin-top:8px;">Cricket | Football<br>Kabaddi | Tennis<br>Live Updates</div>
-    </div>
-
-    <!-- Games -->
-    <div class="live-card" style="min-width:260px;max-width:260px;height:200px;flex-shrink:0;scroll-snap-align:center;border:2px solid #db2777;border-radius:16px;background:linear-gradient(135deg,#fce7f3,#fdf2f8);padding:12px;text-align:center;">
-      <div style="width:36px;height:36px;background:linear-gradient(135deg,#db2777,#9d174d);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;border:2px solid #000;font-size:18px;color:#fff;">🎮</div>
-      <div style="color:#000!important;font-weight:900!important;font-size:13px;">GAMES</div>
-      <div style="color:#000!important;font-weight:700!important;font-size:11px;margin-top:8px;">Mini Games<br>Puzzle | Memory<br>Play Now!</div>
-    </div>
-
-  </div>
-</section>
-
-<script id="liveCardsScript">
-// Auto swipe every 4 sec
-let cardIdx=0;
-setInterval(()=>{
-  const wrap=document.getElementById('liveCardsWrapper');
-  if(!wrap) return;
-  const cards=wrap.querySelectorAll('.live-card');
-  if(cards.length==0) return;
-  cardIdx=(cardIdx+1)%cards.length;
-  wrap.scrollTo({left: cards[cardIdx].offsetLeft - 20, behavior:'smooth'});
-},4000);
-
-// Auto update every 5 min - Gold, Kural, Kavithai, Ponmozhigal, Sport
-const kurals=[
-"அகர முதல எழுத்தெல்லாம் ஆதி<br>பகவன் முதற்றே உலகு<br><span style='font-size:10px;'>#1</span>",
-"கற்க கசடறக் கற்பவை கற்றபின்<br>நிற்க அதற்குத் தக<br><span style='font-size:10px;'>#391</span>",
-"எண்ணென்ப ஏனை எழுத்தென்ப இவ்விரண்டும்<br>கண்ணென்ப வாழும் உயிர்க்கு<br><span style='font-size:10px;'>#392</span>"
-];
-const kavithais=[
-"வாழ்க்கை ஒரு கவிதை<br>வாசிக்க தெரிந்தால் இன்பம்!",
-"கனவு காண்<br>கனவை நனவாக்கு<br>வெற்றி உனதே!",
-"நம்பிக்கை தான்<br>வாழ்க்கையின் ஆதாரம்!"
-];
-const ponmozhis=[
-""முயற்சி திருவினை ஆக்கும்"<br><br>வெற்றி நிச்சயம்!",
-""காலம் பொன் போன்றது"<br><br>நேரத்தை மதி!",
-""அறிவே சக்தி"<br><br>கற்றல் தொடரும்!"
-];
-function updateLive(){
-  const now=new Date();
-  // Gold - Tanjavur variation
-  const base22=7450+Math.floor(Math.random()*40-20);
-  const base24=8120+Math.floor(Math.random()*40-20);
-  const gp=document.getElementById('goldPriceVal');
-  if(gp) gp.innerHTML=`22K: ₹${base22}/g<br>24K: ₹${base24}/g<br><span style='font-size:9px;'>${now.toLocaleTimeString()}</span>`;
-  // Rotate content
-  const k=document.getElementById('kuralText'); if(k) k.innerHTML=kurals[Math.floor(Math.random()*kurals.length)];
-  const kv=document.getElementById('kavithaiText'); if(kv) kv.innerHTML=kavithais[Math.floor(Math.random()*kavithais.length)];
-  const pm=document.getElementById('ponmozhiText'); if(pm) pm.innerHTML=ponmozhis[Math.floor(Math.random()*ponmozhis.length)];
-  console.log('Live Cards Updated - Tanjavur Gold + Kural + Kavithai');
-}
-setInterval(updateLive, 5*60*1000); // 5 min
-</script>
-
-
 <section id="sasikumarPay2AllWallet" style="margin:20px auto;max-width:720px;padding:20px;border-radius:22px;background:linear-gradient(135deg,#101827,#182b46);color:#fff;box-shadow:0 10px 30px rgba(0,0,0,.18);">
   <div class="skPay2AllCardHeading">
     <img class="sasikumar-spin-logo-small" src="/assets/sasikumar-ai-logo-60.png" alt="SASIKUMAR AI Logo">
