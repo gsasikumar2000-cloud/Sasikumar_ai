@@ -1,4 +1,56 @@
 
+<style id="skMobileFitColorFont">
+/* SASIKUMAR AI - MOBILE FIT + COLOR + FONT SIZE */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;600&display=swap');
+:root{--fs-sm:clamp(11px, 2.5vw, 13px);--fs-md:clamp(13px, 3vw, 15px);--fs-lg:clamp(16px, 4vw, 20px);--fs-xl:clamp(20px, 5vw, 26px)}
+body{font-size:var(--fs-md)!important;line-height:1.5!important}
+#skTop{padding:12px 10px!important}
+#skTop b{font-size:var(--fs-lg)!important}
+#skMakerTools b,#skAllContent b{font-size:var(--fs-md)!important}
+
+/* COLOR DIFFERENT FOR EACH CARD */
+#skAllContent > div > div:nth-child(1){background:linear-gradient(135deg,#dbeafe,#bfdbfe)!important;border-color:#60a5fa!important}
+#skAllContent > div > div:nth-child(2){background:linear-gradient(135deg,#fef3c7,#fde68a)!important;border-color:#fbbf24!important}
+#skAllContent > div > div:nth-child(3){background:linear-gradient(135deg,#dcfce7,#bbf7d0)!important;border-color:#4ade80!important}
+#skAllContent > div > div:nth-child(4){background:linear-gradient(135deg,#fce7f3,#fbcfe8)!important;border-color:#f472b6!important}
+#skAllContent > div > div:nth-child(5){background:linear-gradient(135deg,#ffedd5,#fed7aa)!important;border-color:#fb923c!important}
+#skAllContent > div > div:nth-child(6){background:linear-gradient(135deg,#e0e7ff,#c7d2ff)!important;border-color:#818cf8!important}
+#skAllContent > div > div:nth-child(7){background:linear-gradient(135deg,#f0fdf4,#bbf7d0)!important;border-color:#22c55e!important}
+#skAllContent > div > div:nth-child(8){background:linear-gradient(135deg,#fdf4ff,#f5d0fe)!important;border-color:#e879f9!important}
+
+/* MAKER COLORS */
+#skMakerTools > div > div > div:nth-child(1){background:linear-gradient(135deg,#dbeafe,#bfdbfe)!important}
+#skMakerTools > div > div > div:nth-child(2){background:linear-gradient(135deg,#fef3c7,#fde68a)!important}
+#skMakerTools > div > div > div:nth-child(3){background:linear-gradient(135deg,#dcfce7,#bbf7d0)!important}
+#skMakerTools > div > div > div:nth-child(4){background:linear-gradient(135deg,#fce7f3,#fbcfe8)!important}
+#skMakerTools > div > div > div:nth-child(5){background:linear-gradient(135deg,#ffedd5,#fed7aa)!important}
+
+/* MOBILE FIT - 100% */
+@media (max-width: 768px){
+  body{padding:0 6px!important}
+  #skTop{flex-direction:column!important;gap:8px!important;text-align:center!important}
+  #skReplySearch{margin:10px 6px!important;padding:12px!important}
+  #skAllContent{margin:10px 6px!important}
+  #skAllContent > div{grid-template-columns:1fr 1fr!important;gap:8px!important}
+  #skMakerTools{margin:10px 6px!important;padding:12px!important}
+  #skMakerTools > div > div{grid-template-columns:1fr 1fr!important}
+  #makerCanvas{width:100%!important;height:auto!important;max-width:340px!important}
+  button{font-size:var(--fs-sm)!important;padding:8px 12px!important}
+  input,textarea,select{font-size:16px!important} /* prevent zoom on iOS */
+}
+@media (max-width: 480px){
+  #skAllContent > div{grid-template-columns:1fr!important}
+  #skMakerTools > div > div{grid-template-columns:1fr!important}
+  #skMakerTools > div > div > div:last-child{grid-column:span 1!important}
+  #skTop b{font-size:18px!important}
+}
+
+/* FONT SIZE CONTROLS */
+.sk-font-controls{display:flex;gap:6px;justify-content:center;margin:10px 0;flex-wrap:wrap}
+.sk-font-controls button{padding:6px 12px;border-radius:20px;border:1px solid #e2e8f0;background:#fff;font-size:11px;cursor:pointer;font-weight:600}
+.sk-font-controls button.active{background:#0f172a;color:#fff}
+</style>
+
 <style id="skDesignUpgrade">
 /* SASIKUMAR AI PREMIUM DESIGN */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
@@ -23,6 +75,14 @@ button:hover{transform:translateY(-1px)!important;box-shadow:0 4px 12px rgba(0,0
   <div><span style="font-size:18px;font-weight:bold">🙏 Welcome SASIKUMAR AI</span> <span id="skDT" style="font-size:11px;opacity:0.9;margin-left:8px;background:rgba(255,255,255,0.15);padding:3px 8px;border-radius:12px"></span></div>
   <div style="display:flex;gap:6px"><button style="background:#fbbf24;color:#000;padding:6px 14px;border-radius:20px;border:none;font-weight:bold;cursor:pointer">🔐 SIGN IN / LOGIN</button><button style="background:#22c55e;color:#fff;padding:6px 14px;border-radius:20px;border:none;font-weight:bold;cursor:pointer">🆕 SIGN UP</button></div>
 </div>
+
+<div class="sk-font-controls" id="skFontControls">
+  <button onclick="document.body.style.fontSize='12px';this.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('active'));this.classList.add('active')">A- Small</button>
+  <button class="active" onclick="document.body.style.fontSize='14px';this.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('active'));this.classList.add('active')">A Medium</button>
+  <button onclick="document.body.style.fontSize='16px';this.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('active'));this.classList.add('active')">A+ Large</button>
+  <button onclick="document.body.style.fontSize='18px';this.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('active'));this.classList.add('active')">A++ X-Large</button>
+</div>
+
 
 <!-- WELCOME BOARD KELA LOGIN ADD -->
 <div id="skLoginBelowWelcome" style="margin:12px;padding:16px;background:linear-gradient(135deg,#ffffff 0%,#f0f9ff 100%);border:2px solid #0f172a;border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px">
