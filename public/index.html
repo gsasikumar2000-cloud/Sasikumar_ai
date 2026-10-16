@@ -1,4 +1,40 @@
 
+<style id="skLogo360Horizontal">
+/* SASIKUMAR AI - LOGO 360 SPIN + KIDAI MATTAM HORIZONTAL */
+@keyframes spin360{0%{transform:rotate(0deg) scale(1)}50%{transform:rotate(180deg) scale(1.1)}100%{transform:rotate(360deg) scale(1)}}
+@keyframes floatH{0%,100%{transform:translateX(0)}50%{transform:translateX(6px)}}
+.sk-logo-spin{
+  width:42px;height:42px;border-radius:50%;
+  background:linear-gradient(135deg,#0f172a,#fbbf24);
+  display:inline-flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:800;font-size:18px;
+  border:2px solid #fbbf24;box-shadow:0 4px 12px rgba(251,191,36,0.4);
+  animation:spin360 3s linear infinite;
+  vertical-align:middle;margin-right:8px;
+}
+.sk-logo-spin-small{width:32px;height:32px;font-size:14px;animation:spin360 2.5s linear infinite}
+.sk-logo-text{font-weight:800;background:linear-gradient(90deg,#fbbf24,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+/* KIDAI MATTAM - HORIZONTAL LAYOUT */
+.sk-horizontal-bar{
+  display:flex;flex-direction:row;overflow-x:auto;gap:10px;
+  padding:10px 6px;scroll-snap-type:x mandatory;
+  scrollbar-width:thin; -webkit-overflow-scrolling:touch;
+}
+.sk-horizontal-bar::-webkit-scrollbar{height:6px}
+.sk-horizontal-bar::-webkit-scrollbar-thumb{background:#fbbf24;border-radius:10px}
+.sk-h-card{
+  min-width:280px;flex:0 0 280px;
+  scroll-snap-align:start;
+  border-radius:14px;padding:12px;
+}
+@media (max-width:768px){
+  .sk-horizontal-bar{flex-direction:column;overflow-x:visible}
+  .sk-h-card{min-width:100%;flex:1 1 100%}
+  .sk-logo-spin{width:36px;height:36px;font-size:16px}
+}
+</style>
+
 <style id="skMobileFitAll">
 /* SASIKUMAR AI - MOBILE FIT COLORFUL ALL */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
@@ -70,7 +106,7 @@ button:hover{transform:translateY(-1px)!important;box-shadow:0 4px 12px rgba(0,0
 
 <!-- SASIKUMAR AI TOP - CLEAN NO POPUP -->
 <div id="skTop" style="background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff;padding:12px 15px;position:sticky;top:0;z-index:9999;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px">
-  <div><span style="font-size:18px;font-weight:bold">🙏 Welcome SASIKUMAR AI</span> <span id="skDT" style="font-size:11px;opacity:0.9;margin-left:8px;background:rgba(255,255,255,0.15);padding:3px 8px;border-radius:12px"></span></div>
+  <div><span style="font-size:18px;font-weight:bold">🙏 <span class="sk-logo-spin">S</span> Welcome SASIKUMAR AI</span> <span id="skDT" style="font-size:11px;opacity:0.9;margin-left:8px;background:rgba(255,255,255,0.15);padding:3px 8px;border-radius:12px"></span></div>
   <div style="display:flex;gap:6px"><button style="background:#fbbf24;color:#000;padding:6px 14px;border-radius:20px;border:none;font-weight:bold;cursor:pointer">🔐 SIGN IN / LOGIN</button><button style="background:#22c55e;color:#fff;padding:6px 14px;border-radius:20px;border:none;font-weight:bold;cursor:pointer">🆕 SIGN UP</button></div>
 </div>
 
@@ -116,7 +152,7 @@ button:hover{transform:translateY(-1px)!important;box-shadow:0 4px 12px rgba(0,0
 document.addEventListener('DOMContentLoaded',()=>{let s=localStorage.getItem('skReplySave'); let el=document.querySelector('#skReplySearch textarea, #skReplyInput, textarea'); if(s && el &&!el.value){el.value=s;}});
 </script>
 
-  <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px"><b>💬 SASIKUMAR AI REPLY BOX</b><span style="font-size:11px;background:#0f172a;color:#fff;padding:2px 8px;border-radius:10px">TOOL WEB ALL</span></div>
+  <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px"><b>💬 <span class="sk-logo-spin">S</span> SASIKUMAR AI REPLY BOX</b><span style="font-size:11px;background:#0f172a;color:#fff;padding:2px 8px;border-radius:10px">TOOL WEB ALL</span></div>
   <textarea id="skIn" placeholder="Ask anything to SASIKUMAR AI..." style="width:100%;min-height:85px;margin-top:10px;padding:12px;border:1px solid #cbd5e1;border-radius:10px;font-size:14px"></textarea>
   <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
     <button onclick="var v=document.getElementById('skIn').value.trim(); var o=document.getElementById('skOut'); if(!v){alert('Type Anna!');return} o.style.display='block'; o.innerHTML='<b>🤖 SASIKUMAR AI:</b><br>'+v+'<br><br>✅ Received!';" style="background:#0f172a;color:#fff;padding:9px 16px;border:none;border-radius:8px;font-weight:bold;cursor:pointer">🚀 GO SEND</button>
@@ -126,7 +162,7 @@ document.addEventListener('DOMContentLoaded',()=>{let s=localStorage.getItem('sk
   <div id="skOut" style="display:none;margin-top:10px;padding:12px;background:#f1f5f9;border-radius:8px;font-size:13px"></div>
 
   <div style="margin-top:14px;border-top:1px solid #e2e8f0;padding-top:12px">
-    <b>🔍 SASIKUMAR AI WEB SEARCH BOX</b>
+    <b>🔍 <span class="sk-logo-spin">S</span> SASIKUMAR AI WEB SEARCH BOX</b>
     <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
       <input id="skS" placeholder="Search anything on web..." style="flex:1;min-width:200px;padding:11px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px">
       <button onclick="var q=document.getElementById('skS').value.trim(); if(q) window.open('https://www.google.com/search?q='+encodeURIComponent(q),'_blank')" style="padding:11px 16px;background:#0f172a;color:#fff;border:none;border-radius:8px;font-weight:bold;cursor:pointer">🔍 Search</button>
@@ -134,7 +170,7 @@ document.addEventListener('DOMContentLoaded',()=>{let s=localStorage.getItem('sk
     </div>
   </div>
 
-<!-- SASIKUMAR AI MAKER STUDIO - BELOW WEB SEARCH -->
+<!-- <span class="sk-logo-spin">S</span> SASIKUMAR AI MAKER STUDIO - BELOW WEB SEARCH -->
 <div id="skMakerTools" style="margin:14px;padding:16px;background:#fff;border:2px solid #0f172a;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,0.08)">
   <div style="text-align:center">
     <div style="font-size:17px;font-weight:800;color:#0f172a">🎨 SASIKUMAR AI MAKER STUDIO</div>
@@ -186,7 +222,7 @@ document.addEventListener('DOMContentLoaded',()=>{let s=localStorage.getItem('sk
 
   </div>
 
-<!-- SASIKUMAR AI MINI OFFICE -->
+<!-- <span class="sk-logo-spin">S</span> SASIKUMAR AI MINI OFFICE -->
 
   </div>
 </div>
