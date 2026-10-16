@@ -10145,3 +10145,120 @@ html body .skMainLiveGrid > .skMainFeatureCard {
 
 </body>
 </html>
+
+<!-- SK_ALL_CARD_ICONS_V1 -->
+<style id="SK_ALL_CARD_ICONS_V1">
+/* Consistent icon buttons for existing SASIKUMAR AI cards */
+.sk-card-icon-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+  min-height: 40px !important;
+  padding: 8px 13px !important;
+  margin: 5px 4px !important;
+  border: 1px solid rgba(255,255,255,.55) !important;
+  border-radius: 12px !important;
+  background: linear-gradient(135deg,#2563eb,#7c3aed) !important;
+  color: #fff !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  line-height: 1.3 !important;
+  cursor: pointer !important;
+  box-shadow: 0 3px 10px rgba(30,64,175,.18) !important;
+  -webkit-tap-highlight-color: transparent;
+}
+.sk-card-icon-btn:active {
+  transform: scale(.97);
+}
+.sk-card-icon-btn:focus-visible {
+  outline: 3px solid #f59e0b !important;
+  outline-offset: 3px !important;
+}
+#skReplyCreatorCards .skCreatorToolIcon {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+#skReplyCreatorCards .skCreatorToolOpen {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+}
+#skLiveBookCardsRow > *,
+#skAllServicesCard .sk-service-zigzag > button,
+#banking-products .service-btn {
+  -webkit-tap-highlight-color: transparent;
+}
+@media(max-width:600px) {
+  .sk-card-icon-btn {
+    min-height: 42px !important;
+    padding: 9px 11px !important;
+    font-size: 13px !important;
+  }
+}
+</style>
+<script id="SK_ALL_CARD_ICONS_SCRIPT_V1">
+(function(){
+  "use strict";
+  if (window.__SK_ALL_CARD_ICONS_V1__) return;
+  window.__SK_ALL_CARD_ICONS_V1__ = true;
+
+  function addIconButton(card, label, icon, action) {
+    if (!card || card.querySelector('[data-sk-icon-action="' + action + '"]')) return;
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'sk-card-icon-btn';
+    button.dataset.skIconAction = action;
+    button.innerHTML = '<span aria-hidden="true">' + icon + '</span><span>' + label + '</span>';
+    button.addEventListener('click', function(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      if (action === 'gold' && typeof window.liveGoldRate === 'function') window.liveGoldRate();
+      else if (action === 'expert' && typeof window.goldExpert === 'function') window.goldExpert();
+      else if (action === 'hallmark' && typeof window.goldHallmark === 'function') window.goldHallmark();
+      else if (action === 'jobs' && typeof window.openJobsFolder === 'function') window.openJobsFolder();
+      else if (action === 'education' && typeof window.openEducationFolder === 'function') window.openEducationFolder();
+      else if (action === 'wallet' && typeof window.skOpenPay2AllV1 === 'function') window.skOpenPay2AllV1();
+      else if (action === 'reply') {
+        var input = document.getElementById('q');
+        if (input) { input.focus(); input.scrollIntoView({behavior:'smooth',block:'center'}); }
+      } else if (action === 'search') {
+        var search = document.getElementById('skGlobalSearchTopInput') || document.getElementById('sasikumar-global-search');
+        if (search) { search.focus(); search.scrollIntoView({behavior:'smooth',block:'center'}); }
+      } else {
+        card.scrollIntoView({behavior:'smooth',block:'center'});
+      }
+    });
+    var heading = card.querySelector('h2,h3,h4,.skPay2AllCardHeading');
+    if (heading && heading.parentNode) heading.parentNode.insertBefore(button, heading.nextSibling);
+    else card.insertBefore(button, card.firstChild);
+  }
+
+  function install() {
+    addIconButton(document.getElementById('skReplyCreatorCards'), 'AI Creator', '🎨', 'reply');
+    addIconButton(document.getElementById('skLiveNewsBookCard'), 'News', '📰', 'news');
+    addIconButton(document.getElementById('skLiveSportsBookCard'), 'Sports', '🏏', 'sports');
+    addIconButton(document.getElementById('dailyThirukkural'), 'Thirukkural', '📖', 'thirukkural');
+    addIconButton(document.getElementById('livePonmozhigal'), 'Ponmozhigal', '💬', 'quotes');
+    addIconButton(document.getElementById('skLiveKavithaiBookCard'), 'Kavithai', '✍️', 'poem');
+    addIconButton(document.getElementById('skYouTubeCreativeCards'), 'YouTube Videos', '▶️', 'videos');
+    addIconButton(document.getElementById('banking-products'), 'Banking Services', '🏦', 'banking');
+    addIconButton(document.getElementById('sasikumarPay2AllWallet'), 'Wallet Services', '💳', 'wallet');
+    addIconButton(document.getElementById('skGoldApp'), 'Gold Rate', '🥇', 'gold');
+    addIconButton(document.getElementById('allJobs'), 'Jobs', '💼', 'jobs');
+    addIconButton(document.getElementById('sasikumarEducationPanel'), 'Education', '🎓', 'education');
+
+    var appraiser = document.getElementById('skGoldApp');
+    if (appraiser) {
+      addIconButton(appraiser, 'Gold Expert', '💎', 'expert');
+      addIconButton(appraiser, 'Hallmark', '✅', 'hallmark');
+    }
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install);
+  else install();
+})();
+</script>
+<!-- END SK_ALL_CARD_ICONS_V1 -->
