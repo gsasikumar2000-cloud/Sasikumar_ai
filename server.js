@@ -16,7 +16,7 @@ app.use((req,res,next)=>{
 });
 const publicPath = path.join(__dirname,'public');
 const WA_TOKEN = process.env.WHATSAPP_TOKEN || '';
-const WA_PHONE_ID = process.env.WHATSAPP_PHONE_ID || '';
+const WA_PHONE_ID = process.env.WHATSAPP_PHONE_ID || process.env.WHATSAPP_PHONE_NUMBER_ID || '';
 const WA_VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || 'sasikumar_ai_verify_2026';
 
 const WELCOME_MENU = `🤖 Welcome 🙏
