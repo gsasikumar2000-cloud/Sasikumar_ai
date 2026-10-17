@@ -256,6 +256,61 @@ app.post('/api/ai-reply',(req,res)=>{
   }catch(e){res.json({answer:WELCOME_MENU});}
 });
 
+
+// SK_WA_FRIENDLY_COMEDY_AI_V1
+async function getWhatsAppAIReply(question, mode = 'normal') {
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) {
+    return 'மன்னிக்கவும் நண்பா 😊 AI சேவை இப்போது கிடைக்கவில்லை. சிறிது நேரம் கழித்து முயற்சிக்கவும்.';
+  }
+
+  const systemPrompt = mode === 'friendly'
+    ? 'You are SASIKUMAR AI, a warm, friendly and respectful conversation partner. Match the user language (Tamil, English or Tanglish). Be kind, natural and concise. Never claim to be human.'
+    : 'You are SASIKUMAR AI. Answer the user helpfully, accurately and respectfully. Match the user language (Tamil, English or Tanglish). If unsure about current facts, be transparent. Keep WhatsApp replies concise.';
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 20000);
+
+  try {
+    const response = await fetch(
+      'https://api.groq.com/openai/v1/chat/completions',
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + apiKey,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'openai/gpt-oss-20b',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: String(question).slice(0, 4000) }
+          ],
+          temperature: 0.7,
+          max_completion_tokens: 700
+        }),
+        signal: controller.signal
+      }
+    );
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      console.error('[WhatsApp AI]', response.status,
+        data?.error?.message || 'AI request failed');
+      return 'மன்னிக்கவும் நண்பா 😊 இப்போது AI பதில் கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.';
+    }
+
+    return data?.choices?.[0]?.message?.content?.trim() ||
+      'மன்னிக்கவும் நண்பா 😊 பதில் கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.';
+  } catch (error) {
+    console.error('[WhatsApp AI]', error.message || error);
+    return 'மன்னிக்கவும் நண்பா 😊 AI இணைப்பில் தற்காலிகப் பிழை. மீண்டும் முயற்சிக்கவும்.';
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 app.get('/api/whatsapp/webhook',(req,res)=>{const mode=req.query['hub.mode'];const token=req.query['hub.verify_token'];const challenge=req.query['hub.challenge'];if(mode==='subscribe' && token===WA_VERIFY_TOKEN) res.status(200).send(challenge); else res.sendStatus(403);});
 app.post('/api/whatsapp/webhook',async(req,res)=>{
   try{
@@ -268,17 +323,37 @@ app.post('/api/whatsapp/webhook',async(req,res)=>{
     const from=msg.from;
     const trimmed=(msg.text?.body||'').trim();
     const lower=trimmed.toLowerCase();
-    const isWelcome=!trimmed || trimmed==='0' ||
-      ['menu','hi','hello','vanakkam','start'].includes(lower);
 
-    let reply=WELCOME_MENU;
-    if(!isWelcome){
-      const num=trimmed.match(/^\s*(1[0-9]|20|[0-9])\s*$/);
-      reply=num ? (getMenuReply(num[1])||WELCOME_MENU)
-                : getGeneralReply(trimmed,detectLang(trimmed));
-    }
+const isWelcome = !trimmed || trimmed === '0' ||
+  ['menu', 'start'].includes(lower);
 
-    if(WA_TOKEN && WA_PHONE_ID){
+let reply = WELCOME_MENU;
+
+if (!isWelcome) {
+  const num = trimmed.match(/^\s*(1[0-9]|20|[0-9])\s*$/);
+
+  if (num) {
+    reply = getMenuReply(num[1]) || WELCOME_MENU;
+  } else if (/^(hi|hello|hey|வணக்கம்|ஹாய்|ஹலோ)[\s!.]*$/i.test(trimmed)) {
+    reply = /[\u0B80-\u0BFF]/.test(trimmed)
+      ? 'வணக்கம் நண்பா! 😊❤️ எப்படி இருக்கீங்க? என்ன உதவி வேண்டும்?'
+      : 'Hey friend! 😊❤️ How are you today? How can I help?';
+  } else if (/\b(comedy|joke|funny|laugh|next)\b|காமெடி|ஜோக்|நகைச்சுவை/i.test(trimmed)) {
+    const jokes = [
+      '😂 ஆசிரியர்: ஏன் லேட்டா வந்தாய்? மாணவர்: சார், கனவில் பள்ளிக்கு வந்தேன்; அதனால் நிஜத்தில் லேட்டாகிவிட்டது! 🤣',
+      '🤣 நண்பன்: என் மொபைல் என்னை ரொம்ப நேசிக்குது! மற்றவன்: எப்படி? நண்பன்: எப்போதும் என்னைக் கட்டிப்பிடிச்சு சார்ஜ் கேட்குது! 😂📱',
+      '😄 மருத்துவர்: தினமும் உடற்பயிற்சி செய்யுங்கள். நோயாளி: சரி டாக்டர், இனிமேல் உடற்பயிற்சி வீடியோக்களை தினமும் பார்ப்பேன்! 😂',
+      '😂 கணவர்: இன்று சாப்பாட்டில் என்ன ஸ்பெஷல்? மனைவி: உங்களுக்காக அன்புடன் செய்தேன்! கணவர்: அதனால்தான் உப்புக்கூட அன்பாக அதிகமா இருக்கா? 🤣'
+    ];
+    reply = jokes[Math.floor(Math.random() * jokes.length)] +
+      '\n\n😄 இன்னொரு காமெடிக்கு Next அனுப்புங்கள்!';
+  } else if (/\bfriendly\b|நண்பா|நண்பரே/i.test(trimmed)) {
+    reply = await getWhatsAppAIReply(trimmed, 'friendly');
+  } else {
+    reply = await getWhatsAppAIReply(trimmed, 'normal');
+  }
+}
+if(WA_TOKEN && WA_PHONE_ID){
       const sendWA=async(payload)=>{
         const r=await fetch(
           `https://graph.facebook.com/v20.0/${WA_PHONE_ID}/messages`,
