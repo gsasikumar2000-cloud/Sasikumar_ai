@@ -330,6 +330,86 @@ app.post('/api/whatsapp/share',(req,res)=>{
   res.json({wa_link:link});
 });
 
+
+// SASIKUMAR AI GLOBAL WEB SEARCH API
+app.get('/api/global-search', async (req, res) => {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+
+  const query = String(req.query.q || '').trim();
+
+  if (!query) {
+    return res.status(400).json({
+      error: 'Please enter a search query.',
+      results: []
+    });
+  }
+
+  if (query.length > 500) {
+    return res.status(400).json({
+      error: 'Search query is too long.',
+      results: []
+    });
+  }
+
+  const apiKey = process.env.TAVILY_API_KEY;
+
+  if (!apiKey) {
+    return res.status(503).json({
+      error: 'Web Search is not configured. Please set TAVILY_API_KEY.',
+      results: []
+    });
+  }
+
+  try {
+    const response = await fetch('https://api.tavily.com/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        api_key: apiKey,
+        query,
+        search_depth: 'basic',
+        max_results: 8,
+        include_answer: false
+      }),
+      signal: AbortSignal.timeout(25000)
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      console.error('Tavily Search HTTP error:', response.status);
+      const googleUrl = 'https://www.google.com/search?q=' + encodeURIComponent(query);
+      return res.json({
+        query,
+        fallback: 'google',
+        error: 'Tavily search is unavailable. Continue with Google Search.',
+        results: [{
+          title: 'Google Search — ' + query,
+          url: googleUrl,
+          content: 'Tap this result to open current Google search results.'
+        }]
+      });
+    }
+
+    const results = (Array.isArray(data.results) ? data.results : [])
+      .map(item => ({
+        title: String(item.title || 'Search result'),
+        url: String(item.url || ''),
+        content: String(item.content || item.snippet || '')
+      }))
+      .filter(item => item.url.startsWith('https://') || item.url.startsWith('http://'));
+
+    return res.json({ query, results });
+  } catch (error) {
+    console.error('Global Search request failed:', error.message);
+    return res.status(502).json({
+      error: 'Web Search is temporarily unavailable. Please try again.',
+      results: []
+    });
+  }
+});
+// END SASIKUMAR AI GLOBAL WEB SEARCH API
+
 app.use(express.static(publicPath));
 app.get('*',(req,res)=>{const fp=path.join(publicPath,'index.html');if(fs.existsSync(fp))res.sendFile(fp);else res.status(404).send('Not Found');});
 app.listen(PORT,()=>console.log(`🤖 20 OPTIONS WHATSAPP MENU http://localhost:${PORT} - OK`));
