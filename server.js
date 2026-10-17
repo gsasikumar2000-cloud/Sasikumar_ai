@@ -6,7 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 10000;
-app.use(express.json({limit:'1mb'}));
+app.use(express.json({limit:'16mb'}));
 app.use((req,res,next)=>{
   res.header('Access-Control-Allow-Origin','*');
   res.header('Access-Control-Allow-Methods','GET,POST,OPTIONS');
@@ -92,6 +92,128 @@ app.get('/api/status',(req,res)=>{res.json({status:'WHATSAPP MENU 20 OPTIONS LIV
 app.get('/api/whatsapp/menu',(req,res)=>{res.json({welcome:WELCOME_MENU,total:20});});
 app.get('/api/gold',(req,res)=>{const p=14748+Math.floor(Math.random()*80)-40;res.json({'24k_per_g':p,'22k_per_g':Math.floor(p*0.916),trend:p>14748?'up':'down',last_updated:new Date().toISOString()});});
 app.get('/api/services',(req,res)=>{res.json({services:[{id:1,name:'Gold Rate',ta:'தங்க விலை',icon:'💰'},{id:2,name:'Gold Loan',ta:'தங்க கடன்',icon:'🏦'},{id:3,name:'Banking',ta:'வங்கி',icon:'🏧'},{id:4,name:'Gold Expert',ta:'தங்க நிபுணர்',icon:'👨‍🏫'},{id:5,name:'Appraisal',ta:'மதிப்பீடு',icon:'🔍'},{id:6,name:'Education',ta:'கல்வி',icon:'📚'},{id:7,name:'Jobs',ta:'வேலை',icon:'💼'},{id:8,name:'Business Tech News',ta:'வணிக செய்தி',icon:'💼'},{id:9,name:'General AI',ta:'பொது AI',icon:'🧠'},{id:10,name:'Breaking News',ta:'முக்கிய செய்தி',icon:'🚨'},{id:11,name:'Business News',ta:'வணிக செய்தி',icon:'💼'},{id:12,name:'Sports',ta:'விளையாட்டு',icon:'🏏'},{id:13,name:'Web Search',ta:'இணைய தேடல்',icon:'🔎'},{id:14,name:'Poster Creative',ta:'போஸ்டர்',icon:'🎨'},{id:15,name:'Image AI',ta:'பட AI',icon:'📸'},{id:16,name:'Video Maker',ta:'வீடியோ',icon:'🎬'},{id:17,name:'Contact',ta:'தொடர்பு',icon:'📞'},{id:18,name:'Feedback',ta:'கருத்து',icon:'⭐'},{id:19,name:'About',ta:'பற்றி',icon:'ℹ️'},{id:20,name:'Tamil News Videos',ta:'தமிழ் செய்தி',icon:'📰'}]});});
+
+
+/* SASIKUMAR AI GLOBAL CHAT API */
+app.post('/api/chat', async (req, res) => {
+  try {
+    const message = String(req.body?.message || '').trim();
+    const category = String(req.body?.category || 'General AI').slice(0, 100);
+    const attachment = req.body?.attachment;
+
+    if (!message && !attachment) {
+      return res.status(400).json({
+        reply: 'தயவுசெய்து உங்கள் கேள்வியை உள்ளிடுங்கள்.',
+        answer: 'தயவுசெய்து உங்கள் கேள்வியை உள்ளிடுங்கள்.'
+      });
+    }
+
+    const apiKey = process.env.GROQ_API_KEY;
+
+    if (!apiKey) {
+      return res.status(503).json({
+        reply: 'AI server configuration error: GROQ_API_KEY is missing.',
+        answer: 'AI server configuration error: GROQ_API_KEY is missing.'
+      });
+    }
+
+    let userMessage = message;
+
+    if (attachment) {
+      const fileName =
+        typeof attachment === 'object'
+          ? String(attachment.name || attachment.filename || 'uploaded file')
+          : 'uploaded file';
+
+      userMessage +=
+        (userMessage ? '\n\n' : '') +
+        '[User attached a file: ' + fileName +
+        '. If its contents are not available to you, ask the user to paste the relevant text.]';
+    }
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 60000);
+
+    let upstream;
+    try {
+      upstream = await fetch(
+        'https://api.groq.com/openai/v1/chat/completions',
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + apiKey,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: 'openai/gpt-oss-20b',
+            messages: [
+              {
+                role: 'system',
+                content:
+                  'You are SASIKUMAR AI, a helpful multilingual assistant. ' +
+                  'Respond in the language used by the user, including Tamil, English, or Tanglish. ' +
+                  'Give clear, accurate and useful answers. ' +
+                  'For current information that you cannot verify, be transparent. ' +
+                  'The requested service category is: ' + category + '.'
+              },
+              {
+                role: 'user',
+                content: userMessage
+              }
+            ],
+            temperature: 0.7,
+            max_completion_tokens: 2048
+          }),
+          signal: controller.signal
+        }
+      );
+    } finally {
+      clearTimeout(timer);
+    }
+
+    const result = await upstream.json().catch(() => ({}));
+
+    if (!upstream.ok) {
+      console.error(
+        'Groq API error:',
+        upstream.status,
+        result?.error?.message || 'Upstream request failed'
+      );
+
+      const errorMessage =
+        upstream.status === 401
+          ? 'AI API authentication failed. Please check the server API key.'
+          : upstream.status === 429
+          ? 'AI service is busy or its usage limit was reached. Please try again later.'
+          : 'AI service returned an error (HTTP ' + upstream.status + '). Please try again.';
+
+      return res.status(502).json({
+        reply: errorMessage,
+        answer: errorMessage
+      });
+    }
+
+    const reply = result?.choices?.[0]?.message?.content;
+
+    if (!reply) {
+      return res.status(502).json({
+        reply: 'AI-யிடமிருந்து பதில் கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.',
+        answer: 'AI-யிடமிருந்து பதில் கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.'
+      });
+    }
+
+    return res.json({ reply, answer: reply, api: 'Groq AI' });
+  } catch (error) {
+    console.error('Chat API error:', error.name || 'Error', error.message || '');
+
+    const message =
+      error.name === 'AbortError'
+        ? 'AI பதில் பெற அதிக நேரமாகிறது. மீண்டும் முயற்சிக்கவும்.'
+        : 'AI இணைப்பில் பிழை ஏற்பட்டது. சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.';
+
+    return res.status(500).json({ reply: message, answer: message });
+  }
+});
 
 app.post('/api/ai-reply',(req,res)=>{
   try{
