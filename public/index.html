@@ -595,7 +595,7 @@ text-decoration:none !important;
 
   </div>
 </div>
-<div id="skFirstPageWebSearch" style="display:none!important;width:100%;max-width:900px;margin:14px auto;padding:14px;box-sizing:border-box;">
+<div id="skFirstPageWebSearch" style="display:block!important;visibility:visible!important;width:calc(100% - 24px);max-width:900px;margin:14px auto;padding:14px;box-sizing:border-box;">
   <div style="text-align:center;">
     <img src="/assets/sasikumar-ai-logo.png?v=20261006"
          alt="SASIKUMAR AI"
@@ -9065,37 +9065,16 @@ window.addEventListener("keydown",function(e){
 </style>
 
 
-<style id="SK_HIDE_YOUTUBE_HUB_ONLY_V1">
-#skYouTubeCreativeCards {
-  display: none !important;
-  visibility: hidden !important;
-}
-</style>
 
 
-<style id="SK_HIDE_DAILY_THIRUKKURAL_VIDEO_ONLY_V1">
-#dailyThirukkural iframe,
-#dailyThirukkural video {
-  display: none !important;
-  visibility: hidden !important;
-}
-</style>
 
 
-<style id="SK_HIDE_DAILY_KURAL_IFRAME_GLOBAL_V2">
-iframe[title="Daily Thirukkural Tamil video"],
-iframe[src*="youtube-nocookie.com/embed/e57vD7zZeRw"] {
-  display: none !important;
-  visibility: hidden !important;
-}
-</style>
 
 
-<style id="SK_HIDE_DAILY_KURAL_SECTION_V3">
-#skDailyThirukkuralVideoSection {
-  display: none !important;
-}
-</style>
+
+
+
+
 
 <style id="SK_ALL_SERVICES_FINAL_VISIBLE_V2">
 html body #sasikumar-ai-hub-dashboard-card { display:block!important; visibility:visible!important; opacity:1!important; height:auto!important; max-height:none!important; overflow:visible!important; position:relative!important; }
@@ -9957,7 +9936,7 @@ html body .skMainLiveGrid > .skMainFeatureCard {
 #skIndianLeadershipRow4 *{animation:none!important;transition:none!important}
 #skIndianLeadershipRow4 .skLeaderOpen{display:block;width:100%;max-width:360px;margin:12px auto;padding:16px;border:2px solid #f59e0b;border-radius:16px;background:linear-gradient(135deg,#ffedd5,#dbeafe);color:#1e3a8a;font-weight:800;cursor:pointer}
 #skIndianLeadershipRow4 img{width:58px;height:58px;object-fit:contain}
-#skLiveBookCardsRow>.skEditorialCardV1,#skLiveBookCardsRow>.skEditorialCardV1 *{animation:none!important;transition:none!important}
+
 </style>
 <section id="skIndianLeadershipRow4" class="skMainFeatureCard">
 <img src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI logo">
@@ -10087,6 +10066,70 @@ html body .skMainLiveGrid > .skMainFeatureCard {
     min-width: 250px !important;
     max-width: 250px !important;
   }
+}
+</style>
+
+
+
+<style id="SK_TOP_SEARCH_CLEAN_V1">
+#skFirstPageWebSearch {
+  display:block!important;
+  visibility:visible!important;
+  width:calc(100% - 24px)!important;
+  max-width:900px!important;
+  margin:14px auto!important;
+  padding:12px!important;
+  box-sizing:border-box!important;
+}
+#skFirstPageWebSearch > div {
+  background:linear-gradient(135deg,#e0f2fe,#f0fdf4,#fef3c7)!important;
+  color:#172554!important;
+  border:1px solid #bfdbfe!important;
+  border-radius:20px!important;
+  padding:18px!important;
+  box-shadow:0 6px 20px rgba(37,99,235,.12)!important;
+  box-sizing:border-box!important;
+}
+#skFirstPageWebSearch h2 {
+  color:#1d4ed8!important;
+  font-size:clamp(20px,5vw,27px)!important;
+  overflow-wrap:anywhere!important;
+}
+#skFirstPageWebSearch p {
+  color:#334155!important;
+}
+#skFirstPageWebSearch form {
+  display:flex!important;
+  gap:8px!important;
+  flex-wrap:wrap!important;
+  width:100%!important;
+  box-sizing:border-box!important;
+}
+#skFirstPageWebSearchInput {
+  flex:1 1 200px!important;
+  min-width:0!important;
+  width:100%!important;
+  padding:14px!important;
+  border:2px solid #93c5fd!important;
+  border-radius:14px!important;
+  background:#fff!important;
+  color:#111827!important;
+  font-size:16px!important;
+  box-sizing:border-box!important;
+}
+#skFirstPageWebSearch form button {
+  flex:0 1 auto!important;
+  padding:13px 22px!important;
+  border:0!important;
+  border-radius:14px!important;
+  background:linear-gradient(135deg,#2563eb,#7c3aed)!important;
+  color:#fff!important;
+  font-weight:800!important;
+  cursor:pointer!important;
+}
+@media(max-width:480px) {
+  #skFirstPageWebSearch > div {padding:14px!important;}
+  #skFirstPageWebSearch form button {width:100%!important;}
 }
 </style>
 
