@@ -8749,6 +8749,7 @@ window.addEventListener("afterprint",function(){
       .filter(el=>!before.has(el));
     const box=boxes[boxes.length-1];
     if(box){
+      content.appendChild(box);
       moveIntoView(box);
       box.style.display="block";
       box.style.width="100%";
