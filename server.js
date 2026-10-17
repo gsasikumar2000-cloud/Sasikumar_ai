@@ -123,25 +123,70 @@ app.get('/api/whatsapp/webhook',(req,res)=>{const mode=req.query['hub.mode'];con
 app.post('/api/whatsapp/webhook',async(req,res)=>{
   try{
     const body=req.body;
-    if(body.object==='whatsapp_business_account'){
-      const msg=body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
-      if(msg){
-        const from=msg.from;const text=msg.text?.body||'';
-        let reply=WELCOME_MENU;
-        const trimmed=text.trim();
-        if(trimmed==='0' || ['menu','hi','hello','vanakkam','start'].includes(trimmed.toLowerCase())){reply=WELCOME_MENU;}
-        else{
-          let num=trimmed.match(/^\s*(1[0-9]|20|[0-9])\s*$/);
-          if(num){reply=getMenuReply(num[1])||WELCOME_MENU;}
-          else{reply=getGeneralReply(trimmed,detectLang(trimmed));}
-        }
-        if(WA_TOKEN && WA_PHONE_ID){
-          await fetch(`https://graph.facebook.com/v20.0/${WA_PHONE_ID}/messages`,{method:'POST',headers:{'Authorization':`Bearer ${WA_TOKEN}`,'Content-Type':'application/json'},body:JSON.stringify({messaging_product:'whatsapp',to:from,type:'text',text:{body:reply.substring(0,4000)}})});
-        }
+    if(body.object!=='whatsapp_business_account') return res.sendStatus(404);
+
+    const msg=body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
+    if(!msg) return res.sendStatus(200);
+
+    const from=msg.from;
+    const trimmed=(msg.text?.body||'').trim();
+    const lower=trimmed.toLowerCase();
+    const isWelcome=!trimmed || trimmed==='0' ||
+      ['menu','hi','hello','vanakkam','start'].includes(lower);
+
+    let reply=WELCOME_MENU;
+    if(!isWelcome){
+      const num=trimmed.match(/^\s*(1[0-9]|20|[0-9])\s*$/);
+      reply=num ? (getMenuReply(num[1])||WELCOME_MENU)
+                : getGeneralReply(trimmed,detectLang(trimmed));
+    }
+
+    if(WA_TOKEN && WA_PHONE_ID){
+      const sendWA=async(payload)=>{
+        const r=await fetch(
+          `https://graph.facebook.com/v20.0/${WA_PHONE_ID}/messages`,
+          {
+            method:'POST',
+            headers:{
+              'Authorization':`Bearer ${WA_TOKEN}`,
+              'Content-Type':'application/json'
+            },
+            body:JSON.stringify({
+              messaging_product:'whatsapp',
+              to:from,
+              ...payload
+            })
+          }
+        );
+        const data=await r.json().catch(()=>({}));
+        if(!r.ok) console.error('[WhatsApp send]',r.status,JSON.stringify(data).slice(0,400));
+        return r.ok;
+      };
+
+      if(isWelcome){
+        await sendWA({
+          type:'image',
+          image:{
+            link:'https://sasikumar-ai-9wdq.onrender.com/assets/sasikumar-ai-logo.png',
+            caption:'🤖 Welcome 🙏\nSASIKUMAR AI ✨'
+          }
+        });
+        await sendWA({
+          type:'text',
+          text:{body:WELCOME_MENU.substring(0,4000)}
+        });
+      }else{
+        await sendWA({
+          type:'text',
+          text:{body:String(reply||WELCOME_MENU).substring(0,4000)}
+        });
       }
-      res.sendStatus(200);
-    }else res.sendStatus(404);
-  }catch(e){res.sendStatus(500);}
+    }
+    res.sendStatus(200);
+  }catch(e){
+    console.error('[WhatsApp webhook]',e.message||e);
+    res.sendStatus(500);
+  }
 });
 
 app.post('/api/whatsapp/send',async(req,res)=>{
