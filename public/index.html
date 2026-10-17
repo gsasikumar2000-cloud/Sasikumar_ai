@@ -3235,7 +3235,12 @@ const content =
           style="flex:1;min-width:140px;padding:12px;border:0;border-radius:12px;background:#167d3e;color:white;font-weight:800;cursor:pointer;">
           🏠 MAIN PAGE
         </button>
-      </div>
+            <button type="button"
+        onclick="window.openGoldAppraiserPage ? window.openGoldAppraiserPage() : alert('Gold Appraiser page is not ready. Please try again.')"
+        style="flex:1;min-width:140px;padding:12px;border:0;border-radius:12px;background:linear-gradient(135deg,#dbeafe,#93c5fd);color:#12315a;font-weight:800;cursor:pointer;">
+        📋 APPRAISER REPORT
+      </button>
+</div>
 
       <button id="skGoldPriceToggle" type="button"
         aria-expanded="false"
