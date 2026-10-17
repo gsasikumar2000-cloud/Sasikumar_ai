@@ -6486,6 +6486,7 @@ else skRefreshPay2AllWallet();
     const newBar = document.getElementById("skReplyToolsBar");
     const designMaker = document.getElementById("skDesignMakerGlobal");
     const creatorCards = document.getElementById("skReplyCreatorCards");
+    const miniOffice = document.getElementById("skMiniOfficeV1");
 
     if (!welcome || !loginSection || !globalSearch || !heading || !quick || !reply || !chat || !newBar || !designMaker || !creatorCards) {
       console.warn("SASIKUMAR AI: Required reply elements not found; no move performed.");
@@ -6493,7 +6494,7 @@ else skRefreshPay2AllWallet();
     }
 
     let anchor = welcome;
-    [loginSection, globalSearch, heading, quick, reply, chat, designMaker, creatorCards].forEach(function (element) {
+    [loginSection, globalSearch, heading, quick, reply, chat, designMaker, creatorCards].concat(miniOffice ? [miniOffice] : []).forEach(function (element) {
       anchor.insertAdjacentElement("afterend", element);
       anchor = element;
     });
