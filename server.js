@@ -54,6 +54,9 @@ Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada �
 
 2️⃣1️⃣ 📚 Leadership History
 2️⃣2️⃣ 📰 Tamil Breaking News
+2️⃣3️⃣ ✍️ கவிதைகள் — Tamil Kavithai
+2️⃣4️⃣ 💬 பொன்மொழிகள் — Ponmozhigal
+2️⃣5️⃣ 💡 தத்துவங்கள் — Thathuvam
 
 🗣️ Any Language — Ask Freely
 
@@ -62,7 +65,10 @@ Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada �
 
 அல்லது எந்த மொழியிலும் உங்கள் கேள்வியை நேரடியாக அனுப்பலாம்.
 
-— SASIKUMAR AI`;
+— SASIKUMAR AI
+2️⃣6️⃣ 🪔 தினசரி திருக்குறள் — Daily Thirukkural
+2️⃣7️⃣ 🔥 தினசரி ஊக்கம் — Daily Motivation
+`;
 
 const MENU_REPLIES = {
   '1': () => { const p=14748+Math.floor(Math.random()*80)-40; return `1️⃣ Gold Rate - LIVE\n\n💰 Thanjavur Gold:\n24K: Rs ${p}/g\n22K: Rs ${Math.floor(p*0.916)}/g\nTrend: ${p>14748?'Up ⬆️':'Down ⬇️'}\nLive: /api/gold\n\nType 0 for Menu`; },
@@ -116,16 +122,73 @@ Type 0 for Menu`,
 📰 சமீபத்திய செய்திகளைப் பெற "Tamil news" அல்லது "Breaking news" என்று அனுப்புங்கள்.
 🌍 தமிழ்நாடு • இந்தியா • உலகம்
 🤖 SASIKUMAR AI
+Type 0 for Menu`,
+
+  '23': () => `2️⃣3️⃣ 📝 தமிழ் கவிதைகள் — KAVITHAI
+
+❤️ காதல் கவிதைகள்
+🤝 நட்பு கவிதைகள்
+🌿 வாழ்க்கைக் கவிதைகள்
+💪 ஊக்கக் கவிதைகள்
+
+எந்த வகைக் கவிதை வேண்டும் என்று அனுப்புங்கள்.
+உதாரணம்: காதல் கவிதை
+🤖 SASIKUMAR AI
+Type 0 for Menu`,
+
+  '24': () => `2️⃣4️⃣ 🌹 பொன்மொழிகள் — PONMOZHIGAL
+
+🌱 வாழ்க்கைப் பொன்மொழிகள்
+💪 ஊக்கமளிக்கும் பொன்மொழிகள்
+🤝 நட்பு மற்றும் அன்பு
+🎓 கல்வி மற்றும் வெற்றி
+
+"வாழ்க்கை பொன்மொழிகள்" அல்லது "Motivation quotes" என்று அனுப்புங்கள்.
+🤖 SASIKUMAR AI
+Type 0 for Menu`,
+
+  '25': () => `2️⃣5️⃣ 💡 தத்துவம் — THATHUVAM
+
+🌍 வாழ்க்கைத் தத்துவம்
+🧠 சிந்தனை மற்றும் அறிவு
+❤️ அன்பு மற்றும் மனிதநேயம்
+🕊️ அமைதி மற்றும் மனநிறைவு
+
+"வாழ்க்கை தத்துவம்" என்று அனுப்புங்கள்.
+🤖 SASIKUMAR AI
 Type 0 for Menu`
 
+
+  ,
+  '26': () => `🪔 26 — தினசரி திருக்குறள்
+
+📖 குறள் 1:
+அகர முதல எழுத்தெல்லாம் ஆதி
+பகவன் முதற்றே உலகு.
+
+💡 பொருள்:
+எழுத்துகளுக்கு அகரம் முதன்மையானது; உலகிற்கு இறைவன் முதன்மையானவர்.
+
+📩 அடுத்த குறளுக்கு NEXT அனுப்புங்கள்.
+🤖 SASIKUMAR AI Type 0 for Menu`,
+  '27': () => `🔥 27 — தினசரி ஊக்கம்
+
+🌅 இன்றைய சிந்தனை:
+சிறிய முயற்சியையும் தொடர்ந்து செய்தால் பெரிய முன்னேற்றத்தை அடையலாம்.
+
+🎯 இன்றைய செயல்:
+நீண்ட நாட்களாகத் தள்ளிப்போட்ட ஒரு நல்ல வேலையை இன்று தொடங்குங்கள்.
+
+💪 நம்பிக்கையுடன் தொடர்ந்து முயற்சி செய்யுங்கள்.
+🤖 SASIKUMAR AI Type 0 for Menu`
 };
 
 function getMenuReply(num){const fn=MENU_REPLIES[num];return fn?fn():null;}
 function detectLang(q){try{if(/[\u0B80-\u0BFF]/.test(q))return 'ta';return 'en';}catch(e){return 'en';}}
-function getGeneralReply(q,lang){const time=new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'});if(q.toLowerCase().includes('gold')){const p=14748+Math.floor(Math.random()*80)-40;return `💰 GOLD LIVE - ${time}\n24K: Rs ${p}/g\nType 0 for Menu`;}return `🌍 General AI - ${time}\nYou: "${q}"\nType 0 for Menu or 1-20`; }
+function getGeneralReply(q,lang){const time=new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'});if(q.toLowerCase().includes('gold')){const p=14748+Math.floor(Math.random()*80)-40;return `💰 GOLD LIVE - ${time}\n24K: Rs ${p}/g\nType 0 for Menu`;}return `🌍 General AI - ${time}\nYou: "${q}"\nType 0 for Menu or 1-27`; }
 
-app.get('/api/status',(req,res)=>{res.json({status:'WHATSAPP MENU 20 OPTIONS LIVE OK',version:'7.0 Menu',options:20,time:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})});});
-app.get('/api/whatsapp/menu',(req,res)=>{res.json({welcome:WELCOME_MENU,total:22});});
+app.get('/api/status',(req,res)=>{res.json({status:'WHATSAPP MENU 27 OPTIONS LIVE OK',version:'7.1 Menu',options:27,time:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})});});
+app.get('/api/whatsapp/menu',(req,res)=>{res.json({welcome:WELCOME_MENU,total:27});});
 app.get('/api/gold',(req,res)=>{const p=14748+Math.floor(Math.random()*80)-40;res.json({'24k_per_g':p,'22k_per_g':Math.floor(p*0.916),trend:p>14748?'up':'down',last_updated:new Date().toISOString()});});
 app.get('/api/services',(req,res)=>{res.json({services:[{id:1,name:'Gold Rate',ta:'தங்க விலை',icon:'💰'},{id:2,name:'Gold Loan',ta:'தங்க கடன்',icon:'🏦'},{id:3,name:'Banking',ta:'வங்கி',icon:'🏧'},{id:4,name:'Gold Expert',ta:'தங்க நிபுணர்',icon:'👨‍🏫'},{id:5,name:'Appraisal',ta:'மதிப்பீடு',icon:'🔍'},{id:6,name:'Education',ta:'கல்வி',icon:'📚'},{id:7,name:'Jobs',ta:'வேலை',icon:'💼'},{id:8,name:'Business Tech News',ta:'வணிக செய்தி',icon:'💼'},{id:9,name:'General AI',ta:'பொது AI',icon:'🧠'},{id:10,name:'Breaking News',ta:'முக்கிய செய்தி',icon:'🚨'},{id:11,name:'Business News',ta:'வணிக செய்தி',icon:'💼'},{id:12,name:'Sports',ta:'விளையாட்டு',icon:'🏏'},{id:13,name:'Web Search',ta:'இணைய தேடல்',icon:'🔎'},{id:14,name:'Poster Creative',ta:'போஸ்டர்',icon:'🎨'},{id:15,name:'Image AI',ta:'பட AI',icon:'📸'},{id:16,name:'Video Maker',ta:'வீடியோ',icon:'🎬'},{id:17,name:'Contact',ta:'தொடர்பு',icon:'📞'},{id:18,name:'Feedback',ta:'கருத்து',icon:'⭐'},{id:19,name:'About',ta:'பற்றி',icon:'ℹ️'},{id:20,name:'Tamil News Videos',ta:'தமிழ் செய்தி',icon:'📰'}]});});
 
@@ -420,7 +483,7 @@ const isWelcome = !trimmed || trimmed === '0' ||
 let reply = WELCOME_MENU;
 
 if (!isWelcome) {
-  const num = trimmed.match(/^\s*(2[0-2]|1[0-9]|[0-9])\s*$/);
+  const num = trimmed.match(/^\s*(2[0-7]|1[0-9]|[0-9])\s*$/);
 
   if (num) {
     reply = num[1] === '22'
@@ -432,6 +495,16 @@ if (!isWelcome) {
       : 'Hey friend! 😊❤️ How are you today? How can I help?';
   } else if (/tamil\s*(breaking\s*)?news|breaking\s*news|தமிழ்.*செய்தி|முக்கியச் செய்திகள்/i.test(trimmed)) {
     reply = await getTamilBreakingNews();
+  } else if (/\b(kavithai|poem|poetry)\b|கவிதை|கவிதைகள்/i.test(trimmed)) {
+    reply = getMenuReply('23');
+  } else if (/\b(ponmozhigal|ponmozhi|quotes?|proverbs?)\b|பொன்மொழி|பொன்மொழிகள்/i.test(trimmed)) {
+    reply = getMenuReply('24');
+  } else if (/\b(thathuvam|philosophy)\b|தத்துவம்|வாழ்க்கைத் தத்துவம்/i.test(trimmed)) {
+    reply = getMenuReply('25');
+  } else if (/\b(thirukkural|kural)\b|திருக்குறள்/i.test(trimmed)) {
+    reply = getMenuReply('26');
+  } else if (/\b(motivation|motivational)\b|ஊக்கம்|தன்னம்பிக்கை/i.test(trimmed)) {
+    reply = getMenuReply('27');
   } else if (/\b(comedy|joke|funny|laugh|next)\b|காமெடி|ஜோக்|நகைச்சுவை/i.test(trimmed)) {
     const jokes = [
       '😂 ஆசிரியர்: ஏன் லேட்டா வந்தாய்? மாணவர்: சார், கனவில் பள்ளிக்கு வந்தேன்; அதனால் நிஜத்தில் லேட்டாகிவிட்டது! 🤣',
@@ -478,7 +551,7 @@ if(WA_TOKEN && WA_PHONE_ID){
         : 'https://sasikumar-ai-9wdq.onrender.com/assets/sasikumar-ai-logo.png';
 
       const caption = isMenuReply
-        ? '🤖 SASIKUMAR AI — Welcome! Send an option number from 1 to 20.'
+        ? '🤖 SASIKUMAR AI — Welcome! Send an option number from 1 to 27.'
         : ('🤖 SASIKUMAR AI\\n' + answerText).substring(0, 1000);
 
       await sendWA({
@@ -496,17 +569,83 @@ if(WA_TOKEN && WA_PHONE_ID){
   }
 });
 
-app.post('/api/whatsapp/send',async(req,res)=>{
-  try{
-    const {to,message,phone}=req.body;const target=to||phone;
-    if(!target||!message) return res.status(400).json({error:'Need phone and message'});
-    let clean=target.replace(/[^0-9]/g,''); if(clean.length===10) clean='91'+clean;
-    if(!WA_TOKEN||!WA_PHONE_ID){const link=`https://wa.me/${clean}?text=${encodeURIComponent(message)}`;return res.json({success:true,demo:true,wa_link:link,to:clean});}
-    const resp=await fetch(`https://graph.facebook.com/v20.0/${WA_PHONE_ID}/messages`,{method:'POST',headers:{'Authorization':`Bearer ${WA_TOKEN}`,'Content-Type':'application/json'},body:JSON.stringify({messaging_product:'whatsapp',to:clean,type:'text',text:{body:message.substring(0,4000)}})});
-    const data=await resp.json();res.json({success:true,real_api:true,data});
-  }catch(e){res.status(500).json({error:e.message});}
-});
+app.post('/api/whatsapp/send', async (req, res) => {
+  try {
+    const { to, message, phone } = req.body || {};
+    const target = to || phone;
 
+    if (!target || !message) {
+      return res.status(400).json({
+        success: false,
+        error: 'Need phone and message'
+      });
+    }
+
+    let clean = String(target).replace(/[^0-9]/g, '');
+    if (clean.length === 10) clean = '91' + clean;
+
+    if (clean.length < 11 || clean.length > 15) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid recipient phone number'
+      });
+    }
+
+    if (!WA_TOKEN || !WA_PHONE_ID) {
+      const link = `https://wa.me/${clean}?text=${encodeURIComponent(String(message))}`;
+      return res.status(503).json({
+        success: false,
+        demo: true,
+        error: 'WhatsApp Cloud API is not configured',
+        wa_link: link,
+        to: clean
+      });
+    }
+
+    const resp = await fetch(
+      `https://graph.facebook.com/v20.0/${WA_PHONE_ID}/messages`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${WA_TOKEN}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          messaging_product: 'whatsapp',
+          to: clean,
+          type: 'text',
+          text: { body: String(message).substring(0, 4000) }
+        })
+      }
+    );
+
+    const data = await resp.json().catch(() => ({}));
+
+    if (!resp.ok) {
+      console.error('WhatsApp Cloud API error:', resp.status,
+        data.error?.code || 'unknown');
+      return res.status(resp.status >= 400 && resp.status < 600 ? resp.status : 502)
+        .json({
+          success: false,
+          real_api: true,
+          error: data.error?.message || 'WhatsApp message send failed',
+          error_code: data.error?.code || null
+        });
+    }
+
+    return res.json({
+      success: true,
+      real_api: true,
+      data
+    });
+  } catch (e) {
+    console.error('WhatsApp send route error:', e.message);
+    return res.status(500).json({
+      success: false,
+      error: 'Internal WhatsApp send error'
+    });
+  }
+});
 app.post('/api/whatsapp/share',(req,res)=>{
   const {message,phone}=req.body;const text=message||WELCOME_MENU;
   let clean=(phone||'').replace(/[^0-9]/g,''); if(clean.length===10) clean='91'+clean;
@@ -596,4 +735,4 @@ app.get('/api/global-search', async (req, res) => {
 
 app.use(express.static(publicPath));
 app.get('*',(req,res)=>{const fp=path.join(publicPath,'index.html');if(fs.existsSync(fp))res.sendFile(fp);else res.status(404).send('Not Found');});
-app.listen(PORT,()=>console.log(`🤖 20 OPTIONS WHATSAPP MENU http://localhost:${PORT} - OK`));
+app.listen(PORT,()=>console.log(`🤖 27 OPTIONS WHATSAPP MENU http://localhost:${PORT} - OK`));
