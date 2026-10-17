@@ -2108,6 +2108,153 @@ Tamil + English • Gold • General Q&A</div>
   </div>
 </div>
 
+
+<!-- SK_MINI_OFFICE_LOGO_V1 -->
+<style>
+#skMiniOfficeV1 {
+  box-sizing:border-box;width:100%;margin:22px auto;padding:18px 12px;
+  border-radius:20px;border:2px solid #60a5fa;
+  background:linear-gradient(135deg,#eff6ff,#f5f3ff,#ecfeff);
+  color:#172554;text-align:center;
+}
+#skMiniOfficeV1 * {box-sizing:border-box}
+#skMiniOfficeV1 .skOfficeLogo {
+  width:60px;height:60px;object-fit:contain;display:block;margin:0 auto 10px;
+  animation:skMiniOfficeSpin 3s linear infinite;
+}
+@keyframes skMiniOfficeSpin {to{transform:rotate(360deg)}}
+#skMiniOfficeV1 h2 {font-size:clamp(18px,4vw,25px);margin:8px 0}
+#skMiniOfficeV1 .skOfficeSub {margin:6px 0 16px;font-size:13px}
+#skMiniOfficeV1 .skOfficeGrid {
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;
+}
+#skMiniOfficeV1 .skOfficeTool {
+  min-width:0;min-height:105px;padding:12px 5px;border-radius:14px;
+  border:1px solid #bfdbfe;background:#fff;color:#1e3a8a;
+  font-weight:800;font-size:13px;overflow-wrap:anywhere;cursor:pointer;
+  box-shadow:0 3px 10px #1e40af12;
+}
+#skMiniOfficeV1 .skOfficeTool span {display:block;font-size:25px;margin-bottom:7px}
+#skMiniOfficeV1 .skOfficeTool:active {transform:scale(.97)}
+@media(max-width:480px) {
+  #skMiniOfficeV1 .skOfficeGrid {grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+</style>
+
+<section id="skMiniOfficeV1" aria-label="SASIKUMAR AI Mini Office">
+  <img class="skOfficeLogo"
+       src="/assets/sasikumar-ai-logo.png"
+       alt="SASIKUMAR AI Logo">
+  <h2>🏢 SASIKUMAR AI MINI OFFICE</h2>
+  <p class="skOfficeSub">Create documents, spreadsheets and presentations</p>
+  <div class="skOfficeGrid">
+    <button class="skOfficeTool" type="button" onclick="skMiniOfficeWord()">
+      <span>📝</span>AI Word
+    </button>
+    <button class="skOfficeTool" type="button" onclick="skMiniOfficeExcel()">
+      <span>📊</span>AI Excel
+    </button>
+    <button class="skOfficeTool" type="button" onclick="skMiniOfficePowerPoint()">
+      <span>📽️</span>AI PowerPoint
+    </button>
+    <button class="skOfficeTool" type="button"
+            onclick="if(typeof skOpenPdfMaker==='function')skOpenPdfMaker();else alert('PDF Maker is unavailable');">
+      <span>📄</span>PDF Tools
+    </button>
+    <button class="skOfficeTool" type="button" onclick="skMiniOfficeNotes()">
+      <span>📒</span>Notes
+    </button>
+    <button class="skOfficeTool" type="button" onclick="skMiniOfficeAssistant()">
+      <span>🤖</span>Office Assistant
+    </button>
+  </div>
+</section>
+
+<script>
+(function(){
+  if (window.skMiniOfficeFunctionsV1) return;
+  window.skMiniOfficeFunctionsV1 = true;
+
+  function skOfficeDownload(name, content, type) {
+    var blob = new Blob([content], {type:type});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function(){URL.revokeObjectURL(url)},1500);
+  }
+
+  window.skMiniOfficeWord = function(){
+    var title = prompt('Word document title:', 'My Document');
+    if (title === null) return;
+    var content = prompt('Enter document content:');
+    if (content === null) return;
+    var safe = content.replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    var html = '<!doctype html><html><head><meta charset="utf-8"></head><body><h1>' +
+      title.replace(/&/g,'&amp;').replace(/</g,'&lt;') +
+      '</h1><p style="white-space:pre-wrap">' + safe + '</p></body></html>';
+    skOfficeDownload('Sasikumar-AI-Document.doc', html, 'application/msword');
+  };
+
+  window.skMiniOfficeExcel = function(){
+    var content = prompt('Enter spreadsheet rows; separate columns with commas and rows with new lines:', 'Item,Amount\\nGold,1000\\nSilver,500');
+    if (content === null) return;
+    var csv = content.split('\\n').map(function(row){
+      return row.split(',').map(function(cell){
+        return '"' + cell.replace(/"/g,'""') + '"';
+      }).join(',');
+    }).join('\\r\\n');
+    skOfficeDownload('Sasikumar-AI-Spreadsheet.csv', '\\uFEFF' + csv, 'text/csv;charset=utf-8');
+  };
+
+  window.skMiniOfficePowerPoint = function(){
+    var title = prompt('Presentation title:', 'My Presentation');
+    if (title === null) return;
+    var content = prompt('Enter slide text; use a new line for each slide:', 'Welcome\\nMain Points\\nThank You');
+    if (content === null) return;
+    var esc = function(v){return v.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')};
+    var slides = content.split('\\n').map(function(line){
+      return '<section style="height:90vh;display:grid;place-content:center;text-align:center;page-break-after:always"><h1>' +
+        esc(line) + '</h1></section>';
+    }).join('');
+    var html = '<!doctype html><html><head><meta charset="utf-8"><title>' +
+      esc(title) + '</title></head><body>' + slides + '</body></html>';
+    skOfficeDownload('Sasikumar-AI-Presentation.html', html, 'text/html;charset=utf-8');
+  };
+
+  window.skMiniOfficeNotes = function(){
+    var note = prompt('Write your note:');
+    if (note === null) return;
+    try {
+      localStorage.setItem('skMiniOfficeNoteV1', note);
+      alert('Note saved on this browser.');
+    } catch(e) {
+      alert('Could not save note in this browser.');
+    }
+  };
+
+  window.skMiniOfficeAssistant = function(){
+    var question = prompt('What office task do you need help with?');
+    if (question === null || !question.trim()) return;
+    var input = document.querySelector('#q');
+    if (input) {
+      input.value = question;
+      if (typeof window.send === 'function') window.send();
+      else if (document.querySelector('#sendBtn')) document.querySelector('#sendBtn').click();
+      else alert('Please copy your request into the SASIKUMAR AI reply box.');
+    } else {
+      alert('Please enter this request in the SASIKUMAR AI reply box:\\n' + question);
+    }
+  };
+})();
+</script>
+<!-- /SK_MINI_OFFICE_LOGO_V1 -->
+
+
 <div id="skPdfMakerModal" role="dialog" aria-modal="true" aria-label="PDF File Maker" style="display:none">
   <div class="skPdfMakerPanel">
     <h2>📄 PDF File Maker</h2>
