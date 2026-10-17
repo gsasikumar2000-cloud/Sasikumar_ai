@@ -163,23 +163,24 @@ app.post('/api/whatsapp/webhook',async(req,res)=>{
         return r.ok;
       };
 
-      // SASIKUMAR AI branding: send the original logo with every reply.
+      // One branded image message for every WhatsApp reply.
+      const answerText = String(reply || WELCOME_MENU);
+      const isMenuReply = answerText === WELCOME_MENU;
+
+      const imageUrl = isMenuReply
+        ? 'https://sasikumar-ai-9wdq.onrender.com/assets/whatsapp-menu.png'
+        : 'https://sasikumar-ai-9wdq.onrender.com/assets/sasikumar-ai-logo.png';
+
+      const caption = isMenuReply
+        ? '🤖 SASIKUMAR AI — Welcome! Send an option number from 1 to 20.'
+        : ('🤖 SASIKUMAR AI\\n' + answerText).substring(0, 1000);
+
       await sendWA({
-        type:'image',
-        image:{
-          link:'https://sasikumar-ai-9wdq.onrender.com/assets/sasikumar-ai-logo.png',
-          caption:'🤖 SASIKUMAR AI ✨\nஉங்கள் AI உதவியாளர்\n🌐 sasikumar-ai-9wdq.onrender.com'
+        type: 'image',
+        image: {
+          link: imageUrl,
+          caption: caption
         }
-      });
-
-      const answerText = String(reply||WELCOME_MENU);
-      const brandedAnswer = answerText.includes('sasikumar-ai-9wdq.onrender.com')
-        ? answerText
-        : answerText + '\n\n🤖 SASIKUMAR AI\n🌐 https://sasikumar-ai-9wdq.onrender.com';
-
-      await sendWA({
-        type:'text',
-        text:{body:brandedAnswer.substring(0,4000)}
       });
     }
     res.sendStatus(200);
