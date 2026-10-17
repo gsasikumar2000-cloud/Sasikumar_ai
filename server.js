@@ -163,24 +163,24 @@ app.post('/api/whatsapp/webhook',async(req,res)=>{
         return r.ok;
       };
 
-      if(isWelcome){
-        await sendWA({
-          type:'image',
-          image:{
-            link:'https://sasikumar-ai-9wdq.onrender.com/assets/sasikumar-ai-logo.png',
-            caption:'🤖 Welcome 🙏\nSASIKUMAR AI ✨'
-          }
-        });
-        await sendWA({
-          type:'text',
-          text:{body:WELCOME_MENU.substring(0,4000)}
-        });
-      }else{
-        await sendWA({
-          type:'text',
-          text:{body:String(reply||WELCOME_MENU).substring(0,4000)}
-        });
-      }
+      // SASIKUMAR AI branding: send the original logo with every reply.
+      await sendWA({
+        type:'image',
+        image:{
+          link:'https://sasikumar-ai-9wdq.onrender.com/assets/sasikumar-ai-logo.png',
+          caption:'🤖 SASIKUMAR AI ✨\nஉங்கள் AI உதவியாளர்\n🌐 sasikumar-ai-9wdq.onrender.com'
+        }
+      });
+
+      const answerText = String(reply||WELCOME_MENU);
+      const brandedAnswer = answerText.includes('sasikumar-ai-9wdq.onrender.com')
+        ? answerText
+        : answerText + '\n\n🤖 SASIKUMAR AI\n🌐 https://sasikumar-ai-9wdq.onrender.com';
+
+      await sendWA({
+        type:'text',
+        text:{body:brandedAnswer.substring(0,4000)}
+      });
     }
     res.sendStatus(200);
   }catch(e){
