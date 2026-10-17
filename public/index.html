@@ -654,7 +654,7 @@ text-decoration:none !important;
 </div>
 
 <!-- SASIKUMAR AI LOGO 70PX 360 -->
-<div id="sasikumarTopLogo" style="text-align:center;margin:10px auto 16px;display:none!important;">
+<div id="sasikumarTopLogo" style="text-align:center;margin:10px auto 16px;display:block!important;">
   <img src="/assets/sasikumar-ai-logo.png"
        alt="SASIKUMAR AI"
        style="width:60px;height:60px;object-fit:contain;border-radius:50%;display:inline-block;cursor:pointer;animation:sasikumar360 3s linear infinite;" onclick="this.style.animation='sasikumar360 .5s linear 1';setTimeout(()=>this.style.animation='sasikumar360 3s linear infinite',550);">
@@ -9761,11 +9761,12 @@ html body .skMainLiveGrid > .skMainFeatureCard {
 
 <!-- SK_HIDE_GOLD_SILVER_CARDS_V1 -->
 <style id="SK_HIDE_GOLD_SILVER_CARDS_V1">
-  /* Hide only the dedicated Live Gold & Silver content box. */
-  #skAllContentLiveBox:has(.sk-live-title) {
-    display: none !important;
+  /* Keep the Live Gold & Silver content box visible. */
+  #skAllContentLiveBox {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
-  /* Do not hide other homepage feature cards. */
 </style>
 
 
