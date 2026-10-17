@@ -65,7 +65,22 @@ const MENU_REPLIES = {
   '1': () => { const p=14748+Math.floor(Math.random()*80)-40; return `1️⃣ Gold Rate - LIVE\n\n💰 Thanjavur Gold:\n24K: Rs ${p}/g\n22K: Rs ${Math.floor(p*0.916)}/g\nTrend: ${p>14748?'Up ⬆️':'Down ⬇️'}\nLive: /api/gold\n\nType 0 for Menu`; },
   '2': () => `2️⃣ Gold Loan / EMI\nLoan 75% = Rs 1,01,250, Interest 12%, EMI Rs 8,500\nBanks: SBI, HDFC, Muthoot\nType 0 for Menu`,
   '3': () => `3️⃣ Banking\nSavings 3.5%, Gold Loan Instant, Personal Loan 11%\nType 0 for Menu`,
-  '4': () => `4️⃣ Gold Expert\n24K Investment best, 22K Jewellery best, BIS 916 must!\nShops: Lalithaa, GRT\nType 0 for Menu`,
+  '4': () => `4️⃣ GOLD EXPERT — PURITY SYMBOLS
+
+💛 24K — 999: 99.9% தங்கம்
+💍 22K — 916: 91.6% தங்கம்
+💎 18K — 750: 75% தங்கம்
+✨ 14K — 585: 58.5% தங்கம்
+🔹 9K — 375: 37.5% தங்கம்
+
+🏷️ BIS Hallmark சரிபார்க்கவும்:
+✅ BIS முத்திரை
+✅ Purity/Fineness எண்
+✅ HUID — 6 எழுத்து/எண்கள் கொண்ட தனிப்பட்ட குறியீடு
+
+⚠️ குறியீடுகளுடன் Hallmark மற்றும் HUID விவரங்களையும் சரிபார்க்கவும்.
+🤖 SASIKUMAR AI
+Type 0 for Menu`,
   '5': () => `5️⃣ Appraisal\nPurity test, Weight, Value, Certificate\nCharge Rs 100-300\nType 0 for Menu`,
   '6': () => `6️⃣ Education\nTop: AI & Data Science, B.Tech, MBBS, TNPSC UPSC\nType 0 for Menu`,
   '7': () => `7️⃣ Jobs\nAI Engineer 12L+, Full Stack Remote 8-15L, TNPSC Govt\nType 0 for Menu`,
