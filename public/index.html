@@ -2254,6 +2254,43 @@ Tamil + English • Gold • General Q&A</div>
 </script>
 <!-- /SK_MINI_OFFICE_LOGO_V1 -->
 
+<script id="SK_MINI_OFFICE_VISIBLE_FIX_V1">
+(function () {
+  function showMiniOffice() {
+    var office = document.getElementById("skMiniOfficeV1");
+    var creator = document.getElementById("skReplyCreatorCards");
+
+    if (!office || !creator) return;
+
+    /* Keep Mini Office immediately after Creator. */
+    if (creator.nextElementSibling !== office) {
+      creator.insertAdjacentElement("afterend", office);
+    }
+
+    /* Ensure the Office section itself is visible. */
+    office.style.setProperty("display", "block", "important");
+    office.style.setProperty("visibility", "visible", "important");
+    office.style.setProperty("opacity", "1", "important");
+    office.style.setProperty("width", "100%", "important");
+    office.style.setProperty("height", "auto", "important");
+    office.style.setProperty("min-height", "180px", "important");
+    office.style.setProperty("position", "relative", "important");
+    office.style.setProperty("z-index", "5", "important");
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", showMiniOffice);
+  } else {
+    showMiniOffice();
+  }
+
+  window.addEventListener("load", showMiniOffice);
+  setTimeout(showMiniOffice, 1000);
+  setTimeout(showMiniOffice, 2500);
+})();
+</script>
+
+
 
 <div id="skPdfMakerModal" role="dialog" aria-modal="true" aria-label="PDF File Maker" style="display:none">
   <div class="skPdfMakerPanel">
