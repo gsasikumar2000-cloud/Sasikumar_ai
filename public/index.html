@@ -2542,19 +2542,19 @@ function escapeHtml(text){
 
 
 window.skClearReplySearch = function() {
-  const input = document.getElementById("q");
+  const replyInput = document.getElementById("q");
+  const topInput = document.getElementById("skGlobalSearchTopInput");
+  const topStatus = document.getElementById("skGlobalSearchTopStatus");
 
-  if (input) {
-    input.value = "";
-  }
+  if (replyInput) replyInput.value = "";
+  if (topInput) topInput.value = "";
+  if (topStatus) topStatus.replaceChildren();
 
   document.querySelectorAll("#skReplyWebResults").forEach(function(panel) {
     panel.remove();
   });
 
-  if (input) {
-    input.focus();
-  }
+  if (replyInput) replyInput.focus();
 };
 
 async function skReplyWebSearch(){
@@ -4278,40 +4278,9 @@ function printAppraisalReport(btn){
     "<meta name='viewport' content='width=device-width,initial-scale=1'>" +
     "<title>SASIKUMAR AI - Appraisal Report</title>" +
     "<style>body{font-family:Arial,sans-serif;margin:20px;color:#111;background:#fff}.report-box{max-width:850px;margin:auto}</style>" +
-    "
-<style id="sk_all_logo_spin_v2">
-@keyframes skAllLogoSpinV2 {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-</style>
-
-</head><body>" + el.outerHTML + "
-<script id="sk_all_logo_spin_v2-script">
-(function () {
-  function spinLogo(img) {
-    if (!img || !/sasikumar-ai-logo\.png/i.test(img.getAttribute('src') || '')) return;
-    img.style.setProperty('animation', 'skAllLogoSpinV2 3s linear infinite', 'important');
-  }
-  function scan(root) {
-    if (root.matches && root.matches('img')) spinLogo(root);
-    if (root.querySelectorAll) root.querySelectorAll('img').forEach(spinLogo);
-  }
-  scan(document);
-  new MutationObserver(function (records) {
-    records.forEach(function (record) {
-      if (record.type === 'attributes') spinLogo(record.target);
-      else record.addedNodes.forEach(function (node) {
-        if (node.nodeType === 1) scan(node);
-      });
-    });
-  }).observe(document.documentElement, {
-    subtree: true, childList: true, attributes: true, attributeFilter: ['src']
-  });
-})();
-</script>
-
-</body></html>"
+    "<style id=\"sk_all_logo_spin_v2\">@keyframes skAllLogoSpinV2{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}</style>" +
+    "</head><body>" + el.outerHTML +
+    "<script id=\"sk_all_logo_spin_v2-script\">(function(){function spinLogo(img){if(!img||!/sasikumar-ai-logo[.]png/i.test(img.getAttribute('src')||''))return;img.style.setProperty('animation','skAllLogoSpinV2 3s linear infinite','important')}function scan(root){if(root.matches&&root.matches('img'))spinLogo(root);if(root.querySelectorAll)root.querySelectorAll('img').forEach(spinLogo)}scan(document);new MutationObserver(function(records){records.forEach(function(record){if(record.type==='attributes')spinLogo(record.target);else record.addedNodes.forEach(function(node){if(node.nodeType===1)scan(node)})})}).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['src']})})();<\/script></body></html>"
   );
 
   w.document.close();
@@ -4566,6 +4535,7 @@ function printAppraisalReport(id){
 
   w.document.write(
     "<!doctype html><html><head><meta charset='utf-8'>" +
+    "<meta name='viewport' content='width=device-width,initial-scale=1'>" +
     "<title>SASIKUMAR AI - Appraisal Report</title>" +
     "<style>body{font-family:Arial,sans-serif;margin:20px;color:#111}" +
     ".report-box{max-width:850px;margin:auto}" +
@@ -4574,8 +4544,11 @@ function printAppraisalReport(id){
     "td:first-child{font-weight:bold;width:32%}" +
     "button,input,textarea,select{display:none}" +
     "img{max-width:100%;height:auto}" +
+    "@keyframes skAllLogoSpinV2{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}" +
     "@media print{body{margin:10mm}}</style>" +
-"</head><body>" + el.outerHTML + "</body></html>"
+    "</head><body>" + el.outerHTML +
+    "<script>(function(){function spin(img){if(img&&/sasikumar-ai-logo[.]png/i.test(img.getAttribute('src')||'')){img.style.setProperty('animation','skAllLogoSpinV2 3s linear infinite','important')}}document.querySelectorAll('img').forEach(spin)})();<\/script>" +
+    "</body></html>"
   );
   w.document.close();
   w.focus();
