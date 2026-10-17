@@ -2541,19 +2541,21 @@ function escapeHtml(text){
 
 
 
-function skClearReplySearch() {
+window.skClearReplySearch = function() {
   const input = document.getElementById("q");
-  const panel = document.getElementById("skReplyWebResults");
 
   if (input) {
     input.value = "";
-    input.focus();
   }
 
-  if (panel) {
+  document.querySelectorAll("#skReplyWebResults").forEach(function(panel) {
     panel.remove();
+  });
+
+  if (input) {
+    input.focus();
   }
-}
+};
 
 async function skReplyWebSearch(){
   const input = document.getElementById("q");
