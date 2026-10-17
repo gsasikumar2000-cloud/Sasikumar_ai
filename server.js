@@ -52,6 +52,9 @@ Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada �
 1️⃣9️⃣ ℹ️ About SASIKUMAR AI
 2️⃣0️⃣ 📰 Tamil News Channel Videos
 
+2️⃣1️⃣ 📚 Leadership History
+2️⃣2️⃣ 📰 Tamil Breaking News
+
 🗣️ Any Language — Ask Freely
 
 ஒரு option number அனுப்புங்கள்.
@@ -97,6 +100,24 @@ Type 0 for Menu`,
   '18': () => `18️⃣ Feedback\nRate 1-5 stars, Send idea\n"Feedback 5 star - Super AI!"\nType 0 for Menu`,
   '19': () => `19️⃣ About SASIKUMAR AI\nFrom Thanjavur, Multi-Language 20+ langs, 20 Services, Version 7.0\nType 0 for Menu`,
   '20': () => `20️⃣ Tamil News Videos\nThanjavur news, Sun News, 【entity-Thanthi TV¦canonical_name=Thanthi TV】\nSend "Tamil news"\nType 0 for Menu`,
+
+  '21': () => `2️⃣1️⃣ LEADERSHIP HISTORY — தலைமைத்துவ வரலாறு
+
+🌍 உலகத் தலைவர்கள்
+🇮🇳 இந்தியத் தலைவர்கள்
+🏛️ தமிழ்நாட்டுத் தலைவர்கள்
+📚 வாழ்க்கை வரலாறு மற்றும் தலைமைத்துவப் பாடங்கள்
+
+ஒரு தலைவரின் பெயரை அல்லது "Indian leaders", "Tamil Nadu leaders" என்று அனுப்புங்கள்.
+🤖 SASIKUMAR AI
+Type 0 for Menu`,
+  '22': () => `2️⃣2️⃣ TAMIL BREAKING NEWS — தமிழ் முக்கியச் செய்திகள்
+
+📰 சமீபத்திய செய்திகளைப் பெற "Tamil news" அல்லது "Breaking news" என்று அனுப்புங்கள்.
+🌍 தமிழ்நாடு • இந்தியா • உலகம்
+🤖 SASIKUMAR AI
+Type 0 for Menu`
+
 };
 
 function getMenuReply(num){const fn=MENU_REPLIES[num];return fn?fn():null;}
@@ -104,7 +125,7 @@ function detectLang(q){try{if(/[\u0B80-\u0BFF]/.test(q))return 'ta';return 'en';
 function getGeneralReply(q,lang){const time=new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'});if(q.toLowerCase().includes('gold')){const p=14748+Math.floor(Math.random()*80)-40;return `💰 GOLD LIVE - ${time}\n24K: Rs ${p}/g\nType 0 for Menu`;}return `🌍 General AI - ${time}\nYou: "${q}"\nType 0 for Menu or 1-20`; }
 
 app.get('/api/status',(req,res)=>{res.json({status:'WHATSAPP MENU 20 OPTIONS LIVE OK',version:'7.0 Menu',options:20,time:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})});});
-app.get('/api/whatsapp/menu',(req,res)=>{res.json({welcome:WELCOME_MENU,total:20});});
+app.get('/api/whatsapp/menu',(req,res)=>{res.json({welcome:WELCOME_MENU,total:22});});
 app.get('/api/gold',(req,res)=>{const p=14748+Math.floor(Math.random()*80)-40;res.json({'24k_per_g':p,'22k_per_g':Math.floor(p*0.916),trend:p>14748?'up':'down',last_updated:new Date().toISOString()});});
 app.get('/api/services',(req,res)=>{res.json({services:[{id:1,name:'Gold Rate',ta:'தங்க விலை',icon:'💰'},{id:2,name:'Gold Loan',ta:'தங்க கடன்',icon:'🏦'},{id:3,name:'Banking',ta:'வங்கி',icon:'🏧'},{id:4,name:'Gold Expert',ta:'தங்க நிபுணர்',icon:'👨‍🏫'},{id:5,name:'Appraisal',ta:'மதிப்பீடு',icon:'🔍'},{id:6,name:'Education',ta:'கல்வி',icon:'📚'},{id:7,name:'Jobs',ta:'வேலை',icon:'💼'},{id:8,name:'Business Tech News',ta:'வணிக செய்தி',icon:'💼'},{id:9,name:'General AI',ta:'பொது AI',icon:'🧠'},{id:10,name:'Breaking News',ta:'முக்கிய செய்தி',icon:'🚨'},{id:11,name:'Business News',ta:'வணிக செய்தி',icon:'💼'},{id:12,name:'Sports',ta:'விளையாட்டு',icon:'🏏'},{id:13,name:'Web Search',ta:'இணைய தேடல்',icon:'🔎'},{id:14,name:'Poster Creative',ta:'போஸ்டர்',icon:'🎨'},{id:15,name:'Image AI',ta:'பட AI',icon:'📸'},{id:16,name:'Video Maker',ta:'வீடியோ',icon:'🎬'},{id:17,name:'Contact',ta:'தொடர்பு',icon:'📞'},{id:18,name:'Feedback',ta:'கருத்து',icon:'⭐'},{id:19,name:'About',ta:'பற்றி',icon:'ℹ️'},{id:20,name:'Tamil News Videos',ta:'தமிழ் செய்தி',icon:'📰'}]});});
 
@@ -312,6 +333,75 @@ async function getWhatsAppAIReply(question, mode = 'normal') {
 }
 
 app.get('/api/whatsapp/webhook',(req,res)=>{const mode=req.query['hub.mode'];const token=req.query['hub.verify_token'];const challenge=req.query['hub.challenge'];if(mode==='subscribe' && token===WA_VERIFY_TOKEN) res.status(200).send(challenge); else res.sendStatus(403);});
+
+// SK_WA_LEADERSHIP_TAMIL_BREAKING_NEWS_V1
+async function getTamilBreakingNews() {
+  const key = process.env.TAVILY_API_KEY;
+  const now = new Date().toLocaleString('en-IN', {
+    timeZone: 'Asia/Kolkata'
+  });
+
+  if (!key) {
+    return '📰 தமிழ் முக்கியச் செய்திகள்\n\n' +
+      'தற்போதைய செய்தித் தேடல் இப்போது அமைக்கப்படவில்லை.\n' +
+      'Website: https://sasikumar-ai-9wdq.onrender.com\n' +
+      '🤖 SASIKUMAR AI';
+  }
+
+  try {
+    const response = await fetch('https://api.tavily.com/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        api_key: key,
+        query: 'latest breaking news Tamil Nadu India world today',
+        search_depth: 'basic',
+        topic: 'news',
+        max_results: 5,
+        include_answer: true
+      }),
+      signal: AbortSignal.timeout(20000)
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      console.error('[Tamil Breaking News] Search HTTP error:', response.status);
+      return '📰 தமிழ் முக்கியச் செய்திகள்\n\n' +
+        'தற்போதைய செய்திகளைப் பெற முடியவில்லை. சிறிது நேரம் கழித்து முயற்சிக்கவும்.\n' +
+        '🤖 SASIKUMAR AI';
+    }
+
+    const results = Array.isArray(data.results) ? data.results : [];
+    if (!results.length && !data.answer) {
+      return '📰 இப்போது சரிபார்க்கப்பட்ட செய்தி கிடைக்கவில்லை. பின்னர் முயற்சிக்கவும்.\n🤖 SASIKUMAR AI';
+    }
+
+    let out = '📰 தமிழ் முக்கியச் செய்திகள்\n' +
+      '🕒 தேடிய நேரம்: ' + now + '\n\n';
+
+    if (data.answer) {
+      out += '📌 சுருக்கம்:\n' + String(data.answer).slice(0, 900) + '\n\n';
+    }
+
+    for (const [i, item] of results.slice(0, 5).entries()) {
+      out += `${i + 1}. ${String(item.title || 'செய்தி').slice(0, 180)}\n`;
+      if (item.content) {
+        out += String(item.content).slice(0, 260) + '\n';
+      }
+      if (item.url && /^https?:\/\//i.test(item.url)) {
+        out += item.url + '\n';
+      }
+      out += '\n';
+    }
+
+    return out.slice(0, 3500) + '\n🤖 SASIKUMAR AI';
+  } catch (error) {
+    console.error('[Tamil Breaking News]', error.message || error);
+    return '📰 செய்தித் தேடலில் தற்காலிகப் பிழை. மீண்டும் முயற்சிக்கவும்.\n🤖 SASIKUMAR AI';
+  }
+}
+
 app.post('/api/whatsapp/webhook',async(req,res)=>{
   try{
     const body=req.body;
@@ -330,14 +420,18 @@ const isWelcome = !trimmed || trimmed === '0' ||
 let reply = WELCOME_MENU;
 
 if (!isWelcome) {
-  const num = trimmed.match(/^\s*(1[0-9]|20|[0-9])\s*$/);
+  const num = trimmed.match(/^\s*(2[0-2]|1[0-9]|[0-9])\s*$/);
 
   if (num) {
-    reply = getMenuReply(num[1]) || WELCOME_MENU;
+    reply = num[1] === '22'
+      ? await getTamilBreakingNews()
+      : (getMenuReply(num[1]) || WELCOME_MENU);
   } else if (/^(hi|hello|hey|வணக்கம்|ஹாய்|ஹலோ)[\s!.]*$/i.test(trimmed)) {
     reply = /[\u0B80-\u0BFF]/.test(trimmed)
       ? 'வணக்கம் நண்பா! 😊❤️ எப்படி இருக்கீங்க? என்ன உதவி வேண்டும்?'
       : 'Hey friend! 😊❤️ How are you today? How can I help?';
+  } else if (/tamil\s*(breaking\s*)?news|breaking\s*news|தமிழ்.*செய்தி|முக்கியச் செய்திகள்/i.test(trimmed)) {
+    reply = await getTamilBreakingNews();
   } else if (/\b(comedy|joke|funny|laugh|next)\b|காமெடி|ஜோக்|நகைச்சுவை/i.test(trimmed)) {
     const jokes = [
       '😂 ஆசிரியர்: ஏன் லேட்டா வந்தாய்? மாணவர்: சார், கனவில் பள்ளிக்கு வந்தேன்; அதனால் நிஜத்தில் லேட்டாகிவிட்டது! 🤣',
