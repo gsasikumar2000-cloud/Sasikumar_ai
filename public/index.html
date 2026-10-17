@@ -2048,6 +2048,7 @@ Tamil + English • Gold • General Q&A</div>
   <button id="autoVoiceBtn" type="button" onclick="toggleAutoVoice()">🎙️ Auto Voice</button>
   <button id="voiceBtn" type="button" onclick="toggleVoice()">🔊 AI Voice</button>
   <button type="button" onclick="skReplyWebSearch()">🌐 Web Search</button>
+<button id="skReplyClearSearchButton" type="button" onclick="skClearReplySearch()">🧹 Clear Search</button>
   <button id="skReplyCutButton" type="button" onclick="skReplyCut()">✂️ Cut</button>
   <button id="skReplySelectAllButton" type="button" onclick="skReplySelectAll()">☑️ Select All</button>
   <button id="skReplyEditButton" type="button" onclick="skReplyEdit()">📝 Edit</button>
@@ -2539,6 +2540,20 @@ function escapeHtml(text){
 
 
 
+
+function skClearReplySearch() {
+  const input = document.getElementById("q");
+  const panel = document.getElementById("skReplyWebResults");
+
+  if (input) {
+    input.value = "";
+    input.focus();
+  }
+
+  if (panel) {
+    panel.remove();
+  }
+}
 
 async function skReplyWebSearch(){
   const input = document.getElementById("q");
