@@ -145,6 +145,15 @@ onerror="this.style.display='none'">
   <button type="button" class="blue" onclick="skFmLoadMore()">➕ Load More</button>
 </div>
 
+<!-- SK_FM_QUICK_PRESETS_V1 -->
+<div class="fm-buttons" aria-label="FM விரைவு தேடல்கள்">
+  <button type="button" class="green" onclick="skFmQuick('tamil')">🇮🇳 தமிழ் FM</button>
+  <button type="button" class="purple" onclick="skFmQuick('chennai')">📻 சென்னை FM</button>
+  <button type="button" class="pink" onclick="skFmQuick('devotional')">🙏 பக்தி வானொலி</button>
+  <button type="button" class="blue" onclick="skFmQuick('world')">🌍 உலக வானொலி</button>
+</div>
+
+
 <audio id="fmPlayer" class="fm-player" controls preload="none"></audio>
 <label for="fmVolume">🔊 ஒலி அளவு / Volume</label>
 <input id="fmVolume" type="range" min="0" max="1" step="0.05" value="0.8">
@@ -461,6 +470,39 @@ async function skFmLoad(reset) {
     if (requestId !== skFmRequestId) return;
     skFmSetStatus('ரேடியோ பட்டியலைப் பெற முடியவில்லை. இணைய இணைப்பைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும். (' + err.message + ')');
   }
+}
+
+/* SK_FM_QUICK_PRESETS_V1 */
+function skFmQuick(mode) {
+  const region = $('fmRegion');
+  const language = $('fmLanguage');
+  const search = $('fmSearch');
+
+  if (mode === 'tamil') {
+    region.value = 'tamil';
+    language.value = 'tamil';
+    search.value = '';
+    skFmSetStatus('🇮🇳 தமிழ் FM நிலையங்களைத் தேடுகிறது...');
+  } else if (mode === 'chennai') {
+    region.value = 'tamil';
+    language.value = 'tamil';
+    search.value = 'Chennai';
+    skFmSetStatus('📻 சென்னை FM நிலையங்களைத் தேடுகிறது...');
+  } else if (mode === 'devotional') {
+    region.value = 'india';
+    language.value = '';
+    search.value = 'Devotional';
+    skFmSetStatus('🙏 பக்தி வானொலி நிலையங்களைத் தேடுகிறது...');
+  } else if (mode === 'world') {
+    region.value = 'world';
+    language.value = '';
+    search.value = '';
+    skFmSetStatus('🌍 உலக வானொலி நிலையங்களைத் தேடுகிறது...');
+  } else {
+    return;
+  }
+
+  skFmLoad(true);
 }
 
 function skFmLoadMore() {
