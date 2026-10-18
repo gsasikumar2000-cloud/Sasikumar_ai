@@ -68,6 +68,7 @@ Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada �
 — SASIKUMAR AI
 2️⃣6️⃣ 🪔 தினசரி திருக்குறள் — Daily Thirukkural
 2️⃣7️⃣ 🔥 தினசரி ஊக்கம் — Daily Motivation
+2️⃣8️⃣ 🎧 🎬 Audio & Video Hub — அனைத்து மொழிகளிலும்
 `;
 
 const MENU_REPLIES = {
@@ -180,7 +181,22 @@ Type 0 for Menu`
 நீண்ட நாட்களாகத் தள்ளிப்போட்ட ஒரு நல்ல வேலையை இன்று தொடங்குங்கள்.
 
 💪 நம்பிக்கையுடன் தொடர்ந்து முயற்சி செய்யுங்கள்.
-🤖 SASIKUMAR AI Type 0 for Menu`
+🤖 SASIKUMAR AI Type 0 for Menu`,
+  '28': () => `2️⃣8️⃣ 🎧 🎬 AUDIO & VIDEO HUB
+
+🎵 பாடல்கள் மற்றும் ஆடியோ தேடல்
+😂 நகைச்சுவை வீடியோக்கள்
+🎬 திரைப்பட வீடியோக்கள்
+🎤 நடிகர் / பாடகர் தேடல்
+✂️ Audio Cutter
+🌐 பல மொழிகளில் தேடல்
+
+🔗 Hub திறக்க:
+https://sasikumar-ai-9wdq.onrender.com/audio-video-hub.html
+
+🤖 SASIKUMAR AI
+Type 0 for Menu`
+
 };
 
 function getMenuReply(num){const fn=MENU_REPLIES[num];return fn?fn():null;}
@@ -483,7 +499,7 @@ const isWelcome = !trimmed || trimmed === '0' ||
 let reply = WELCOME_MENU;
 
 if (!isWelcome) {
-  const num = trimmed.match(/^\s*(2[0-7]|1[0-9]|[0-9])\s*$/);
+  const num = trimmed.match(/^\s*(2[0-8]|1[0-9]|[0-9])\s*$/);
 
   if (num) {
     reply = num[1] === '22'
@@ -505,6 +521,8 @@ if (!isWelcome) {
     reply = getMenuReply('26');
   } else if (/\b(motivation|motivational)\b|ஊக்கம்|தன்னம்பிக்கை/i.test(trimmed)) {
     reply = getMenuReply('27');
+  } else if (/audio\s*(and|&)\s*video\s*hub|audio.video.hub|audio|songs?|music|video\s*hub|movie\s*videos?|பாடல்கள்?|ஆடியோ|வீடியோ ஹப்|ஒலி/i.test(trimmed)) {
+    reply = getMenuReply('28');
   } else if (/\b(comedy|joke|funny|laugh|next)\b|காமெடி|ஜோக்|நகைச்சுவை/i.test(trimmed)) {
     const jokes = [
       '😂 ஆசிரியர்: ஏன் லேட்டா வந்தாய்? மாணவர்: சார், கனவில் பள்ளிக்கு வந்தேன்; அதனால் நிஜத்தில் லேட்டாகிவிட்டது! 🤣',
