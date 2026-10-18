@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#7c3aed">
+<title>SASIKUMAR AI — Mobile Tools & Downloads</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#172554;background:#f0f9ff}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(135deg,#eff6ff,#fdf2f8,#fefce8);min-height:100vh}
+header{text-align:center;padding:24px 14px 18px;background:linear-gradient(120deg,#2563eb,#7c3aed,#db2777);color:white;border-radius:0 0 26px 26px}
+.logo{width:64px;height:64px;object-fit:contain;animation:spin 5s linear infinite;background:white;border-radius:50%;padding:4px}
+@keyframes spin{to{transform:rotate(360deg)}}
+h1{font-size:clamp(23px,5vw,34px);margin:10px 0 6px}
+header p{margin:4px 0}
+.wrap{width:min(1100px,100%);margin:auto;padding:16px 12px 35px}
+.back{display:inline-block;margin:0 0 14px;padding:10px 14px;background:white;border-radius:12px;text-decoration:none;color:#4338ca;font-weight:800;border:1px solid #c4b5fd}
+.search{width:100%;padding:14px;border:2px solid #a5b4fc;border-radius:14px;font-size:16px;background:white}
+.filters{display:flex;gap:8px;overflow:auto;padding:13px 0}
+.filters button{flex:0 0 auto;border:0;border-radius:20px;padding:10px 14px;background:white;color:#4338ca;font-weight:750;box-shadow:0 2px 8px #4338ca18}
+.filters button.active{background:#4338ca;color:white}
+.count{font-size:14px;color:#475569;margin:3px 0 12px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.card{background:white;border:1px solid #dbeafe;border-radius:17px;padding:14px 10px;text-align:center;box-shadow:0 4px 14px #1d4ed810;display:flex;flex-direction:column;align-items:center;min-width:0;min-height:184px}
+.icon{font-size:31px;line-height:1.3}
+.card h2{font-size:15px;margin:7px 0 5px;overflow-wrap:anywhere}
+.card p{font-size:12px;color:#64748b;line-height:1.45;margin:0 0 12px;flex:1}
+.actions{display:flex;gap:6px;width:100%}
+.actions a{flex:1;text-align:center;text-decoration:none;border-radius:10px;padding:9px 5px;font-size:12px;font-weight:800;background:#2563eb;color:white}
+.actions a.secondary{background:#f3e8ff;color:#6d28d9}
+.note{margin-top:18px;padding:14px;border-radius:14px;background:#fff7ed;color:#9a3412;font-size:13px;line-height:1.6}
+footer{text-align:center;padding:18px;color:#64748b;font-size:13px}
+@media(max-width:760px){.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.card{padding:12px 7px;min-height:178px}}
+@media(max-width:480px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.card h2{font-size:14px}}
+</style>
+</head>
+<body>
+<header>
+<img class="logo" src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI logo" onerror="this.style.display='none'">
+<h1>📱 SASIKUMAR AI</h1>
+<p>50+ Mobile Tools, Web Apps & Download Links</p>
+<p>Search a tool and choose Open or Download</p>
+</header>
+<main class="wrap">
+<a class="back" href="/">← Back to SASIKUMAR AI Home</a>
+<input id="search" class="search" type="search" placeholder="🔎 Search tools, apps or categories..." aria-label="Search mobile tools">
+<div id="filters" class="filters" aria-label="Tool categories"></div>
+<p id="count" class="count" aria-live="polite"></p>
+<div id="grid" class="grid"></div>
+<div class="note"><b>Safety notice:</b> Download buttons lead to official app-store search pages unless a verified direct tool website is available. Check the developer and permissions before installing an app. This page does not host APK files.</div>
+</main>
+<footer>🤖 SASIKUMAR AI · Mobile Tools Hub</footer>
+<script>
+const tools = [
+["Browser","🌐","Browser & Web","Open websites and search for browsers","https://www.google.com/search?q=official+mobile+browser","https://play.google.com/store/search?q=browser&c=apps"],
+["Website Search","🔎","Browser & Web","Search the web","https://www.google.com/","https://play.google.com/store/search?q=web+search&c=apps"],
+["QR Code Generator","▦","Browser & Web","Create QR codes online","https://www.qrcode-monkey.com/","https://play.google.com/store/search?q=qr+code+generator&c=apps"],
+["QR Scanner","📷","Browser & Web","Find QR scanner apps","https://play.google.com/store/search?q=qr+scanner&c=apps","https://play.google.com/store/search?q=qr+scanner&c=apps"],
+["Internet Speed Test","🚀","Browser & Web","Check connection speed","https://fast.com/","https://play.google.com/store/search?q=internet+speed+test&c=apps"],
+["URL Shortener","🔗","Browser & Web","Shorten web links","https://tinyurl.com/","https://play.google.com/store/search?q=url+shortener&c=apps"],
+["File Manager","📁","Files & PDF","Find file manager apps","https://play.google.com/store/search?q=file+manager&c=apps","https://play.google.com/store/search?q=file+manager&c=apps"],
+["PDF Reader","📕","Files & PDF","Read PDF documents","https://play.google.com/store/search?q=pdf+reader&c=apps","https://play.google.com/store/search?q=pdf+reader&c=apps"],
+["PDF Tools","📄","Files & PDF","Open online PDF tools","https://www.ilovepdf.com/","https://play.google.com/store/search?q=pdf+tools&c=apps"],
+["PDF to Word","📝","Files & PDF","Convert PDF documents","https://www.ilovepdf.com/pdf_to_word","https://play.google.com/store/search?q=pdf+converter&c=apps"],
+["Image to PDF","🖼️","Files & PDF","Convert images to PDF","https://www.ilovepdf.com/jpg_to_pdf","https://play.google.com/store/search?q=image+to+pdf&c=apps"],
+["ZIP Tools","🗜️","Files & PDF","Find archive tools","https://play.google.com/store/search?q=zip+file+manager&c=apps","https://play.google.com/store/search?q=zip+file+manager&c=apps"],
+["Text Editor","✍️","Files & PDF","Edit text online","https://editpad.org/","https://play.google.com/store/search?q=text+editor&c=apps"],
+["Notes","📒","Files & PDF","Find note-taking apps","https://keep.google.com/","https://play.google.com/store/search?q=notes&c=apps"],
+["Cloud Storage","☁️","Files & PDF","Store and share files","https://drive.google.com/","https://play.google.com/store/search?q=cloud+storage&c=apps"],
+["Music Player","🎵","Audio & Video","Find music player apps","https://play.google.com/store/search?q=music+player&c=apps","https://play.google.com/store/search?q=music+player&c=apps"],
+["Audio Converter","🎚️","Audio & Video","Convert audio online","https://cloudconvert.com/","https://play.google.com/store/search?q=audio+converter&c=apps"],
+["Voice Recorder","🎙️","Audio & Video","Find voice recording apps","https://play.google.com/store/search?q=voice+recorder&c=apps","https://play.google.com/store/search?q=voice+recorder&c=apps"],
+["FM Radio","📻","Audio & Video","Discover radio apps","https://play.google.com/store/search?q=fm+radio&c=apps","https://play.google.com/store/search?q=fm+radio&c=apps"],
+["Video Player","🎬","Audio & Video","Find video player apps","https://play.google.com/store/search?q=video+player&c=apps","https://play.google.com/store/search?q=video+player&c=apps"],
+["Video Converter","🎞️","Audio & Video","Convert video files","https://cloudconvert.com/","https://play.google.com/store/search?q=video+converter&c=apps"],
+["Audio & Video Hub","🎧","Audio & Video","Open SASIKUMAR AI media hub","/audio-video-hub.html","/audio-video-hub.html"],
+["Photo Editor","🎨","Photo & Design","Find photo editing apps","https://play.google.com/store/search?q=photo+editor&c=apps","https://play.google.com/store/search?q=photo+editor&c=apps"],
+["Image Compressor","🗜️","Photo & Design","Compress images online","https://tinypng.com/","https://play.google.com/store/search?q=image+compressor&c=apps"],
+["Image Converter","🌄","Photo & Design","Convert image formats","https://cloudconvert.com/","https://play.google.com/store/search?q=image+converter&c=apps"],
+["Background Remover","✂️","Photo & Design","Remove image backgrounds","https://www.remove.bg/","https://play.google.com/store/search?q=background+eraser&c=apps"],
+["Color Picker","🎯","Photo & Design","Pick colors from a palette","https://htmlcolorcodes.com/","https://play.google.com/store/search?q=color+picker&c=apps"],
+["AI Chat","🤖","AI Tools","Open ChatGPT","https://chatgpt.com/","https://play.google.com/store/search?q=chatgpt&c=apps"],
+["AI Writing","📝","AI Tools","Explore AI writing tools","https://chatgpt.com/","https://play.google.com/store/search?q=ai+writing&c=apps"],
+["AI Image Maker","🪄","AI Tools","Explore AI image tools","https://chatgpt.com/","https://play.google.com/store/search?q=ai+image+generator&c=apps"],
+["AI Translator","🌍","AI Tools","Translate text online","https://translate.google.com/","https://play.google.com/store/search?q=translator&c=apps"],
+["AI Website Maker","💻","AI Tools","Explore website builders","https://www.wix.com/","https://play.google.com/store/search?q=website+builder&c=apps"],
+["Speech to Text","🗣️","AI Tools","Convert speech into text","https://dictation.io/","https://play.google.com/store/search?q=speech+to+text&c=apps"],
+["Text to Speech","🔊","AI Tools","Read text aloud","https://play.google.com/store/search?q=text+to+speech&c=apps","https://play.google.com/store/search?q=text+to+speech&c=apps"],
+["Grammar Checker","✅","AI Tools","Check grammar online","https://languagetool.org/","https://play.google.com/store/search?q=grammar+checker&c=apps"],
+["Calculator","🧮","Office & Utility","Open calculator search","https://www.google.com/search?q=calculator","https://play.google.com/store/search?q=calculator&c=apps"],
+["Unit Converter","📐","Office & Utility","Convert units online","https://www.google.com/search?q=unit+converter","https://play.google.com/store/search?q=unit+converter&c=apps"],
+["Currency Converter","💱","Office & Utility","Check currency conversions","https://www.google.com/search?q=currency+converter","https://play.google.com/store/search?q=currency+converter&c=apps"],
+["Calendar","🗓️","Office & Utility","Open Google Calendar","https://calendar.google.com/","https://play.google.com/store/search?q=calendar&c=apps"],
+["World Clock","🕒","Office & Utility","Check world time","https://time.is/","https://play.google.com/store/search?q=world+clock&c=apps"],
+["Password Generator","🔐","Privacy & Security","Generate a strong password","https://bitwarden.com/password-generator/","https://play.google.com/store/search?q=password+manager&c=apps"],
+["Authenticator Apps","🛡️","Privacy & Security","Find authenticator apps","https://play.google.com/store/search?q=authenticator&c=apps","https://play.google.com/store/search?q=authenticator&c=apps"],
+["Privacy Tools","🕵️","Privacy & Security","Explore privacy resources","https://www.eff.org/","https://play.google.com/store/search?q=privacy+tools&c=apps"],
+["Device Security","🔒","Privacy & Security","Find security apps","https://play.google.com/store/search?q=device+security&c=apps","https://play.google.com/store/search?q=device+security&c=apps"],
+["Dictionary","📚","Education","Look up word meanings","https://dictionary.cambridge.org/","https://play.google.com/store/search?q=dictionary&c=apps"],
+["English Learning","🔤","Education","Find language learning apps","https://www.duolingo.com/","https://play.google.com/store/search?q=english+learning&c=apps"],
+["Math Tools","➗","Education","Explore math calculators","https://www.wolframalpha.com/","https://play.google.com/store/search?q=math+solver&c=apps"],
+["Quiz Maker","❓","Education","Create quizzes online","https://quizizz.com/","https://play.google.com/store/search?q=quiz+maker&c=apps"],
+["Study Resources","🎓","Education","Explore learning resources","https://www.khanacademy.org/","https://play.google.com/store/search?q=study+apps&c=apps"],
+["Jobs Search","💼","Career & Business","Find jobs in India","https://www.ncs.gov.in/","https://play.google.com/store/search?q=job+search&c=apps"],
+["Business Tools","📊","Career & Business","Explore business resources","https://www.google.com/search?q=free+business+tools","https://play.google.com/store/search?q=business+tools&c=apps"],
+["SASIKUMAR AI Home","🤖","SASIKUMAR AI","Return to the main website","/","/"],
+["SASIKUMAR AI Media Hub","🎧","SASIKUMAR AI","Open the existing Audio & Video Hub","/audio-video-hub.html","/audio-video-hub.html"]
+];
+const categories=["All Tools",...new Set(tools.map(t=>t[2]))];
+let selected="All Tools";
+const filters=document.getElementById("filters"),grid=document.getElementById("grid"),search=document.getElementById("search"),count=document.getElementById("count");
+function safe(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function render(){
+ filters.innerHTML=categories.map(c=>`<button type="button" class="${selected===c?'active':''}" data-cat="${safe(c)}">${safe(c)}</button>`).join("");
+ const q=search.value.trim().toLowerCase();
+ const list=tools.filter(t=>(selected==="All Tools"||t[2]===selected)&&t.slice(0,4).join(" ").toLowerCase().includes(q));
+ count.textContent=`Showing ${list.length} of ${tools.length} tools`;
+ grid.innerHTML=list.map(t=>`<article class="card"><div class="icon">${t[1]}</div><h2>${safe(t[0])}</h2><p>${safe(t[3])}</p><div class="actions"><a href="${safe(t[4])}" target="_blank" rel="noopener noreferrer">OPEN</a><a class="secondary" href="${safe(t[5])}" target="_blank" rel="noopener noreferrer">DOWNLOAD</a></div></article>`).join("");
+}
+filters.addEventListener("click",e=>{const b=e.target.closest("button[data-cat]");if(!b)return;selected=b.dataset.cat;render()});
+search.addEventListener("input",render);
+render();
+</script>
+</body>
+</html>
