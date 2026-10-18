@@ -761,18 +761,74 @@ app.get('/api/breaking-news', async (req, res) => {
   const key = process.env.NEWSDATA_API_KEY;
   if (!key || !key.trim()) {
     return res.status(503).json({
+      ok: false,
       error: 'News API key is not configured.',
       articles: []
     });
   }
 
-  try {
-    const params = new URLSearchParams({
-      apikey: key.trim(),
+  const requested = String(req.query.category || 'tamil-nadu')
+    .trim().toLowerCase();
+
+  const configs = {
+    'tamil-nadu': {
+      label: 'Tamil Nadu',
       country: 'in',
       language: 'ta',
       q: 'தமிழ்நாடு OR இந்தியா'
+    },
+    'india': {
+      label: 'India',
+      country: 'in',
+      language: 'en'
+    },
+    'world': {
+      label: 'World',
+      language: 'en',
+      category: 'world'
+    },
+    'business': {
+      label: 'Business',
+      country: 'in',
+      language: 'en',
+      category: 'business'
+    },
+    'technology': {
+      label: 'Technology',
+      country: 'in',
+      language: 'en',
+      category: 'technology'
+    },
+    'sports': {
+      label: 'Sports',
+      country: 'in',
+      language: 'en',
+      category: 'sports'
+    }
+  };
+
+  const config = configs[requested];
+
+  if (!config) {
+    return res.status(400).json({
+      ok: false,
+      error: 'Invalid news category.',
+      supportedCategories: Object.keys(configs),
+      articles: []
     });
+  }
+
+  try {
+    const values = {
+      apikey: key.trim(),
+      language: config.language
+    };
+
+    if (config.country) values.country = config.country;
+    if (config.category) values.category = config.category;
+    if (config.q) values.q = config.q;
+
+    const params = new URLSearchParams(values);
 
     const response = await fetch(
       'https://newsdata.io/api/1/latest?' + params.toString(),
@@ -782,22 +838,30 @@ app.get('/api/breaking-news', async (req, res) => {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok || data.status === 'error') {
-      const errorInfo = data.results || data.message || data.error || 'Unknown provider error';
+      const errorInfo =
+        data.results || data.message || data.error || 'Unknown provider error';
+
       console.error(
-        '[Live Tamil News] NewsData error:',
+        '[Live News] NewsData error:',
         response.status,
-        JSON.stringify(errorInfo).slice(0, 500)
+        JSON.stringify(errorInfo).slice(0, 300)
       );
 
       return res.status(502).json({
+        ok: false,
         error: 'News provider is temporarily unavailable.',
+        category: config.label,
         articles: []
       });
     }
 
     const articles = (Array.isArray(data.results) ? data.results : [])
-      .filter(item => item && item.title && item.link &&
-        /^https?:\/\//i.test(String(item.link)))
+      .filter(item =>
+        item &&
+        item.title &&
+        item.link &&
+        /^https?:\/\//i.test(String(item.link))
+      )
       .slice(0, 5)
       .map(item => ({
         title: String(item.title).slice(0, 250),
@@ -809,14 +873,16 @@ app.get('/api/breaking-news', async (req, res) => {
     return res.json({
       ok: true,
       provider: 'NewsData.io',
-      category: 'Tamil Nadu',
-      language: 'ta',
+      category: config.label,
+      language: config.language,
       updatedAt: new Date().toISOString(),
       articles
     });
   } catch (error) {
-    console.error('[Live Tamil News] Request failed:', error.message || error);
+    console.error('[Live News] Request failed:', error.message || error);
+
     return res.status(502).json({
+      ok: false,
       error: 'News search temporarily failed.',
       articles: []
     });
