@@ -93,7 +93,7 @@ const MENU_REPLIES = {
 🤖 SASIKUMAR AI
 Type 0 for Menu`,
   '5': () => `5️⃣ Appraisal\nPurity test, Weight, Value, Certificate\nCharge Rs 100-300\nType 0 for Menu`,
-  '6': () => `6️⃣ Education\nTop: AI & Data Science, B.Tech, MBBS, TNPSC UPSC\nType 0 for Menu`,
+  '6': () => `📚 6️⃣ EDUCATION – கல்வி வழிகாட்டி\n\n🏫 School & College Education\n💻 Computer Science & IT\n🤖 AI & Data Science\n⚙️ B.E. / B.Tech Engineering\n🩺 MBBS & Medical Courses\n🔬 Science & Mathematics\n\n🎓 COMPETITIVE EXAMS\n✅ TNPSC, UPSC, SSC, Railway\n✅ Banking Exams\n✅ NEET, JEE, TET\n\n📖 Courses, Eligibility, Scholarships, Career Guidance மற்றும் கல்வித் தகவல்களைப் பெறலாம்.\n\n🔗 EDUCATION PAGE:\nhttps://sasikumar-ai-9wdq.onrender.com/education/qa.html\n\n📐 MATHS & EQUATIONS:\nhttps://sasikumar-ai-9wdq.onrender.com/education/equations.html\n\n📩 தேவையான Course அல்லது Exam பெயரை அனுப்புங்கள்.\n🏠 Main Menu: 0`,
   '7': () => `7️⃣ Jobs\nAI Engineer 12L+, Full Stack Remote 8-15L, TNPSC Govt\nType 0 for Menu`,
   '8': () => `8️⃣ Business / Tech News\nAI boom, Gold up 5%, Sensex 75k+\nType 0 for Menu`,
   '9': () => `9️⃣ General AI\nAsk Anything: Tamil history, Gold, Jobs, Science, Math, Coding, 20+ languages!\nType 0 for Menu`,
