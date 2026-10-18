@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#6d28d9">
+<title>SASIKUMAR AI | All 27 Menus</title>
+<style>
+:root {
+  --purple:#6d28d9;
+  --blue:#2563eb;
+  --text:#172554;
+  --muted:#526078;
+  --bg:#f4f7ff;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,"Noto Sans Tamil",sans-serif;
+  color:var(--text);
+  background:linear-gradient(160deg,#eef2ff,#fff7ed,#ecfeff);
+}
+header{
+  text-align:center;
+  padding:25px 14px;
+  color:white;
+  background:linear-gradient(120deg,#6d28d9,#2563eb,#0891b2);
+  border-radius:0 0 28px 28px;
+}
+.logo{
+  width:76px;height:76px;object-fit:contain;
+  border-radius:50%;background:white;padding:5px;
+  animation:spin 9s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+header h1{font-size:clamp(23px,5vw,36px);margin:12px 0 6px}
+header p{margin:7px auto;max-width:650px;line-height:1.7}
+.badge{
+  display:inline-block;background:#ffffff25;
+  border:1px solid #ffffff75;border-radius:30px;
+  padding:7px 14px;margin-top:8px;
+}
+.actions{
+  display:flex;justify-content:center;gap:10px;
+  flex-wrap:wrap;margin:18px auto;
+}
+.btn{
+  display:inline-block;text-decoration:none;border:0;
+  border-radius:12px;padding:11px 16px;font-weight:bold;
+  cursor:pointer;background:#fff;color:#5b21b6;
+  box-shadow:0 3px 10px #17255418;
+}
+.btn.primary{background:#6d28d9;color:white}
+main{max-width:1150px;margin:auto;padding:16px}
+.searchbox{
+  display:block;width:100%;padding:15px 16px;
+  border:2px solid #c4b5fd;border-radius:15px;
+  font-size:16px;background:white;outline:none;
+}
+.searchbox:focus{border-color:#6d28d9}
+.summary{text-align:center;color:var(--muted);margin:14px 0}
+.grid{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:15px;
+}
+.card{
+  --accent:#6d28d9;
+  background:white;border:1px solid #e2e8f0;
+  border-top:5px solid var(--accent);
+  border-radius:17px;overflow:hidden;
+  box-shadow:0 5px 17px #1e293b12;
+  min-width:0;transition:transform .18s,box-shadow .18s;
+}
+.card:hover{transform:translateY(-3px);box-shadow:0 9px 22px #1e293b1c}
+.card summary{
+  list-style:none;cursor:pointer;padding:16px;
+  display:flex;gap:12px;align-items:center;text-align:left;
+}
+.card summary::-webkit-details-marker{display:none}
+.num{
+  width:43px;height:43px;flex-shrink:0;border-radius:13px;
+  background:var(--accent);color:white;
+  display:grid;place-items:center;font-size:17px;font-weight:bold;
+}
+.card h2{font-size:17px;line-height:1.4;margin:0}
+.card .en{font-size:12px;color:var(--muted);margin-top:5px}
+.arrow{margin-left:auto;color:var(--accent);font-size:20px}
+.card[open] .arrow{transform:rotate(180deg)}
+.content{padding:0 16px 17px;line-height:1.7}
+.content p{margin:5px 0 10px}
+.content ul{padding-left:20px;margin:7px 0}
+.tag{
+  display:inline-block;background:#f1f5f9;
+  border-radius:20px;padding:5px 9px;font-size:12px;margin:3px 3px 0 0;
+}
+.cardlink{
+  display:inline-block;margin-top:10px;text-decoration:none;
+  background:var(--accent);color:white;padding:9px 12px;
+  border-radius:10px;font-weight:bold;font-size:13px;
+}
+.empty{display:none;text-align:center;padding:30px}
+footer{
+  text-align:center;padding:25px 12px;color:#475569;
+  line-height:1.8;
+}
+@media(max-width:800px){
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+  main{padding:12px}
+  .card summary{padding:12px;gap:9px}
+  .card h2{font-size:15px}
+  .content{padding:0 12px 14px;font-size:14px}
+}
+@media(max-width:430px){
+  .grid{grid-template-columns:1fr}
+  .card summary{padding:14px}
+  .card h2{font-size:16px}
+  .logo{width:68px;height:68px}
+}
+</style>
+</head>
+<body>
+<header>
+  <img class="logo" src="/assets/sasikumar-ai-logo.png"
+       alt="SASIKUMAR AI Logo"
+       onerror="this.style.display='none'">
+  <h1>🤖 SASIKUMAR AI</h1>
+  <p>ALL 27 MENUS — முழுமையான சேவை விவரங்கள்</p>
+  <p>Learn • Create • Achieve</p>
+  <span class="badge">📋 27 Menu Cards · தமிழ் · English</span>
+  <div class="actions">
+    <a class="btn" href="/">🏠 முகப்புப் பக்கம்</a>
+    <button class="btn" onclick="expandAll(true)">➕ அனைத்தையும் திற</button>
+    <button class="btn" onclick="expandAll(false)">➖ அனைத்தையும் மூடு</button>
+  </div>
+</header>
+
+<main>
+  <input id="search" class="searchbox" type="search"
+    placeholder="🔍 Menu எண் அல்லது பெயரைத் தேடுங்கள்..."
+    aria-label="Search menus">
+  <div class="summary" id="summary">27 Menu-கள் உள்ளன. கார்டைத் தொட்டு விவரங்களைப் பார்க்கவும்.</div>
+  <section class="grid" id="grid">
+
+<details class="card" style="--accent:#b45309" data-search="1 gold rate தங்கம் விலை பொன்">
+<summary><span class="num">01</span><div><h2>🪙 தங்கத்தின் விலை</h2><div class="en">Gold Rate</div></div><span class="arrow">⌄</span></summary>
+<div class="content"><p>தங்கத்தின் விலை தொடர்பான தகவல்களைப் பார்க்கும் சேவை.</p><ul><li>24K மற்றும் 22K தங்க விலை விவரங்கள்</li><li>விலை மதிப்பீட்டிற்கான அடிப்படைத் தகவல்கள்</li><li>விலை மாறக்கூடியது; வாங்குவதற்கு முன் தற்போதைய விலையை உறுதிப்படுத்தவும்.</li></ul><span class="tag">Gold</span><span class="tag">Rate Information</span></div></details>
+
+<details class="card" style="--accent:#15803d" data-search="2 gold loan emi கடன் வட்டி தவணை">
+<summary><span class="num">02</span><div><h2>💰 தங்கக் கடன் / தவணை</h2><div class="en">Gold Loan / EMI</div></div><span class="arrow">⌄</span></summary>
+<div class="content"><p>தங்கக் கடன் மற்றும் மாதத் தவணை தொடர்பான அடிப்படை விளக்கங்கள்.</p><ul><li>கடன் தொகை கணக்கீட்டைப் புரிந்துகொள்ளுதல்</li><li>வட்டி மற்றும் EMI கணக்கீடு</li><li>வங்கியின் உண்மையான வட்டி, கட்டணங்கள், நிபந்தனைகளைச் சரிபார்க்கவும்.</li></ul><span class="tag">Loan</span><span class="tag">EMI</span></div></details>
+
+<details class="card" style="--accent:#2563eb" data-search="3 banking வங்கி சேமிப்பு கணக்கு">
+<summary><span class="num">03</span><div><h2>🏦 வங்கிச் சேவைகள்</h2><div class="en">Banking</div></div><span class="arrow">⌄</span></summary>
+<div class="content"><p>வங்கி சேவைகள் மற்றும் பொதுவான நிதி விழிப்புணர்வு.</p><ul><li>கணக்கு மற்றும் வங்கி சேவை விளக்கங்கள்</li><li>வட்டி மற்றும் வங்கிச் சொற்களின் பொருள்</li><li>பாதுகாப்பான டிஜிட்டல் வங்கி நடைமுறைகள்</li></ul><span class="tag">Banking</span><span class="tag">Financial Awareness</span></div></details>
+
+<details class="card" style="--accent:#7c3aed" data-search="4 gold expert தங்க நிபுணர்">
+<summary><span class="num">04</span><div><h2>💎 தங்க நிபுணர்</h2><div class="en">Gold Expert</div></div><span class="arrow">⌄</span></summary>
+<div class="content"><p>தங்கம், காரட், தூய்மை மற்றும் நகை மதிப்பீடு குறித்த தகவல்கள்.</p><ul><li>22K, 24K உள்ளிட்ட காரட் விளக்கங்கள்</li><li>தங்க எடை மற்றும் தூய்மை பற்றிய அடிப்படை அறிவு</li><li>இறுதி தூய்மையைத் தகுந்த பரிசோதனையால் உறுதிப்படுத்தவும்.</li></ul><span class="tag">Gold Knowledge</span></div></details>
+
+<details class="card" style="--accent:#be123c" data-search="5 appraisal gold valuer மதிப்பீடு நகை">
+<summary><span class="num">05</span><div><h2>⚖️ தங்க மதிப்பீடு</h2><div class="en">Appraisal</div></div><span class="arrow">⌄</span></summary>
+<div class="content"><p>நகை மதிப்பீடு மற்றும் மதிப்பீட்டு அறிக்கையைப் புரிந்துகொள்ள உதவும் சேவை.</p><ul><li>எடை மற்றும் காரட் விவரங்கள்</li><li>மதிப்பீட்டுத் தொகைக்கான கணக்கீட்டு விளக்கம்</li><li>கற்கள், கலவை உலோகங்கள் மற்றும் பரிசோதனை வரம்புகள்</li></ul><span class="tag">Valuation</span><span class="tag">Report</span></div></details>
+
+<details class="card" style="--accent:#0891b2" data-search="6 education கல்வி school learning">
+<summary><span class="num">06</span><div><h2>🎓 கல்வி</h2><div class="en">Education</div></div><span class="arrow">⌄</span></summary>
+<div class="content"><p>மாணவர்கள் மற்றும் கற்றுக்கொள்பவர்களுக்கான கல்வி உதவி.</p><ul><li>பாட விளக்கங்கள் மற்றும் கேள்வி–பதில்கள்</li><li>கணிதம் மற்றும் சமன்பாடுகள்</li><li>பயிற்சி மற்றும் கற்றல் வழிகாட்டுதல்</li></ul><a class="cardlink" href="/education/qa.html">📚 கல்வி Q&amp;A</a><a class="cardlink" href="/education/equations.html">➗ Equations</a></div></details>
+
+<details class="card" style="--accent:#15803d" data-search="7 jobs வேலை career employment">
+<summary><span class="num">07</span><div><h2>💼 வேலைவாய்ப்புகள்</h2><div class="en">Jobs</div></div><span class="arrow">⌄</span></summary>
+<div class="content"><p>வேலை தேடுபவர்களுக்கான வாய்ப்புகள் மற்றும் வழிகாட்டுதல்.</p><ul><li>அரசு மற்றும் தனியார் வேலைகளைத் தேட உதவி</li><li>தகுதி, விண்ணப்பம், தேர்வு தொடர்பான தகவல்கள்</li><li>விண்ணப்பிக்கும் முன் அதிகாரப்பூர்வ அறிவிப்பைச் சரிபார்க்கவும்.</li></ul><a class="cardlink" href="/jobs/index.html">💼 வேலைவாய்ப்புப் பக்கம்</a></div></details>
+
+<details class="card" style="--accent:#1d4ed8" data-search="8 business tech news தொழில்நுட்ப வணிகம்">
+<summary><span class="num">08</span><div><h2>💻 வணிகம் &amp; தொழில்நுட்பம்</h2><div class="en">Business / Tech News</div></div><span class="arrow">⌄</span></summary>
+<div class="content"><p>வணிக உலகம், தொழில்நுட்ப வளர்ச்சி மற்றும் புதிய யோசனைகள் பற்றிய தகவல்கள்.</p><ul><li>டிஜிட்டல் தொழில்நுட்பம்</li><li>வணிகப் போக்குகள்</li><li>புதிய தொழில் வாய்ப்புகள் குறித்த விழிப்புணர்வு</li></ul><span class="tag">Business</span><span class="tag">Technology</span></div></details>
+
+<details class="card" style="--accent:#9333ea" data-search="9 general ai செயற்கை நுண்ணறிவு கேள்வி">
+<summary><span class="num">09</span><div><h2>🤖 பொது AI உதவி</h2><div class="en">General AI</div></div><span class="arrow">⌄</span></summary>
+<div class="content"><p>பல மொழிகளில் கேள்விகள் கேட்டு உதவி பெறுவதற்கான AI வசதி.</p><ul><li>எழுத்து மற்றும் விளக்கங்கள்</li><li>யோசனைகள் மற்றும் திட்டமிடல்</li><li>தமிழ், ஆங்கிலம் உள்ளிட்ட பல மொழிகளில் கேள்விகள்</li></ul><span class="tag">AI Assistant</span><span class="tag">Multilingual</span></div></details>
+
+<details class="card" style="--accent:#dc2626" data-search="10 breaking news அவசர செய்திகள்">
+<summary><span class="num">10</span><div><h2>🚨 முக்கியச் செய்திகள்</h2><div class="en">Breaking News</div></div><span class="arrow">⌄</span></summary>
+<div class="content"><p>முக்கிய நிகழ்வுகள் மற்றும் உடனடிச் செய்திகளை அறிய உதவும் பகுதி.</p><ul><li>முக்கிய நிகழ்வுகள்</li><li>செய்திகளின் சுருக்கம்</li><li>செய்தி நேரம் மற்றும் நம்பகமான ஆதாரத்தைச் சரிபார்க்கவும்.</li></ul><span class="tag">News</span><span class="tag">Updates</span></div></details>
+
+<details class="card" style="--accent:#0f766e" data-search="11 business news வணிகச் செய்திகள் சந்தை">
+<summary><span class="num">11</span><div><h2>📈 வணிகச் செய்திகள்</h2><div class="en">Business News</div></div><span class="arrow">⌄</span></summary>
+<div class="content"><p>நிறுவனங்கள், வணிகச் சந்தை மற்றும் பொருளாதாரச் செய்திகளைப் புரிந்துகொள்ள உதவும் பகுதி.</p><ul><li>வணிகச் செய்திகள்</li><li>நிறுவன வளர்ச்சிகள்</li><li>பொருளாதார நிகழ்வுகள்</li></ul><span class="tag">Business Updates</span></div></details>
+
+<details class="card" style="--accent:#ea580c" data-search="12 sports விளையாட்டு cricket football">
+<summary><span class="num">12</span><div><h2>🏏 விளையாட்டு</h2><div class="en">Sports</div></div><span class="arrow">⌄</span></summary>
+<div class="content"><p>விளையாட்டு உலகம் பற்றிய தகவல்கள் மற்றும் விளையாட்டு உள்ளடக்கங்கள்.</p><ul><li>கிரிக்கெட் மற்றும் பிற விளையாட்டுகள்</li><li>விளையாட்டு செய்திகள்</li><li>விளையாட்டு வினாடி வினா மற்றும் செயல்பாடுகள்</li></ul><a class="cardlink" href="/sports/index.html">🏆 விளையாட்டுப் பக்கம்</a></div></details>
+
+<details class="card" style="--accent:#0284c7" data-search="13 web search இணைய தேடல்">
+<summary><span class="num">13</span><div><h2>🔎 இணையத் தேடல்</h2><div class="en">Web Search</div></div><span class="arrow">⌄</span></summary>
+<div class="content"><p>இணையத்தில் தகவல்களைத் தேடுவதற்கான வசதி.</p><ul><li>தகவல் மற்றும் இணையப் பக்கங்களைத் தேடுதல்</li><li>தலைப்புகள் தொடர்பான ஆராய்ச்சி</li><li>முக்கிய தகவல்களை நம்பகமான மூலங்களுடன் சரிபார்த்தல்</li></ul><span class="tag">Search</span><span class="tag">Research</span></div></details>
+
+<details class="card" style="--accent:#db2777" data-search="14 poster creative design போஸ்டர் வடிவமைப்பு">
+<summary><span class="num">14</span><div><h2>🎨 போஸ்டர் &amp; படைப்பாக்கம்</h2><div class="en">Poster / Creative</div></div><span class="arrow">⌄</span></summary>
+<div class="content"><p>போஸ்டர் மற்றும் படைப்பாற்றல் வடிவமைப்புகளுக்கான உதவி.</p><ul><li>விளம்பரப் போஸ்டர் யோசனைகள்</li><li>வாழ்த்து மற்றும் நிகழ்ச்சி வடிவமைப்புகள்</li><li>உரை மற்றும் வடிவமைப்பு கருத்துகள்</li></ul><span class="tag">Design</span><span class="tag">Creative</span></div></details>
+
+<details class="card" style="--accent:#7c3aed" data-search="15 image ai படம் உருவாக்கம் image generation">
+<summary><span class="num">15</span><div><h2>🖼️ AI படங்கள்</h2><div class="en">Image AI</div></div><span class="arrow">⌄</span></summary>
+<div class="content"><p>AI பட உருவாக்கம் மற்றும் படைப்பாக்கக் கருத்துகளுக்கான பகுதி.</p><ul><li>படத்திற்கான விளக்க உரை உருவாக்குதல்</li><li>பட வடிவமைப்பு யோசனைகள்</li><li>கிடைக்கும் பட வசதிகளுக்கு ஏற்ப உருவாக்குதல்</li></ul><a class="cardlink" href="/ai-image.html">🖼️ AI Image பக்கம்</a></div></details>
+
+<details class="card" style="--accent:#c2410c" data-search="16 video maker வீடியோ உருவாக்கம்">
+<summary><span class="num">16</span><div><h2>🎬 வீடியோ உருவாக்கம்</h2><div class="en">Video Maker</div></div><span class="arrow">⌄</span></summary>
+<div class="content"><p>வீடியோ உள்ளடக்கம் மற்றும் கதை வடிவமைப்புக்கான உதவி.</p><ul><li>வீடியோ யோசனைகள் மற்றும் ஸ்கிரிப்ட்</li><li>காட்சி வரிசை மற்றும் தலைப்புகள்</li><li>வீடியோ தொடர்பான உள்ளடக்க வழிகாட்டுதல்</li></ul><a class="cardlink" href="/daily-video.html">🎬 வீடியோ பகுதி</a></div></details>
+
+<details class="card" style="--accent:#0e7490" data-search="17 contact communication தொடர்பு">
+<summary><span class="num">17</span><div><h2>📞 தொடர்பு</h2><div class="en">Contact / Communication</div></div><span class="arrow">⌄</span></summary>
+<div class="content"><p>தொடர்புத் தகவல் மற்றும் தகவல் பரிமாற்றம் தொடர்பான வசதிகள்.</p><ul><li>தொடர்பு கொள்ளும் வழிகள்</li><li>செய்தி மற்றும் தகவல் பரிமாற்ற உதவி</li><li>தனிப்பட்ட ரகசியத் தகவல்களைப் பாதுகாக்கவும்.</li></ul><a class="cardlink" href="/communication.html">📞 தொடர்புப் பக்கம்</a></div></details>
+
+<details class="card" style="--accent:#be185d" data-search="18 feedback கருத்து புகார் suggestion">
+<summary><span class="num">18</span><div><h2>💬 கருத்து தெரிவிக்க</h2><div class="en">Feedback</div></div><span class="arrow">⌄</span></summary>
+<div class="content"><p>இணையதள அனுபவம் மற்றும் சேவைகள் குறித்த கருத்துகளைப் பகிர உதவும் பகுதி.</p><ul><li>பரிந்துரைகள்</li><li>சேவை தொடர்பான கருத்துகள்</li><li>சிக்கல்கள் பற்றிய தகவல்</li></ul><a class="cardlink" href="/customer-feedback.html">💬 Feedback பக்கம்</a></div></details>
+
+<details class="card" style="--accent:#475569" data-search="19 about sasikumar ai பற்றி அறிமுகம்">
+<summary><span class="num">19</span><div><h2>ℹ️ SASIKUMAR AI பற்றி</h2><div class="en">About SASIKUMAR AI</div></div><span class="arrow">⌄</span></summary>
+<div class="content"><p>SASIKUMAR AI சேவைகள் மற்றும் பயன்பாடுகளை அறிமுகப்படுத்தும் பகுதி.</p><ul><li>AI உதவி மற்றும் படைப்பாக்கம்</li><li>கல்வி, வேலை மற்றும் தகவல் சேவைகள்</li><li>இணையதளத்தின் பல்வேறு பகுதிகளை அறிதல்</li></ul><a class="cardlink" href="/">🌐 இணையதளம்</a></div></details>
+
+<details class="card" style="--accent:#0369a1" data-search="20 tamil news channel videos தமிழ் செய்தி வீடியோக்கள்">
+<summary><span class="num">20</span><div><h2>📺 தமிழ் செய்தி வீடியோக்கள்</h2><div class="en">Tamil News Channel Videos</div></div><span class="arrow">⌄</span></summary>
+<div class="content"><p>தமிழ் செய்தி சேனல் வீடியோக்களைத் தேடிப் பார்க்க உதவும் பகுதி.</p><ul><li>செய்தி வீடியோக்கள்</li><li>செய்தி சேனல் உள்ளடக்கங்கள்</li><li>வீடியோவின் வெளியீட்டாளர் மற்றும் தேதியைச் சரிபார்க்கவும்.</li></ul><span class="tag">Tamil</span><span class="tag">Video</span></div></details>
+
+<details class="card" style="--accent:#7e22ce" data-search="21 leadership history தலைமை வரலாறு">
+<summary><span class="num">21</span><div><h2>📚 தலைமைத்துவ வரலாறு</h2><div class="en">Leadership History</div></div><span class="arrow">⌄</span></summary>
+<div class="content"><p>தலைவர்கள், வரலாற்றுச் சம்பவங்கள் மற்றும் தலைமைத்துவப் பாடங்களை அறிய உதவும் பகுதி.</p><ul><li>வரலாற்று ஆளுமைகள்</li><li>தலைமைத்துவக் கொள்கைகள்</li><li>சாதனைகள் மற்றும் வரலாற்றுப் பின்னணி</li></ul><a class="cardlink" href="/indian-leadership.html">📚 தலைமைத்துவப் பக்கம்</a></div></details>
+
+<details class="card" style="--accent:#dc2626" data-search="22 tamil breaking news தமிழ் உடனடி செய்திகள்">
+<summary><span class="num">22</span><div><h2>🚨 தமிழ் உடனடிச் செய்திகள்</h2><div class="en">Tamil Breaking News</div></div><span class="arrow">⌄</span></summary>
+<div class="content"><p>தமிழில் முக்கியச் செய்திகளை அறியும் பகுதி.</p><ul><li>தமிழ்நாடு மற்றும் பிற இடங்களின் செய்திகள்</li><li>முக்கிய நிகழ்வுகளின் சுருக்கம்</li><li>புதிய தகவல்களையும் செய்தி ஆதாரங்களையும் சரிபார்க்கவும்.</li></ul><span class="tag">Tamil News</span></div></details>
+
+<details class="card" style="--accent:#db2777" data-search="23 kavithai கவிதைகள் tamil poem poetry காதல் நட்பு">
+<summary><span class="num">23</span><div><h2>✍️ தமிழ் கவிதைகள்</h2><div class="en">Tamil Kavithai</div></div><span class="arrow">⌄</span></summary>
+<div class="content"><p>பல்வேறு உணர்வுகள் மற்றும் தலைப்புகளில் தமிழ் கவிதைகளைப் பெறும் பகுதி.</p><ul><li>❤️ காதல் கவிதைகள்</li><li>🤝 நட்பு கவிதைகள்</li><li>🌿 வாழ்க்கைக் கவிதைகள்</li><li>💪 ஊக்கக் கவிதைகள்</li></ul><span class="tag">Tamil Poetry</span><span class="tag">Creative Writing</span></div></details>
+
+<details class="card" style="--accent:#059669" data-search="24 ponmozhigal பொன்மொழிகள் quotes">
+<summary><span class="num">24</span><div><h2>💬 பொன்மொழிகள்</h2><div class="en">Ponmozhigal / Quotes</div></div><span class="arrow">⌄</span></summary>
+<div class="content"><p>வாழ்க்கை, நட்பு, முயற்சி மற்றும் வெற்றி பற்றிய பொன்மொழிகள்.</p><ul><li>வாழ்க்கைப் பொன்மொழிகள்</li><li>ஊக்கமளிக்கும் சிந்தனைகள்</li><li>பகிர்ந்து கொள்ள ஏற்ற குறும் வாசகங்கள்</li></ul><span class="tag">Quotes</span><span class="tag">Wisdom</span></div></details>
+
+<details class="card" style="--accent:#9333ea" data-search="25 thathuvam தத்துவம் philosophy சிந்தனை">
+<summary><span class="num">25</span><div><h2>💡 தத்துவங்கள்</h2><div class="en">Thathuvam / Philosophy</div></div><span class="arrow">⌄</span></summary>
+<div class="content"><p>வாழ்க்கை மற்றும் மனித அனுபவங்களைப் பற்றி ஆழமாகச் சிந்திக்க உதவும் பகுதி.</p><ul><li>வாழ்க்கைத் தத்துவங்கள்</li><li>மனித உறவுகள் மற்றும் அனுபவங்கள்</li><li>சிந்தனையைத் தூண்டும் கருத்துகள்</li></ul><span class="tag">Philosophy</span><span class="tag">Life Lessons</span></div></details>
+
+<details class="card" style="--accent:#d97706" data-search="26 thirukkural திருக்குறள் daily kural">
+<summary><span class="num">26</span><div><h2>🪔 தினசரி திருக்குறள்</h2><div class="en">Daily Thirukkural</div></div><span class="arrow">⌄</span></summary>
+<div class="content"><p>திருக்குறளையும் அதன் பொருளையும் அறியும் பகுதி.</p><ul><li>குறள் மற்றும் அதன் பொருள்</li><li>வாழ்க்கை நெறி மற்றும் அறம்</li><li>தினசரி குறள் சிந்தனை</li></ul><span class="tag">Tamil Literature</span><span class="tag">Thirukkural</span></div></details>
+
+<details class="card" style="--accent:#ea580c" data-search="27 motivation daily motivation தினசரி ஊக்கம் தன்னம்பிக்கை">
+<summary><span class="num">27</span><div><h2>🔥 தினசரி ஊக்கம்</h2><div class="en">Daily Motivation</div></div><span class="arrow">⌄</span></summary>
+<div class="content">
+<p><b>🌅 இன்றைய சிந்தனை:</b><br>சிறிய முயற்சியையும் தொடர்ந்து செய்தால் பெரிய முன்னேற்றத்தை அடையலாம்.</p>
+<p><b>🎯 இன்றைய செயல்:</b><br>நீண்ட நாட்களாகத் தள்ளிப்போட்ட ஒரு நல்ல வேலையை இன்று தொடங்குங்கள்.</p>
+<p><b>💪 நம்பிக்கை:</b><br>நம்பிக்கையுடன் தொடர்ந்து முயற்சி செய்யுங்கள்.</p>
+<span class="tag">Daily Motivation</span><span class="tag">Confidence</span><span class="tag">Positive Thinking</span>
+</div></details>
+
+  </section>
+  <div class="empty" id="empty">இந்தத் தேடலுக்கு ஏற்ற Menu கிடைக்கவில்லை.</div>
+  <div class="actions">
+    <a class="btn primary" href="/">🏠 முகப்புப் பக்கத்திற்குத் திரும்பு</a>
+    <button class="btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆️ மேலே செல்ல</button>
+  </div>
+</main>
+
+<footer>
+  🤖 <b>SASIKUMAR AI</b><br>
+  Learn • Create • Achieve<br>
+  <a href="/" style="color:#6d28d9">முகப்புப் பக்கம்</a>
+</footer>
+
+<script>
+const search = document.getElementById('search');
+const cards = [...document.querySelectorAll('.card')];
+const summary = document.getElementById('summary');
+const empty = document.getElementById('empty');
+
+function filterMenus(){
+  const q = search.value.trim().toLocaleLowerCase();
+  let count = 0;
+  cards.forEach(card => {
+    const match = (card.innerText + ' ' + (card.dataset.search || ''))
+      .toLocaleLowerCase().includes(q);
+    card.style.display = match ? '' : 'none';
+    if(match) count++;
+  });
+  summary.textContent = `${count} / 27 Menu-கள் காட்டப்படுகின்றன. கார்டைத் தொட்டு விவரங்களைப் பார்க்கவும்.`;
+  empty.style.display = count ? 'none' : 'block';
+}
+function expandAll(open){
+  cards.forEach(card => {
+    if(card.style.display !== 'none') card.open = open;
+  });
+}
+search.addEventListener('input', filterMenus);
+</script>
+</body>
+</html>
