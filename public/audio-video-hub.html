@@ -28,6 +28,23 @@ button:active,.btn:active{transform:scale(.98)}
 small{color:#475569;line-height:1.5}
 footer{text-align:center;padding:20px}
 @media(max-width:400px){main{padding:9px}.panel{padding:13px}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.card{padding:12px 8px}}
+
+/* SK_GLOBAL_FM_RADIO_HUB_V1 */
+.fm-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.fm-controls .wide{grid-column:1/-1}
+.fm-controls label{margin-top:3px}
+.fm-buttons{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}
+.fm-player{width:100%;margin-top:12px}
+.fm-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:11px;margin-top:15px}
+.fm-station{min-width:0;border-radius:14px;padding:14px;background:linear-gradient(135deg,#ede9fe,#fce7f3);border:1px solid #ddd6fe;overflow-wrap:anywhere}
+.fm-station h3{font-size:16px;margin:0 0 7px;color:#4c1d95}
+.fm-station p{font-size:13px;margin:5px 0;line-height:1.45}
+.fm-station .fm-buttons button{flex:1;min-width:78px;padding:10px 8px;font-size:13px}
+.fm-fav{background:#be185d}
+.fm-note{font-size:13px;line-height:1.6;color:#475569}
+#fmStatus{font-size:14px;line-height:1.6;overflow-wrap:anywhere}
+@media(max-width:400px){.fm-controls{grid-template-columns:1fr}.fm-controls .wide{grid-column:auto}.fm-list{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -79,6 +96,62 @@ onerror="this.style.display='none'">
 <div class="card c5"><div style="font-size:32px">🎤</div><b>Artist / Singer</b><button onclick="quickSearch('artist')">தேடவும்</button></div>
 <div class="card c6"><div style="font-size:32px">📺</div><b>Official Channels</b><button onclick="quickSearch('official')">தேடவும்</button></div>
 </div>
+</section>
+
+
+<!-- SK_GLOBAL_FM_RADIO_HUB_V1 -->
+<section class="panel" id="skGlobalFmRadio">
+<h2>🌍 Global FM Radio Hub</h2>
+<p>🇮🇳 India FM • 🎙️ Tamil FM • 🌐 World Radio</p>
+
+<div class="fm-controls">
+  <div>
+    <label for="fmRegion">📍 நாடு / பகுதி</label>
+    <select id="fmRegion">
+      <option value="india">🇮🇳 India — இந்தியா</option>
+      <option value="tamil">🎙️ Tamil Nadu / Tamil FM</option>
+      <option value="world">🌍 World — உலகம்</option>
+      <option value="all">🌐 All available regions</option>
+    </select>
+  </div>
+  <div>
+    <label for="fmLanguage">🗣️ மொழி</label>
+    <select id="fmLanguage">
+      <option value="">அனைத்து மொழிகளும்</option>
+      <option value="tamil">தமிழ் — Tamil</option>
+      <option value="english">English</option>
+      <option value="hindi">हिन्दी — Hindi</option>
+      <option value="telugu">తెలుగు — Telugu</option>
+      <option value="malayalam">മലയാളം — Malayalam</option>
+      <option value="kannada">ಕನ್ನಡ — Kannada</option>
+      <option value="bengali">বাংলা — Bengali</option>
+      <option value="punjabi">ਪੰਜਾਬੀ — Punjabi</option>
+      <option value="marathi">मराठी — Marathi</option>
+      <option value="french">French</option>
+      <option value="spanish">Spanish</option>
+      <option value="arabic">Arabic</option>
+      <option value="other">Other language</option>
+    </select>
+  </div>
+  <div class="wide">
+    <label for="fmSearch">🔎 ரேடியோ நிலையம் தேடவும்</label>
+    <input id="fmSearch" type="search" placeholder="உதா: Radio Mirchi, AIR, Tamil FM, BBC">
+  </div>
+</div>
+
+<div class="fm-buttons">
+  <button type="button" class="purple" onclick="skFmLoad(true)">🔎 Search / Load Stations</button>
+  <button type="button" class="pink" onclick="skFmShowFavorites()">❤️ Favorites</button>
+  <button type="button" class="blue" onclick="skFmLoadMore()">➕ Load More</button>
+</div>
+
+<audio id="fmPlayer" class="fm-player" controls preload="none"></audio>
+<label for="fmVolume">🔊 ஒலி அளவு / Volume</label>
+<input id="fmVolume" type="range" min="0" max="1" step="0.05" value="0.8">
+
+<p id="fmStatus" role="status" aria-live="polite">ரேடியோ நிலையங்களைப் பெற Search / Load Stations அழுத்தவும்.</p>
+<div id="fmStations" class="fm-list"></div>
+<p class="fm-note">குறிப்பு: இந்தப் பட்டியல் இணைய ரேடியோ நிலையங்களிலிருந்து பெறப்படுகிறது. சில நிலையங்கள் தற்காலிகமாக இயங்காமல் இருக்கலாம். நிலையத்தின் stream அனுமதி, இணைய இணைப்பு மற்றும் உங்கள் உலாவியின் ஆதரவைப் பொறுத்து ஒலி இயங்கும்.</p>
 </section>
 
 <section class="panel">
@@ -190,6 +263,244 @@ function downloadVideo(){
   $('status').textContent='பதிவிறக்கம் இணைப்பைத் திறக்க முயற்சிக்கப்பட்டது. தள அனுமதியைப் பொறுத்து வீடியோ திறக்கலாம் அல்லது பதிவிறங்கலாம்.';
  }catch(e){$('status').textContent='சரியான HTTP/HTTPS URL உள்ளிடவும்.'}
 }
+
+/* SK_GLOBAL_FM_RADIO_HUB_V1 */
+const skFmApi = 'https://de1.api.radio-browser.info/json/stations/search';
+let skFmOffset = 0;
+let skFmFavoriteMode = false;
+let skFmRequestId = 0;
+let skFmLastQuery = {};
+let skFmStations = [];
+let skFmFavoriteIds = [];
+try {
+  skFmFavoriteIds = JSON.parse(localStorage.getItem('skGlobalFmFavoritesV1') || '[]');
+  if (!Array.isArray(skFmFavoriteIds)) skFmFavoriteIds = [];
+} catch (_) { skFmFavoriteIds = []; }
+
+$('fmVolume').addEventListener('input', () => {
+  $('fmPlayer').volume = Number($('fmVolume').value);
+});
+$('fmPlayer').volume = 0.8;
+
+function skFmText(value) {
+  return String(value || '').replace(/[&<>"']/g, ch => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+  })[ch]);
+}
+
+function skFmSetStatus(message) {
+  $('fmStatus').textContent = message;
+}
+
+function skFmFavoriteIdsSave() {
+  try {
+    localStorage.setItem('skGlobalFmFavoritesV1', JSON.stringify(skFmFavoriteIds));
+  } catch (_) {}
+}
+
+function skFmIsFavorite(station) {
+  return skFmFavoriteIds.includes(station.stationuuid);
+}
+
+function skFmToggleFavorite(id) {
+  if (skFmFavoriteIds.includes(id)) {
+    skFmFavoriteIds = skFmFavoriteIds.filter(x => x !== id);
+    skFmSetStatus('Favorites பட்டியலிலிருந்து நிலையம் நீக்கப்பட்டது.');
+  } else {
+    skFmFavoriteIds.push(id);
+    skFmSetStatus('❤️ Favorites பட்டியலில் சேமிக்கப்பட்டது.');
+  }
+  skFmFavoriteIdsSave();
+  if (skFmFavoriteMode) skFmShowFavorites();
+  else skFmRender();
+}
+
+function skFmRender() {
+  const root = $('fmStations');
+  root.replaceChildren();
+
+  if (!skFmStations.length) {
+    root.textContent = 'நிலையங்கள் இல்லை. வேறு மொழி அல்லது தேடல் சொல்லை முயற்சிக்கவும்.';
+    return;
+  }
+
+  const frag = document.createDocumentFragment();
+  skFmStations.forEach(station => {
+    const card = document.createElement('article');
+    card.className = 'fm-station';
+
+    const name = document.createElement('h3');
+    name.textContent = '📻 ' + (station.name || 'Radio Station');
+    card.appendChild(name);
+
+    const details = document.createElement('p');
+    details.textContent = [station.state, station.country].filter(Boolean).join(' • ') || 'Location not listed';
+    card.appendChild(details);
+
+    const meta = document.createElement('p');
+    meta.textContent = [
+      station.language || '',
+      station.codec || '',
+      station.bitrate ? station.bitrate + ' kbps' : ''
+    ].filter(Boolean).join(' • ');
+    card.appendChild(meta);
+
+    const buttons = document.createElement('div');
+    buttons.className = 'fm-buttons';
+
+    const play = document.createElement('button');
+    play.type = 'button';
+    play.className = 'green';
+    play.textContent = '▶️ Play';
+    play.addEventListener('click', () => skFmPlay(station));
+    buttons.appendChild(play);
+
+    const fav = document.createElement('button');
+    fav.type = 'button';
+    fav.className = 'fm-fav';
+    fav.textContent = skFmIsFavorite(station) ? '💖 Saved' : '❤️ Favorite';
+    fav.addEventListener('click', () => skFmToggleFavorite(station.stationuuid));
+    buttons.appendChild(fav);
+
+    if (station.homepage) {
+      const site = document.createElement('a');
+      site.className = 'btn gray';
+      site.href = station.homepage;
+      site.target = '_blank';
+      site.rel = 'noopener noreferrer';
+      site.textContent = '🌐 Website';
+      buttons.appendChild(site);
+    }
+
+    card.appendChild(buttons);
+    frag.appendChild(card);
+  });
+  root.appendChild(frag);
+}
+
+async function skFmPlay(station) {
+  const player = $('fmPlayer');
+  const stream = station.url_resolved || station.url;
+  if (!stream) {
+    skFmSetStatus('இந்த நிலையத்திற்கு stream URL கிடைக்கவில்லை.');
+    return;
+  }
+
+  player.pause();
+  player.src = stream;
+  player.load();
+  try {
+    await player.play();
+    skFmSetStatus('▶️ இப்போது இயங்குகிறது: ' + station.name);
+  } catch (err) {
+    skFmSetStatus('இந்த நிலையத்தை இயக்க முடியவில்லை. வேறு நிலையத்தை முயற்சிக்கவும். சில streams உலாவி அல்லது HTTPS கட்டுப்பாடுகளால் இயங்காமல் இருக்கலாம்.');
+  }
+
+  if (station.stationuuid) {
+    fetch('https://de1.api.radio-browser.info/json/url/' + encodeURIComponent(station.stationuuid), {
+      method: 'GET',
+      mode: 'cors'
+    }).catch(() => {});
+  }
+}
+
+async function skFmLoad(reset) {
+  const requestId = ++skFmRequestId;
+  skFmFavoriteMode = false;
+
+  if (reset) {
+    skFmOffset = 0;
+    skFmStations = [];
+  }
+
+  const region = $('fmRegion').value;
+  const language = $('fmLanguage').value;
+  const search = $('fmSearch').value.trim();
+  const params = new URLSearchParams({
+    order: 'votes',
+    reverse: 'true',
+    hidebroken: 'true',
+    limit: '100',
+    offset: String(skFmOffset)
+  });
+
+  if (region === 'india' || region === 'tamil') params.set('countrycode', 'IN');
+  if (region === 'tamil') params.set('state', 'Tamil Nadu');
+  if (language && language !== 'other') params.set('language', language);
+  if (search) params.set('name', search);
+
+  skFmLastQuery = {region, language, search};
+  skFmSetStatus('📡 இணைய ரேடியோ நிலையங்களைத் தேடுகிறது...');
+
+  try {
+    const response = await fetch(skFmApi + '?' + params.toString(), {
+      headers: {'Accept':'application/json'}
+    });
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+
+    const data = await response.json();
+    if (requestId !== skFmRequestId) return;
+    if (!Array.isArray(data)) throw new Error('Unexpected response');
+
+    const unique = new Map(skFmStations.map(x => [x.stationuuid, x]));
+    data.forEach(station => {
+      if (station.stationuuid && (station.url_resolved || station.url)) {
+        unique.set(station.stationuuid, station);
+      }
+    });
+    skFmStations = Array.from(unique.values());
+    skFmOffset += data.length;
+
+    skFmRender();
+    skFmSetStatus('✅ ' + data.length + ' புதிய நிலையங்கள் கிடைத்தன. இந்தப் பட்டியலில் ' +
+      skFmStations.length + ' நிலையங்கள் உள்ளன. மேலும் பெற Load More அழுத்தவும்.');
+    if (!data.length) {
+      skFmSetStatus('மேலும் நிலையங்கள் கிடைக்கவில்லை. வேறு தேடல் அல்லது பகுதியைத் தேர்ந்தெடுக்கவும்.');
+    }
+  } catch (err) {
+    if (requestId !== skFmRequestId) return;
+    skFmSetStatus('ரேடியோ பட்டியலைப் பெற முடியவில்லை. இணைய இணைப்பைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும். (' + err.message + ')');
+  }
+}
+
+function skFmLoadMore() {
+  if (skFmFavoriteMode) {
+    skFmSetStatus('மேலும் நிலையங்களைப் பெற Search / Load Stations அழுத்தவும்.');
+    return;
+  }
+  skFmLoad(false);
+}
+
+async function skFmShowFavorites() {
+  skFmFavoriteMode = true;
+  ++skFmRequestId;
+  $('fmStations').replaceChildren();
+
+  if (!skFmFavoriteIds.length) {
+    skFmSetStatus('இன்னும் Favorites சேமிக்கப்படவில்லை. நிலைய அட்டையில் ❤️ Favorite அழுத்தவும்.');
+    return;
+  }
+
+  skFmSetStatus('❤️ Favorites நிலையங்களை ஏற்றுகிறது...');
+  try {
+    const params = new URLSearchParams({
+      hidebroken: 'false',
+      limit: '100'
+    });
+    skFmFavoriteIds.forEach(id => {});
+    const response = await fetch(skFmApi + '?' + params.toString());
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    const all = await response.json();
+    const wanted = new Set(skFmFavoriteIds);
+    skFmStations = all.filter(station => wanted.has(station.stationuuid));
+    skFmRender();
+    skFmSetStatus('❤️ சேமித்த நிலையங்கள்: ' + skFmStations.length +
+      '. ஏதேனும் நிலையம் காணப்படாவிட்டால் அது தற்போது பட்டியலில் கிடைக்காமல் இருக்கலாம்.');
+  } catch (err) {
+    skFmSetStatus('Favorites நிலைய விவரங்களை ஏற்ற முடியவில்லை. ' + err.message);
+  }
+}
+
 function closeHub(){if(history.length>1)history.back();else location.href='/'}
 </script>
 </body>
