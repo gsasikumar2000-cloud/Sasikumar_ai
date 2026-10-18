@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
@@ -750,6 +751,79 @@ app.get('/api/global-search', async (req, res) => {
   }
 });
 // END SASIKUMAR AI GLOBAL WEB SEARCH API
+
+
+
+// SK_LIVE_TAMIL_NEWS_JSON_API_V1
+app.get('/api/breaking-news', async (req, res) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+
+  const key = process.env.NEWSDATA_API_KEY;
+  if (!key || !key.trim()) {
+    return res.status(503).json({
+      error: 'News API key is not configured.',
+      articles: []
+    });
+  }
+
+  try {
+    const params = new URLSearchParams({
+      apikey: key.trim(),
+      country: 'in',
+      language: 'ta',
+      q: 'தமிழ்நாடு OR இந்தியா'
+    });
+
+    const response = await fetch(
+      'https://newsdata.io/api/1/latest?' + params.toString(),
+      { signal: AbortSignal.timeout(20000) }
+    );
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok || data.status === 'error') {
+      const errorInfo = data.results || data.message || data.error || 'Unknown provider error';
+      console.error(
+        '[Live Tamil News] NewsData error:',
+        response.status,
+        JSON.stringify(errorInfo).slice(0, 500)
+      );
+
+      return res.status(502).json({
+        error: 'News provider is temporarily unavailable.',
+        articles: []
+      });
+    }
+
+    const articles = (Array.isArray(data.results) ? data.results : [])
+      .filter(item => item && item.title && item.link &&
+        /^https?:\/\//i.test(String(item.link)))
+      .slice(0, 5)
+      .map(item => ({
+        title: String(item.title).slice(0, 250),
+        url: String(item.link),
+        content: String(item.description || '').slice(0, 500),
+        published_date: item.pubDate || null
+      }));
+
+    return res.json({
+      ok: true,
+      provider: 'NewsData.io',
+      category: 'Tamil Nadu',
+      language: 'ta',
+      updatedAt: new Date().toISOString(),
+      articles
+    });
+  } catch (error) {
+    console.error('[Live Tamil News] Request failed:', error.message || error);
+    return res.status(502).json({
+      error: 'News search temporarily failed.',
+      articles: []
+    });
+  }
+});
+// END SK_LIVE_TAMIL_NEWS_JSON_API_V1
+
 
 app.use(express.static(publicPath));
 app.get('*',(req,res)=>{const fp=path.join(publicPath,'index.html');if(fs.existsSync(fp))res.sendFile(fp);else res.status(404).send('Not Found');});
