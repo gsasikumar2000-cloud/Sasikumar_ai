@@ -10308,5 +10308,252 @@ table {
 }
 </style>
 <!-- END SK_ALL_CONTENT_MOBILE_FIT_V1 -->
+
+
+<!-- SK_THREE_SIZE_COLOR_MOBILE_FIT_V1 -->
+<style id="SK_THREE_SIZE_COLOR_MOBILE_FIT_V1">
+
+/* Base: keep cards inside their available layout */
+#skDesignMakerGlobal,
+#skReplyCreatorCards,
+#skMiniOfficeV1,
+#skGoldApp {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+}
+
+/* LARGE: Design Maker and Gold App */
+#skDesignMakerGlobal {
+  padding: clamp(10px, 3vw, 22px) !important;
+  border: 2px solid #38bdf8 !important;
+  border-radius: 22px !important;
+  background: linear-gradient(135deg, #082f49, #312e81, #164e63) !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 24px rgba(30, 64, 175, .20) !important;
+}
+
+#skDesignMakerGlobal > div {
+  min-width: 0 !important;
+  max-width: 100% !important;
+}
+
+#skDesignMakerGlobal article {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow-wrap: anywhere !important;
+  border: 1px solid rgba(255,255,255,.32) !important;
+  border-radius: 16px !important;
+  background: linear-gradient(145deg, rgba(255,255,255,.15), rgba(56,189,248,.10)) !important;
+}
+
+#skDesignMakerGlobal textarea,
+#skDesignMakerGlobal iframe {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+
+#skDesignMakerGlobal button {
+  max-width: 100% !important;
+  overflow-wrap: anywhere !important;
+  white-space: normal !important;
+}
+
+/* MEDIUM: Creator cards */
+#skReplyCreatorCards {
+  padding: clamp(10px, 2.5vw, 18px) !important;
+  border: 2px solid #818cf8 !important;
+  border-radius: 20px !important;
+  background: linear-gradient(135deg, #eff6ff, #f5f3ff, #ecfeff) !important;
+  color: #1e1b4b !important;
+  overflow-wrap: anywhere !important;
+}
+
+#skReplyCreatorCards .skCreatorToolsGrid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+#skReplyCreatorCards .skCreatorToolCard {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  min-height: 145px !important;
+  padding: 12px 8px !important;
+  border: 2px solid #a5b4fc !important;
+  border-radius: 16px !important;
+  background: linear-gradient(145deg, #ffffff, #e0f2fe) !important;
+  color: #1e3a8a !important;
+  box-shadow: 0 4px 12px rgba(79,70,229,.12) !important;
+  text-align: center !important;
+  overflow-wrap: anywhere !important;
+  white-space: normal !important;
+}
+
+#skReplyCreatorCards .skCreatorToolCard:nth-of-type(4n+1) {
+  background: linear-gradient(145deg, #ffffff, #dbeafe) !important;
+}
+#skReplyCreatorCards .skCreatorToolCard:nth-of-type(4n+2) {
+  background: linear-gradient(145deg, #ffffff, #dcfce7) !important;
+}
+#skReplyCreatorCards .skCreatorToolCard:nth-of-type(4n+3) {
+  background: linear-gradient(145deg, #ffffff, #f3e8ff) !important;
+}
+#skReplyCreatorCards .skCreatorToolCard:nth-of-type(4n) {
+  background: linear-gradient(145deg, #ffffff, #ffedd5) !important;
+}
+
+#skReplyCreatorCards .skCreatorToolCard strong,
+#skReplyCreatorCards .skCreatorToolDesc,
+#skReplyCreatorCards .skCreatorToolOpen {
+  max-width: 100% !important;
+  overflow-wrap: anywhere !important;
+  white-space: normal !important;
+}
+
+/* SMALL: Editorial cards */
+.skEditorialCardV1 {
+  box-sizing: border-box !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  border-radius: 16px !important;
+  overflow-wrap: anywhere !important;
+  box-shadow: 0 4px 14px rgba(15,23,42,.12) !important;
+}
+
+.skEditorialCardV1 h2,
+.skEditorialCardV1 h3,
+.skEditorialExplainV1 {
+  max-width: 100% !important;
+  overflow-wrap: anywhere !important;
+  white-space: normal !important;
+}
+
+/* Live row stays swipeable without forcing the whole page wider */
+#skLiveBookCardsRow {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  scroll-snap-type: x proximity !important;
+}
+
+#skLiveBookCardsRow > * {
+  box-sizing: border-box !important;
+  flex-shrink: 0 !important;
+  overflow-wrap: anywhere !important;
+}
+
+#skLiveBookCardsRow img,
+#skLiveBookCardsRow video,
+#skLiveBookCardsRow iframe {
+  max-width: 100% !important;
+}
+
+/* Inputs and embedded previews must fit their cards */
+#skDesignMakerGlobal *,
+#skReplyCreatorCards *,
+#skGoldApp * {
+  box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+  #skDesignMakerGlobal {
+    margin: 12px auto !important;
+    padding: 12px !important;
+    border-radius: 16px !important;
+  }
+
+  #skDesignMakerGlobal h2 {
+    font-size: clamp(18px, 5vw, 23px) !important;
+    line-height: 1.3 !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  #skDesignMakerGlobal h3 {
+    font-size: 16px !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  #skReplyCreatorCards {
+    margin: 12px auto !important;
+    padding: 10px !important;
+  }
+
+  #skReplyCreatorCards .skCreatorToolsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+
+  #skReplyCreatorCards .skCreatorToolCard {
+    min-height: 132px !important;
+    padding: 9px 6px !important;
+    font-size: 13px !important;
+  }
+
+  #skReplyCreatorCards .skCreatorToolIcon {
+    font-size: 25px !important;
+  }
+
+  #skLiveBookCardsRow > * {
+    flex: 0 0 82% !important;
+    width: 82% !important;
+    min-width: 0 !important;
+    max-width: 300px !important;
+  }
+
+  #skLiveBookCardsRow > .skEditorialCardV1 {
+    flex: 0 0 150px !important;
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+    min-height: 150px !important;
+    padding: 8px !important;
+  }
+
+  #skLiveBookCardsRow > * h2,
+  #skLiveBookCardsRow > * h3 {
+    font-size: 14px !important;
+    line-height: 1.35 !important;
+  }
+
+  #skGoldApp {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+
+  #skGoldApp input,
+  #skGoldApp select,
+  #skGoldApp textarea,
+  #skGoldApp button {
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow-wrap: anywhere !important;
+  }
+}
+
+@media (min-width: 601px) {
+  #skReplyCreatorCards .skCreatorToolsGrid {
+    grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)) !important;
+  }
+}
+
+</style>
+<!-- END SK_THREE_SIZE_COLOR_MOBILE_FIT_V1 -->
+
 </body>
 </html>
