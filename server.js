@@ -768,7 +768,7 @@ app.get('/api/breaking-news', async (req, res) => {
   }
 
   const requested = String(req.query.category || 'tamil-nadu')
-    .trim().toLowerCase();
+    .trim().toLowerCase().replace(/\s+/g, '-');
 
   const configs = {
     'tamil-nadu': {
