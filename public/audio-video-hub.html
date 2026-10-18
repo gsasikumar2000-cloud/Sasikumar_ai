@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#6d28d9">
+<title>SASIKUMAR AI Audio & Video Hub</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#e0f2fe,#fce7f3,#ede9fe);color:#222;min-height:100vh}
+header{text-align:center;padding:22px 12px;background:linear-gradient(120deg,#6d28d9,#db2777,#ea580c);color:white}
+.logo{width:76px;height:76px;object-fit:contain;border-radius:50%;background:white;padding:5px}
+h1{font-size:clamp(23px,5vw,34px);margin:10px 0}
+header p{margin:5px}
+main{max-width:1000px;margin:auto;padding:15px}
+.panel{background:white;border-radius:18px;padding:18px;margin:14px 0;box-shadow:0 5px 18px #00000012}
+label{display:block;font-weight:bold;margin:10px 0 6px}
+input,select{width:100%;padding:13px;border:1px solid #cbd5e1;border-radius:10px;font-size:16px;background:white}
+button,.btn{border:0;border-radius:11px;padding:12px 15px;color:white;font-weight:bold;font-size:15px;cursor:pointer;text-decoration:none;display:inline-block;text-align:center}
+button:active,.btn:active{transform:scale(.98)}
+.purple{background:#6d28d9}.pink{background:#db2777}.blue{background:#0284c7}.green{background:#15803d}.orange{background:#ea580c}.gray{background:#475569}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px}
+.card{border-radius:15px;padding:17px 12px;text-align:center;color:white;min-height:125px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+.card button{width:100%;background:#ffffff24;border:1px solid #ffffff70}
+.c1{background:linear-gradient(135deg,#db2777,#be123c)}.c2{background:linear-gradient(135deg,#7c3aed,#4338ca)}.c3{background:linear-gradient(135deg,#0284c7,#0369a1)}.c4{background:linear-gradient(135deg,#ea580c,#c2410c)}.c5{background:linear-gradient(135deg,#15803d,#166534)}.c6{background:linear-gradient(135deg,#9333ea,#6b21a8)}
+#status{font-size:14px;line-height:1.6;overflow-wrap:anywhere}
+small{color:#475569;line-height:1.5}
+footer{text-align:center;padding:20px}
+@media(max-width:400px){main{padding:9px}.panel{padding:13px}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.card{padding:12px 8px}}
+</style>
+</head>
+<body>
+<header>
+<img class="logo" src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI Logo"
+onerror="this.style.display='none'">
+<h1>🎬 SASIKUMAR AI</h1>
+<h2>🎧 AUDIO & VIDEO HUB</h2>
+<p>All Languages • தமிழ் இயல்புநிலை</p>
+</header>
+<main>
+<section class="panel">
+<h2>🌐 மொழி / Language</h2>
+<label for="lang">உங்கள் மொழியைத் தேர்வு செய்யவும்</label>
+<select id="lang">
+<option value="Tamil" selected>தமிழ் — Tamil (Default)</option>
+<option value="Telugu">తెలుగు — Telugu</option>
+<option value="Hindi">हिन्दी — Hindi</option>
+<option value="Malayalam">മലയാളം — Malayalam</option>
+<option value="Kannada">ಕನ್ನಡ — Kannada</option>
+<option value="English">English</option>
+<option value="Bengali">বাংলা — Bengali</option>
+<option value="Marathi">मराठी — Marathi</option>
+<option value="Punjabi">ਪੰਜਾਬੀ — Punjabi</option>
+<option value="Other">Other Languages</option>
+</select>
+</section>
+
+<section class="panel">
+<h2>🔎 திரைப்படம் / பாடல் தேடல்</h2>
+<label for="query">திரைப்படம், நகைச்சுவை, பாடல் அல்லது நடிகர் பெயர்</label>
+<input id="query" placeholder="உதா: திரைப்படப் பெயர் / பாடல் பெயர்">
+<div class="actions">
+<button class="purple" onclick="searchHub('comedy')">😂 Comedy Search</button>
+<button class="pink" onclick="searchHub('songs')">🎵 Songs Search</button>
+<button class="blue" onclick="searchHub('audio')">🎧 Audio Search</button>
+<button class="orange" onclick="searchHub('video')">🎬 Video Search</button>
+</div>
+<p><small>தேடல் முடிவுகள் YouTube-ல் திறக்கும். கிடைக்கும் வீடியோவின் பெயரும் வெளியீட்டாளரும் சரிபார்க்கவும்.</small></p>
+</section>
+
+<section class="panel">
+<h2>✨ Explore Hub</h2>
+<div class="cards">
+<div class="card c1"><div style="font-size:32px">😂</div><b>Movie Comedy</b><button onclick="quickSearch('comedy')">தேடவும்</button></div>
+<div class="card c2"><div style="font-size:32px">🎵</div><b>Movie Songs</b><button onclick="quickSearch('songs')">தேடவும்</button></div>
+<div class="card c3"><div style="font-size:32px">🎧</div><b>Audio Songs</b><button onclick="quickSearch('audio')">தேடவும்</button></div>
+<div class="card c4"><div style="font-size:32px">🎬</div><b>Movie Videos</b><button onclick="quickSearch('video')">தேடவும்</button></div>
+<div class="card c5"><div style="font-size:32px">🎤</div><b>Artist / Singer</b><button onclick="quickSearch('artist')">தேடவும்</button></div>
+<div class="card c6"><div style="font-size:32px">📺</div><b>Official Channels</b><button onclick="quickSearch('official')">தேடவும்</button></div>
+</div>
+</section>
+
+<section class="panel">
+<h2>✂️ Audio Cutter & Download</h2>
+<p>உங்களிடம் உள்ள audio கோப்பைத் தேர்வு செய்து, வேண்டிய தொடக்கம் மற்றும் முடிவு நேரத்தை அமைத்து WAV கிளிப்பை உருவாக்கலாம்.</p>
+<label for="audioFile">உங்கள் audio கோப்பைத் தேர்ந்தெடுக்கவும்</label>
+<input type="file" id="audioFile" accept="audio/*">
+<div id="audioArea" hidden>
+<audio id="player" controls style="width:100%;margin-top:12px"></audio>
+<label for="start">தொடக்க நேரம் (விநாடிகள்)</label>
+<input type="number" id="start" min="0" value="0" step="0.1">
+<label for="end">முடிவு நேரம் (விநாடிகள்)</label>
+<input type="number" id="end" min="0" value="10" step="0.1">
+<div class="actions">
+<button class="green" onclick="downloadOriginal()">⬇️ DOWNLOAD AUDIO</button>
+<button class="purple" onclick="cutAudio()">✂️ CUT & DOWNLOAD WAV</button>
+</div>
+</div>
+<p id="status" role="status">Audio கோப்பைத் தேர்ந்தெடுத்தால் இங்கு அதன் விவரங்கள் தெரியும்.</p>
+<small>குறிப்பு: இந்த வசதி நீங்கள் தேர்ந்தெடுக்கும் உள்ளூர் audio கோப்பில் வேலை செய்யும். பிறரின் காப்புரிமை பெற்ற பாடல்களை அனுமதியின்றி பதிவிறக்கம் செய்யவோ மறுபகிர்வு செய்யவோ கூடாது.</small>
+</section>
+
+<section class="panel">
+<h2>⬇️ Video Download</h2>
+<p>அதிகாரப்பூர்வமாக பதிவிறக்கம் செய்ய அனுமதிக்கப்பட்ட வீடியோ அல்லது நேரடி கோப்பு இணைப்பைப் பயன்படுத்தவும்.</p>
+<label for="videoUrl">அனுமதிக்கப்பட்ட நேரடி வீடியோ URL</label>
+<input id="videoUrl" type="url" placeholder="https://example.com/video.mp4">
+<div class="actions">
+<button class="blue" onclick="downloadVideo()">⬇️ DOWNLOAD VIDEO</button>
+</div>
+<p><small>YouTube போன்ற தளங்களின் தேடல் பக்க URL-ஐ நேரடியாகப் பதிவிறக்க முடியாது. தளத்தின் அதிகாரப்பூர்வ Download வசதியைப் பயன்படுத்தவும்.</small></p>
+</section>
+
+<footer>
+<div class="actions" style="justify-content:center">
+<button class="pink" onclick="closeHub()">❌ CLOSE</button>
+<a class="btn green" href="/">🏠 MAIN</a>
+</div>
+<p><small>© SASIKUMAR AI • Audio & Video Hub</small></p>
+</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+function searchHub(type){
+ const q=$('query').value.trim();
+ if(!q){$('query').focus();$('status').textContent='முதலில் திரைப்படம் அல்லது பாடல் பெயரை உள்ளிடவும்.';return}
+ const lang=$('lang').value;
+ const terms={comedy:'comedy scenes',songs:'movie songs',audio:'audio songs',video:'movie videos',artist:'singer songs',official:'official channel'};
+ const url='https://www.youtube.com/results?search_query='+encodeURIComponent(lang+' '+q+' '+terms[type]);
+ window.open(url,'_blank','noopener');
+}
+function quickSearch(type){
+ const q=$('query').value.trim();
+ if(!q){$('query').focus();$('status').textContent='முதலில் திரைப்படம் அல்லது பாடல் பெயரை உள்ளிடவும்.';return}
+ searchHub(type);
+}
+let audioObjectUrl='';
+$('audioFile').addEventListener('change',()=>{
+ const f=$('audioFile').files[0];if(!f)return;
+ if(audioObjectUrl)URL.revokeObjectURL(audioObjectUrl);
+ audioObjectUrl=URL.createObjectURL(f);
+ $('player').src=audioObjectUrl;$('audioArea').hidden=false;
+ $('status').textContent='தேர்ந்தெடுக்கப்பட்டது: '+f.name+' ('+(f.size/1024/1024).toFixed(2)+' MB)';
+ $('player').onloadedmetadata=()=>{
+   $('end').value=Number.isFinite($('player').duration)?$('player').duration.toFixed(2):10;
+   $('end').max=$('player').duration||'';
+   $('start').max=$('player').duration||'';
+ };
+});
+function downloadOriginal(){
+ const f=$('audioFile').files[0];if(!f){$('status').textContent='முதலில் audio கோப்பைத் தேர்ந்தெடுக்கவும்.';return}
+ const a=document.createElement('a');a.href=audioObjectUrl;a.download=f.name;a.click();
+}
+async function cutAudio(){
+ const f=$('audioFile').files[0];if(!f){$('status').textContent='முதலில் audio கோப்பைத் தேர்ந்தெடுக்கவும்.';return}
+ const s=Number($('start').value),e=Number($('end').value);
+ if(!Number.isFinite(s)||!Number.isFinite(e)||s<0||e<=s){$('status').textContent='தொடக்க மற்றும் முடிவு நேரங்களைச் சரிபார்க்கவும்.';return}
+ $('status').textContent='Audio clip உருவாக்கப்படுகிறது...';
+ try{
+  const ctx=new (window.AudioContext||window.webkitAudioContext)();
+  const buffer=await ctx.decodeAudioData(await f.arrayBuffer());
+  if(e>buffer.duration){throw new Error('முடிவு நேரம் audio நீளத்தைவிட அதிகமாக உள்ளது.')}
+  const from=Math.floor(s*buffer.sampleRate),to=Math.floor(e*buffer.sampleRate),len=to-from;
+  if(len<=0)throw new Error('தேர்ந்தெடுத்த நேரம் சரியில்லை.');
+  const channels=buffer.numberOfChannels,bytes=44+len*channels*2;
+  const out=new ArrayBuffer(bytes),v=new DataView(out);
+  function str(o,t){for(let i=0;i<t.length;i++)v.setUint8(o+i,t.charCodeAt(i))}
+  str(0,'RIFF');v.setUint32(4,bytes-8,true);str(8,'WAVE');str(12,'fmt ');
+  v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,channels,true);
+  v.setUint32(24,buffer.sampleRate,true);v.setUint32(28,buffer.sampleRate*channels*2,true);
+  v.setUint16(32,channels*2,true);v.setUint16(34,16,true);str(36,'data');v.setUint32(40,bytes-44,true);
+  let pos=44;
+  for(let i=0;i<len;i++)for(let c=0;c<channels;c++){
+   let x=Math.max(-1,Math.min(1,buffer.getChannelData(c)[from+i]));
+   v.setInt16(pos,x<0?x*32768:x*32767,true);pos+=2;
+  }
+  const blob=new Blob([out],{type:'audio/wav'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download=(f.name.replace(/\.[^.]+$/,'')||'audio')+'-clip.wav';a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),30000);await ctx.close();
+  $('status').textContent='வெற்றி! தேர்ந்தெடுத்த audio clip WAV கோப்பாகப் பதிவிறக்கப்பட்டது.';
+ }catch(err){$('status').textContent='Clip உருவாக்க முடியவில்லை: '+err.message+' — வேறு audio கோப்பை முயற்சிக்கவும்.'}
+}
+function downloadVideo(){
+ const raw=$('videoUrl').value.trim();if(!raw){$('videoUrl').focus();return}
+ try{
+  const u=new URL(raw);
+  if(!['http:','https:'].includes(u.protocol))throw new Error();
+  const a=document.createElement('a');a.href=u.href;a.download='video';a.rel='noopener';a.target='_blank';a.click();
+  $('status').textContent='பதிவிறக்கம் இணைப்பைத் திறக்க முயற்சிக்கப்பட்டது. தள அனுமதியைப் பொறுத்து வீடியோ திறக்கலாம் அல்லது பதிவிறங்கலாம்.';
+ }catch(e){$('status').textContent='சரியான HTTP/HTTPS URL உள்ளிடவும்.'}
+}
+function closeHub(){if(history.length>1)history.back();else location.href='/'}
+</script>
+</body>
+</html>
