@@ -2274,7 +2274,10 @@ Tamil + English • Gold • General Q&A</div>
 
 </head><body><h1>' +
       title.replace(/&/g,'&amp;').replace(/</g,'&lt;') +
-      '</h1><p style="white-space:pre-wrap">' + safe + '</p></body></html>';
+      '</h1><p style="white-space:pre-wrap">' + safe + '</p>
+
+
+</body></html>';
     skOfficeDownload('Sasikumar-AI-Document.doc', html, 'application/msword');
   };
 
@@ -10244,5 +10247,66 @@ html body .skMainLiveGrid > .skMainFeatureCard {
 <div id="skSettingsBottomV1" style="display:flex;justify-content:center;align-items:center;margin:18px auto;padding:10px;width:100%;box-sizing:border-box;">
   <a href="/settings.html" class="skBtn" style="display:inline-flex;justify-content:center;align-items:center;background:#0878f9;color:#ffffff;border:2px solid #60a5fa;border-radius:14px;padding:13px 30px;font-size:18px;font-weight:700;text-decoration:none;box-shadow:0 4px 14px rgba(8,120,249,.35);">⚙️ Settings</a>
 </div>
+<!-- SK_ALL_CONTENT_MOBILE_FIT_V1 -->
+<style id="SK_ALL_CONTENT_MOBILE_FIT_V1">
+/* Keep all page content within the mobile viewport */
+html {
+  max-width: 100%;
+  overflow-x: clip;
+}
+body {
+  width: 100%;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  overflow-x: clip;
+}
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+img, video, iframe, canvas, svg {
+  max-width: 100%;
+}
+input, select, textarea, button {
+  max-width: 100%;
+}
+pre, code {
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+table {
+  max-width: 100%;
+}
+@media (max-width: 600px) {
+  body {
+    font-size: 15px;
+  }
+  main, section, article, aside, header, footer {
+    max-width: 100%;
+  }
+  img, video, iframe {
+    height: auto;
+  }
+  input, select, textarea {
+    min-width: 0;
+  }
+  #skDesignMakerGlobal,
+  #skReplyCreatorCards {
+    max-width: 100%;
+  }
+  #skReplyCreatorCards {
+    flex-wrap: wrap;
+  }
+  #skLiveBookCardsRow {
+    max-width: 100%;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  #skLiveBookCardsRow > * {
+    box-sizing: border-box;
+  }
+}
+</style>
+<!-- END SK_ALL_CONTENT_MOBILE_FIT_V1 -->
 </body>
 </html>
