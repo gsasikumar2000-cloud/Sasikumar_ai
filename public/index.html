@@ -6222,8 +6222,9 @@ else skRefreshPay2AllWallet();
   <h3 style="margin:0 0 14px;">⚙️ SASIKUMAR AI</h3>
 
   <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;">
-    <a href="/settings.html" class="skBtn">⚙️ Settings</a>
-    <button type="button" class="skBtn" onclick="window.openGoldAppraiserPage ? window.openGoldAppraiserPage() : alert('Gold Appraiser page is not ready. Please try again.')">📋 Appraiser Report</button>
+
+    <!-- SK_HIDE_DUPLICATE_SETTINGS_APPRAISER_REPORT_V1 -->
+    <button type="button" class="skBtn" style="display:none !important" onclick="window.openGoldAppraiserPage ? window.openGoldAppraiserPage() : alert('Gold Appraiser page is not ready. Please try again.')">📋 Appraiser Report</button>
     <a href="tel:9894440400" class="skBtn">📞 Communication</a>
     <a href="https://wa.me/919585080842" target="_blank" class="skBtn">💬 WhatsApp</a>
     <a href="mailto:gsasikumar2000@gmail.com" class="skBtn">📧 Email</a>
@@ -10155,6 +10156,12 @@ html body .skMainLiveGrid > .skMainFeatureCard {
  outline:3px solid #fbbf24;outline-offset:3px
 }
 </style>
+
+<!-- SK_SETTINGS_BUTTON_BOTTOM_V1 -->
+<div id="skSettingsBottomV1" style="display:flex;justify-content:center;align-items:center;margin:18px auto;padding:10px;width:100%;box-sizing:border-box;">
+  <a href="/settings.html" class="skBtn" style="font-size:17px;">⚙️ Settings</a>
+</div>
+
 <a id="skAllMobileToolsButton" href="/mobile-tools.html">
  📱 ALL MOBILE TOOLS &amp; DOWNLOADS — 50+ TOOLS
 </a>
