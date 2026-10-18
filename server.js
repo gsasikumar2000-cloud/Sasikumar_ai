@@ -20,193 +20,176 @@ const WA_TOKEN = process.env.WHATSAPP_TOKEN || '';
 const WA_PHONE_ID = process.env.WHATSAPP_PHONE_ID || process.env.WHATSAPP_PHONE_NUMBER_ID || '';
 const WA_VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || 'sasikumar_ai_verify_2026';
 
-const WELCOME_MENU = `🤖 Welcome 🙏
-SASIKUMAR AI
+const WELCOME_MENU = `🤖 SASIKUMAR AI — MAIN MENU
 
-🖼️ Logo: SASIKUMAR AI
 🌐 Website: https://sasikumar-ai-9wdq.onrender.com
 
-🎁 Visit Bonus • ▶️ Continue
-Website: https://sasikumar-ai-9wdq.onrender.com
+1. 🤖 SASIKUMAR AI — AI Assistant
+2. 🪙 Live Gold & Silver Rate
+3. 🧮 Gold Loan / EMI Calculator
+4. 🏦 Banking Services
+5. 💎 Gold Expert
+6. 📋 Gold Appraisal
+7. 🎓 Education
+8. 💼 Jobs & Careers
+9. 💻 Business & Technology News
+10. 📰 Breaking News
+11. 🧠 General AI Chat
+12. 🎨 Poster & Creative Design
+13. 🖼️ AI Image Maker
+14. 🎬 Video Maker
+15. 🔍 Global Web Search
+16. 🏏 Sports Updates
+17. 📖 Daily Thirukkural
+18. 📝 Tamil Kavithai
+19. 🌹 Ponmozhigal
+20. 💡 Thathuvam
+21. 🔥 Motivation
+22. 🌍 Leadership History
+23. 🎧 Audio & Video Songs Hub
+24. 📻 Live FM Radio
+25. ✂️ Audio / Video Song Cutter
+26. 📱 Mobile App Download
+27. 🚀 Business Ideas
+28. 🛠️ AI Tools
+29. 🌐 Website Services
+30. 📞 Contact & Customer Feedback
+31. 📚 ALL CONTENT — Complete Services & Details
 
-🌍 MULTI-LANGUAGE AI
-Tamil • English • Tanglish • Hindi • Telugu • Malayalam • Kannada • Bengali • Marathi • Gujarati • Punjabi • Urdu • Odia • Assamese • More Languages
+0. 🏠 Main Menu
 
-1️⃣ Gold Rate
-2️⃣ Gold Loan / EMI
-3️⃣ Banking
-4️⃣ Gold Expert
-5️⃣ Appraisal
-6️⃣ Education
-7️⃣ Jobs
-8️⃣ Business / Tech News
-9️⃣ General AI
-🔟 🚨 Breaking News
-1️⃣1️⃣ 💼 Business News
-1️⃣2️⃣ 🏏 Sports
-1️⃣3️⃣ 🔎 Web Search
-1️⃣4️⃣ 🎨 Poster / Creative
-1️⃣5️⃣ 📸 Image AI
-1️⃣6️⃣ 🎬 Video Maker
-1️⃣7️⃣ 📞 Contact / Communication
-1️⃣8️⃣ ⭐ Feedback
-1️⃣9️⃣ ℹ️ About SASIKUMAR AI
-2️⃣0️⃣ 📰 Tamil News Channel Videos
+Any language-la unga question-ai type pannalaam.
+Option number anuppi service select pannunga.
 
-2️⃣1️⃣ 📚 Leadership History
-2️⃣2️⃣ 📰 Tamil Breaking News
-2️⃣3️⃣ ✍️ கவிதைகள் — Tamil Kavithai
-2️⃣4️⃣ 💬 பொன்மொழிகள் — Ponmozhigal
-2️⃣5️⃣ 💡 தத்துவங்கள் — Thathuvam
-
-🗣️ Any Language — Ask Freely
-
-ஒரு option number அனுப்புங்கள்.
-உதாரணம்: 1
-
-அல்லது எந்த மொழியிலும் உங்கள் கேள்வியை நேரடியாக அனுப்பலாம்.
-
-— SASIKUMAR AI
-2️⃣6️⃣ 🪔 தினசரி திருக்குறள் — Daily Thirukkural
-2️⃣7️⃣ 🔥 தினசரி ஊக்கம் — Daily Motivation
-2️⃣8️⃣ 🎧 🎬 Audio & Video Hub — அனைத்து மொழிகளிலும்
-`;
+— SASIKUMAR AI`;
 
 const MENU_REPLIES = {
-  '1': () => { const p=14748+Math.floor(Math.random()*80)-40; return `1️⃣ Gold Rate - LIVE\n\n💰 Thanjavur Gold:\n24K: Rs ${p}/g\n22K: Rs ${Math.floor(p*0.916)}/g\nTrend: ${p>14748?'Up ⬆️':'Down ⬇️'}\nLive: /api/gold\n\nType 0 for Menu`; },
-  '2': () => `2️⃣ Gold Loan / EMI\nLoan 75% = Rs 1,01,250, Interest 12%, EMI Rs 8,500\nBanks: SBI, HDFC, Muthoot\nType 0 for Menu`,
-  '3': () => `3️⃣ Banking\nSavings 3.5%, Gold Loan Instant, Personal Loan 11%\nType 0 for Menu`,
-  '4': () => `4️⃣ GOLD EXPERT — PURITY SYMBOLS
-
-💛 24K — 999: 99.9% தங்கம்
-💍 22K — 916: 91.6% தங்கம்
-💎 18K — 750: 75% தங்கம்
-✨ 14K — 585: 58.5% தங்கம்
-🔹 9K — 375: 37.5% தங்கம்
-
-🏷️ BIS Hallmark சரிபார்க்கவும்:
-✅ BIS முத்திரை
-✅ Purity/Fineness எண்
-✅ HUID — 6 எழுத்து/எண்கள் கொண்ட தனிப்பட்ட குறியீடு
-
-⚠️ குறியீடுகளுடன் Hallmark மற்றும் HUID விவரங்களையும் சரிபார்க்கவும்.
-🤖 SASIKUMAR AI
-Type 0 for Menu`,
-  '5': () => `5️⃣ Appraisal\nPurity test, Weight, Value, Certificate\nCharge Rs 100-300\nType 0 for Menu`,
-  '6': () => `📚 6️⃣ EDUCATION – கல்வி வழிகாட்டி\n\n🏫 School & College Education\n💻 Computer Science & IT\n🤖 AI & Data Science\n⚙️ B.E. / B.Tech Engineering\n🩺 MBBS & Medical Courses\n🔬 Science & Mathematics\n\n🎓 COMPETITIVE EXAMS\n✅ TNPSC, UPSC, SSC, Railway\n✅ Banking Exams\n✅ NEET, JEE, TET\n\n📖 Courses, Eligibility, Scholarships, Career Guidance மற்றும் கல்வித் தகவல்களைப் பெறலாம்.\n\n🔗 EDUCATION PAGE:\nhttps://sasikumar-ai-9wdq.onrender.com/education/qa.html\n\n📐 MATHS & EQUATIONS:\nhttps://sasikumar-ai-9wdq.onrender.com/education/equations.html\n\n📩 தேவையான Course அல்லது Exam பெயரை அனுப்புங்கள்.\n🏠 Main Menu: 0`,
-  '7': () => `7️⃣ Jobs\nAI Engineer 12L+, Full Stack Remote 8-15L, TNPSC Govt\nType 0 for Menu`,
-  '8': () => `8️⃣ Business / Tech News\nAI boom, Gold up 5%, Sensex 75k+\nType 0 for Menu`,
-  '9': () => `9️⃣ General AI\nAsk Anything: Tamil history, Gold, Jobs, Science, Math, Coding, 20+ languages!\nType 0 for Menu`,
-  '10': () => `🔟 Breaking News\nGold Rs 14748/g LIVE, Thanjavur festival, 【entity-IPL¦canonical_name=IPL】 CSK Top\nType 0 for Menu`,
-  '11': () => `11️⃣ Business News\nGold market strong, RBI 6.5%, Startups funding up\nType 0 for Menu`,
-  '12': () => `12️⃣ Sports\nIPL CSK vs MI today! CSK Top! Football Euro\nType 0 for Menu`,
-  '13': () => `13️⃣ Web Search\nSearch: "【entity-ISRO¦canonical_name=ISRO】", "Thanjavur"\nType 0 for Menu`,
-  '14': () => `14️⃣ Poster / Creative\nFestival posters Pongal Diwali, Business posters\nSend "Poster Pongal"\nType 0 for Menu`,
-  '15': () => `15️⃣ Image AI\nGenerate: "Thanjavur temple", "Gold jewellery"\nType 0 for Menu`,
-  '16': () => `16️⃣ Video Maker\nFestival videos, Business promo\nSend "Video Pongal"\nType 0 for Menu`,
-  '17': () => `17️⃣ Contact\nWebsite: https://sasikumar-ai-9wdq.onrender.com\nWhatsApp: This number!\nThanjavur\nType 0 for Menu`,
-  '18': () => `18️⃣ Feedback\nRate 1-5 stars, Send idea\n"Feedback 5 star - Super AI!"\nType 0 for Menu`,
-  '19': () => `19️⃣ About SASIKUMAR AI\nFrom Thanjavur, Multi-Language 20+ langs, 20 Services, Version 7.0\nType 0 for Menu`,
-  '20': () => `20️⃣ Tamil News Videos\nThanjavur news, Sun News, 【entity-Thanthi TV¦canonical_name=Thanthi TV】\nSend "Tamil news"\nType 0 for Menu`,
-
-  '21': () => `2️⃣1️⃣ LEADERSHIP HISTORY — தலைமைத்துவ வரலாறு
-
-🌍 உலகத் தலைவர்கள்
-🇮🇳 இந்தியத் தலைவர்கள்
-🏛️ தமிழ்நாட்டுத் தலைவர்கள்
-📚 வாழ்க்கை வரலாறு மற்றும் தலைமைத்துவப் பாடங்கள்
-
-ஒரு தலைவரின் பெயரை அல்லது "Indian leaders", "Tamil Nadu leaders" என்று அனுப்புங்கள்.
-🤖 SASIKUMAR AI
-Type 0 for Menu`,
-  '22': () => `2️⃣2️⃣ TAMIL BREAKING NEWS — தமிழ் முக்கியச் செய்திகள்
-
-📰 சமீபத்திய செய்திகளைப் பெற "Tamil news" அல்லது "Breaking news" என்று அனுப்புங்கள்.
-🌍 தமிழ்நாடு • இந்தியா • உலகம்
-🤖 SASIKUMAR AI
-Type 0 for Menu`,
-
-  '23': () => `2️⃣3️⃣ 📝 தமிழ் கவிதைகள் — KAVITHAI
-
-❤️ காதல் கவிதைகள்
-🤝 நட்பு கவிதைகள்
-🌿 வாழ்க்கைக் கவிதைகள்
-💪 ஊக்கக் கவிதைகள்
-
-எந்த வகைக் கவிதை வேண்டும் என்று அனுப்புங்கள்.
-உதாரணம்: காதல் கவிதை
-🤖 SASIKUMAR AI
-Type 0 for Menu`,
-
-  '24': () => `2️⃣4️⃣ 🌹 பொன்மொழிகள் — PONMOZHIGAL
-
-🌱 வாழ்க்கைப் பொன்மொழிகள்
-💪 ஊக்கமளிக்கும் பொன்மொழிகள்
-🤝 நட்பு மற்றும் அன்பு
-🎓 கல்வி மற்றும் வெற்றி
-
-"வாழ்க்கை பொன்மொழிகள்" அல்லது "Motivation quotes" என்று அனுப்புங்கள்.
-🤖 SASIKUMAR AI
-Type 0 for Menu`,
-
-  '25': () => `2️⃣5️⃣ 💡 தத்துவம் — THATHUVAM
-
-🌍 வாழ்க்கைத் தத்துவம்
-🧠 சிந்தனை மற்றும் அறிவு
-❤️ அன்பு மற்றும் மனிதநேயம்
-🕊️ அமைதி மற்றும் மனநிறைவு
-
-"வாழ்க்கை தத்துவம்" என்று அனுப்புங்கள்.
-🤖 SASIKUMAR AI
-Type 0 for Menu`
-
-
-  ,
-  '26': () => `🪔 26 — தினசரி திருக்குறள்
-
-📖 குறள் 1:
-அகர முதல எழுத்தெல்லாம் ஆதி
-பகவன் முதற்றே உலகு.
-
-💡 பொருள்:
-எழுத்துகளுக்கு அகரம் முதன்மையானது; உலகிற்கு இறைவன் முதன்மையானவர்.
-
-📩 அடுத்த குறளுக்கு NEXT அனுப்புங்கள்.
-🤖 SASIKUMAR AI Type 0 for Menu`,
-  '27': () => `🔥 27 — தினசரி ஊக்கம்
-
-🌅 இன்றைய சிந்தனை:
-சிறிய முயற்சியையும் தொடர்ந்து செய்தால் பெரிய முன்னேற்றத்தை அடையலாம்.
-
-🎯 இன்றைய செயல்:
-நீண்ட நாட்களாகத் தள்ளிப்போட்ட ஒரு நல்ல வேலையை இன்று தொடங்குங்கள்.
-
-💪 நம்பிக்கையுடன் தொடர்ந்து முயற்சி செய்யுங்கள்.
-🤖 SASIKUMAR AI Type 0 for Menu`,
-  '28': () => `2️⃣8️⃣ 🎧 🎬 AUDIO & VIDEO HUB
-
-🎵 பாடல்கள் மற்றும் ஆடியோ தேடல்
-😂 நகைச்சுவை வீடியோக்கள்
-🎬 திரைப்பட வீடியோக்கள்
-🎤 நடிகர் / பாடகர் தேடல்
-✂️ Audio Cutter
-🌐 பல மொழிகளில் தேடல்
-
-🔗 Hub திறக்க:
+  '1': () => `🤖 SASIKUMAR AI — AI Assistant
+Tamil, English, Tanglish and other languages-la kelvigal kelunga.
+Type 0 for Main Menu`,
+  '2': () => `🪙 LIVE GOLD & SILVER RATE
+Current rates:
+Gold API: https://sasikumar-ai-9wdq.onrender.com/api/gold
+Silver API: https://sasikumar-ai-9wdq.onrender.com/api/silver-rate?state=Tamil%20Nadu&district=Thanjavur
+Indha links-la current API data check pannunga. Verified live value illama rate guess pannama iruppom.
+Type 0 for Main Menu`,
+  '3': () => `🧮 GOLD LOAN / EMI CALCULATOR
+Loan amount, interest rate, tenure details use panni EMI calculate pannalaam.
+Website: https://sasikumar-ai-9wdq.onrender.com/loan-calculator.html
+Type 0 for Main Menu`,
+  '4': () => `🏦 BANKING SERVICES
+Savings, loans, EMI and banking-related questions-ai kelunga.
+Bank terms-ai official bank sources-la verify pannunga.
+Type 0 for Main Menu`,
+  '5': () => `💎 GOLD EXPERT
+24K = 999; 22K = 916; 18K = 750.
+Hallmark, purity, fineness and HUID-ai verify pannunga.
+Type 0 for Main Menu`,
+  '6': () => `📋 GOLD APPRAISAL
+Weight, purity and valuation guidance.
+AI estimate mattum final certification illa; professional testing thevai.
+Type 0 for Main Menu`,
+  '7': () => `🎓 EDUCATION
+Courses, exams, scholarships and career guidance.
+https://sasikumar-ai-9wdq.onrender.com/education/qa.html
+https://sasikumar-ai-9wdq.onrender.com/education/equations.html
+Type 0 for Main Menu`,
+  '8': () => `💼 JOBS & CAREERS
+Job search, resume, interview and career guidance.
+https://sasikumar-ai-9wdq.onrender.com/jobs/index.html
+Type 0 for Main Menu`,
+  '9': () => `💻 BUSINESS & TECHNOLOGY NEWS
+Business, startups, AI and technology-related questions kelunga.
+Latest news details-ai current sources-la verify pannunga.
+Type 0 for Main Menu`,
+  '10': () => `📰 BREAKING NEWS
+Tamil breaking news updates-kku request pannunga.
+Type 0 for Main Menu`,
+  '11': () => `🧠 GENERAL AI CHAT
+Science, maths, coding, writing and general questions kelunga.
+Type 0 for Main Menu`,
+  '12': () => `🎨 POSTER & CREATIVE DESIGN
+Festival posters, business posters and creative design ideas.
+Website: https://sasikumar-ai-9wdq.onrender.com
+Type 0 for Main Menu`,
+  '13': () => `🖼️ AI IMAGE MAKER
+Image creation ideas and prompts.
+https://sasikumar-ai-9wdq.onrender.com/ai-image.html
+Type 0 for Main Menu`,
+  '14': () => `🎬 VIDEO MAKER
+Video creation and promotional video guidance.
+https://sasikumar-ai-9wdq.onrender.com/ai-video.html
+Type 0 for Main Menu`,
+  '15': () => `🔍 GLOBAL WEB SEARCH
+Search-related questions and web research requests-ai anuppunga.
+Type 0 for Main Menu`,
+  '16': () => `🏏 SPORTS UPDATES
+Sports schedules, scores and updates kelunga.
+Latest scores-ai live source-la verify pannunga.
+Type 0 for Main Menu`,
+  '17': () => `📖 DAILY THIRUKKURAL
+Thirukkural and its meaning ketkalaam.
+Type 0 for Main Menu`,
+  '18': () => `📝 TAMIL KAVITHAI
+Tamil kavithai, love poems and friendship poems ketkalaam.
+Type 0 for Main Menu`,
+  '19': () => `🌹 PONMOZHIGAL
+Tamil ponmozhigal and their meanings ketkalaam.
+Type 0 for Main Menu`,
+  '20': () => `💡 THATHUVAM
+Life philosophy and Tamil thathuvam ketkalaam.
+Type 0 for Main Menu`,
+  '21': () => `🔥 MOTIVATION
+Motivational thoughts and positive guidance ketkalaam.
+Type 0 for Main Menu`,
+  '22': () => `🌍 LEADERSHIP HISTORY
+Indian and world leaders history patri kelunga.
+https://sasikumar-ai-9wdq.onrender.com/indian-leadership.html
+Type 0 for Main Menu`,
+  '23': () => `🎧 AUDIO & VIDEO SONGS HUB
+Audio/video hub:
 https://sasikumar-ai-9wdq.onrender.com/audio-video-hub.html
-
-🤖 SASIKUMAR AI
-Type 0 for Menu`
-
+Type 0 for Main Menu`,
+  '24': () => `📻 LIVE FM RADIO
+FM radio hub:
+https://sasikumar-ai-9wdq.onrender.com/audio-video-hub.html
+Type 0 for Main Menu`,
+  '25': () => `✂️ AUDIO / VIDEO SONG CUTTER
+Audio cutter tools:
+https://sasikumar-ai-9wdq.onrender.com/audio-video-hub.html
+Type 0 for Main Menu`,
+  '26': () => `📱 MOBILE APP DOWNLOAD
+SASIKUMAR AI website:
+https://sasikumar-ai-9wdq.onrender.com
+Verified dedicated APK link currently not confirmed.
+Type 0 for Main Menu`,
+  '27': () => `🚀 BUSINESS IDEAS
+Small business, startup and business planning ideas ketkalaam.
+Type 0 for Main Menu`,
+  '28': () => `🛠️ AI TOOLS
+AI tools and productivity suggestions ketkalaam.
+Type 0 for Main Menu`,
+  '29': () => `🌐 WEBSITE SERVICES
+Website creation and web development guidance.
+https://sasikumar-ai-9wdq.onrender.com
+Type 0 for Main Menu`,
+  '30': () => `📞 CONTACT & CUSTOMER FEEDBACK
+Contact: https://sasikumar-ai-9wdq.onrender.com/communication.html
+Feedback: https://sasikumar-ai-9wdq.onrender.com/customer-feedback.html
+Type 0 for Main Menu`,
+  '31': () => `📚 ALL CONTENT — COMPLETE SERVICES
+SASIKUMAR AI menu options 1–31 cover AI chat, Gold/Silver, loan/EMI, banking, appraisal, education, jobs, news, creative tools, search, sports, Tamil content, audio/video, business ideas and website services.
+Website: https://sasikumar-ai-9wdq.onrender.com/all-menus.html
+Type 0 for Main Menu`
 };
 
 function getMenuReply(num){const fn=MENU_REPLIES[num];return fn?fn():null;}
 function detectLang(q){try{if(/[\u0B80-\u0BFF]/.test(q))return 'ta';return 'en';}catch(e){return 'en';}}
-function getGeneralReply(q,lang){const time=new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'});if(q.toLowerCase().includes('gold')){const p=14748+Math.floor(Math.random()*80)-40;return `💰 GOLD LIVE - ${time}\n24K: Rs ${p}/g\nType 0 for Menu`;}return `🌍 General AI - ${time}\nYou: "${q}"\nType 0 for Menu or 1-28`; }
+function getGeneralReply(q,lang){const time=new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'});if(q.toLowerCase().includes('gold'))return `💰 GOLD RATE\nVerified current rate-ai /api/gold-la check pannunga.\nhttps://sasikumar-ai-9wdq.onrender.com/api/gold\nType 0 for Menu`;return `🌍 General AI - ${time}\nYou: "${q}"\nType 0 for Menu or 1-31`; }
 
-app.get('/api/status',(req,res)=>{res.json({status:'WHATSAPP MENU 28 OPTIONS LIVE OK',version:'7.1 Menu',options:28,time:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})});});
-app.get('/api/whatsapp/menu',(req,res)=>{res.json({welcome:WELCOME_MENU,total:28});});
-app.get('/api/gold',(req,res)=>{const p=14748+Math.floor(Math.random()*80)-40;res.json({'24k_per_g':p,'22k_per_g':Math.floor(p*0.916),trend:p>14748?'up':'down',last_updated:new Date().toISOString()});});
+app.get('/api/status',(req,res)=>{res.json({status:'WHATSAPP MENU 31 OPTIONS LIVE OK',version:'7.1 Menu',options:31,time:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})});});
+app.get('/api/whatsapp/menu',(req,res)=>{res.json({welcome:WELCOME_MENU,total:31});});
+app.get('/api/gold', async (req,res)=>{try{const d=await skGetLiveGoldRates();res.set('Cache-Control','no-store');res.json({'24k_per_g':d.rates['24K'],'22k_per_g':d.rates['22K'],rates:d.rates,source:d.source,fallbackUsed:d.fallbackUsed,updatedAt:d.updatedAt,note:d.note});}catch(e){console.error('[Gold API] Request failed:',e.message);res.status(503).json({ok:false,error:'Live Gold Rate temporarily unavailable.'});}});
 app.get('/api/services',(req,res)=>{res.json({services:[{id:1,name:'Gold Rate',ta:'தங்க விலை',icon:'💰'},{id:2,name:'Gold Loan',ta:'தங்க கடன்',icon:'🏦'},{id:3,name:'Banking',ta:'வங்கி',icon:'🏧'},{id:4,name:'Gold Expert',ta:'தங்க நிபுணர்',icon:'👨‍🏫'},{id:5,name:'Appraisal',ta:'மதிப்பீடு',icon:'🔍'},{id:6,name:'Education',ta:'கல்வி',icon:'📚'},{id:7,name:'Jobs',ta:'வேலை',icon:'💼'},{id:8,name:'Business Tech News',ta:'வணிக செய்தி',icon:'💼'},{id:9,name:'General AI',ta:'பொது AI',icon:'🧠'},{id:10,name:'Breaking News',ta:'முக்கிய செய்தி',icon:'🚨'},{id:11,name:'Business News',ta:'வணிக செய்தி',icon:'💼'},{id:12,name:'Sports',ta:'விளையாட்டு',icon:'🏏'},{id:13,name:'Web Search',ta:'இணைய தேடல்',icon:'🔎'},{id:14,name:'Poster Creative',ta:'போஸ்டர்',icon:'🎨'},{id:15,name:'Image AI',ta:'பட AI',icon:'📸'},{id:16,name:'Video Maker',ta:'வீடியோ',icon:'🎬'},{id:17,name:'Contact',ta:'தொடர்பு',icon:'📞'},{id:18,name:'Feedback',ta:'கருத்து',icon:'⭐'},{id:19,name:'About',ta:'பற்றி',icon:'ℹ️'},{id:20,name:'Tamil News Videos',ta:'தமிழ் செய்தி',icon:'📰'}]});});
 
 
@@ -500,10 +483,10 @@ const isWelcome = !trimmed || trimmed === '0' ||
 let reply = WELCOME_MENU;
 
 if (!isWelcome) {
-  const num = trimmed.match(/^\s*(2[0-8]|1[0-9]|[0-9])\s*$/);
+  const num = trimmed.match(/^\s*(3[01]|[12][0-9]|[0-9])\s*$/);
 
   if (num) {
-    reply = num[1] === '22'
+    reply = num[1] === '10'
       ? await getTamilBreakingNews()
       : (getMenuReply(num[1]) || WELCOME_MENU);
   } else if (/^(hi|hello|hey|வணக்கம்|ஹாய்|ஹலோ)[\s!.]*$/i.test(trimmed)) {
@@ -513,17 +496,17 @@ if (!isWelcome) {
   } else if (/tamil\s*(breaking\s*)?news|breaking\s*news|தமிழ்.*செய்தி|முக்கியச் செய்திகள்/i.test(trimmed)) {
     reply = await getTamilBreakingNews();
   } else if (/\b(kavithai|poem|poetry)\b|கவிதை|கவிதைகள்/i.test(trimmed)) {
-    reply = getMenuReply('23');
+    reply = getMenuReply('18');
   } else if (/\b(ponmozhigal|ponmozhi|quotes?|proverbs?)\b|பொன்மொழி|பொன்மொழிகள்/i.test(trimmed)) {
-    reply = getMenuReply('24');
+    reply = getMenuReply('19');
   } else if (/\b(thathuvam|philosophy)\b|தத்துவம்|வாழ்க்கைத் தத்துவம்/i.test(trimmed)) {
-    reply = getMenuReply('25');
+    reply = getMenuReply('20');
   } else if (/\b(thirukkural|kural)\b|திருக்குறள்/i.test(trimmed)) {
-    reply = getMenuReply('26');
+    reply = getMenuReply('17');
   } else if (/\b(motivation|motivational)\b|ஊக்கம்|தன்னம்பிக்கை/i.test(trimmed)) {
-    reply = getMenuReply('27');
+    reply = getMenuReply('21');
   } else if (/audio\s*(and|&)\s*video\s*hub|audio.video.hub|audio|songs?|music|video\s*hub|movie\s*videos?|பாடல்கள்?|ஆடியோ|வீடியோ ஹப்|ஒலி/i.test(trimmed)) {
-    reply = getMenuReply('28');
+    reply = getMenuReply('23');
   } else if (/\b(comedy|joke|funny|laugh|next)\b|காமெடி|ஜோக்|நகைச்சுவை/i.test(trimmed)) {
     const jokes = [
       '😂 ஆசிரியர்: ஏன் லேட்டா வந்தாய்? மாணவர்: சார், கனவில் பள்ளிக்கு வந்தேன்; அதனால் நிஜத்தில் லேட்டாகிவிட்டது! 🤣',
@@ -563,23 +546,96 @@ if(WA_TOKEN && WA_PHONE_ID){
 
       // One branded image message for every WhatsApp reply.
       const answerText = String(reply || WELCOME_MENU);
-      const isMenuReply = answerText === WELCOME_MENU;
 
-      const imageUrl = isMenuReply
-        ? 'https://sasikumar-ai-9wdq.onrender.com/assets/whatsapp-menu.png'
-        : 'https://sasikumar-ai-9wdq.onrender.com/assets/sasikumar-ai-logo.png';
+      if (isWelcome) {
+        const now = new Date();
+        const date = now.toLocaleDateString('en-IN', {
+          timeZone: 'Asia/Kolkata',
+          day: '2-digit', month: 'long', year: 'numeric'
+        });
+        const time = now.toLocaleTimeString('en-IN', {
+          timeZone: 'Asia/Kolkata',
+          hour: '2-digit', minute: '2-digit', hour12: true
+        });
 
-      const caption = isMenuReply
-        ? '🤖 SASIKUMAR AI — Welcome! Send an option number from 1 to 27.'
-        : ('🤖 SASIKUMAR AI\\n' + answerText).substring(0, 1000);
+        const welcomeCaption = [
+          '🤖 SASIKUMAR AI',
+          '🙏 Welcome! வணக்கம்!',
+          '🌍 ALL LANGUAGES AVAILABLE',
+          '💬 Ask in your preferred language: Tamil, English, Hindi, Telugu, Malayalam, Kannada, Bengali, Marathi, Gujarati, Punjabi, Urdu and more.',
+          '🌐 Website: https://sasikumar-ai-9wdq.onrender.com',
+          '📅 Date: ' + date,
+          '🕒 Time: ' + time + ' IST',
+          '📍 Papanasam, Thanjavur, Tamil Nadu',
+          '📩 Complete service menu follows in the next message.'
+        ].join('\n');
 
-      await sendWA({
-        type: 'image',
-        image: {
-          link: imageUrl,
-          caption: caption
-        }
-      });
+        await sendWA({
+          type: 'image',
+          image: {
+            link: 'https://sasikumar-ai-9wdq.onrender.com/assets/sasikumar-ai-logo.png',
+            caption: welcomeCaption
+          }
+        });
+
+        await new Promise(resolve => setTimeout(resolve, 800));
+
+        const menuCaption = [
+          '🤖 SASIKUMAR AI — COMPLETE MENU',
+          '1. AI Assistant',
+          '2. Live Gold & Silver Rate',
+          '3. Gold Loan / EMI Calculator',
+          '4. Banking Services',
+          '5. Gold Expert',
+          '6. Gold Appraisal',
+          '7. Education',
+          '8. Jobs & Careers',
+          '9. Business & Technology News',
+          '10. Breaking News',
+          '11. General AI Chat',
+          '12. Poster & Creative Design',
+          '13. AI Image Maker',
+          '14. Video Maker',
+          '15. Global Web Search',
+          '16. Sports Updates',
+          '17. Daily Thirukkural',
+          '18. Tamil Kavithai',
+          '19. Ponmozhigal',
+          '20. Thathuvam',
+          '21. Motivation',
+          '22. Leadership History',
+          '23. Audio & Video Songs Hub',
+          '24. Live FM Radio',
+          '25. Audio / Video Song Cutter',
+          '26. Mobile App Download',
+          '27. Business Ideas',
+          '28. AI Tools',
+          '29. Website Services',
+          '30. Contact & Customer Feedback',
+          '31. All Content — Complete Services',
+          '0. Main Menu',
+          'Send an option number to select a service.'
+        ].join('\n');
+
+        await sendWA({
+          type: 'image',
+          image: {
+            link: 'https://sasikumar-ai-9wdq.onrender.com/assets/whatsapp-menu.png',
+            caption: menuCaption
+          }
+        });
+      } else {
+        const caption = ('🤖 SASIKUMAR AI\n' + answerText).substring(0, 1000);
+        const imageUrl = 'https://sasikumar-ai-9wdq.onrender.com/assets/sasikumar-ai-logo.png';
+
+        await sendWA({
+          type: 'image',
+          image: {
+            link: imageUrl,
+            caption: caption
+          }
+        });
+      }
     }
     res.sendStatus(200);
   }catch(e){
@@ -891,6 +947,172 @@ app.get('/api/breaking-news', async (req, res) => {
 // END SK_LIVE_TAMIL_NEWS_JSON_API_V1
 
 
+
+// SK_REAL_GOLD_SILVER_API_V1
+const SK_GOLD_SILVER_CACHE_MS = 5 * 60 * 1000;
+let skLiveGoldCache = null;
+let skLiveGoldCacheTime = 0;
+let skLiveSilverCache = null;
+let skLiveSilverCacheTime = 0;
+
+async function skGetLiveGoldRates() {
+  if (skLiveGoldCache && Date.now() - skLiveGoldCacheTime < SK_GOLD_SILVER_CACHE_MS) {
+    return { ...skLiveGoldCache, cached: true };
+  }
+
+  let r24, source, fallbackUsed = false, buy = null, sell = null, gst = null;
+  let change24h = null;
+
+  try {
+    const response = await fetch(
+      "https://api.oropocket.com/public/prices",
+      { signal: AbortSignal.timeout(12000) }
+    );
+    const data = await response.json();
+    const gold = data && data.data && data.data.gold;
+    const value = Number(gold && gold.sell);
+
+    if (!response.ok || !gold || !Number.isFinite(value) || value <= 0) {
+      throw new Error("OroPocket gold price unavailable or invalid");
+    }
+
+    r24 = Math.round(value);
+    buy = Number.isFinite(Number(gold.buy)) ? Number(gold.buy) : null;
+    sell = value;
+    gst = Number.isFinite(Number(gold.gst)) ? Number(gold.gst) : null;
+    change24h = gold.change24h || null;
+    source = "OroPocket • Gold • INR/gram";
+  } catch (primaryError) {
+    console.warn("[Gold Rate] OroPocket failed:", primaryError.message);
+
+    const response = await fetch(
+      "https://api.goldprice.dev/v1/prices?symbol=XAU-INR-SPOT",
+      { signal: AbortSignal.timeout(12000) }
+    );
+    const data = await response.json();
+    const ouncePrice = Number(data && data.symbols && data.symbols[0] && data.symbols[0].price);
+
+    if (!response.ok || !Number.isFinite(ouncePrice) || ouncePrice <= 0) {
+      throw new Error("Live Gold providers unavailable");
+    }
+
+    r24 = Math.round(ouncePrice / 31.1034768);
+    source = "goldprice.dev • XAU/INR";
+    fallbackUsed = true;
+  }
+
+  const rates = {
+    "24K": r24,
+    "22K": Math.round(r24 * 22 / 24),
+    "20K": Math.round(r24 * 20 / 24),
+    "19K": Math.round(r24 * 19 / 24),
+    "18K": Math.round(r24 * 18 / 24)
+  };
+
+  skLiveGoldCache = {
+    ok: true,
+    rates,
+    gold24k: rates["24K"],
+    gold22k: rates["22K"],
+    "24k_per_g": rates["24K"],
+    "22k_per_g": rates["22K"],
+    buy,
+    sell,
+    gst,
+    change24h,
+    source,
+    fallbackUsed,
+    updatedAt: new Date().toISOString(),
+    note: "Reference gold price. Local jewellery retail rates may differ."
+  };
+  skLiveGoldCacheTime = Date.now();
+
+  return { ...skLiveGoldCache, cached: false };
+}
+
+async function skGetLiveSilverRate() {
+  if (skLiveSilverCache && Date.now() - skLiveSilverCacheTime < SK_GOLD_SILVER_CACHE_MS) {
+    return { ...skLiveSilverCache, cached: true };
+  }
+
+  const response = await fetch(
+    "https://api.oropocket.com/public/prices",
+    { signal: AbortSignal.timeout(12000) }
+  );
+  const data = await response.json();
+  const silver = data && data.data && data.data.silver;
+  const priceGram = Number(silver && silver.sell);
+
+  if (!response.ok || !silver || !Number.isFinite(priceGram) || priceGram <= 0) {
+    throw new Error("Live Silver provider unavailable or returned invalid data");
+  }
+
+  const round = n => Math.round(n * 100) / 100;
+
+  skLiveSilverCache = {
+    ok: true,
+    price_gram_999: round(priceGram),
+    price_10g_999: round(priceGram * 10),
+    price_8g_999: round(priceGram * 8),
+    price_kg_999: round(priceGram * 1000),
+    silver: {
+      gram: round(priceGram),
+      tenGram: round(priceGram * 10),
+      eightGram: round(priceGram * 8),
+      kg: round(priceGram * 1000)
+    },
+    source: "OroPocket • Silver • INR/gram",
+    fallbackUsed: false,
+    updatedAt: new Date().toISOString(),
+    note: "Reference silver sell price. Local retail rates may differ."
+  };
+  skLiveSilverCacheTime = Date.now();
+
+  return { ...skLiveSilverCache, cached: false };
+}
+
+app.get("/api/gold-rate", async (req, res) => {
+  try {
+    const rates = await skGetLiveGoldRates();
+    res.set("Cache-Control", "no-store");
+    res.json({
+      ...rates,
+      state: req.query.state || "Tamil Nadu",
+      district: req.query.district || "Thanjavur",
+      date: new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Kolkata" }).format(new Date())
+    });
+  } catch (error) {
+    console.error("[Gold Rate] Request failed:", error.message || error);
+    res.status(503).json({
+      ok: false,
+      error: "Live Gold Rate temporarily unavailable.",
+      source: null
+    });
+  }
+});
+
+app.get("/api/silver-rate", async (req, res) => {
+  try {
+    const rates = await skGetLiveSilverRate();
+    res.set("Cache-Control", "no-store");
+    res.json({
+      ...rates,
+      state: req.query.state || "Tamil Nadu",
+      district: req.query.district || "Thanjavur",
+      date: new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Kolkata" }).format(new Date())
+    });
+  } catch (error) {
+    console.error("[Silver Rate] Request failed:", error.message || error);
+    res.status(503).json({
+      ok: false,
+      state: req.query.state || "Tamil Nadu",
+      district: req.query.district || "Thanjavur",
+      error: "Live Silver Rate temporarily unavailable."
+    });
+  }
+});
+// END SK_REAL_GOLD_SILVER_API_V1
+
 app.use(express.static(publicPath));
 app.get('*',(req,res)=>{const fp=path.join(publicPath,'index.html');if(fs.existsSync(fp))res.sendFile(fp);else res.status(404).send('Not Found');});
-app.listen(PORT,()=>console.log(`🤖 27 OPTIONS WHATSAPP MENU http://localhost:${PORT} - OK`));
+app.listen(PORT,()=>console.log(`🤖 31 OPTIONS WHATSAPP MENU http://localhost:${PORT} - OK`));
