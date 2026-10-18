@@ -10,6 +10,56 @@
 <meta name="author" content="G Sasikumar">
 
 
+<!-- SK_ALL_EDITORIAL_CARDS_SMALL_V1 -->
+<style id="SK_ALL_EDITORIAL_CARDS_SMALL_V1">
+.skEditorialCardV1 {
+  box-sizing: border-box !important;
+  min-height: 185px !important;
+  padding: 11px !important;
+}
+.skEditorialCardV1 h2 {
+  font-size: 17px !important;
+  line-height: 1.35 !important;
+  overflow-wrap: anywhere !important;
+}
+.skEditorialExplainV1 {
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+  margin: 7px auto !important;
+}
+#skLiveBookCardsRow > .skEditorialCardV1 {
+  flex: 0 0 220px !important;
+  width: 220px !important;
+  min-width: 220px !important;
+  max-width: 220px !important;
+  min-height: 185px !important;
+  padding: 11px !important;
+}
+.skEditorialDesignV1,
+.skEditorialCreatorV1 {
+  min-height: 185px !important;
+  padding: 11px !important;
+}
+@media (max-width: 600px) {
+  .skEditorialCardV1 {
+    min-height: 165px !important;
+    padding: 9px !important;
+  }
+  #skLiveBookCardsRow > .skEditorialCardV1 {
+    flex: 0 0 185px !important;
+    width: 185px !important;
+    min-width: 185px !important;
+    max-width: 185px !important;
+    min-height: 165px !important;
+    padding: 9px !important;
+  }
+  .skEditorialCardV1 h2 {
+    font-size: 15px !important;
+  }
+}
+</style>
+<!-- END SK_ALL_EDITORIAL_CARDS_SMALL_V1 -->
+
 <style id="SK_PAY2ALL_HOME_CARD_VISIBLE_V1">
 html body #sasikumarPay2AllWallet {
   display:block!important;
@@ -2261,14 +2311,12 @@ Tamil + English • Gold • General Q&A</div>
     var office = document.getElementById("skMiniOfficeV1");
     var creator = document.getElementById("skReplyCreatorCards");
 
-    if (!office || !creator) return;
+    if (!office) return;
 
-    /* Keep Mini Office immediately after Creator. */
-    if (creator.nextElementSibling !== office) {
+    if (creator && creator.nextElementSibling !== office) {
       creator.insertAdjacentElement("afterend", office);
     }
 
-    /* Ensure the Office section itself is visible. */
     office.style.setProperty("display", "block", "important");
     office.style.setProperty("visibility", "visible", "important");
     office.style.setProperty("opacity", "1", "important");
