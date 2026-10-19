@@ -255,7 +255,24 @@ footer{
 </div></details>
 
   </section>
-  <div class="empty" id="empty">இந்தத் தேடலுக்கு ஏற்ற Menu கிடைக்கவில்லை.</div>
+
+<details class="card" style="--accent:#0284c7" data-search="28 audio video hub songs comedy video இசை பாடல்கள்">
+<summary><span class="num">28</span><div><h2>🎵 Audio & Video Hub</h2><div class="en">Songs, Comedy & Videos</div></div><span class="arrow">⌄</span></summary>
+<div class="content"><p>பாடல்கள், நகைச்சுவை மற்றும் வீடியோ தேடலுக்கான மையம்.</p><a class="cardlink" href="/audio-video-hub.html">🎬 Audio & Video Hub திறக்க</a></div></details>
+
+<details class="card" style="--accent:#7c3aed" data-search="29 global fm radio live radio உலக வானொலி">
+<summary><span class="num">29</span><div><h2>📻 Global FM Radio</h2><div class="en">Live Radio Stations</div></div><span class="arrow">⌄</span></summary>
+<div class="content"><p>பல்வேறு நாடுகள் மற்றும் மொழிகளின் FM வானொலி நிலையங்களைத் தேடிப் பயன்படுத்துங்கள்.</p><a class="cardlink" href="/audio-video-hub.html">📻 Radio Hub திறக்க</a></div></details>
+
+<details class="card" style="--accent:#ea580c" data-search="30 audio cutter wav clip பாடல் வெட்டு audio edit">
+<summary><span class="num">30</span><div><h2>✂️ Audio Cutter</h2><div class="en">Create an Audio Clip</div></div><span class="arrow">⌄</span></summary>
+<div class="content"><p>உங்கள் சாதனத்தில் உள்ள audio கோப்பிலிருந்து தேவையான பகுதியைத் தேர்ந்தெடுத்து WAV clip உருவாக்கலாம்.</p><a class="cardlink" href="/audio-video-hub.html">✂️ Audio Cutter திறக்க</a></div></details>
+
+<details class="card" style="--accent:#15803d" data-search="31 mobile app download android செயலி பதிவிறக்கம்">
+<summary><span class="num">31</span><div><h2>📱 Mobile App</h2><div class="en">App & Mobile Services</div></div><span class="arrow">⌄</span></summary>
+<div class="content"><p>SASIKUMAR AI-ஐ மொபைலில் பயன்படுத்துவதற்கான தகவல்கள்.</p><a class="cardlink" href="/">🌐 SASIKUMAR AI இணையதளம் திறக்க</a><span class="tag">Mobile</span><span class="tag">SASIKUMAR AI</span></div></details>
+
+<div class="empty" id="empty">இந்தத் தேடலுக்கு ஏற்ற Menu கிடைக்கவில்லை.</div>
   <div class="actions">
     <a class="btn primary" href="/">🏠 முகப்புப் பக்கத்திற்குத் திரும்பு</a>
     <button class="btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆️ மேலே செல்ல</button>
@@ -283,7 +300,7 @@ function filterMenus(){
     card.style.display = match ? '' : 'none';
     if(match) count++;
   });
-  summary.textContent = `${count} / 27 Menu-கள் காட்டப்படுகின்றன. கார்டைத் தொட்டு விவரங்களைப் பார்க்கவும்.`;
+  summary.textContent = `${count} / ${cards.length} Menu-கள் காட்டப்படுகின்றன. கார்டைத் தொட்டு விவரங்களைப் பார்க்கவும்.`;
   empty.style.display = count ? 'none' : 'block';
 }
 function expandAll(open){
