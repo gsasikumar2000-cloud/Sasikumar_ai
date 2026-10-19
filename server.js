@@ -560,14 +560,21 @@ if(WA_TOKEN && WA_PHONE_ID){
 
         const welcomeCaption = [
           '🤖 SASIKUMAR AI',
-          '🙏 Welcome! வணக்கம்!',
-          '🌍 ALL LANGUAGES AVAILABLE',
-          '💬 Ask in your preferred language: Tamil, English, Hindi, Telugu, Malayalam, Kannada, Bengali, Marathi, Gujarati, Punjabi, Urdu and more.',
-          '🌐 Website: https://sasikumar-ai-9wdq.onrender.com',
-          '📅 Date: ' + date,
-          '🕒 Time: ' + time + ' IST',
           '',
-          '📩 Complete service menu follows in the next message.'
+          '🙏 வணக்கம் நண்பரே! Welcome!',
+          '',
+          '🌍 தமிழ் • English • हिंदी • తెలుగు • മലയാളം • ಕನ್ನಡ மற்றும் பல மொழிகளில் சேவை.',
+          '',
+          '💬 உங்கள் கேள்வியை நேரடியாக அனுப்புங்கள்.',
+          '',
+          '📋 31 சேவைகள் கொண்ட Complete Menu அடுத்த படத்தில் உள்ளது.',
+          '',
+          '🌐 Website: https://sasikumar-ai-9wdq.onrender.com',
+          '',
+          '📅 தேதி: ' + date,
+          '🕒 நேரம்: ' + time + ' IST',
+          '',
+          '🤖 SASIKUMAR AI — உங்கள் டிஜிட்டல் உதவியாளர் ❤️'
         ].join('\n');
 
         await sendWA({
