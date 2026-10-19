@@ -571,8 +571,20 @@ https://sasikumar-ai-9wdq.onrender.com/
 
 🏠 Home: https://sasikumar-ai-9wdq.onrender.com/
 Type 0 for Main Menu`,
-  '20': () => `💡 THATHUVAM
-Life philosophy and Tamil thathuvam ketkalaam.
+  '20': () => `🤖 SASIKUMAR AI
+💡 தமிழ் தத்துவங்கள் — THATHUVAM
+
+📚 திருவள்ளுவர் • புத்தர் • விவேகானந்தர்
+🕊️ மகாத்மா காந்தி • அப்துல் கலாம்
+📖 மேலும் பல அறிஞர்களின் சிந்தனைகள்
+💎 எளிய விளக்கங்கள் மற்றும் வாழ்க்கைப் பாடங்கள்.
+
+🔎 Open Details:
+https://sasikumar-ai-9wdq.onrender.com/thathuvam.html
+
+🏠 Home:
+https://sasikumar-ai-9wdq.onrender.com/
+
 Type 0 for Main Menu`,
   '21': () => `🔥 MOTIVATION
 Motivational thoughts and positive guidance ketkalaam.

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0878f9">
+<title>Tamil Thathuvam | SASIKUMAR AI</title>
+<meta name="description" content="தமிழ் தத்துவங்கள், அறிஞர்களின் சிந்தனைகள், எளிய விளக்கங்கள் மற்றும் வாழ்க்கைப் பாடங்கள்.">
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,"Noto Sans Tamil",sans-serif;background:linear-gradient(135deg,#eff6ff,#fdf2f8,#fefce8);color:#172554}
+header{padding:22px 14px;text-align:center;background:linear-gradient(135deg,#075985,#2563eb,#7c3aed);color:white}
+header img{width:76px;height:76px;object-fit:contain;animation:spin 12s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+header h1{font-size:clamp(23px,5vw,34px);margin:10px 0}
+header p{line-height:1.7}
+nav{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:16px}
+main{width:min(900px,94%);margin:20px auto 36px}
+.card{background:white;border-radius:20px;padding:18px;margin:16px 0;box-shadow:0 8px 28px #1e3a8a16;border:1px solid #dbeafe}
+h2{margin-top:0;color:#1d4ed8}
+.controls{display:flex;gap:8px;flex-wrap:wrap}
+input{flex:1;min-width:180px;padding:13px;border:1px solid #93c5fd;border-radius:12px;font-size:16px}
+button,.btn{border:0;border-radius:12px;padding:12px 16px;font-size:15px;font-weight:bold;cursor:pointer;background:#0878f9;color:white;text-decoration:none;display:inline-block}
+.secondary{background:#7c3aed}
+.thinker{color:#7c3aed;font-weight:bold;font-size:19px}
+.lesson{background:#eff6ff;border-left:4px solid #0878f9;padding:12px;border-radius:10px;line-height:1.8}
+.details{line-height:1.9}
+footer{text-align:center;padding:20px;color:#475569}
+</style>
+</head>
+<body>
+<header>
+<img src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI Logo">
+<h1>💡 தமிழ் தத்துவங்கள்</h1>
+<p>அறிஞர்களின் சிந்தனைகள் • வாழ்க்கைப் பாடங்கள் • நல்லொழுக்கம்</p>
+<p>SASIKUMAR AI — அறிவும் தன்னம்பிக்கையும் வளர்ப்போம்</p>
+<nav>
+<a class="btn" href="/">🏠 Home</a>
+<a class="btn secondary" href="/all-menus.html">📋 All Services</a>
+</nav>
+</header>
+<main>
+<section class="card">
+<h2>🔎 அறிஞர் அல்லது தலைப்பைத் தேடுங்கள்</h2>
+<div class="controls">
+<input id="search" type="search" placeholder="உதா: திருவள்ளுவர், அமைதி, முயற்சி" oninput="filterCards()">
+<button onclick="document.getElementById('search').value='';filterCards()">அனைத்தும்</button>
+</div>
+<p>கீழே உள்ள அட்டைகளைத் திறந்து கருத்துகளையும் வாழ்க்கைப் பாடங்களையும் படியுங்கள்.</p>
+</section>
+
+<div id="cards">
+<article class="card">
+<h2>📜 திருவள்ளுவர்</h2>
+<p class="thinker">அறம் • ஒழுக்கம் • கல்வி</p>
+<details class="details"><summary><b>📖 Open Details — விரிவாகப் படிக்க</b></summary>
+<p><b>கருத்து:</b> ஒழுக்கமும் அறநெறியும் மனித வாழ்க்கைக்கு அடிப்படை.</p>
+<div class="lesson"><b>வாழ்க்கைப் பாடம்:</b> நேர்மை, அன்பு, பொறுப்பு ஆகியவற்றைக் கடைப்பிடித்து நடக்க வேண்டும்.</div>
+</details></article>
+
+<article class="card">
+<h2>🧘 புத்தர்</h2>
+<p class="thinker">அமைதி • விழிப்புணர்வு • கருணை</p>
+<details class="details"><summary><b>📖 Open Details — விரிவாகப் படிக்க</b></summary>
+<p><b>கருத்து:</b> மனதைப் புரிந்துகொள்வதும் ஆசைகளைக் கட்டுப்படுத்துவதும் அமைதிக்கு உதவும்.</p>
+<div class="lesson"><b>வாழ்க்கைப் பாடம்:</b> கோபத்தில் உடனே பதிலளிக்காமல், நிதானமாகச் சிந்தித்துச் செயல்படுங்கள்.</div>
+</details></article>
+
+<article class="card">
+<h2>🇮🇳 சுவாமி விவேகானந்தர்</h2>
+<p class="thinker">தன்னம்பிக்கை • துணிவு • சேவை</p>
+<details class="details"><summary><b>📖 Open Details — விரிவாகப் படிக்க</b></summary>
+<p><b>கருத்து:</b> தன்னம்பிக்கையுடன் முயற்சி செய்வதும் மன உறுதியுடன் செயல்படுவதும் வளர்ச்சிக்கு வழி.</p>
+<div class="lesson"><b>வாழ்க்கைப் பாடம்:</b> உங்கள் திறமைகளை வளர்த்துக்கொள்ளுங்கள்; தோல்வியால் முயற்சியை நிறுத்தாதீர்கள்.</div>
+</details></article>
+
+<article class="card">
+<h2>🕊️ மகாத்மா காந்தி</h2>
+<p class="thinker">அகிம்சை • உண்மை • எளிமை</p>
+<details class="details"><summary><b>📖 Open Details — விரிவாகப் படிக்க</b></summary>
+<p><b>கருத்து:</b> உண்மையையும் அகிம்சையையும் பின்பற்றுவது சமூகத்தில் நம்பிக்கையை வளர்க்கும்.</p>
+<div class="lesson"><b>வாழ்க்கைப் பாடம்:</b> பிரச்சினைகளை வன்முறையின்றி, உரையாடல் மற்றும் பொறுமையால் தீர்க்க முயலுங்கள்.</div>
+</details></article>
+
+<article class="card">
+<h2>🚀 டாக்டர் ஏ.பி.ஜே. அப்துல் கலாம்</h2>
+<p class="thinker">கனவு • கல்வி • கடின உழைப்பு</p>
+<details class="details"><summary><b>📖 Open Details — விரிவாகப் படிக்க</b></summary>
+<p><b>கருத்து:</b> உயர்ந்த இலக்குகளை அமைத்து, அறிவையும் திறமையையும் தொடர்ந்து வளர்த்துக்கொள்ள வேண்டும்.</p>
+<div class="lesson"><b>வாழ்க்கைப் பாடம்:</b> உங்கள் இலக்கைச் சிறிய படிகளாகப் பிரித்து, ஒவ்வொரு நாளும் முன்னேறுங்கள்.</div>
+</details></article>
+
+<article class="card">
+<h2>📚 டாக்டர் பி.ஆர். அம்பேத்கர்</h2>
+<p class="thinker">கல்வி • சமத்துவம் • உரிமைகள்</p>
+<details class="details"><summary><b>📖 Open Details — விரிவாகப் படிக்க</b></summary>
+<p><b>கருத்து:</b> கல்வி, சமத்துவம் மற்றும் சட்ட உரிமைகள் சமூக முன்னேற்றத்தில் முக்கியமானவை.</p>
+<div class="lesson"><b>வாழ்க்கைப் பாடம்:</b> தொடர்ந்து கற்றுக்கொள்ளுங்கள்; அனைவரையும் சம மரியாதையுடன் நடத்துங்கள்.</div>
+</details></article>
+
+<article class="card">
+<h2>🌿 அவ்வையார்</h2>
+<p class="thinker">நற்பண்பு • அறிவுரை • கல்வி</p>
+<details class="details"><summary><b>📖 Open Details — விரிவாகப் படிக்க</b></summary>
+<p><b>கருத்து:</b> நல்ல சொற்களையும் நற்பண்புகளையும் சிறு வயதிலிருந்தே வளர்த்துக்கொள்ள வேண்டும்.</p>
+<div class="lesson"><b>வாழ்க்கைப் பாடம்:</b> இனிமையாகப் பேசுங்கள், பிறருக்கு உதவுங்கள், நல்லவற்றைக் கற்றுக்கொள்ளுங்கள்.</div>
+</details></article>
+
+<article class="card">
+<h2>🧠 சாக்ரடீஸ்</h2>
+<p class="thinker">கேள்வி • சிந்தனை • சுயஅறிவு</p>
+<details class="details"><summary><b>📖 Open Details — விரிவாகப் படிக்க</b></summary>
+<p><b>கருத்து:</b> கேள்விகள் கேட்டு ஆராய்வது நமது புரிதலை மேம்படுத்த உதவும்.</p>
+<div class="lesson"><b>வாழ்க்கைப் பாடம்:</b> எதையும் உடனே நம்பாமல், ஆதாரங்களுடன் ஆராய்ந்து கற்றுக்கொள்ளுங்கள்.</div>
+</details></article>
+
+<article class="card">
+<h2>🤝 நெல்சன் மண்டேலா</h2>
+<p class="thinker">சமத்துவம் • பொறுமை • தலைமை</p>
+<details class="details"><summary><b>📖 Open Details — விரிவாகப் படிக்க</b></summary>
+<p><b>கருத்து:</b> நீதி, சமத்துவம் மற்றும் ஒற்றுமைக்காகத் தொடர்ந்து உழைப்பது சமூக மாற்றத்திற்கு உதவும்.</p>
+<div class="lesson"><b>வாழ்க்கைப் பாடம்:</b> வேறுபாடுகளை மதியுங்கள்; நல்ல மாற்றத்திற்காகப் பொறுமையுடன் செயல்படுங்கள்.</div>
+</details></article>
+
+<article class="card">
+<h2>🔬 ஆல்பர்ட் ஐன்ஸ்டீன்</h2>
+<p class="thinker">ஆர்வம் • கற்பனை • அறிவியல் சிந்தனை</p>
+<details class="details"><summary><b>📖 Open Details — விரிவாகப் படிக்க</b></summary>
+<p><b>கருத்து:</b> ஆர்வத்துடன் கேள்விகள் கேட்டு ஆராய்வது புதிய அறிவைப் பெற உதவும்.</p>
+<div class="lesson"><b>வாழ்க்கைப் பாடம்:</b> தவறுகளிலிருந்து கற்றுக்கொண்டு, புதிய வழிகளில் சிந்திக்கத் தயங்காதீர்கள்.</div>
+</details></article>
+
+<article class="card">
+<h2>🌏 கன்பூசியஸ்</h2>
+<p class="thinker">மரியாதை • பொறுப்பு • நல்லொழுக்கம்</p>
+<details class="details"><summary><b>📖 Open Details — விரிவாகப் படிக்க</b></summary>
+<p><b>கருத்து:</b> குடும்பம், சமூகம் மற்றும் பிறரிடம் பொறுப்புடன் நடப்பது நல்ல உறவுகளை உருவாக்க உதவும்.</p>
+<div class="lesson"><b>வாழ்க்கைப் பாடம்:</b> பிறரை மதியுங்கள்; உங்கள் செயல்களுக்கு நீங்களே பொறுப்பேற்றுக்கொள்ளுங்கள்.</div>
+</details></article>
+</div>
+
+<section class="card">
+<h2>✨ தினசரி வாழ்க்கைப் பாடங்கள்</h2>
+<p>• உண்மையைப் பேசுங்கள்.</p>
+<p>• தினமும் புதிதாக ஒன்றைக் கற்றுக்கொள்ளுங்கள்.</p>
+<p>• பிறரை மதித்து உதவுங்கள்.</p>
+<p>• தோல்வியிலிருந்து பாடம் கற்றுக்கொள்ளுங்கள்.</p>
+<p>• உங்கள் இலக்கை நோக்கித் தொடர்ந்து முயற்சி செய்யுங்கள்.</p>
+</section>
+<section class="card">
+<h2>🤖 SASIKUMAR AI</h2>
+<p>இந்தப் பக்கத்தில் உள்ள விளக்கங்கள் கல்வி மற்றும் பொது அறிவுக்கான சுருக்கமான கருத்துரைகள். ஒவ்வொரு கருத்தும் நேரடி மேற்கோள் என்று கருத வேண்டாம்.</p>
+<a class="btn" href="/">🏠 Home</a>
+<a class="btn secondary" href="/all-menus.html">📋 All Services</a>
+</section>
+</main>
+<footer>© SASIKUMAR AI • தமிழ் தத்துவங்கள் மற்றும் வாழ்க்கைப் பாடங்கள்</footer>
+<script>
+function filterCards(){
+ const q=document.getElementById('search').value.trim().toLowerCase();
+ document.querySelectorAll('#cards .card').forEach(card=>{
+  card.style.display=card.innerText.toLowerCase().includes(q)?'':'none';
+ });
+}
+</script>
+</body>
+</html>
