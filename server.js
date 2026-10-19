@@ -184,10 +184,39 @@ EMI 100000 12 12
 ⚠️ வட்டி, கட்டணம், தகுதி ஆகியவை வங்கி விதிமுறைகளைப் பொறுத்தவை.
 🌐 Website: https://sasikumar-ai-9wdq.onrender.com
 🔙 Type 0 for Main Menu`,
-  '5': () => `💎 GOLD EXPERT
-24K = 999; 22K = 916; 18K = 750.
-Hallmark, purity, fineness and HUID-ai verify pannunga.
-Type 0 for Main Menu`,
+  '5': () => `💎 SASIKUMAR AI — GOLD EXPERT
+
+🟡 GOLD PURITY
+• 24K = 999 fineness (சுமார் 99.9% தங்கம்)
+• 22K = 916 fineness (சுமார் 91.6% தங்கம்)
+• 20K = 833 fineness (சுமார் 83.3% தங்கம்)
+• 18K = 750 fineness (75% தங்கம்)
+
+💎 BIS HALLMARK & HUID
+• BIS Hallmark மற்றும் HUID குறியீட்டைச் சரிபார்க்கவும்.
+• HUID-ஐ BIS Care செயலியில் சரிபார்க்கவும்.
+• Hallmark மட்டும் பார்த்து வாங்காமல், bill-ல் purity மற்றும் net weight உள்ளதா பார்க்கவும்.
+
+⚖️ GOLD WEIGHT
+• Gross weight = நகையின் மொத்த எடை.
+• Net gold weight = கற்கள் மற்றும் பிற பொருட்களின் எடையை நீக்கிய தங்க எடை.
+• கற்கள் உள்ள நகைகளில் net gold weight-ஐ விற்பனையாளரிடம் உறுதிப்படுத்தவும்.
+
+🧮 GOLD VALUE ESTIMATE
+• தங்க மதிப்பீடு = நிகர தங்க எடை × அந்த purity-க்கான ஒரு கிராம் விலை.
+• Making charges, wastage, GST மற்றும் கடை விதிமுறைகள் கூடுதல் செலவாக இருக்கலாம்.
+• இது வழிகாட்டும் கணக்கீடு மட்டுமே; உறுதியான வாங்கல்/விற்பனை விலை அல்ல.
+
+🏦 GOLD LOAN
+• கடன் தொகை தங்கத்தின் நிகர எடை, தூய்மை மற்றும் கடன் வழங்குநரின் விதிமுறைகளைப் பொறுத்தது.
+• வட்டி, கட்டணம் மற்றும் திருப்பிச் செலுத்தும் நிபந்தனைகளை எழுத்தில் உறுதிப்படுத்தவும்.
+
+⚠️ முக்கியம்
+• சந்தேகம் இருந்தால் அங்கீகரிக்கப்பட்ட மையத்தில் தங்கத்தின் தூய்மையைச் சோதிக்கவும்.
+• உண்மையான மதிப்பு மற்றும் தற்போதைய விலையை நகைக்கடை/கடன் வழங்குநரிடம் உறுதிப்படுத்தவும்.
+
+🌐 Website: https://sasikumar-ai-9wdq.onrender.com/gold-silver.html
+🔙 Type 0 for Main Menu`,
   '6': () => `📋 GOLD APPRAISAL
 Weight, purity and valuation guidance.
 AI estimate mattum final certification illa; professional testing thevai.
