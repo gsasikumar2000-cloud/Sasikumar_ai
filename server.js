@@ -519,8 +519,29 @@ https://sasikumar-ai-9wdq.onrender.com/thirukkural.html
 குறிப்பு: தற்போது 1–5 குறள்களின் விவரங்கள் மட்டும் பக்கத்தில் உள்ளன.
 
 🔙 Type 0 for Main Menu`,
-  '18': () => `📝 TAMIL KAVITHAI
-Tamil kavithai, love poems and friendship poems ketkalaam.
+  '18': () => `🤖 SASIKUMAR AI
+📝 TAMIL KAVITHAI — கவிதை உலகம்
+
+❤️ காதல் கவிதைகள்
+🤝 நட்புக் கவிதைகள்
+💔 சோகக் கவிதைகள்
+👩 அம்மா கவிதைகள்
+👨 அப்பா கவிதைகள்
+🌹 வாழ்க்கைக் கவிதைகள்
+💪 தன்னம்பிக்கைக் கவிதைகள்
+🎂 பிறந்தநாள் வாழ்த்துக் கவிதைகள்
+🌧️ இயற்கை மற்றும் மழைக் கவிதைகள்
+💐 திருமண வாழ்த்துக் கவிதைகள்
+🎓 மாணவர் கவிதைகள்
+
+🔎 கவிதைகளைத் தேடவும்.
+📋 கவிதைகளை Copy செய்யவும்.
+📤 நண்பர்களுடன் Share செய்யவும்.
+
+🌐 முழு கவிதைப் பக்கம்:
+https://sasikumar-ai-9wdq.onrender.com/kavithai.html
+
+🏠 Home: https://sasikumar-ai-9wdq.onrender.com/
 Type 0 for Main Menu`,
   '19': () => `🌹 PONMOZHIGAL
 Tamil ponmozhigal and their meanings ketkalaam.

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#9333ea">
+<title>Tamil Kavithai | SASIKUMAR AI</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,"Noto Sans Tamil",sans-serif;background:linear-gradient(135deg,#fdf2f8,#f3e8ff,#eff6ff);color:#4a044e}
+header{background:linear-gradient(135deg,#7e22ce,#db2777);color:white;text-align:center;padding:22px 14px}
+header img{width:72px;height:72px;object-fit:contain;animation:spin 10s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+h1{font-size:clamp(23px,5vw,34px);margin:8px 0}
+main{width:min(900px,94%);margin:20px auto}
+.card{background:#fff;border-radius:18px;padding:18px;margin:14px 0;box-shadow:0 5px 22px #83184318}
+.controls{display:flex;flex-wrap:wrap;gap:8px}
+input{flex:1;min-width:150px;padding:12px;border:1px solid #e9a8d4;border-radius:10px;font-size:16px}
+button,.btn{border:0;border-radius:10px;padding:11px 14px;background:#9333ea;color:#fff;font-weight:bold;cursor:pointer;text-decoration:none;display:inline-block}
+.btn2{background:#db2777}
+.categories{display:flex;flex-wrap:wrap;gap:8px}
+.poem{border:1px solid #f5d0fe;border-radius:14px;padding:16px;margin:12px 0;background:#fffaff}
+.poem h3{margin-top:0;color:#86198f}
+.poemtext{white-space:pre-line;line-height:1.9;font-size:17px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+small{color:#86198f}
+footer{text-align:center;padding:20px}
+</style>
+</head>
+<body>
+<header>
+<img src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI">
+<h1>✍️ தமிழ் கவிதைகள்</h1>
+<p>காதல் • நட்பு • குடும்பம் • வாழ்க்கை • தன்னம்பிக்கை</p>
+<a class="btn" href="/">🏠 Home</a>
+<a class="btn btn2" href="/all-menus.html">📋 All Services</a>
+</header>
+<main>
+<section class="card">
+<h2>🔎 கவிதை தேடல்</h2>
+<div class="controls">
+<input id="search" placeholder="கவிதை அல்லது வகையைத் தேடுங்கள்">
+<button onclick="render()">தேடு</button>
+<button class="btn2" onclick="document.getElementById('search').value='';render()">அனைத்தும்</button>
+</div>
+</section>
+<section class="card">
+<h2>🌸 கவிதை வகைகள்</h2>
+<div class="categories" id="categories"></div>
+</section>
+<section class="card">
+<h2>📚 கவிதைத் தொகுப்பு</h2>
+<div id="poems"></div>
+</section>
+</main>
+<footer>🤖 SASIKUMAR AI<br><small>தமிழ் மொழி மற்றும் படைப்பாற்றலுக்காக</small></footer>
+<script>
+const data=[
+{cat:"காதல்",title:"❤️ காதல் கவிதை",text:"உன் நினைவுகள் வந்தாலே\nமனதில் பூக்கள் பூக்கின்றன;\nநீ அருகில் இல்லாவிட்டாலும்\nஉன் அன்பு என்னுடன் வாழ்கிறது."},
+{cat:"நட்பு",title:"🤝 நட்புக் கவிதை",text:"சிரிப்பில் மட்டும் சேர்வதல்ல நட்பு,\nசிரமத்திலும் துணை நிற்பதே நட்பு;\nதூரங்கள் நம்மைப் பிரித்தாலும்,\nஉண்மையான நட்பு என்றும் பிரியாது."},
+{cat:"சோகம்",title:"💔 சோகக் கவிதை",text:"சில மௌனங்கள் ஆயிரம் கதைகள் சொல்லும்,\nசில நினைவுகள் கண்களில் மழையாகும்;\nகாலம் மெதுவாகக் காயம் ஆற்றும்,\nநம்பிக்கை மீண்டும் மலராகும்."},
+{cat:"அம்மா",title:"👩 அம்மா கவிதை",text:"உலகம் தராத ஆறுதலை\nஉன் மடியில் கண்டேனம்மா;\nஎன் வெற்றியின் பின்னாலே\nஉன் அன்பை உணர்கிறேனம்மா."},
+{cat:"அப்பா",title:"👨 அப்பா கவிதை",text:"தன் ஆசையை மறைத்து வைத்து\nஎன் கனவுக்கு வழி அமைத்தாய்;\nசொல்லாமல் உழைத்த அன்பால்\nவாழ்க்கையின் அர்த்தம் கற்றுத் தந்தாய்."},
+{cat:"வாழ்க்கை",title:"🌹 வாழ்க்கைக் கவிதை",text:"விழுவது முடிவல்ல,\nஎழுவது புதிய தொடக்கம்;\nஒவ்வொரு அனுபவமும் சொல்லும்\nவாழ்க்கை ஒரு பாடப்புத்தகம்."},
+{cat:"தன்னம்பிக்கை",title:"💪 தன்னம்பிக்கைக் கவிதை",text:"உன் முயற்சியை நீ நம்பு,\nஉன் பயணத்தை நீ தொடரு;\nதடைகள் வரும் பாதையிலும்\nதுணிவுடன் வெற்றியைத் தொடு."},
+{cat:"பிறந்தநாள்",title:"🎂 பிறந்தநாள் வாழ்த்து",text:"இனிய நாளில் இனிய கனவுகள் மலரட்டும்,\nஉன் வாழ்வில் மகிழ்ச்சி நிறையட்டும்;\nஆரோக்கியம், அன்பு, வெற்றி சேர்ந்து\nஒவ்வொரு நாளும் சிறக்கட்டும்."},
+{cat:"இயற்கை",title:"🌧️ மழைக் கவிதை",text:"மண்ணைத் தொடும் மழைத்துளி,\nமனதைத் தொடும் இனிய இசை;\nபசுமை பாடும் பூமியிலே,\nபுதுமை தரும் இயற்கை அழகே."},
+{cat:"திருமணம்",title:"💐 திருமண வாழ்த்து",text:"இரு இதயங்கள் இணையும் நாள்,\nஇனிய பயணம் தொடங்கும் நாள்;\nஅன்பும் புரிதலும் துணையாக,\nவாழ்க்கை முழுதும் மகிழ்ச்சி மலரட்டும்."},
+{cat:"ஊக்கம்",title:"🌟 ஊக்கக் கவிதை",text:"சிறிய முயற்சியும் மதிப்புடையதே,\nதொடர்ந்த பயணமே வெற்றியுடையதே;\nஇன்று விதைக்கும் உழைப்பின் விதை,\nநாளை நிழல் தரும் மரமாகுமே."},
+{cat:"மாணவர்கள்",title:"🎓 மாணவர் கவிதை",text:"கேள்வி கேள், கற்றுக் கொள்,\nகனவுகளை உயர்த்திக் கொள்;\nநேரத்தை நன்றாய் பயன்படுத்தி,\nநாளைய உலகை உருவாக்கு."}
+];
+function shareText(p){
+ const text=p.title+"\n\n"+p.text+"\n\n— SASIKUMAR AI";
+ if(navigator.share){navigator.share({title:p.title,text}).catch(()=>{});}
+ else if(navigator.clipboard){navigator.clipboard.writeText(text).then(()=>alert("கவிதை நகலெடுக்கப்பட்டது!"));}
+ else prompt("கவிதையை நகலெடுக்கவும்:",text);
+}
+function copyText(p){
+ const text=p.title+"\n\n"+p.text+"\n\n— SASIKUMAR AI";
+ if(navigator.clipboard){navigator.clipboard.writeText(text).then(()=>alert("கவிதை Copy செய்யப்பட்டது!")).catch(()=>prompt("Copy செய்யவும்:",text));}
+ else prompt("கவிதையை Copy செய்யவும்:",text);
+}
+function render(){
+ const q=document.getElementById("search").value.trim().toLowerCase();
+ const list=data.filter(p=>(p.cat+" "+p.title+" "+p.text).toLowerCase().includes(q));
+ document.getElementById("poems").innerHTML=list.length?list.map((p,i)=>'<article class="poem"><h3>'+p.title+'</h3><div class="poemtext">'+p.text+'</div><div class="actions"><button onclick="copyText(data['+data.indexOf(p)+'])">📋 Copy</button><button class="btn2" onclick="shareText(data['+data.indexOf(p)+'])">📤 Share</button></div></article>').join(""):"<p>இந்தத் தேடலுக்கு கவிதை கிடைக்கவில்லை. வேறு சொல்லை முயற்சிக்கவும்.</p>";
+}
+document.getElementById("categories").innerHTML=[...new Set(data.map(p=>p.cat))].map(c=>'<button onclick="document.getElementById(\\'search\\').value='+JSON.stringify(c)+';render()">'+c+'</button>').join("");
+render();
+</script>
+</body>
+</html>
