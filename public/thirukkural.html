@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0878f9">
+<title>Daily Thirukkural | SASIKUMAR AI</title>
+<meta name="description" content="திருக்குறள், எளிய தமிழ் விளக்கம், ஆங்கிலப் பொருள் மற்றும் வாழ்க்கைப் பாடங்கள்.">
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,"Noto Sans Tamil",sans-serif;background:linear-gradient(135deg,#eff6ff,#fdf2f8,#fefce8);color:#172554}
+header{padding:22px 14px;text-align:center;background:linear-gradient(135deg,#075985,#2563eb,#7c3aed);color:white}
+header img{width:76px;height:76px;object-fit:contain;animation:spin 12s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+header h1{font-size:clamp(23px,5vw,34px);margin:10px 0}
+header p{margin:6px 0}
+main{width:min(900px,94%);margin:20px auto 36px}
+.card{background:white;border-radius:20px;padding:20px;margin:16px 0;box-shadow:0 8px 28px #1e3a8a16;border:1px solid #dbeafe}
+h2{margin-top:0;color:#1d4ed8}
+.controls{display:flex;gap:8px;flex-wrap:wrap}
+input{flex:1;min-width:130px;padding:13px;border:1px solid #93c5fd;border-radius:12px;font-size:16px}
+button,.btn{border:0;border-radius:12px;padding:12px 16px;font-size:15px;font-weight:bold;cursor:pointer;background:#0878f9;color:white;text-decoration:none;display:inline-block}
+button:hover,.btn:hover{filter:brightness(.93)}
+.secondary{background:#7c3aed}
+.kuralno{font-weight:bold;color:#7c3aed}
+.verse{font-size:clamp(19px,4vw,25px);line-height:1.9;font-weight:bold;color:#7c2d12;white-space:pre-line}
+.meaning{line-height:1.8}
+.pill{display:inline-block;background:#dbeafe;color:#1d4ed8;padding:7px 11px;margin:4px;border-radius:999px}
+footer{text-align:center;padding:20px;color:#475569}
+nav{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:16px}
+small{color:#64748b}
+</style>
+</head>
+<body>
+<header>
+<img src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI Logo">
+<h1>📖 DAILY THIRUKKURAL</h1>
+<p>திருக்குறள் • தமிழ் விளக்கம் • English Meaning</p>
+<p>SASIKUMAR AI — கற்றல் மற்றும் நல்லொழுக்க வழிகாட்டி</p>
+<nav>
+<a class="btn" href="/">🏠 Home</a>
+<a class="btn secondary" href="/all-menus.html">📋 All Services</a>
+</nav>
+</header>
+<main>
+<section class="card">
+<h2>🔎 குறள் எண் மூலம் தேடுங்கள்</h2>
+<div class="controls">
+<input id="kuralNumber" type="number" min="1" max="1330" placeholder="குறள் எண் (உதா: 1)">
+<button onclick="showKural()">தேடு</button>
+<button class="secondary" onclick="dailyKural()">இன்றைய குறள்</button>
+</div>
+<p><small>குறிப்பு: தற்போது இந்தப் பக்கத்தில் 1–5 குறள்களின் உள்ளடக்கம் மட்டுமே சேர்க்கப்பட்டுள்ளது. மற்ற குறள்களைத் தேடுவதற்கான முழுத் தரவுத்தளம் இன்னும் இணைக்கப்படவில்லை.</small></p>
+</section>
+<section class="card" aria-live="polite">
+<div id="result">
+<h2>🌟 வரவேற்கிறோம்</h2>
+<p>குறள் எண் 1 முதல் 5 வரை தேர்ந்தெடுத்து குறளையும் விளக்கத்தையும் படிக்கலாம்.</p>
+</div>
+</section>
+<section class="card">
+<h2>📚 திருக்குறள் பற்றி</h2>
+<p class="meaning">திருவள்ளுவர் இயற்றிய திருக்குறள் 1,330 குறள்களையும் 133 அதிகாரங்களையும் கொண்ட நூல்.</p>
+<div><span class="pill">அறத்துப்பால் — 380</span><span class="pill">பொருட்பால் — 700</span><span class="pill">காமத்துப்பால் — 250</span></div>
+</section>
+<section class="card">
+<h2>💡 தினசரி வாழ்க்கைப் பாடம்</h2>
+<p class="meaning" id="lesson">நல்ல அறிவைப் பெறுங்கள்; கற்றதை உங்கள் அன்றாட வாழ்க்கையில் பயன்படுத்துங்கள்.</p>
+</section>
+</main>
+<footer>🤖 SASIKUMAR AI<br><small>கல்வி மற்றும் பொதுத் தகவலுக்காக.</small></footer>
+<script>
+const kurals = {
+1:{verse:"அகர முதல எழுத்தெல்லாம் ஆதி\nபகவன் முதற்றே உலகு",meaning:"எழுத்துகளுக்கு ‘அ’ முதலாக இருப்பது போல, உலகிற்கு ஆதிபகவன் முதன்மையானவன்.",english:"Just as the letter A is the first of all letters, the Divine is the first cause of the world.",lesson:"எந்தச் செயலையும் அடிப்படை அறிவுடனும் பணிவுடனும் தொடங்குங்கள்."},
+2:{verse:"கற்றதனால் ஆய பயனென்கொல் வாலறிவன்\nநற்றாள் தொழாஅர் எனின்",meaning:"கற்ற கல்வி உயர்ந்த அறிவையும் நல்ல வாழ்வையும் நோக்கிச் செல்ல வேண்டும்.",english:"Learning fulfils its purpose when it leads to wisdom and a life guided by virtue.",lesson:"கல்வி அறிவாகவும் நல்ல செயலாகவும் மாற வேண்டும்."},
+3:{verse:"மலர்மிசை ஏகினான் மாணடி சேர்ந்தார்\nநிலமிசை நீடுவாழ் வார்",meaning:"உயர்ந்த நெறியைப் பின்பற்றுபவர்கள் நிலையான நற்பெயரைப் பெறுவார்கள்.",english:"Those who follow the noble path are remembered with lasting honour.",lesson:"நல்லொழுக்கமும் நேர்மையும் நிலையான மதிப்பை உருவாக்கும்."},
+4:{verse:"வேண்டுதல் வேண்டாமை இலானடி சேர்ந்தார்க்கு\nயாண்டும் இடும்பை இல",meaning:"விருப்பு வெறுப்புகளைக் கடந்து சமநிலையுடன் வாழ்வது துன்பத்தைக் குறைக்க உதவும்.",english:"Those who live beyond attachment and aversion find freedom from distress.",lesson:"முடிவெடுக்கும்போது விருப்பு வெறுப்பைவிட நியாயத்தை முன்னிலைப்படுத்துங்கள்."},
+5:{verse:"இருள்சேர் இருவினையும் சேரா இறைவன்\nபொருள்சேர் புகழ்புரிந்தார் மாட்டு",meaning:"உயர்ந்த நெறியையும் நல்லொழுக்கத்தையும் போற்றுவோர் தீய செயல்களிலிருந்து விலக முயல்வார்கள்.",english:"Those who honour true virtue strive to avoid the consequences of wrongdoing.",lesson:"நல்ல எண்ணத்துடன் சரியான செயல்களைத் தேர்ந்தெடுங்கள்."}
+};
+function showKural(){
+ const n=Number(document.getElementById("kuralNumber").value);
+ const k=kurals[n], out=document.getElementById("result");
+ if(!Number.isInteger(n)||n<1||n>1330){out.innerHTML="<h2>⚠️ சரியான குறள் எண்ணை உள்ளிடுங்கள்</h2><p>குறள் எண் 1 முதல் 1330 வரை இருக்க வேண்டும்.</p>";return;}
+ if(!k){out.innerHTML="<h2>📚 குறள் எண் "+n+"</h2><p>இந்தப் பக்கத்தில் தற்போது 1–5 குறள்களின் தரவுகள் மட்டுமே உள்ளன. மற்ற குறள்களின் தரவுத்தளம் இன்னும் இணைக்கப்படவில்லை.</p>";return;}
+ out.innerHTML='<div class="kuralno">📖 திருக்குறள் எண் '+n+'</div><h2>தமிழ் குறள்</h2><div class="verse">'+k.verse+'</div><h2>📝 எளிய விளக்கம்</h2><p class="meaning">'+k.meaning+'</p><h2>🌐 English Meaning</h2><p class="meaning">'+k.english+'</p><h2>💡 வாழ்க்கைப் பாடம்</h2><p class="meaning">'+k.lesson+'</p>';
+ document.getElementById("lesson").textContent=k.lesson;
+}
+function dailyKural(){
+ const nums=Object.keys(kurals).map(Number);
+ const n=nums[Math.floor(Date.now()/86400000)%nums.length];
+ document.getElementById("kuralNumber").value=n;showKural();
+}
+document.getElementById("kuralNumber").addEventListener("keydown",e=>{if(e.key==="Enter")showKural()});
+dailyKural();
+</script>
+</body>
+</html>

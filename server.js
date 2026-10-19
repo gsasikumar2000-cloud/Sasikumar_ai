@@ -503,9 +503,22 @@ Check official league and tournament websites for confirmed results.
 Verify important updates with official sources.
 
 🔙 Type 0 for Main Menu`,
-  '17': () => `📖 DAILY THIRUKKURAL
-Thirukkural and its meaning ketkalaam.
-Type 0 for Main Menu`,
+  '17': () => `🤖 SASIKUMAR AI
+📖 DAILY THIRUKKURAL — திருக்குறள்
+
+🌟 தினமும் திருக்குறள் கற்கலாம்!
+• குறள் மற்றும் குறள் எண்
+• எளிய தமிழ் விளக்கம்
+• English meaning
+• வாழ்க்கைப் பாடம்
+
+🌐 THIRUKKURAL PAGE
+https://sasikumar-ai-9wdq.onrender.com/thirukkural.html
+
+🔢 குறள் எண் மூலம் தேட புதிய பக்கத்தைத் திறக்கவும்.
+குறிப்பு: தற்போது 1–5 குறள்களின் விவரங்கள் மட்டும் பக்கத்தில் உள்ளன.
+
+🔙 Type 0 for Main Menu`,
   '18': () => `📝 TAMIL KAVITHAI
 Tamil kavithai, love poems and friendship poems ketkalaam.
 Type 0 for Main Menu`,
