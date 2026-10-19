@@ -478,7 +478,7 @@ app.post('/api/whatsapp/webhook',async(req,res)=>{
     const lower=trimmed.toLowerCase();
 
 const isWelcome = !trimmed || trimmed === '0' ||
-  ['menu', 'start'].includes(lower);
+  ['menu', 'manu', 'start', 'மெனு'].includes(lower);
 
 let reply = WELCOME_MENU;
 
