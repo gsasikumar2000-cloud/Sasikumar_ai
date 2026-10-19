@@ -543,8 +543,33 @@ https://sasikumar-ai-9wdq.onrender.com/kavithai.html
 
 🏠 Home: https://sasikumar-ai-9wdq.onrender.com/
 Type 0 for Main Menu`,
-  '19': () => `🌹 PONMOZHIGAL
-Tamil ponmozhigal and their meanings ketkalaam.
+  '19': () => `🤖 SASIKUMAR AI
+🌹 TAMIL PONMOZHIGAL — தமிழ் பொன்மொழிகள்
+
+💎 பொன்மொழி 1:
+"முயற்சி திருவினையாக்கும்."
+📖 அர்த்தம்: தொடர்ந்து முயற்சி செய்தால் வெற்றியை அடையலாம்.
+
+💎 பொன்மொழி 2:
+"ஒற்றுமையே பலம்."
+📖 அர்த்தம்: ஒன்றிணைந்து செயல்பட்டால் வலிமையும் வெற்றியும் கிடைக்கும்.
+
+💎 பொன்மொழி 3:
+"கற்றது கைமண் அளவு; கல்லாதது உலகளவு."
+📖 அர்த்தம்: நாம் கற்றவை குறைவு; இன்னும் கற்க வேண்டியவை அதிகம்.
+
+💎 பொன்மொழி 4:
+"பொறுமை கடலினும் பெரிது."
+📖 அர்த்தம்: பொறுமையுடன் செயல்பட்டால் சிக்கல்களைச் சமாளிக்கலாம்.
+
+💎 பொன்மொழி 5:
+"நல்ல எண்ணங்கள் நல்ல செயல்களுக்கு வழிகாட்டும்."
+📖 அர்த்தம்: நல்ல சிந்தனை நமது செயல்களையும் வாழ்க்கையையும் மேம்படுத்தும்.
+
+🌐 மேலும் படிக்க:
+https://sasikumar-ai-9wdq.onrender.com/
+
+🏠 Home: https://sasikumar-ai-9wdq.onrender.com/
 Type 0 for Main Menu`,
   '20': () => `💡 THATHUVAM
 Life philosophy and Tamil thathuvam ketkalaam.
