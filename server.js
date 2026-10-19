@@ -376,9 +376,44 @@ Cross-check important information with reliable sources.
   '10': () => `📰 BREAKING NEWS
 Tamil breaking news updates-kku request pannunga.
 Type 0 for Main Menu`,
-  '11': () => `🧠 GENERAL AI CHAT
-Science, maths, coding, writing and general questions kelunga.
-Type 0 for Main Menu`,
+  '11': () => `🤖 SASIKUMAR AI
+🧠 A TO Z GENERAL AI — QUESTIONS & ANSWERS
+
+📚 EDUCATION & LEARNING
+School, College, Diploma, UG, PG and exam preparation.
+
+🔬 SCIENCE & TECHNOLOGY
+Science, physics, chemistry, biology and technology.
+
+➗ MATHS & PROBLEM SOLVING
+Calculations, equations and step-by-step explanations.
+
+💻 CODING & PROGRAMMING
+HTML, CSS, JavaScript, Python, debugging and project guidance.
+
+✍️ WRITING & LANGUAGES
+Essays, letters, grammar, translation and summaries.
+
+🌍 GENERAL KNOWLEDGE & RESEARCH
+History, geography, concepts, research and explanations.
+
+💼 BUSINESS & FINANCE EDUCATION
+Business ideas, budgeting and financial concepts.
+
+🎨 CREATIVITY & DAILY HELP
+Ideas, planning, productivity and creative writing.
+
+🌐 MULTILINGUAL AI
+Ask questions in Tamil, English or other supported languages.
+
+💬 HOW TO USE
+Type your question directly in this WhatsApp chat.
+Ask follow-up questions to understand the answer.
+
+⚠️ Important information should be verified with reliable sources.
+AI answers may contain errors.
+
+🔙 Type 0 for Main Menu`,
   '12': () => `🎨 POSTER & CREATIVE DESIGN
 Festival posters, business posters and creative design ideas.
 Website: https://sasikumar-ai-9wdq.onrender.com
