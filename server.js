@@ -650,10 +650,18 @@ Type 0 for Main Menu`,
 Audio cutter tools:
 https://sasikumar-ai-9wdq.onrender.com/audio-video-hub.html
 Type 0 for Main Menu`,
-  '26': () => `📱 MOBILE APP DOWNLOAD
-SASIKUMAR AI website:
+  '26': () => `📱 SASIKUMAR AI — ANDROID APP
+
+⬇️ DOWNLOAD APK:
+https://sasikumar-ai-9wdq.onrender.com/downloads/sasikumar-ai.apk
+
+🌐 OFFICIAL WEBSITE:
 https://sasikumar-ai-9wdq.onrender.com
-Verified dedicated APK link currently not confirmed.
+
+📦 App: SASIKUMAR AI
+📱 Android App Download
+⚠️ Install the APK only if you trust this app and its source.
+
 Type 0 for Main Menu`,
   '27': () => `🚀 BUSINESS IDEAS
 Small business, startup and business planning ideas ketkalaam.
