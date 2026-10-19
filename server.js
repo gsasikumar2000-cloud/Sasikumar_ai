@@ -458,10 +458,51 @@ Be specific about the topic, location or date.
 Verify important facts using official and reliable sources.
 
 🔙 Type 0 for Main Menu`,
-  '16': () => `🏏 SPORTS UPDATES
-Sports schedules, scores and updates kelunga.
-Latest scores-ai live source-la verify pannunga.
-Type 0 for Main Menu`,
+  '16': () => `🤖 SASIKUMAR AI
+🏆 A–Z SPORTS UPDATES
+
+🌐 SPORTS HUB
+https://sasikumar-ai-9wdq.onrender.com/sports/
+
+🎮 SPORTS GAMES
+https://sasikumar-ai-9wdq.onrender.com/sports/games/
+
+
+🏏 CRICKET
+Live scores, fixtures, results, tournaments and statistics.
+
+⚽ FOOTBALL
+Match scores, leagues, fixtures and results.
+
+🏸 BADMINTON & 🎾 TENNIS
+Matches, tournaments, results and rankings.
+
+🏀 BASKETBALL & 🏐 VOLLEYBALL
+Fixtures, scores and match results.
+
+🥇 OLYMPICS & INTERNATIONAL SPORTS
+Major tournaments and international competitions.
+
+🇮🇳 INDIAN SPORTS
+Indian teams, national competitions and athlete updates.
+
+📅 MATCH SCHEDULES
+Upcoming matches, dates and tournament information.
+
+🏆 RANKINGS & STATISTICS
+Points tables, team standings and player statistics.
+
+🔴 LIVE SCORE UPDATES
+Ask for a sport, team, tournament or match.
+Live information depends on available data sources.
+
+🔗 OFFICIAL SOURCES
+Check official league and tournament websites for confirmed results.
+
+⚠️ Scores and schedules may change.
+Verify important updates with official sources.
+
+🔙 Type 0 for Main Menu`,
   '17': () => `📖 DAILY THIRUKKURAL
 Thirukkural and its meaning ketkalaam.
 Type 0 for Main Menu`,
