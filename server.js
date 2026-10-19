@@ -100,11 +100,30 @@ https://sasikumar-ai-9wdq.onrender.com
 
 🔙 Type 0 for Main Menu`,
   '2': () => `🪙 LIVE GOLD & SILVER RATE
-Current rates:
-Gold API: https://sasikumar-ai-9wdq.onrender.com/api/gold
-Silver API: https://sasikumar-ai-9wdq.onrender.com/api/silver-rate?state=Tamil%20Nadu&district=Thanjavur
-Indha links-la current API data check pannunga. Verified live value illama rate guess pannama iruppom.
-Type 0 for Main Menu`,
+📍 Tamil Nadu • Thanjavur
+
+🟡 LIVE GOLD RATE — PER GRAM
+24K (999): Check live API
+22K (916): Check live API
+20K: Check live API
+19K: Check live API
+18K (750): Check live API
+
+⚪ LIVE SILVER 999 RATE
+1 gram: Check live API
+8 grams: Check live API
+10 grams: Check live API
+1 kilogram: Check live API
+
+🔄 Live API links:
+Gold: https://sasikumar-ai-9wdq.onrender.com/api/gold-rate?state=Tamil%20Nadu&district=Thanjavur
+Silver: https://sasikumar-ai-9wdq.onrender.com/api/silver-rate?state=Tamil%20Nadu&district=Thanjavur
+
+🌐 Website: https://sasikumar-ai-9wdq.onrender.com/gold-silver.html
+
+⚠️ WhatsApp menu provides API links for verified current rates. Prices can change; local jewellery rates may differ due to GST, making charges and other costs.
+
+🔙 Type 0 for Main Menu`,
   '3': () => `🧮 GOLD LOAN / EMI CALCULATOR
 Loan amount, interest rate, tenure details use panni EMI calculate pannalaam.
 Website: https://sasikumar-ai-9wdq.onrender.com/loan-calculator.html
@@ -214,6 +233,92 @@ SASIKUMAR AI menu options 1–31 cover AI chat, Gold/Silver, loan/EMI, banking, 
 Website: https://sasikumar-ai-9wdq.onrender.com/all-menus.html
 Type 0 for Main Menu`
 };
+
+async function getLiveGoldSilverWhatsAppReply() {
+  const goldUrl = 'https://sasikumar-ai-9wdq.onrender.com/api/gold-rate?state=Tamil%20Nadu&district=Thanjavur';
+  const silverUrl = 'https://sasikumar-ai-9wdq.onrender.com/api/silver-rate?state=Tamil%20Nadu&district=Thanjavur';
+  const websiteUrl = 'https://sasikumar-ai-9wdq.onrender.com/gold-silver.html';
+
+  try {
+    const [gold, silver] = await Promise.all([
+      skGetLiveGoldRates(),
+      skGetLiveSilverRate()
+    ]);
+
+    if (
+      !gold?.ok ||
+      !gold?.rates ||
+      !['24K', '22K', '20K', '19K', '18K'].every(
+        key => Number.isFinite(Number(gold.rates[key])) && Number(gold.rates[key]) > 0
+      ) ||
+      !silver?.ok ||
+      ![
+        silver.price_gram_999,
+        silver.price_8g_999,
+        silver.price_10g_999,
+        silver.price_kg_999
+      ].every(value => Number.isFinite(Number(value)) && Number(value) > 0)
+    ) {
+      throw new Error('Live rate data is incomplete or unavailable');
+    }
+
+    const money = value => Number(value).toLocaleString('en-IN', {
+      maximumFractionDigits: 2
+    });
+
+    const formatTime = value => value
+      ? new Date(value).toLocaleString('en-IN', {
+          timeZone: 'Asia/Kolkata',
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true
+        })
+      : 'Not provided by API';
+
+    return `🪙 LIVE GOLD & SILVER RATE
+📍 Tamil Nadu • Thanjavur
+
+🟡 GOLD RATE — PER GRAM
+24K (999): ₹${money(gold.rates['24K'])}
+22K (916): ₹${money(gold.rates['22K'])}
+20K: ₹${money(gold.rates['20K'])}
+19K: ₹${money(gold.rates['19K'])}
+18K (750): ₹${money(gold.rates['18K'])}
+
+⚪ SILVER 999 RATE
+1 gram: ₹${money(silver.price_gram_999)}
+8 grams: ₹${money(silver.price_8g_999)}
+10 grams: ₹${money(silver.price_10g_999)}
+1 kilogram: ₹${money(silver.price_kg_999)}
+
+🕒 Gold updated: ${formatTime(gold.updatedAt)}
+🕒 Silver updated: ${formatTime(silver.updatedAt)}
+📊 Gold source: ${gold.source || 'Live API'}
+📊 Silver source: ${silver.source || 'Live API'}
+
+🌐 Website: ${websiteUrl}
+🔄 Gold API: ${goldUrl}
+🔄 Silver API: ${silverUrl}
+
+⚠️ Reference prices only. Jewellery shop prices may differ due to GST, making charges and other costs.
+
+🔙 Type 0 for Main Menu`;
+  } catch (error) {
+    console.error('[WhatsApp Gold/Silver] Live rate fetch failed:', error.message || error);
+    return `🪙 LIVE GOLD & SILVER RATE
+
+⚠️ Live rates are temporarily unavailable. Please try again shortly. No estimated prices are shown.
+
+🔄 Gold API: ${goldUrl}
+🔄 Silver API: ${silverUrl}
+🌐 Website: ${websiteUrl}
+
+🔙 Type 0 for Main Menu`;
+  }
+}
 
 function getMenuReply(num){const fn=MENU_REPLIES[num];return fn?fn():null;}
 function detectLang(q){try{if(/[\u0B80-\u0BFF]/.test(q))return 'ta';return 'en';}catch(e){return 'en';}}
@@ -517,7 +622,9 @@ if (!isWelcome) {
   if (num) {
     reply = num[1] === '10'
       ? await getTamilBreakingNews()
-      : (getMenuReply(num[1]) || WELCOME_MENU);
+      : num[1] === '2'
+        ? await getLiveGoldSilverWhatsAppReply()
+        : (getMenuReply(num[1]) || WELCOME_MENU);
   } else if (/^(hi|hello|hey|வணக்கம்|ஹாய்|ஹலோ)[\s!.]*$/i.test(trimmed)) {
     reply = /[\u0B80-\u0BFF]/.test(trimmed)
       ? 'வணக்கம் நண்பா! 😊❤️ எப்படி இருக்கீங்க? என்ன உதவி வேண்டும்?'
