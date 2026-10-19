@@ -574,13 +574,40 @@ Type 0 for Main Menu`,
   '20': () => `🤖 SASIKUMAR AI
 💡 தமிழ் தத்துவங்கள் — THATHUVAM
 
-📚 திருவள்ளுவர் • புத்தர் • விவேகானந்தர்
-🕊️ மகாத்மா காந்தி • அப்துல் கலாம்
-📖 மேலும் பல அறிஞர்களின் சிந்தனைகள்
-💎 எளிய விளக்கங்கள் மற்றும் வாழ்க்கைப் பாடங்கள்.
+📖 ஒவ்வொரு அறிஞரையும் திறக்கவும்:
 
-🔎 Open Details:
-https://sasikumar-ai-9wdq.onrender.com/thathuvam.html
+1. திருவள்ளுவர்
+https://sasikumar-ai-9wdq.onrender.com/thathuvam.html#thiruvalluvar
+
+2. புத்தர்
+https://sasikumar-ai-9wdq.onrender.com/thathuvam.html#buddha
+
+3. சுவாமி விவேகானந்தர்
+https://sasikumar-ai-9wdq.onrender.com/thathuvam.html#vivekananda
+
+4. மகாத்மா காந்தி
+https://sasikumar-ai-9wdq.onrender.com/thathuvam.html#gandhi
+
+5. அப்துல் கலாம்
+https://sasikumar-ai-9wdq.onrender.com/thathuvam.html#abdul-kalam
+
+6. டாக்டர் பி.ஆர். அம்பேத்கர்
+https://sasikumar-ai-9wdq.onrender.com/thathuvam.html#ambedkar
+
+7. அவ்வையார்
+https://sasikumar-ai-9wdq.onrender.com/thathuvam.html#avvaiyar
+
+8. சாக்ரடீஸ்
+https://sasikumar-ai-9wdq.onrender.com/thathuvam.html#socrates
+
+9. நெல்சன் மண்டேலா
+https://sasikumar-ai-9wdq.onrender.com/thathuvam.html#mandela
+
+10. ஆல்பர்ட் ஐன்ஸ்டீன்
+https://sasikumar-ai-9wdq.onrender.com/thathuvam.html#einstein
+
+11. கன்பூசியஸ்
+https://sasikumar-ai-9wdq.onrender.com/thathuvam.html#confucius
 
 🏠 Home:
 https://sasikumar-ai-9wdq.onrender.com/
