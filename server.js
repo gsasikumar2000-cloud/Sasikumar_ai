@@ -290,9 +290,24 @@ https://sasikumar-ai-9wdq.onrender.com
 
 ⚠️ Verify admissions, exam dates and scholarship details with official authorities.
 🔙 Type 0 for Main Menu`,
-  '8': () => `💼 JOBS & CAREERS
-Job search, resume, interview and career guidance.
+  '8': () => `🤖 SASIKUMAR AI
+💼 JOBS & CAREERS
+
+🔎 Job search, resume, interview and career guidance.
+
+📝 JOB SEEKER REGISTRATION
+https://sasikumar-ai-9wdq.onrender.com/jobs/register.html
+
+🏢 EMPLOYER REGISTRATION
+https://sasikumar-ai-9wdq.onrender.com/jobs/employer.html
+
+🏛️ GOVERNMENT JOBS
+https://sasikumar-ai-9wdq.onrender.com/jobs/government.html
+
+🌐 ALL JOBS & CAREERS
 https://sasikumar-ai-9wdq.onrender.com/jobs/index.html
+
+⚠️ Verify vacancies and employer details before applying.
 Type 0 for Main Menu`,
   '9': () => `💻 BUSINESS & TECHNOLOGY NEWS
 Business, startups, AI and technology-related questions kelunga.
