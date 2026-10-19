@@ -253,11 +253,43 @@ https://sasikumar-ai-9wdq.onrender.com
 
 ⚠️ AI guidance is an estimate, not a final certificate. Professional testing is required for confirmation.
 🔙 Type 0 for Main Menu`,
-  '7': () => `🎓 EDUCATION
-Courses, exams, scholarships and career guidance.
+  '7': () => `🤖 SASIKUMAR AI
+🎓 EDUCATION & AI STUDY ASSISTANT
+
+📚 COURSES
+School • Diploma • UG • PG • Engineering • Science
+
+🤖 AI QUESTIONS & ANSWERS
+Send your educational questions to AI.
+Get simple explanations and study guidance.
+
+🌐 AI WEB RESEARCH
+Send research questions to AI for help exploring topics, finding information and understanding results.
+Verify important facts with reliable sources.
+
+🧮 AI MATHS SOLVER
+Maths problems, equations and step-by-step explanations.
+
+📝 AI EXAM PREPARATION
+Practice questions, revision and study guidance.
+
+🎓 SCHOLARSHIPS
+Scholarship information and eligibility guidance.
+
+💼 CAREER GUIDANCE
+Courses, higher studies and career options.
+
+🌐 EDUCATION Q&A PAGE
 https://sasikumar-ai-9wdq.onrender.com/education/qa.html
+
+📐 MATHS & EQUATIONS
 https://sasikumar-ai-9wdq.onrender.com/education/equations.html
-Type 0 for Main Menu`,
+
+🏠 MAIN WEBSITE
+https://sasikumar-ai-9wdq.onrender.com
+
+⚠️ Verify admissions, exam dates and scholarship details with official authorities.
+🔙 Type 0 for Main Menu`,
   '8': () => `💼 JOBS & CAREERS
 Job search, resume, interview and career guidance.
 https://sasikumar-ai-9wdq.onrender.com/jobs/index.html
