@@ -566,7 +566,7 @@ if(WA_TOKEN && WA_PHONE_ID){
           '🌐 Website: https://sasikumar-ai-9wdq.onrender.com',
           '📅 Date: ' + date,
           '🕒 Time: ' + time + ' IST',
-          '📍 Papanasam, Thanjavur, Tamil Nadu',
+          '',
           '📩 Complete service menu follows in the next message.'
         ].join('\n');
 
