@@ -217,10 +217,42 @@ EMI 100000 12 12
 
 🌐 Website: https://sasikumar-ai-9wdq.onrender.com/gold-silver.html
 🔙 Type 0 for Main Menu`,
-  '6': () => `📋 GOLD APPRAISAL
-Weight, purity and valuation guidance.
-AI estimate mattum final certification illa; professional testing thevai.
-Type 0 for Main Menu`,
+  '6': () => `🤖 SASIKUMAR AI
+💎 GOLD APPRAISAL & TESTING GUIDE
+
+⚖️ 1. GOLD PURITY — FINENESS
+• 24K: 999 — approximately 99.9%
+• 22K: 916 — approximately 91.6%
+• 20K: 833 — approximately 83.3%
+• 18K: 750 — approximately 75.0%
+• 14K: 585 — approximately 58.5%
+
+🧪 2. ACID TEST — COLOUR GUIDE
+• Test-stone streak colour and its reaction depend on the acid and test method.
+• Streak remains: the sample may resist that particular test solution.
+• Streak fades or disappears: the metal may react with the solution.
+• Colour alone cannot confirm gold karat or purity.
+⚠️ Gold-testing acids are corrosive. Use appropriate professional safety precautions.
+
+🧂 3. COMMON SALT TEST
+• Ordinary salt (NaCl) alone cannot reliably determine gold purity.
+• A colour change is not proof of 24K, 22K or 18K gold.
+• Do not assign a karat based on salt colour.
+
+⚖️ 4. DENSITY TEST
+• Pure gold density: approximately 19.32 g/cm³.
+• Jewellery alloys, stones, hollow parts and internal metals can affect results.
+• Density is an estimate, not final proof of purity.
+
+📋 5. APPRAISAL REPORT
+Weight • Purity • Estimated value • Testing guidance
+For an estimate, send weight in grams, known purity and the current gold rate.
+
+🌐 SASIKUMAR AI Website:
+https://sasikumar-ai-9wdq.onrender.com
+
+⚠️ AI guidance is an estimate, not a final certificate. Professional testing is required for confirmation.
+🔙 Type 0 for Main Menu`,
   '7': () => `🎓 EDUCATION
 Courses, exams, scholarships and career guidance.
 https://sasikumar-ai-9wdq.onrender.com/education/qa.html
