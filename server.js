@@ -663,8 +663,53 @@ https://sasikumar-ai-9wdq.onrender.com
 ⚠️ Install the APK only if you trust this app and its source.
 
 Type 0 for Main Menu`,
-  '27': () => `🚀 BUSINESS IDEAS
-Small business, startup and business planning ideas ketkalaam.
+  '27': () => `🚀 BUSINESS & STARTUP SERVICES
+🚀 வணிகம் மற்றும் தொடக்கநிறுவன சேவைகள்
+
+💼 GROW YOUR BUSINESS WITH US
+💼 எங்களுடன் உங்கள் வணிகத்தை வளர்த்திடுங்கள்
+
+1️⃣ Business & Startup Guidance
+வணிகம் மற்றும் தொடக்கநிறுவன வழிகாட்டுதல்
+
+2️⃣ Retail Marketing
+சில்லறை விற்பனை சந்தைப்படுத்தல்
+
+3️⃣ Pay2All Services
+Pay2All சேவைகள்
+
+4️⃣ Affiliate Marketing
+இணைப்பு சந்தைப்படுத்தல்
+
+5️⃣ Referral Business
+பரிந்துரை வணிகம்
+
+6️⃣ FMCG Agency Services
+FMCG முகவர் சேவைகள்
+
+7️⃣ Business Consulting
+வணிக ஆலோசனை
+
+8️⃣ Communication Services
+தொடர்பு சேவைகள்
+
+9️⃣ Email Support
+மின்னஞ்சல் ஆதரவு
+
+📱 CONTACT US
+☎️ 98944 40400
+
+📧 EMAIL
+✉️ gsasikumar2000@gmail.com
+
+🌐 OFFICIAL WEBSITE
+https://sasikumar-ai-9wdq.onrender.com
+
+💡 Start • Connect • Market • Grow!
+💡 தொடங்குங்கள் • இணைந்திடுங்கள் • சந்தைப்படுத்துங்கள் • வளருங்கள்!
+
+📩 மேலும் விவரங்களுக்கு எங்களைத் தொடர்புகொள்ளுங்கள்.
+
 Type 0 for Main Menu`,
   '28': () => `🛠️ AI TOOLS
 AI tools and productivity suggestions ketkalaam.
