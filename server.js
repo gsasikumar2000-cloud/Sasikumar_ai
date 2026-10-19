@@ -64,9 +64,41 @@ Option number anuppi service select pannunga.
 — SASIKUMAR AI`;
 
 const MENU_REPLIES = {
-  '1': () => `🤖 SASIKUMAR AI — AI Assistant
-Tamil, English, Tanglish and other languages-la kelvigal kelunga.
-Type 0 for Main Menu`,
+  '1': () => `🤖 AI ASSISTANT — ASK ANYTHING!
+
+🙏 Vanakkam Nanbare! 😊
+
+💬 Ask your questions directly in:
+தமிழ் • Tanglish • English • हिंदी
+and other languages.
+
+🧠 HOW I CAN HELP YOU
+
+📚 Education
+Lessons, exam preparation, maths and explanations.
+
+✍️ Writing & Translation
+Letters, messages, summaries and translations.
+
+💻 Technology & Coding
+Computer help, programming and website guidance.
+
+💼 Jobs & Career
+Resume preparation, interview practice and career guidance.
+
+🌍 General Knowledge
+Science, everyday questions and useful information.
+
+💡 Ideas & Creativity
+Content ideas, writing assistance and brainstorming.
+
+📝 Type your question directly in WhatsApp.
+I'll try to provide a clear and helpful answer.
+
+🌐 SASIKUMAR AI Website:
+https://sasikumar-ai-9wdq.onrender.com
+
+🔙 Type 0 for Main Menu`,
   '2': () => `🪙 LIVE GOLD & SILVER RATE
 Current rates:
 Gold API: https://sasikumar-ai-9wdq.onrender.com/api/gold
