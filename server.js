@@ -350,10 +350,29 @@ https://sasikumar-ai-9wdq.onrender.com/jobs/index.html
 • Vacancy availability changes; these links do not guarantee a job.
 
 🔙 Type 0 for Main Menu`,
-  '9': () => `💻 BUSINESS & TECHNOLOGY NEWS
-Business, startups, AI and technology-related questions kelunga.
-Latest news details-ai current sources-la verify pannunga.
-Type 0 for Main Menu`,
+  '9': () => `🤖 SASIKUMAR AI
+📰 BUSINESS, TECHNOLOGY & LIVE NEWS
+
+🗞️ NEWS CATEGORIES
+🇮🇳 Tamil Nadu News
+🇮🇳 India National News
+🌍 World News
+💼 Business & Economy
+💻 Technology, Science & AI
+🏏 Sports News
+
+🌐 LIVE TAMIL NEWS
+https://sasikumar-ai-9wdq.onrender.com/live-news.html
+
+🔎 NEWS & RESEARCH
+Send a news topic, location or subject.
+Verify current details with reliable sources.
+
+⚠️ NEWS NOTICE
+News availability and update times may vary.
+Cross-check important information with reliable sources.
+
+🔙 Type 0 for Main Menu`,
   '10': () => `📰 BREAKING NEWS
 Tamil breaking news updates-kku request pannunga.
 Type 0 for Main Menu`,
