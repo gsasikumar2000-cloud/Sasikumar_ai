@@ -1051,23 +1051,13 @@ app.post('/api/ai-reply',(req,res)=>{
     const q=(req.body.question||'').trim();
     if(!q) return res.json({answer:WELCOME_MENU,api:'Welcome Menu'});
     if(q==='0' || q.toLowerCase()==='menu' || ['hi','hello','vanakkam','start'].includes(q.toLowerCase())) return res.json({answer:WELCOME_MENU,api:'Welcome Menu'});
-    const direct=q.match(/^\s*(1[0-9]|20|[0-9])\s*$/);
-    let num=direct?direct[1]:q.replace(/[^0-9]/g,'');
-    if(num && parseInt(num)>=1 && parseInt(num)<=20 && q.length<=3){
+    const direct=q.match(/^\s*(3[01]|[12][0-9]|[0-9])\s*$/);
+    if(direct){
+      const num=direct[1];
+      if(num==='0') return res.json({answer:WELCOME_MENU,api:'Welcome Menu'});
       const reply=getMenuReply(num);
       if(reply) return res.json({answer:reply,api:`Option ${num}`,option:num});
     }
-    // Check 11-20 explicitly
-    if(q.includes('11')) return res.json({answer:getMenuReply('11'),option:'11'});
-    if(q.includes('12')) return res.json({answer:getMenuReply('12'),option:'12'});
-    if(q.includes('13')) return res.json({answer:getMenuReply('13'),option:'13'});
-    if(q.includes('14')) return res.json({answer:getMenuReply('14'),option:'14'});
-    if(q.includes('15')) return res.json({answer:getMenuReply('15'),option:'15'});
-    if(q.includes('16')) return res.json({answer:getMenuReply('16'),option:'16'});
-    if(q.includes('17')) return res.json({answer:getMenuReply('17'),option:'17'});
-    if(q.includes('18')) return res.json({answer:getMenuReply('18'),option:'18'});
-    if(q.includes('19')) return res.json({answer:getMenuReply('19'),option:'19'});
-    if(q.includes('20')) return res.json({answer:getMenuReply('20'),option:'20'});
     res.json({answer:getGeneralReply(q,detectLang(q)),api:'General'});
   }catch(e){res.json({answer:WELCOME_MENU});}
 });
