@@ -613,8 +613,26 @@ https://sasikumar-ai-9wdq.onrender.com/thathuvam.html#confucius
 https://sasikumar-ai-9wdq.onrender.com/
 
 Type 0 for Main Menu`,
-  '21': () => `🔥 MOTIVATION
-Motivational thoughts and positive guidance ketkalaam.
+  '21': () => `🤖 SASIKUMAR AI
+🌟 DAILY MOTIVATION | தினசரி ஊக்கம்
+
+💪 இன்றைய ஊக்கச் செய்தி:
+இன்று நீங்கள் எடுக்கும் சிறிய முயற்சிதான் நாளைய பெரிய வெற்றிக்கு அடித்தளம்!
+
+🌱 தோல்வியைக் கண்டு பயப்படாதீர்கள். ஒவ்வொரு தோல்வியும் ஒரு புதிய பாடத்தைக் கற்றுத் தருகிறது.
+
+🎯 தினமும் புதிதாகக் கற்றுக்கொள்ளுங்கள்.
+⏰ நேரத்தைப் பயனுள்ளதாகப் பயன்படுத்துங்கள்.
+🔥 உங்கள் திறமையை நம்புங்கள்; முயற்சியைத் தொடருங்கள்.
+
+🇬🇧 MOTIVATION IN ENGLISH
+“Small steps every day lead to big achievements.”
+Believe in yourself. Learn from mistakes. Stay focused and keep improving.
+
+🌞 TODAY'S CHALLENGE:
+இன்று உங்கள் இலக்கை நோக்கி ஒரு சிறிய செயலையாவது செய்து முடிக்கவும்!
+
+🌐 https://sasikumar-ai-9wdq.onrender.com
 Type 0 for Main Menu`,
   '22': () => `🌍 LEADERSHIP HISTORY
 Indian and world leaders history patri kelunga.
