@@ -8,7 +8,15 @@ header{background:#111;color:#fff;padding:20px;text-align:center}
 main{max-width:700px;margin:auto;padding:16px}
 .card{background:#fff;padding:18px;margin:14px 0;border-radius:16px;box-shadow:0 2px 8px #ccc}
 a{color:#111;text-decoration:none;font-weight:bold}
-</style></head>
+</style>
+<style id="sk_all_logo_spin_v2">
+@keyframes skAllLogoSpinV2 {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+</style>
+
+</head>
 <body>
 
 <!-- SASIKUMAR AI BRAND HEADER -->
@@ -27,6 +35,21 @@ a{color:#111;text-decoration:none;font-weight:bold}
 <main>
 <div class="card"><h2>🇮🇳 Central Government</h2><p>Central government recruitment information.</p><a href="central.html">View Central Jobs →</a></div>
 <div class="card"><h2>🏛️ State Government</h2><p>State government recruitment information.</p><a href="state.html">View State Jobs →</a></div>
+<!-- SK_OFFICIAL_GOVERNMENT_JOBS_LINKS_V1 -->
+<div class="card">
+<h2>📢 Official Government Recruitment Websites</h2>
+<p>Check official notifications, eligibility, application dates and fees before applying.</p>
+<p><a href="https://www.tnpsc.gov.in/" target="_blank" rel="noopener noreferrer">🏛️ Tamil Nadu PSC (TNPSC) ↗</a></p>
+<p><a href="https://upsc.gov.in/" target="_blank" rel="noopener noreferrer">🇮🇳 Union Public Service Commission (UPSC) ↗</a></p>
+<p><a href="https://www.rrbchennai.gov.in/" target="_blank" rel="noopener noreferrer">🚆 Railway Recruitment Board, Chennai ↗</a></p>
+<p><a href="https://www.indiapost.gov.in/vacancies" target="_blank" rel="noopener noreferrer">📮 India Post Vacancies ↗</a></p>
+<p><a href="https://employmentnews.gov.in/" target="_blank" rel="noopener noreferrer">📰 Employment News ↗</a></p>
+<p><a href="https://www.india.gov.in/category/jobs" target="_blank" rel="noopener noreferrer">🌐 Government Jobs — India.gov.in ↗</a></p>
+<p><a href="https://www.ncs.gov.in/" target="_blank" rel="noopener noreferrer">💼 National Career Service ↗</a></p>
+<small>These are external official information portals. Check each portal for current vacancies and deadlines. SASIKUMAR AI does not guarantee recruitment or selection.</small>
+</div>
+<!-- END SK_OFFICIAL_GOVERNMENT_JOBS_LINKS_V1 -->
+
 <div class="card"><h2>📋 Job Apply Details</h2><p>Check eligibility and application information.</p><a href="apply.html">View Apply Details →</a></div>
 </main>
 
@@ -87,6 +110,31 @@ a{color:#111;text-decoration:none;font-weight:bold}
   });
 
   document.body.appendChild(btn);
+})();
+</script>
+
+
+<script id="sk_all_logo_spin_v2-script">
+(function () {
+  function spinLogo(img) {
+    if (!img || !/sasikumar-ai-logo\.png/i.test(img.getAttribute('src') || '')) return;
+    img.style.setProperty('animation', 'skAllLogoSpinV2 3s linear infinite', 'important');
+  }
+  function scan(root) {
+    if (root.matches && root.matches('img')) spinLogo(root);
+    if (root.querySelectorAll) root.querySelectorAll('img').forEach(spinLogo);
+  }
+  scan(document);
+  new MutationObserver(function (records) {
+    records.forEach(function (record) {
+      if (record.type === 'attributes') spinLogo(record.target);
+      else record.addedNodes.forEach(function (node) {
+        if (node.nodeType === 1) scan(node);
+      });
+    });
+  }).observe(document.documentElement, {
+    subtree: true, childList: true, attributes: true, attributeFilter: ['src']
+  });
 })();
 </script>
 

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Employer Registration - SASIKUMAR AI</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#e0f7ff,#f8eaff,#fff4dc);color:#17324d}
+header{padding:22px;text-align:center;background:linear-gradient(110deg,#047857,#0878f9,#7c3aed);color:white}
+header img{width:65px;height:65px;object-fit:contain}
+main{max-width:680px;margin:20px auto;padding:14px}
+.card{background:#ffffffed;border-radius:20px;padding:20px;box-shadow:0 8px 25px #3454a333}
+label{display:block;font-weight:bold;margin-top:14px}
+input,select,textarea{width:100%;padding:12px;margin-top:6px;border:1px solid #b7c9dd;border-radius:10px;font-size:16px}
+button,.back{display:block;width:100%;padding:14px;margin-top:18px;border:0;border-radius:12px;background:#0878f9;color:white;font-size:16px;font-weight:bold;text-align:center;text-decoration:none}
+.note{font-size:13px;line-height:1.6;color:#555}
+</style>
+</head>
+<body>
+<header>
+<img src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI">
+<h1>🏢 Employer Registration</h1>
+<p>SASIKUMAR AI — Jobs & Careers</p>
+</header>
+<main>
+<div class="card">
+<h2>📋 Company & Vacancy Details</h2>
+<form id="employerForm">
+<label for="company">Company / Business Name *</label>
+<input id="company" name="company" required maxlength="150">
+
+<label for="contact">Contact Person *</label>
+<input id="contact" name="contact" required maxlength="100">
+
+<label for="mobile">Contact Mobile *</label>
+<input id="mobile" name="mobile" type="tel" required maxlength="20">
+
+<label for="email">Business Email</label>
+<input id="email" name="email" type="email" maxlength="150">
+
+<label for="location">Job Location *</label>
+<input id="location" name="location" required maxlength="150">
+
+<label for="title">Job Title *</label>
+<input id="title" name="title" required maxlength="150">
+
+<label for="vacancies">Number of Vacancies *</label>
+<input id="vacancies" name="vacancies" type="number" min="1" max="100000" required>
+
+<label for="qualification">Required Qualification</label>
+<input id="qualification" name="qualification" maxlength="200">
+
+<label for="salary">Salary / Pay Range</label>
+<input id="salary" name="salary" maxlength="100">
+
+<label for="jobtype">Job Type *</label>
+<select id="jobtype" name="jobtype" required>
+<option value="">Select job type</option>
+<option>Full Time</option><option>Part Time</option>
+<option>Contract</option><option>Internship</option>
+<option>Work From Home</option>
+</select>
+
+<label for="description">Job Description / Skills</label>
+<textarea id="description" name="description" rows="4" maxlength="2000"></textarea>
+
+<label for="apply">Official Company / Application Website</label>
+<input id="apply" name="apply" type="url" maxlength="300" placeholder="https://">
+
+<p class="note">
+Please submit only genuine vacancies. Do not request job seekers to pay
+recruitment fees or share passwords, OTPs or banking PINs. This page
+prepares a message on your device; it does not verify the employer or
+permanently save the vacancy on SASIKUMAR AI.
+</p>
+<button type="submit">📲 Prepare Vacancy Message</button>
+</form>
+<p id="result" class="note" role="status"></p>
+<a class="back" href="index.html">⬅ Back to Jobs</a>
+</div>
+</main>
+<script>
+document.getElementById('employerForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const f = new FormData(this);
+  const message = [
+    '🏢 SASIKUMAR AI — EMPLOYER / VACANCY DETAILS',
+    '',
+    'Company: ' + f.get('company'),
+    'Contact Person: ' + f.get('contact'),
+    'Mobile: ' + f.get('mobile'),
+    'Email: ' + (f.get('email') || 'Not provided'),
+    'Job Location: ' + f.get('location'),
+    'Job Title: ' + f.get('title'),
+    'Vacancies: ' + f.get('vacancies'),
+    'Qualification: ' + (f.get('qualification') || 'Not provided'),
+    'Salary: ' + (f.get('salary') || 'Not provided'),
+    'Job Type: ' + f.get('jobtype'),
+    'Description: ' + (f.get('description') || 'Not provided'),
+    'Application Website: ' + (f.get('apply') || 'Not provided'),
+    '',
+    'Please verify the employer and vacancy before publishing.'
+  ].join('\n');
+
+  try {
+    if (navigator.share) {
+      await navigator.share({title:'Employer Registration',text:message});
+      document.getElementById('result').textContent =
+        'Share window opened. Choose a recipient to send these details. This page has not saved the vacancy.';
+    } else {
+      await navigator.clipboard.writeText(message);
+      document.getElementById('result').textContent =
+        'Message copied. Paste it into WhatsApp or another messaging app. The vacancy has not been saved on the server.';
+    }
+  } catch (err) {
+    document.getElementById('result').textContent =
+      'Sharing was cancelled or unavailable. The details have not been sent or saved.';
+  }
+});
+</script>
+</body>
+</html>
