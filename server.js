@@ -426,9 +426,38 @@ Type 0 for Main Menu`,
 Video creation and promotional video guidance.
 https://sasikumar-ai-9wdq.onrender.com/ai-video.html
 Type 0 for Main Menu`,
-  '15': () => `🔍 GLOBAL WEB SEARCH
-Search-related questions and web research requests-ai anuppunga.
-Type 0 for Main Menu`,
+  '15': () => `🤖 SASIKUMAR AI
+🌐 GLOBAL WEB SEARCH & RESEARCH
+
+🔎 WEB SEARCH
+Ask a topic or question to search for relevant online information.
+
+📰 CURRENT INFORMATION
+Research recent developments, news and public information.
+
+🎓 EDUCATION & RESEARCH
+Explore concepts, study topics and research questions.
+
+💻 TECHNOLOGY & AI
+Research programming, software, science and AI topics.
+
+💼 BUSINESS & MARKET RESEARCH
+Explore companies, products, industries and business trends.
+
+📚 FACT-CHECKING
+Compare information from multiple reliable sources when available.
+
+🔗 SOURCES & LINKS
+Review available source links and publication dates.
+
+💬 HOW TO USE
+Send your search query directly in this WhatsApp chat.
+Be specific about the topic, location or date.
+
+⚠️ Search results may be incomplete or outdated.
+Verify important facts using official and reliable sources.
+
+🔙 Type 0 for Main Menu`,
   '16': () => `🏏 SPORTS UPDATES
 Sports schedules, scores and updates kelunga.
 Latest scores-ai live source-la verify pannunga.
