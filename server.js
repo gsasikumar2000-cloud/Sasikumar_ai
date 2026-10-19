@@ -750,9 +750,38 @@ Type 0 for Main Menu`,
 📩 மேலும் உதவி தேவைப்பட்டால் உங்கள் கேள்வியை அனுப்புங்கள்.
 
 Type 0 for Main Menu`,
-  '29': () => `🌐 WEBSITE SERVICES
-Website creation and web development guidance.
+  '29': () => `🌐 SASIKUMAR AI — WEBSITE SERVICES
+🌐 இணையதள சேவைகள்
+
+1️⃣ Website Design
+🎨 இணையதள வடிவமைப்பு
+
+2️⃣ Website Development
+💻 இணையதளம் உருவாக்குதல்
+
+3️⃣ Mobile-Friendly Websites
+📱 மொபைலுக்கு ஏற்ற இணையதளங்கள்
+
+4️⃣ Business Websites
+🏢 வணிக இணையதளங்கள்
+
+5️⃣ Landing Pages
+📄 விளம்பர மற்றும் தயாரிப்பு பக்கங்கள்
+
+6️⃣ Website Content & Updates
+✍️ இணையதள உள்ளடக்கம் மற்றும் புதுப்பிப்புகள்
+
+7️⃣ Website Maintenance Guidance
+🛠️ இணையதள பராமரிப்பு வழிகாட்டுதல்
+
+8️⃣ AI Website Creation
+🤖 AI உதவியுடன் இணையதளம் உருவாக்கும் வழிகாட்டுதல்
+
+🌐 SASIKUMAR AI Website:
 https://sasikumar-ai-9wdq.onrender.com
+
+📩 Website சேவை தொடர்பான உங்கள் தேவையை செய்தியாக அனுப்புங்கள்.
+
 Type 0 for Main Menu`,
   '30': () => `📞 CONTACT & CUSTOMER FEEDBACK
 Contact: https://sasikumar-ai-9wdq.onrender.com/communication.html
