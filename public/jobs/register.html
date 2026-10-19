@@ -15,6 +15,7 @@ label{display:block;font-weight:bold;margin-top:14px}
 input,select,textarea{width:100%;padding:12px;margin-top:6px;border:1px solid #b7c9dd;border-radius:10px;font-size:16px}
 button,.back{display:block;width:100%;padding:14px;margin-top:18px;border:0;border-radius:12px;background:#0878f9;color:white;font-size:16px;font-weight:bold;text-align:center;text-decoration:none}
 .note{font-size:13px;line-height:1.6;color:#555}
+.consent{display:flex;gap:10px;align-items:flex-start;font-weight:normal;line-height:1.5}.consent input{width:auto;flex:0 0 auto;margin-top:3px}
 </style>
 </head>
 <body>
@@ -66,52 +67,64 @@ button,.back{display:block;width:100%;padding:14px;margin-top:18px;border:0;bord
 <label for="skills">Skills / Preferred Job</label>
 <textarea id="skills" name="skills" rows="3" maxlength="1000"></textarea>
 
+<label class="consent" for="consent">
+<input id="consent" name="consent" type="checkbox" required>
+<span>I agree to submit my information to SASIKUMAR AI for job registration and understand that it will be stored for registration review.</span>
+</label>
 <p class="note">
-Privacy: Enter only information you are comfortable sharing.
-This form currently prepares a message on your device. It does not
-upload or permanently save your details to SASIKUMAR AI.
+Privacy: Submit only information necessary for your registration.
+Your details will be sent securely over HTTPS to the SASIKUMAR AI server
+and stored for registration review. Do not submit passwords, OTPs or banking PINs.
 </p>
 
-<button type="submit">📲 Prepare Registration Message</button>
+<button type="submit">💾 Submit Job Registration</button>
 </form>
 <p id="result" class="note" role="status"></p>
 <a class="back" href="index.html">⬅ Back to Jobs</a>
 </div>
 </main>
 <script>
-document.getElementById('jobForm').addEventListener('submit', async function(e){
+
+document.getElementById('jobForm').addEventListener('submit', async function(e) {
   e.preventDefault();
-  const f = new FormData(this);
-  const message = [
-    '💼 SASIKUMAR AI — JOB SEEKER REGISTRATION',
-    '',
-    'Name: ' + f.get('name'),
-    'Mobile: ' + f.get('mobile'),
-    'Email: ' + (f.get('email') || 'Not provided'),
-    'Location: ' + f.get('location'),
-    'Qualification: ' + f.get('education'),
-    'Experience: ' + f.get('experience'),
-    'Preferred Job: ' + f.get('jobtype'),
-    'Skills / Job Preference: ' + (f.get('skills') || 'Not provided'),
-    '',
-    'This is a candidate-submitted draft. Please confirm receipt before treating it as registered.'
-  ].join('\n');
+
+  const form = this;
+  const result = document.getElementById('result');
+  const button = form.querySelector('button[type="submit"]');
+
+  const f = new FormData(form);
+  const payload = Object.fromEntries(f.entries());
+  payload.consent = document.getElementById('consent').checked;
+
+  result.textContent = 'Submitting your registration securely...';
+  button.disabled = true;
 
   try {
-    if (navigator.share) {
-      await navigator.share({title:'Job Seeker Registration',text:message});
-      document.getElementById('result').textContent =
-        'Share window opened. Select a recipient to send your details. This page does not store your registration.';
-    } else {
-      await navigator.clipboard.writeText(message);
-      document.getElementById('result').textContent =
-        'Registration message copied. Paste it into WhatsApp or another messaging app. Details have not been saved on the server.';
+    const response = await fetch('/api/jobs/seeker', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.ok) {
+      throw new Error(data.error || 'Registration could not be saved.');
     }
+
+    result.textContent =
+      '✅ ' + data.message + ' Reference ID: ' + data.referenceId +
+      '. Status: ' + data.status + '. Please keep your reference ID.';
+
+    form.reset();
   } catch (err) {
-    document.getElementById('result').textContent =
-      'Sharing was cancelled or unavailable. Your details have not been sent or saved.';
+    result.textContent =
+      '❌ ' + (err.message || 'Unable to submit registration. Please try again.');
+  } finally {
+    button.disabled = false;
   }
 });
+
 </script>
 </body>
 </html>

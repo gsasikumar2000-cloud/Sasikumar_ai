@@ -15,6 +15,7 @@ label{display:block;font-weight:bold;margin-top:14px}
 input,select,textarea{width:100%;padding:12px;margin-top:6px;border:1px solid #b7c9dd;border-radius:10px;font-size:16px}
 button,.back{display:block;width:100%;padding:14px;margin-top:18px;border:0;border-radius:12px;background:#0878f9;color:white;font-size:16px;font-weight:bold;text-align:center;text-decoration:none}
 .note{font-size:13px;line-height:1.6;color:#555}
+.consent{display:flex;gap:10px;align-items:flex-start;font-weight:normal;line-height:1.5}.consent input{width:auto;flex:0 0 auto;margin-top:3px}
 </style>
 </head>
 <body>
@@ -68,56 +69,65 @@ button,.back{display:block;width:100%;padding:14px;margin-top:18px;border:0;bord
 <label for="apply">Official Company / Application Website</label>
 <input id="apply" name="apply" type="url" maxlength="300" placeholder="https://">
 
+<label class="consent" for="consent">
+<input id="consent" name="consent" type="checkbox" required>
+<span>I agree to submit these company and vacancy details to SASIKUMAR AI for review and understand that they will be stored for registration review.</span>
+</label>
 <p class="note">
-Please submit only genuine vacancies. Do not request job seekers to pay
-recruitment fees or share passwords, OTPs or banking PINs. This page
-prepares a message on your device; it does not verify the employer or
-permanently save the vacancy on SASIKUMAR AI.
+Submit only genuine vacancies. Do not request job seekers to pay recruitment
+fees or share passwords, OTPs or banking PINs. Employer details and vacancies
+will be stored for review; submission does not mean the employer or vacancy
+has been verified or approved.
 </p>
-<button type="submit">📲 Prepare Vacancy Message</button>
+<button type="submit">💾 Submit Employer Registration</button>
 </form>
 <p id="result" class="note" role="status"></p>
 <a class="back" href="index.html">⬅ Back to Jobs</a>
 </div>
 </main>
 <script>
-document.getElementById('employerForm').addEventListener('submit', async function(e){
+
+document.getElementById('employerForm').addEventListener('submit', async function(e) {
   e.preventDefault();
-  const f = new FormData(this);
-  const message = [
-    '🏢 SASIKUMAR AI — EMPLOYER / VACANCY DETAILS',
-    '',
-    'Company: ' + f.get('company'),
-    'Contact Person: ' + f.get('contact'),
-    'Mobile: ' + f.get('mobile'),
-    'Email: ' + (f.get('email') || 'Not provided'),
-    'Job Location: ' + f.get('location'),
-    'Job Title: ' + f.get('title'),
-    'Vacancies: ' + f.get('vacancies'),
-    'Qualification: ' + (f.get('qualification') || 'Not provided'),
-    'Salary: ' + (f.get('salary') || 'Not provided'),
-    'Job Type: ' + f.get('jobtype'),
-    'Description: ' + (f.get('description') || 'Not provided'),
-    'Application Website: ' + (f.get('apply') || 'Not provided'),
-    '',
-    'Please verify the employer and vacancy before publishing.'
-  ].join('\n');
+
+  const form = this;
+  const result = document.getElementById('result');
+  const button = form.querySelector('button[type="submit"]');
+
+  const f = new FormData(form);
+  const payload = Object.fromEntries(f.entries());
+  payload.consent = document.getElementById('consent').checked;
+  payload.vacancies = Number(payload.vacancies);
+
+  result.textContent = 'Submitting company and vacancy details securely...';
+  button.disabled = true;
 
   try {
-    if (navigator.share) {
-      await navigator.share({title:'Employer Registration',text:message});
-      document.getElementById('result').textContent =
-        'Share window opened. Choose a recipient to send these details. This page has not saved the vacancy.';
-    } else {
-      await navigator.clipboard.writeText(message);
-      document.getElementById('result').textContent =
-        'Message copied. Paste it into WhatsApp or another messaging app. The vacancy has not been saved on the server.';
+    const response = await fetch('/api/jobs/employer', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.ok) {
+      throw new Error(data.error || 'Vacancy could not be saved.');
     }
+
+    result.textContent =
+      '✅ ' + data.message + ' Reference ID: ' + data.referenceId +
+      '. Status: ' + data.status + '. Please keep your reference ID.';
+
+    form.reset();
   } catch (err) {
-    document.getElementById('result').textContent =
-      'Sharing was cancelled or unavailable. The details have not been sent or saved.';
+    result.textContent =
+      '❌ ' + (err.message || 'Unable to submit details. Please try again.');
+  } finally {
+    button.disabled = false;
   }
 });
+
 </script>
 </body>
 </html>

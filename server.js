@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
+import pg from 'pg';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -7,6 +8,17 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 10000;
+
+const jobDbPool = process.env.DATABASE_URL
+  ? new pg.Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false },
+      max: 5,
+      connectionTimeoutMillis: 10000,
+      idleTimeoutMillis: 30000
+    })
+  : null;
+
 app.use(express.json({limit:'16mb'}));
 app.use((req,res,next)=>{
   res.header('Access-Control-Allow-Origin','*');
@@ -1467,5 +1479,187 @@ app.get('/whatsapp-menu.html', (req, res) => res.redirect(302, '/'));
 // END SK_HIDE_OLD_20_OPTION_MENU_V1
 
 app.use(express.static(publicPath));
+
+// SK_JOB_REGISTRATION_API_V1
+function skJobText(value, max) {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function skValidMobile(value) {
+  return /^[+\d()\s-]{7,20}$/.test(value) &&
+    (value.match(/\d/g) || []).length >= 7;
+}
+
+app.post('/api/jobs/seeker', async (req, res) => {
+  if (!jobDbPool) {
+    return res.status(503).json({
+      ok: false, error: 'Registration service is not configured.'
+    });
+  }
+
+  const b = req.body || {};
+  const name = skJobText(b.name, 101);
+  const mobile = skJobText(b.mobile, 21);
+  const email = skJobText(b.email, 151);
+  const location = skJobText(b.location, 101);
+  const education = skJobText(b.education, 51);
+  const experience = skJobText(b.experience, 51);
+  const jobType = skJobText(b.jobtype, 51);
+  const skills = skJobText(b.skills, 1001);
+
+  if (b.consent !== true) {
+    return res.status(400).json({
+      ok: false, error: 'Please agree to the privacy notice before registering.'
+    });
+  }
+
+  if (!name || name.length > 100 ||
+      !mobile || mobile.length > 20 || !skValidMobile(mobile) ||
+      !location || location.length > 100 ||
+      !education || education.length > 50 ||
+      !jobType || jobType.length > 50 ||
+      experience.length > 50 || skills.length > 1000 ||
+      email.length > 150 ||
+      (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) {
+    return res.status(400).json({
+      ok: false, error: 'Please check the registration details and try again.'
+    });
+  }
+
+  const allowedEducation = [
+    '10th', '12th', 'ITI', 'Diploma', 'UG Degree',
+    'PG Degree', 'Engineering', 'Other'
+  ];
+  const allowedExperience = [
+    'Fresher', 'Less than 1 year', '1–3 years',
+    '3–5 years', 'More than 5 years'
+  ];
+  const allowedJobTypes = [
+    'Private Job', 'Government Job', 'Full Time',
+    'Part Time', 'Work From Home', 'Internship'
+  ];
+
+  if (!allowedEducation.includes(education) ||
+      !allowedExperience.includes(experience) ||
+      !allowedJobTypes.includes(jobType)) {
+    return res.status(400).json({
+      ok: false, error: 'Please select valid qualification, experience and job type.'
+    });
+  }
+
+  try {
+    const result = await jobDbPool.query(
+      `INSERT INTO public.job_seekers
+       (full_name, mobile, email, location, education, experience, job_type, skills)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+       RETURNING id, created_at`,
+      [name, mobile, email || null, location, education,
+       experience, jobType, skills || null]
+    );
+
+    return res.status(201).json({
+      ok: true,
+      message: 'Registration received successfully. Your application is pending review.',
+      referenceId: result.rows[0].id,
+      status: 'pending'
+    });
+  } catch (err) {
+    console.error('[Job Seeker Registration] Database error:', err.message);
+    return res.status(503).json({
+      ok: false, error: 'Registration could not be saved right now. Please try again later.'
+    });
+  }
+});
+
+app.post('/api/jobs/employer', async (req, res) => {
+  if (!jobDbPool) {
+    return res.status(503).json({
+      ok: false, error: 'Registration service is not configured.'
+    });
+  }
+
+  const b = req.body || {};
+  const company = skJobText(b.company, 151);
+  const contact = skJobText(b.contact, 101);
+  const mobile = skJobText(b.mobile, 21);
+  const email = skJobText(b.email, 151);
+  const location = skJobText(b.location, 151);
+  const title = skJobText(b.title, 151);
+  const qualification = skJobText(b.qualification, 201);
+  const salary = skJobText(b.salary, 101);
+  const jobType = skJobText(b.jobtype, 51);
+  const description = skJobText(b.description, 2001);
+  const applyUrl = skJobText(b.apply, 301);
+  const vacancies = Number(b.vacancies);
+
+  if (b.consent !== true) {
+    return res.status(400).json({
+      ok: false, error: 'Please agree to the privacy notice before registering.'
+    });
+  }
+
+  if (!company || company.length > 150 ||
+      !contact || contact.length > 100 ||
+      !mobile || mobile.length > 20 || !skValidMobile(mobile) ||
+      !location || location.length > 150 ||
+      !title || title.length > 150 ||
+      !Number.isInteger(vacancies) || vacancies < 1 || vacancies > 100000 ||
+      qualification.length > 200 || salary.length > 100 ||
+      description.length > 2000 || applyUrl.length > 300 ||
+      email.length > 150 ||
+      (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) {
+    return res.status(400).json({
+      ok: false, error: 'Please check the company and vacancy details and try again.'
+    });
+  }
+
+  const allowedJobTypes = [
+    'Full Time', 'Part Time', 'Contract', 'Internship', 'Work From Home'
+  ];
+
+  if (!allowedJobTypes.includes(jobType)) {
+    return res.status(400).json({
+      ok: false, error: 'Please select a valid job type.'
+    });
+  }
+
+  if (applyUrl) {
+    try {
+      const parsed = new URL(applyUrl);
+      if (!['http:', 'https:'].includes(parsed.protocol)) throw new Error('Invalid protocol');
+    } catch {
+      return res.status(400).json({
+        ok: false, error: 'Please enter a valid HTTP or HTTPS application website.'
+      });
+    }
+  }
+
+  try {
+    const result = await jobDbPool.query(
+      `INSERT INTO public.employer_registrations
+       (company, contact_person, mobile, email, location, job_title,
+        vacancies, qualification, salary, job_type, description, apply_url)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+       RETURNING id, created_at`,
+      [company, contact, mobile, email || null, location, title,
+       vacancies, qualification || null, salary || null, jobType,
+       description || null, applyUrl || null]
+    );
+
+    return res.status(201).json({
+      ok: true,
+      message: 'Vacancy submission received. It will remain pending until reviewed.',
+      referenceId: result.rows[0].id,
+      status: 'pending'
+    });
+  } catch (err) {
+    console.error('[Employer Registration] Database error:', err.message);
+    return res.status(503).json({
+      ok: false, error: 'Vacancy could not be saved right now. Please try again later.'
+    });
+  }
+});
+// END SK_JOB_REGISTRATION_API_V1
+
 app.get('*',(req,res)=>{const fp=path.join(publicPath,'index.html');if(fs.existsSync(fp))res.sendFile(fp);else res.status(404).send('Not Found');});
 app.listen(PORT,()=>console.log(`🤖 31 OPTIONS WHATSAPP MENU http://localhost:${PORT} - OK`));
