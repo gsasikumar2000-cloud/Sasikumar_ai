@@ -85,7 +85,20 @@ function render(){
  const list=data.filter(p=>(p.cat+" "+p.title+" "+p.text).toLowerCase().includes(q));
  document.getElementById("poems").innerHTML=list.length?list.map((p,i)=>'<article class="poem"><h3>'+p.title+'</h3><div class="poemtext">'+p.text+'</div><div class="actions"><button onclick="copyText(data['+data.indexOf(p)+'])">📋 Copy</button><button class="btn2" onclick="shareText(data['+data.indexOf(p)+'])">📤 Share</button></div></article>').join(""):"<p>இந்தத் தேடலுக்கு கவிதை கிடைக்கவில்லை. வேறு சொல்லை முயற்சிக்கவும்.</p>";
 }
-document.getElementById("categories").innerHTML=[...new Set(data.map(p=>p.cat))].map(c=>'<button onclick="document.getElementById(\\'search\\').value='+JSON.stringify(c)+';render()">'+c+'</button>').join("");
+document.getElementById("categories").innerHTML =
+  [...new Set(data.map(p => p.cat))]
+    .map(c => '<button type="button" data-cat="' + c + '">' + c + '</button>')
+    .join("");
+
+document.getElementById("categories").addEventListener("click", function(e) {
+  const button = e.target.closest("button[data-cat]");
+  if (!button) return;
+  document.getElementById("search").value = button.dataset.cat;
+  render();
+});
+
+document.getElementById("search").addEventListener("input", render);
+render();
 render();
 </script>
 </body>
