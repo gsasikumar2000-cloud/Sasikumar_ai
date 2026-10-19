@@ -406,69 +406,59 @@ app.get('/api/whatsapp/webhook',(req,res)=>{const mode=req.query['hub.mode'];con
 
 // SK_WA_LEADERSHIP_TAMIL_BREAKING_NEWS_V1
 async function getTamilBreakingNews() {
-  const key = process.env.TAVILY_API_KEY;
   const now = new Date().toLocaleString('en-IN', {
     timeZone: 'Asia/Kolkata'
   });
 
-  if (!key) {
-    return '📰 தமிழ் முக்கியச் செய்திகள்\n\n' +
-      'தற்போதைய செய்தித் தேடல் இப்போது அமைக்கப்படவில்லை.\n' +
-      'Website: https://sasikumar-ai-9wdq.onrender.com\n' +
-      '🤖 SASIKUMAR AI';
-  }
-
   try {
-    const response = await fetch('https://api.tavily.com/search', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        api_key: key,
-        query: 'latest breaking news Tamil Nadu India world today',
-        search_depth: 'basic',
-        topic: 'news',
-        max_results: 5,
-        include_answer: true
-      }),
-      signal: AbortSignal.timeout(20000)
-    });
+    const response = await fetch(
+      'https://sasikumar-ai-9wdq.onrender.com/api/breaking-news?category=Tamil%20Nadu',
+      { signal: AbortSignal.timeout(25000) }
+    );
 
     const data = await response.json().catch(() => ({}));
 
-    if (!response.ok) {
-      console.error('[Tamil Breaking News] Search HTTP error:', response.status);
+    if (!response.ok || data.ok !== true) {
+      console.error(
+        '[Tamil Breaking News] Live API error:',
+        response.status,
+        String(data.error || 'Unknown error').slice(0, 200)
+      );
       return '📰 தமிழ் முக்கியச் செய்திகள்\n\n' +
         'தற்போதைய செய்திகளைப் பெற முடியவில்லை. சிறிது நேரம் கழித்து முயற்சிக்கவும்.\n' +
+        '🌐 https://sasikumar-ai-9wdq.onrender.com/live-news.html\n' +
         '🤖 SASIKUMAR AI';
     }
 
-    const results = Array.isArray(data.results) ? data.results : [];
-    if (!results.length && !data.answer) {
-      return '📰 இப்போது சரிபார்க்கப்பட்ட செய்தி கிடைக்கவில்லை. பின்னர் முயற்சிக்கவும்.\n🤖 SASIKUMAR AI';
+    const articles = Array.isArray(data.articles) ? data.articles : [];
+
+    if (!articles.length) {
+      return '📰 இப்போது செய்திகள் கிடைக்கவில்லை. பின்னர் முயற்சிக்கவும்.\n' +
+        '🌐 https://sasikumar-ai-9wdq.onrender.com/live-news.html\n' +
+        '🤖 SASIKUMAR AI';
     }
 
-    let out = '📰 தமிழ் முக்கியச் செய்திகள்\n' +
-      '🕒 தேடிய நேரம்: ' + now + '\n\n';
+    let out = '🤖 SASIKUMAR AI\n' +
+      '📰 தமிழ் முக்கியச் செய்திகள்\n' +
+      '🕒 ' + now + '\n\n';
 
-    if (data.answer) {
-      out += '📌 சுருக்கம்:\n' + String(data.answer).slice(0, 900) + '\n\n';
-    }
-
-    for (const [i, item] of results.slice(0, 5).entries()) {
-      out += `${i + 1}. ${String(item.title || 'செய்தி').slice(0, 180)}\n`;
-      if (item.content) {
-        out += String(item.content).slice(0, 260) + '\n';
-      }
-      if (item.url && /^https?:\/\//i.test(item.url)) {
+    for (const [i, item] of articles.slice(0, 5).entries()) {
+      out += `${i + 1}. ${String(item.title || 'செய்தி').slice(0, 220)}\n`;
+      if (item.url && (String(item.url).startsWith('https://') || String(item.url).startsWith('http://'))) {
         out += item.url + '\n';
       }
       out += '\n';
     }
 
-    return out.slice(0, 3500) + '\n🤖 SASIKUMAR AI';
+    out += '🌐 மேலும் செய்திகள்: https://sasikumar-ai-9wdq.onrender.com/live-news.html\n' +
+      '🤖 SASIKUMAR AI';
+
+    return out.slice(0, 3500);
   } catch (error) {
-    console.error('[Tamil Breaking News]', error.message || error);
-    return '📰 செய்தித் தேடலில் தற்காலிகப் பிழை. மீண்டும் முயற்சிக்கவும்.\n🤖 SASIKUMAR AI';
+    console.error('[Tamil Breaking News] Live API fetch error:', error.message || error);
+    return '📰 செய்திகளைப் பெறுவதில் தற்காலிகப் பிழை. மீண்டும் முயற்சிக்கவும்.\n' +
+      '🌐 https://sasikumar-ai-9wdq.onrender.com/live-news.html\n' +
+      '🤖 SASIKUMAR AI';
   }
 }
 
