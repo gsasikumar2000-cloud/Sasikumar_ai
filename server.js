@@ -711,8 +711,44 @@ https://sasikumar-ai-9wdq.onrender.com
 📩 மேலும் விவரங்களுக்கு எங்களைத் தொடர்புகொள்ளுங்கள்.
 
 Type 0 for Main Menu`,
-  '28': () => `🛠️ AI TOOLS
-AI tools and productivity suggestions ketkalaam.
+  '28': () => `🛠️ SASIKUMAR AI — AI TOOLS
+🤖 செயற்கை நுண்ணறிவு கருவிகள்
+
+1️⃣ AI Chat & Assistant
+🤖 கேள்விகளுக்குப் பதில் மற்றும் AI உதவியாளர்
+
+2️⃣ AI Writing & Content Creation
+✍️ கட்டுரைகள், கடிதங்கள் மற்றும் உள்ளடக்கம் உருவாக்குதல்
+
+3️⃣ AI Image & Poster Creator
+🎨 படங்கள், போஸ்டர்கள் மற்றும் விளம்பர வடிவமைப்பு
+
+4️⃣ AI Video Maker
+🎬 வீடியோ உருவாக்கும் வழிகாட்டுதல்
+
+5️⃣ AI Web Search
+🌐 இணையத் தேடல் மற்றும் தகவல் அறிதல்
+
+6️⃣ Document & PDF Assistant
+📄 ஆவணங்கள் மற்றும் PDF உதவி
+
+7️⃣ Voice Assistant
+🎙️ குரல் வழி உதவி
+
+8️⃣ Website & Code Creator
+💻 இணையதளம் மற்றும் நிரலாக்க உதவி
+
+9️⃣ Education & Learning Tools
+📚 கல்வி மற்றும் கற்றல் உதவி
+
+🔟 AI Productivity Tools
+⚡ வேலைத்திறன் மற்றும் நேர மேலாண்மை உதவி
+
+💡 மேலே உள்ள AI கருவிகளை SASIKUMAR AI இணையதளத்தில் பயன்படுத்துங்கள்:
+🌐 https://sasikumar-ai-9wdq.onrender.com
+
+📩 மேலும் உதவி தேவைப்பட்டால் உங்கள் கேள்வியை அனுப்புங்கள்.
+
 Type 0 for Main Menu`,
   '29': () => `🌐 WEBSITE SERVICES
 Website creation and web development guidance.
