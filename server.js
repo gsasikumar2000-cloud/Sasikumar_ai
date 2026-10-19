@@ -144,10 +144,46 @@ EMI 100000 12 12
 
 🌐 Calculator: https://sasikumar-ai-9wdq.onrender.com/loan-calculator.html
 🔙 Type 0 for Main Menu`,
-  '4': () => `🏦 BANKING SERVICES
-Savings, loans, EMI and banking-related questions-ai kelunga.
-Bank terms-ai official bank sources-la verify pannunga.
-Type 0 for Main Menu`,
+  '4': () => `🏦 SASIKUMAR AI — BANKING SERVICES
+
+1️⃣ BANK ACCOUNT
+• Savings Account / Current Account
+• Zero-Balance Account பற்றிய வழிகாட்டுதல்
+• கணக்கு திறப்பதற்கான ஆவணங்கள்
+
+2️⃣ ATM / DEBIT CARD
+• ATM மற்றும் Debit Card பயன்பாடு
+• PIN பாதுகாப்பு மற்றும் Card Block வழிகாட்டுதல்
+
+3️⃣ BANK LOANS
+• Personal Loan / Home Loan
+• Education Loan / Business Loan
+• Gold Loan பற்றிய வழிகாட்டுதல்
+
+4️⃣ EMI CALCULATOR
+• கடன் தொகை, வருட வட்டி, மாதங்கள் கொடுத்து EMI கணக்கிடலாம்.
+• உதாரணம்: EMI 100000 12 12
+
+5️⃣ FD / RD
+• Fixed Deposit மற்றும் Recurring Deposit விவரங்கள்
+• வட்டி மற்றும் முதிர்வுத் தொகை பற்றிய வழிகாட்டுதல்
+
+6️⃣ UPI / INTERNET BANKING
+• UPI, Mobile Banking, Net Banking
+• பாதுகாப்பான டிஜிட்டல் பணப்பரிவர்த்தனை
+
+7️⃣ KYC
+• அடையாளம் மற்றும் முகவரிச் சான்றுகள் பற்றிய தகவல்
+• தேவையான ஆவணங்களை வங்கியிடம் உறுதிப்படுத்தவும்.
+
+8️⃣ BANK COMPLAINT SUPPORT
+• வங்கியில் புகார் அளிக்கும் வழிமுறை
+• தீர்வு கிடைக்காவிட்டால் RBI அதிகாரப்பூர்வ வழிகாட்டுதலைப் பார்க்கவும்.
+
+🔐 OTP, UPI PIN, ATM PIN, Password ஆகியவற்றை யாரிடமும் பகிர வேண்டாம்.
+⚠️ வட்டி, கட்டணம், தகுதி ஆகியவை வங்கி விதிமுறைகளைப் பொறுத்தவை.
+🌐 Website: https://sasikumar-ai-9wdq.onrender.com
+🔙 Type 0 for Main Menu`,
   '5': () => `💎 GOLD EXPERT
 24K = 999; 22K = 916; 18K = 750.
 Hallmark, purity, fineness and HUID-ai verify pannunga.
