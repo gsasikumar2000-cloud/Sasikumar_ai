@@ -305,7 +305,8 @@ https://sasikumar-ai-9wdq.onrender.com
   '8': () => `🤖 SASIKUMAR AI
 💼 JOBS & CAREERS
 
-🔎 Job search, resume, interview and career guidance.
+🔎 JOB SEARCH & CAREER GUIDANCE
+Resume • Interview preparation • Career options
 
 📝 JOB SEEKER REGISTRATION
 https://sasikumar-ai-9wdq.onrender.com/jobs/register.html
@@ -313,14 +314,42 @@ https://sasikumar-ai-9wdq.onrender.com/jobs/register.html
 🏢 EMPLOYER REGISTRATION
 https://sasikumar-ai-9wdq.onrender.com/jobs/employer.html
 
-🏛️ GOVERNMENT JOBS
-https://sasikumar-ai-9wdq.onrender.com/jobs/government.html
+🇮🇳 OFFICIAL GOVERNMENT JOB WEBSITES
+
+1. 🇮🇳 National Career Service (NCS)
+https://www.ncs.gov.in/
+
+2. 🏛️ Tamil Nadu PSC (TNPSC)
+https://www.tnpsc.gov.in/
+
+3. 👮 Tamil Nadu Uniformed Services Recruitment Board (TNUSRB)
+https://www.tnusrb.tn.gov.in/
+
+4. 🚆 Railway Recruitment Boards (RRB)
+https://www.rrbcdg.gov.in/
+
+5. 📝 Staff Selection Commission (SSC)
+https://ssc.gov.in/
+
+6. 🎓 Union Public Service Commission (UPSC)
+https://upsc.gov.in/
+
+7. 🏦 Institute of Banking Personnel Selection (IBPS)
+https://www.ibps.in/
+
+8. 📮 India Post
+https://www.indiapost.gov.in/
 
 🌐 ALL JOBS & CAREERS
 https://sasikumar-ai-9wdq.onrender.com/jobs/index.html
 
-⚠️ Verify vacancies and employer details before applying.
-Type 0 for Main Menu`,
+⚠️ SAFETY NOTICE
+• Check the official recruitment notification before applying.
+• Verify qualification, age limit, application deadline and fees.
+• Never pay unofficial agents or trust guaranteed-job promises.
+• Vacancy availability changes; these links do not guarantee a job.
+
+🔙 Type 0 for Main Menu`,
   '9': () => `💻 BUSINESS & TECHNOLOGY NEWS
 Business, startups, AI and technology-related questions kelunga.
 Latest news details-ai current sources-la verify pannunga.
