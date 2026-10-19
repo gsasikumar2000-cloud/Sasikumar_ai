@@ -1113,6 +1113,10 @@ app.get("/api/silver-rate", async (req, res) => {
 });
 // END SK_REAL_GOLD_SILVER_API_V1
 
+// SK_HIDE_OLD_20_OPTION_MENU_V1
+app.get('/whatsapp-menu.html', (req, res) => res.redirect(302, '/'));
+// END SK_HIDE_OLD_20_OPTION_MENU_V1
+
 app.use(express.static(publicPath));
 app.get('*',(req,res)=>{const fp=path.join(publicPath,'index.html');if(fs.existsSync(fp))res.sendFile(fp);else res.status(404).send('Not Found');});
 app.listen(PORT,()=>console.log(`🤖 31 OPTIONS WHATSAPP MENU http://localhost:${PORT} - OK`));
