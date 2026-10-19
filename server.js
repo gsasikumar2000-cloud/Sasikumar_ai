@@ -580,7 +580,7 @@ if(WA_TOKEN && WA_PHONE_ID){
         await sendWA({
           type: 'image',
           image: {
-            link: 'https://sasikumar-ai-9wdq.onrender.com/assets/whatsapp-menu.png',
+            link: 'https://sasikumar-ai-9wdq.onrender.com/assets/sasikumar-ai-logo.png',
             caption: welcomeCaption
           }
         });
