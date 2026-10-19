@@ -188,7 +188,14 @@ function detectLang(q){try{if(/[\u0B80-\u0BFF]/.test(q))return 'ta';return 'en';
 function getGeneralReply(q,lang){const time=new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'});if(q.toLowerCase().includes('gold'))return `💰 GOLD RATE\nVerified current rate-ai /api/gold-la check pannunga.\nhttps://sasikumar-ai-9wdq.onrender.com/api/gold\nType 0 for Menu`;return `🌍 General AI - ${time}\nYou: "${q}"\nType 0 for Menu or 1-31`; }
 
 app.get('/api/status',(req,res)=>{res.json({status:'WHATSAPP MENU 31 OPTIONS LIVE OK',version:'7.1 Menu',options:31,time:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})});});
-app.get('/api/whatsapp/menu',(req,res)=>{res.json({welcome:WELCOME_MENU,total:31});});
+app.get('/api/whatsapp/menu',(req,res)=>{
+  res.set('Cache-Control','no-store');
+  res.json({
+    welcome: '🤖 SASIKUMAR AI — 31 Services',
+    total: 31,
+    menuImage: 'https://sasikumar-ai-9wdq.onrender.com/assets/whatsapp-menu.png'
+  });
+});
 app.get('/api/gold', async (req,res)=>{try{const d=await skGetLiveGoldRates();res.set('Cache-Control','no-store');res.json({'24k_per_g':d.rates['24K'],'22k_per_g':d.rates['22K'],rates:d.rates,source:d.source,fallbackUsed:d.fallbackUsed,updatedAt:d.updatedAt,note:d.note});}catch(e){console.error('[Gold API] Request failed:',e.message);res.status(503).json({ok:false,error:'Live Gold Rate temporarily unavailable.'});}});
 app.get('/api/services',(req,res)=>{res.json({services:[{id:1,name:'Gold Rate',ta:'தங்க விலை',icon:'💰'},{id:2,name:'Gold Loan',ta:'தங்க கடன்',icon:'🏦'},{id:3,name:'Banking',ta:'வங்கி',icon:'🏧'},{id:4,name:'Gold Expert',ta:'தங்க நிபுணர்',icon:'👨‍🏫'},{id:5,name:'Appraisal',ta:'மதிப்பீடு',icon:'🔍'},{id:6,name:'Education',ta:'கல்வி',icon:'📚'},{id:7,name:'Jobs',ta:'வேலை',icon:'💼'},{id:8,name:'Business Tech News',ta:'வணிக செய்தி',icon:'💼'},{id:9,name:'General AI',ta:'பொது AI',icon:'🧠'},{id:10,name:'Breaking News',ta:'முக்கிய செய்தி',icon:'🚨'},{id:11,name:'Business News',ta:'வணிக செய்தி',icon:'💼'},{id:12,name:'Sports',ta:'விளையாட்டு',icon:'🏏'},{id:13,name:'Web Search',ta:'இணைய தேடல்',icon:'🔎'},{id:14,name:'Poster Creative',ta:'போஸ்டர்',icon:'🎨'},{id:15,name:'Image AI',ta:'பட AI',icon:'📸'},{id:16,name:'Video Maker',ta:'வீடியோ',icon:'🎬'},{id:17,name:'Contact',ta:'தொடர்பு',icon:'📞'},{id:18,name:'Feedback',ta:'கருத்து',icon:'⭐'},{id:19,name:'About',ta:'பற்றி',icon:'ℹ️'},{id:20,name:'Tamil News Videos',ta:'தமிழ் செய்தி',icon:'📰'}]});});
 
