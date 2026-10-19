@@ -124,10 +124,26 @@ Silver: https://sasikumar-ai-9wdq.onrender.com/api/silver-rate?state=Tamil%20Nad
 ⚠️ WhatsApp menu provides API links for verified current rates. Prices can change; local jewellery rates may differ due to GST, making charges and other costs.
 
 🔙 Type 0 for Main Menu`,
-  '3': () => `🧮 GOLD LOAN / EMI CALCULATOR
-Loan amount, interest rate, tenure details use panni EMI calculate pannalaam.
-Website: https://sasikumar-ai-9wdq.onrender.com/loan-calculator.html
-Type 0 for Main Menu`,
+  '3': () => `🟡 GOLD LOAN • 🧮 LOAN CALCULATIONS
+
+GOLD LOAN — தங்கக் கடன்
+• தங்கத்தின் எடை மற்றும் தூய்மை அடிப்படையில் மதிப்பீடு.
+• 18K / 20K / 22K / 24K தங்க விவரங்களை அனுப்பலாம்.
+• உண்மையான கடன் தொகை வங்கி/NBFC விதிமுறைகள் மற்றும் நகை மதிப்பீட்டைப் பொறுத்தது.
+• தங்கக் கடன் பெறுவதை உறுதி செய்யும் வாக்குறுதி அல்ல.
+
+EMI CALCULATOR
+இந்த வடிவத்தில் அனுப்புங்கள்:
+EMI 100000 12 12
+
+இதன் பொருள்:
+கடன் தொகை ₹1,00,000 • வருட வட்டி 12% • காலம் 12 மாதங்கள்.
+
+உங்கள் தொகை, வருட வட்டி %, மாதங்கள் ஆகியவற்றை மாற்றி அனுப்பலாம்.
+உதாரணம்: EMI 50000 10.5 24
+
+🌐 Calculator: https://sasikumar-ai-9wdq.onrender.com/loan-calculator.html
+🔙 Type 0 for Main Menu`,
   '4': () => `🏦 BANKING SERVICES
 Savings, loans, EMI and banking-related questions-ai kelunga.
 Bank terms-ai official bank sources-la verify pannunga.
@@ -321,6 +337,35 @@ async function getLiveGoldSilverWhatsAppReply() {
 }
 
 function getMenuReply(num){const fn=MENU_REPLIES[num];return fn?fn():null;}
+
+function getWhatsAppEMIReply(message) {
+  const m = String(message || '').trim().match(/^EMI\s+([\d,]+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)\s+(\d{1,3})$/i);
+  if (!m) return null;
+  const principal = Number(m[1].replace(/,/g, ''));
+  const annualRate = Number(m[2]);
+  const months = Number(m[3]);
+  if (!Number.isFinite(principal) || !Number.isFinite(annualRate) ||
+      principal <= 0 || principal > 1000000000 ||
+      annualRate < 0 || annualRate > 100 || months < 1 || months > 600) {
+    return '⚠️ சரியான விவரங்களை அனுப்புங்கள். உதாரணம்: EMI 100000 12 12';
+  }
+  const r = annualRate / 1200;
+  const emi = r === 0 ? principal / months :
+    principal * r * Math.pow(1 + r, months) / (Math.pow(1 + r, months) - 1);
+  const total = emi * months;
+  const money = n => '₹' + n.toLocaleString('en-IN', {maximumFractionDigits: 2, minimumFractionDigits: 2});
+  return `🤖 SASIKUMAR AI — EMI CALCULATION
+💰 Loan Amount: ${money(principal)}
+📈 Annual Interest: ${annualRate}%
+📅 Tenure: ${months} months
+🧮 Monthly EMI: ${money(emi)}
+💵 Total Payment: ${money(total)}
+📊 Total Interest: ${money(total - principal)}
+
+⚠️ Estimate only; fees and lender terms may change the final amount.
+🌐 Calculator: https://sasikumar-ai-9wdq.onrender.com/loan-calculator.html
+🔙 Type 0 for Main Menu`;
+}
 function detectLang(q){try{if(/[\u0B80-\u0BFF]/.test(q))return 'ta';return 'en';}catch(e){return 'en';}}
 function getGeneralReply(q,lang){const time=new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'});if(q.toLowerCase().includes('gold'))return `💰 GOLD RATE\nVerified current rate-ai /api/gold-la check pannunga.\nhttps://sasikumar-ai-9wdq.onrender.com/api/gold\nType 0 for Menu`;return `🌍 General AI - ${time}\nYou: "${q}"\nType 0 for Menu or 1-31`; }
 
@@ -629,6 +674,24 @@ if (!isWelcome) {
     reply = /[\u0B80-\u0BFF]/.test(trimmed)
       ? 'வணக்கம் நண்பா! 😊❤️ எப்படி இருக்கீங்க? என்ன உதவி வேண்டும்?'
       : 'Hey friend! 😊❤️ How are you today? How can I help?';
+  } else if (/^EMI\b/i.test(trimmed) && getWhatsAppEMIReply(trimmed)) {
+    reply = getWhatsAppEMIReply(trimmed);
+  } else if (/gold\s*loan|தங்கக்\s*கடன்|நகைக்\s*கடன்/i.test(trimmed)) {
+    reply = `🟡 GOLD LOAN SUPPORT
+தங்கத்தின் நிகர எடை (கிராம்), தூய்மை (18K/20K/22K/24K) ஆகியவற்றை அனுப்புங்கள்.
+கடன் மதிப்பீடு கடன் வழங்குநரின் விதிமுறைகள் மற்றும் நகைச் சோதனையைப் பொறுத்தது.
+🌐 Gold & Silver: https://sasikumar-ai-9wdq.onrender.com/gold-silver.html
+⚠️ இது ஆரம்ப வழிகாட்டுதல் மட்டுமே; கடன் ஒப்புதல் உறுதி அல்ல.
+🔙 Type 0 for Main Menu`;
+  } else if (/human\s*support|live\s*support|contact\s*support|மனித\s*உதவி|நேரடி\s*உதவி/i.test(trimmed)) {
+    reply = `👨‍💻 SASIKUMAR AI — HUMAN SUPPORT
+உங்கள் கேள்வி அல்லது பிரச்சினையை விவரமாக அனுப்புங்கள்.
+📩 Contact: https://sasikumar-ai-9wdq.onrender.com/communication.html
+⭐ Feedback: https://sasikumar-ai-9wdq.onrender.com/customer-feedback.html
+குறிப்பு: நேரடி மனித பதில் ஆதரவு குழு கிடைப்பதைப் பொறுத்தது.
+🔙 Type 0 for Main Menu`;
+  } else if (/loan\s*calculat|emi\s*calculat|கடன்\s*கணக்கீடு/i.test(trimmed)) {
+    reply = getMenuReply('3');
   } else if (/tamil\s*(breaking\s*)?news|breaking\s*news|தமிழ்.*செய்தி|முக்கியச் செய்திகள்/i.test(trimmed)) {
     reply = await getTamilBreakingNews();
   } else if (/\b(kavithai|poem|poetry)\b|கவிதை|கவிதைகள்/i.test(trimmed)) {
