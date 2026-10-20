@@ -965,6 +965,76 @@ app.get('/api/services',(req,res)=>{res.json({services:[{id:1,name:'Gold Rate',t
 
 
 /* SASIKUMAR AI GLOBAL CHAT API */
+async function getCloudflareAIReply(message, category = 'General AI') {
+  const account = process.env.CLOUDFLARE_ACCOUNT_ID;
+  const token = process.env.CLOUDFLARE_API_TOKEN;
+
+  if (!account || !token) {
+    console.error('[Cloudflare AI] Environment variables missing');
+    return null;
+  }
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 25000);
+
+  try {
+    const response = await fetch(
+      'https://api.cloudflare.com/client/v4/accounts/' +
+        account +
+        '/ai/run/@cf/meta/llama-3.1-8b-instruct',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          messages: [
+            {
+              role: 'system',
+              content:
+                'You are SASIKUMAR AI, a helpful multilingual assistant. ' +
+                'Reply in the user language, including Tamil, English or Tanglish. ' +
+                'Be accurate, concise and transparent about uncertainty. ' +
+                'The requested category is: ' + String(category).slice(0, 100)
+            },
+            {
+              role: 'user',
+              content: String(message).slice(0, 12000)
+            }
+          ]
+        }),
+        signal: controller.signal
+      }
+    );
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok || data.success === false) {
+      console.error(
+        '[Cloudflare AI]',
+        response.status,
+        data.errors?.[0]?.message || 'Fallback request failed'
+      );
+      return null;
+    }
+
+    const reply =
+      data.result?.response ||
+      data.result?.output_text ||
+      '';
+
+    return typeof reply === 'string' && reply.trim()
+      ? reply.trim()
+      : null;
+  } catch (error) {
+    console.error('[Cloudflare AI]', error.message || 'Request failed');
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 app.post('/api/chat', async (req, res) => {
   try {
     const message = String(req.body?.message || '').trim();
@@ -1105,6 +1175,18 @@ app.post('/api/chat', async (req, res) => {
           signal: controller.signal
         }
       );
+    } catch (fetchError) {
+      if (!imageData) {
+        const fallbackReply = await getCloudflareAIReply(userMessage, category);
+        if (fallbackReply) {
+          return res.json({
+            reply: fallbackReply,
+            answer: fallbackReply,
+            api: 'Cloudflare Workers AI (fallback)'
+          });
+        }
+      }
+      throw fetchError;
     } finally {
       clearTimeout(timer);
     }
@@ -1112,6 +1194,17 @@ app.post('/api/chat', async (req, res) => {
     const result = await upstream.json().catch(() => ({}));
 
     if (!upstream.ok) {
+      if (!imageData) {
+        const fallbackReply = await getCloudflareAIReply(userMessage, category);
+        if (fallbackReply) {
+          return res.json({
+            reply: fallbackReply,
+            answer: fallbackReply,
+            api: 'Cloudflare Workers AI (fallback)'
+          });
+        }
+      }
+
       console.error(
         'Groq API error:',
         upstream.status,
@@ -1134,6 +1227,17 @@ app.post('/api/chat', async (req, res) => {
     const reply = result?.choices?.[0]?.message?.content;
 
     if (!reply) {
+      if (!imageData) {
+        const fallbackReply = await getCloudflareAIReply(userMessage, category);
+        if (fallbackReply) {
+          return res.json({
+            reply: fallbackReply,
+            answer: fallbackReply,
+            api: 'Cloudflare Workers AI (fallback)'
+          });
+        }
+      }
+
       return res.status(502).json({
         reply: 'AI-யிடமிருந்து பதில் கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.',
         answer: 'AI-யிடமிருந்து பதில் கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.'
