@@ -22,6 +22,14 @@ button{width:100%;margin-top:14px;padding:14px;border:0;border-radius:14px;font-
 #result img{display:block;width:100%;max-width:100%;height:auto;max-height:none;margin:auto;object-fit:contain;border-radius:14px}
 .small{color:#cbd5e1;text-align:center}
 </style>
+
+<style id="sk_all_logo_spin_v2">
+@keyframes skAllLogoSpinV2 {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+</style>
+
 </head>
 <body>
 
@@ -45,6 +53,8 @@ button{width:100%;margin-top:14px;padding:14px;border:0;border-radius:14px;font-
 <textarea id="prompt" placeholder="Example: A beautiful peacock in a natural garden, realistic digital art"></textarea>
 
 <button class="generate" onclick="generateImage()">✨ Generate Image</button>
+<button type="button" class="generate" style="background:#0f766e" onclick="generateImageWithHF()">🤗 Generate with Hugging Face</button>
+<button type="button" class="back" onclick="downloadPosterPNG()">⬇️ Download Poster PNG</button>
 
 <div class="tool-title">🛠️ All Tools</div>
 <div class="tool-grid">
@@ -169,68 +179,249 @@ async function pastePrompt(){
   }
 }
 
-async function generateImage(){
-  const prompt=document.getElementById("prompt").value.trim();
-  const status=document.getElementById("status");
-  const result=document.getElementById("result");
 
-  result.innerHTML="";
+/* SK_LOCAL_POSTER_PNG_V1 */
+let skLocalPosterUrl = '';
 
-  if(!prompt){
-    status.textContent="Please enter an image description.";
-    return;
+function skEscapeXml(value) {
+  return String(value).replace(/[&<>"']/g, ch => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&apos;'
+  })[ch]);
+}
+
+function skWrapPosterText(value, maxChars) {
+  const words = String(value).split(/\s+/);
+  const lines = [];
+  let line = '';
+
+  for (const word of words) {
+    if (!word) continue;
+
+    if ((line + ' ' + word).trim().length > maxChars && line) {
+      lines.push(line);
+      line = word;
+    } else {
+      line = (line + ' ' + word).trim();
+    }
   }
 
-  status.textContent="⏳ Generating image...";
+  if (line) lines.push(line);
+  return lines.slice(0, 12);
+}
 
-  try{
-    const response=await fetch("/api/ai/image",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({prompt})
-    });
+function createLocalPoster(prompt) {
+  const safePrompt = String(prompt || '').trim();
 
-    const data=await response.json();
+  if (!safePrompt) {
+    throw new Error('Please enter poster content first.');
+  }
 
-    if(!data.ok){
-      if(/429|quota|rate limit|limit reached/i.test(String(data.error || ""))){
-        status.textContent="⏳ Gemini quota unavailable — creating local poster...";
-        try{
-          const fallback=await fetch("/api/any-content",{
-            method:"POST",
-            headers:{"Content-Type":"application/json"},
-            body:JSON.stringify({content:prompt,theme:"classic"})
-          });
-          const fb=await fallback.json();
-          if(fb.ok && fb.imageUrl){
-            status.textContent="✅ Local poster created successfully.";
-            const img=document.createElement("img");
-            img.src=fb.imageUrl;
-            img.alt=prompt;
-            result.appendChild(img);
-            return;
-          }
-          status.textContent="❌ "+(fb.error || "Local poster creation failed.");
-        }catch(e){
-          status.textContent="❌ Local poster service unavailable.";
-        }
-      }else{
-        status.textContent="❌ "+(data.error || "Image generation failed.");
-      }
+  const lines = skWrapPosterText(safePrompt,  thirtyChars());
+  const textSvg = lines.map((line, index) =>
+    '<text x="540" y="' + (570 + index * 58) +
+    '" text-anchor="middle" font-family="Arial,sans-serif" ' +
+    'font-size="31" fill="#ffffff">' +
+    skEscapeXml(line) + '</text>'
+  ).join('');
+
+  const svg =
+    '<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">' +
+    '<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">' +
+    '<stop offset="0" stop-color="#075985"/>' +
+    '<stop offset="0.55" stop-color="#4338ca"/>' +
+    '<stop offset="1" stop-color="#7e22ce"/>' +
+    '</linearGradient></defs>' +
+    '<rect width="1080" height="1350" rx="42" fill="url(#bg)"/>' +
+    '<rect x="35" y="35" width="1010" height="1280" rx="30" fill="none" stroke="#facc15" stroke-width="7"/>' +
+    '<circle cx="540" cy="245" r="112" fill="#ffffff" opacity=".13"/>' +
+    '<text x="540" y="225" text-anchor="middle" font-family="Arial,sans-serif" font-size="68" font-weight="bold" fill="#facc15">SK</text>' +
+    '<text x="540" y="395" text-anchor="middle" font-family="Arial,sans-serif" font-size="57" font-weight="bold" fill="#ffffff">SASIKUMAR AI</text>' +
+    '<text x="540" y="455" text-anchor="middle" font-family="Arial,sans-serif" font-size="28" fill="#e0f2fe">YOUR IDEA • YOUR POSTER</text>' +
+    textSvg +
+    '<rect x="210" y="1120" width="660" height="3" fill="#facc15"/>' +
+    '<text x="540" y="1185" text-anchor="middle" font-family="Arial,sans-serif" font-size="30" font-weight="bold" fill="#facc15">CREATED WITH SASIKUMAR AI</text>' +
+    '<text x="540" y="1240" text-anchor="middle" font-family="Arial,sans-serif" font-size="23" fill="#ffffff">Smart Digital Services</text>' +
+    '</svg>';
+
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+
+function thirtyChars() {
+  return 30;
+}
+
+function makeLocalPoster(prompt) {
+  const result = document.getElementById('result');
+  const status = document.getElementById('status');
+
+  skLocalPosterUrl = createLocalPoster(prompt);
+
+  result.innerHTML = '';
+  const img = document.createElement('img');
+  img.src = skLocalPosterUrl;
+  img.alt = 'SASIKUMAR AI local poster';
+  result.appendChild(img);
+
+  status.textContent =
+    '✅ Local poster created. Tap Download Poster PNG to save it.';
+}
+
+async function downloadPosterPNG() {
+  if (!skLocalPosterUrl) {
+    const prompt = document.getElementById('prompt').value.trim();
+
+    if (!prompt) {
+      document.getElementById('status').textContent =
+        'Please enter a description first.';
       return;
     }
 
-    status.textContent="✅ Image generated successfully.";
+    try {
+      makeLocalPoster(prompt);
+    } catch (err) {
+      document.getElementById('status').textContent = '❌ ' + err.message;
+      return;
+    }
+  }
 
-    const img=document.createElement("img");
-    img.src=data.imageUrl;
-    img.alt=prompt;
-    result.appendChild(img);
+  const status = document.getElementById('status');
+  const image = new Image();
 
-  }catch(error){
-    status.textContent="❌ Unable to connect to the image service.";
+  image.onload = function () {
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1080;
+      canvas.height = 1350;
+
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+      canvas.toBlob(blob => {
+        if (!blob) {
+          status.textContent = '❌ PNG export failed. Please try again.';
+          return;
+        }
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'sasikumar-ai-poster.png';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+        status.textContent = '✅ Poster PNG download started.';
+      }, 'image/png');
+    } catch (err) {
+      status.textContent = '❌ PNG export failed: ' + err.message;
+    }
+  };
+
+  image.onerror = function () {
+    status.textContent = '❌ Poster preview could not be loaded.';
+  };
+
+  image.src = skLocalPosterUrl;
+}
+/* END SK_LOCAL_POSTER_PNG_V1 */
+
+
+async function generateImage() {
+  const prompt = document.getElementById('prompt').value.trim();
+  const status = document.getElementById('status');
+  const result = document.getElementById('result');
+
+  result.innerHTML = '';
+
+  if (!prompt) {
+    status.textContent = 'Please enter an image description.';
+    return;
+  }
+
+  status.textContent = '⏳ Trying AI image generation...';
+
+  try {
+    const response = await fetch('/api/ai/image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
+    });
+
+    const data = await response.json();
+
+    if (data.ok && data.imageUrl) {
+      skLocalPosterUrl = '';
+      const img = document.createElement('img');
+      img.src = data.imageUrl;
+      img.alt = prompt;
+      result.appendChild(img);
+      status.textContent = '✅ AI image generated successfully.';
+      return;
+    }
+
+    status.textContent =
+      'ℹ️ AI image unavailable. Creating a local poster instead...';
+    makeLocalPoster(prompt);
+
+  } catch (error) {
+    status.textContent =
+      'ℹ️ AI image service unavailable. Creating a local poster instead...';
+
+    try {
+      makeLocalPoster(prompt);
+    } catch (localError) {
+      status.textContent = '❌ ' + localError.message;
+    }
   }
 }
+
+// SK_HUGGINGFACE_IMAGE_UI_V1
+async function generateImageWithHF() {
+  const prompt = document.getElementById('prompt').value.trim();
+  const status = document.getElementById('status');
+  const result = document.getElementById('result');
+
+  result.innerHTML = '';
+
+  if (!prompt) {
+    status.textContent = 'Please enter an image description.';
+    return;
+  }
+
+  status.textContent = '⏳ Generating image with Hugging Face...';
+
+  try {
+    const response = await fetch('/api/ai/image/huggingface', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.ok || !data.imageUrl) {
+      throw new Error(data.error || `Request failed (${response.status})`);
+    }
+
+    skLocalPosterUrl = '';
+
+    const img = document.createElement('img');
+    img.src = data.imageUrl;
+    img.alt = prompt;
+    result.appendChild(img);
+
+    status.textContent = '✅ Hugging Face image generated successfully.';
+  } catch (error) {
+    status.textContent = '❌ Hugging Face image generation failed: ' + error.message;
+  }
+}
+// END SK_HUGGINGFACE_IMAGE_UI_V1
+
 </script>
 
 <script id="skGlobalExitButtonScript">
@@ -290,6 +481,31 @@ async function generateImage(){
   });
 
   document.body.appendChild(btn);
+})();
+</script>
+
+
+<script id="sk_all_logo_spin_v2-script">
+(function () {
+  function spinLogo(img) {
+    if (!img || !/sasikumar-ai-logo\.png/i.test(img.getAttribute('src') || '')) return;
+    img.style.setProperty('animation', 'skAllLogoSpinV2 3s linear infinite', 'important');
+  }
+  function scan(root) {
+    if (root.matches && root.matches('img')) spinLogo(root);
+    if (root.querySelectorAll) root.querySelectorAll('img').forEach(spinLogo);
+  }
+  scan(document);
+  new MutationObserver(function (records) {
+    records.forEach(function (record) {
+      if (record.type === 'attributes') spinLogo(record.target);
+      else record.addedNodes.forEach(function (node) {
+        if (node.nodeType === 1) scan(node);
+      });
+    });
+  }).observe(document.documentElement, {
+    subtree: true, childList: true, attributes: true, attributeFilter: ['src']
+  });
 })();
 </script>
 

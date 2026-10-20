@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import { InferenceClient } from '@huggingface/inference';
 import express from 'express';
 import pg from 'pg';
 import path from 'path';
@@ -2145,6 +2146,194 @@ app.post('/api/jobs/employer', async (req, res) => {
   }
 });
 // END SK_JOB_REGISTRATION_API_V1
+
+
+/* SASIKUMAR AI IMAGE GENERATION API */
+async function skGenerateImage(prompt) {
+  const apiKey = process.env.GEMINI_API_KEY;
+
+  if (!apiKey) {
+    const err = new Error('GEMINI_API_KEY is not configured.');
+    err.status = 503;
+    throw err;
+  }
+
+  const response = await fetch(
+    'https://generativelanguage.googleapis.com/v1/models/gemini-3.1-flash-image:generateContent',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-goog-api-key': apiKey
+      },
+      body: JSON.stringify({
+        contents: [{
+          parts: [{ text: prompt }]
+        }],
+        generationConfig: {
+          responseModalities: ['IMAGE']
+        }
+      }),
+      signal: AbortSignal.timeout(120000)
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    console.error(
+      '[Image API] Provider error:',
+      response.status,
+      data?.error?.message || 'Unknown error'
+    );
+
+    const err = new Error(
+      response.status === 429
+        ? 'Image generation quota reached. Please try later.'
+        : 'Gemini image generation failed. Check model access and API configuration.'
+    );
+
+    err.status = response.status === 429 ? 429 : 502;
+    throw err;
+  }
+
+  const parts = (data.candidates || [])
+    .flatMap(candidate => candidate.content?.parts || []);
+
+  const imagePart = parts.find(part =>
+    part.inlineData?.data &&
+    String(part.inlineData.mimeType || '').startsWith('image/')
+  );
+
+  if (!imagePart) {
+    const err = new Error('No image was returned by Gemini.');
+    err.status = 502;
+    throw err;
+  }
+
+  return 'data:' + imagePart.inlineData.mimeType +
+    ';base64,' + imagePart.inlineData.data;
+}
+
+app.post('/api/ai/image', async (req, res) => {
+  try {
+    const prompt = String(req.body?.prompt || '').trim();
+
+    if (!prompt) {
+      return res.status(400).json({
+        ok: false,
+        error: 'Please enter an image description.'
+      });
+    }
+
+    if (prompt.length > 6000) {
+      return res.status(413).json({
+        ok: false,
+        error: 'Image description is too long.'
+      });
+    }
+
+    const imageUrl = await skGenerateImage(prompt);
+    return res.json({ ok: true, imageUrl });
+  } catch (err) {
+    console.error('[Image API]', err.message);
+
+    return res.status(err.status || 502).json({
+      ok: false,
+      error: err.status === 503
+        ? 'Image API key is missing on the server.'
+        : err.message || 'Image generation failed.'
+    });
+  }
+});
+
+
+// SK_HUGGINGFACE_IMAGE_API_V1
+app.post('/api/ai/image/huggingface', async (req, res) => {
+  try {
+    const prompt = String(req.body?.prompt || '').trim();
+
+    if (!prompt) {
+      return res.status(400).json({
+        ok: false,
+        error: 'Please enter an image description.'
+      });
+    }
+
+    if (prompt.length > 6000) {
+      return res.status(413).json({
+        ok: false,
+        error: 'Image description is too long.'
+      });
+    }
+
+    const token = process.env.HF_TOKEN;
+    if (!token) {
+      return res.status(503).json({
+        ok: false,
+        error: 'HF_TOKEN is not configured on the server.'
+      });
+    }
+
+    const client = new InferenceClient(token);
+    const imageBlob = await client.textToImage({
+      model: 'black-forest-labs/FLUX.1-schnell',
+      inputs: prompt
+    });
+
+    const mime = imageBlob.type || 'image/png';
+    const base64 = Buffer.from(
+      await imageBlob.arrayBuffer()
+    ).toString('base64');
+
+    return res.json({
+      ok: true,
+      imageUrl: `data:${mime};base64,${base64}`
+    });
+  } catch (err) {
+    console.error('[Hugging Face Image API]', err.message);
+    return res.status(502).json({
+      ok: false,
+      error: 'Hugging Face image generation failed. Check model access, provider availability, and account credits.'
+    });
+  }
+});
+// END SK_HUGGINGFACE_IMAGE_API_V1
+
+app.post('/api/any-content', async (req, res) => {
+  try {
+    const content = String(req.body?.content || '').trim();
+    const theme = String(req.body?.theme || 'classic')
+      .replace(/[^a-z0-9 _-]/gi, '')
+      .slice(0, 50);
+
+    if (!content) {
+      return res.status(400).json({
+        ok: false,
+        error: 'Please enter poster content.'
+      });
+    }
+
+    const prompt =
+      'Create a finished, polished poster image. Theme: ' + theme +
+      '. Use attractive colors, readable text and balanced layout. ' +
+      'Preserve supplied names, numbers and wording. Do not invent missing details. ' +
+      'Poster request: ' + content;
+
+    const imageUrl = await skGenerateImage(prompt);
+    return res.json({ ok: true, imageUrl });
+  } catch (err) {
+    console.error('[Poster API]', err.message);
+
+    return res.status(err.status || 502).json({
+      ok: false,
+      error: err.message || 'Poster generation failed.'
+    });
+  }
+});
+
+/* END SASIKUMAR AI IMAGE GENERATION API */
+
 
 app.get('*',(req,res)=>{const fp=path.join(publicPath,'index.html');if(fs.existsSync(fp))res.sendFile(fp);else res.status(404).send('Not Found');});
 app.listen(PORT,()=>console.log(`🤖 33 OPTIONS WHATSAPP MENU http://localhost:${PORT} - OK`));
