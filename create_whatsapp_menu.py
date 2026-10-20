@@ -42,7 +42,7 @@ draw.text((W//2, 200), "SASIKUMAR AI", anchor="mm",
           font=title_font, fill="#1556B3")
 draw.text((W//2, 247), "YOUR MULTI-LANGUAGE AI ASSISTANT",
           anchor="mm", font=subtitle_font, fill="#3973B9")
-draw.text((W//2, 320), "COMPLETE MENU — 31 SERVICES",
+draw.text((W//2, 320), "COMPLETE MENU — 32 SERVICES",
           anchor="mm", font=title_font, fill="#174A91")
 
 items = [
@@ -76,7 +76,8 @@ items = [
     "28. AI Tools",
     "29. Website Services",
     "30. Contact & Customer Feedback",
-    "31. All Content — Complete Services"
+    "31. All Content — Complete Services",
+    "32. Tamil Comedy & Movie Fun"
 ]
 
 # Two-column layout
@@ -130,4 +131,4 @@ img.save(out, optimize=True)
 print("SUCCESS:", out)
 print("Image size:", img.size)
 print("Options:", len(items))
-print("Backup created successfully")
+print("Menu image generated successfully")
