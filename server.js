@@ -2404,6 +2404,114 @@ app.post('/api/ai/image/huggingface', async (req, res) => {
 });
 // END SK_HUGGINGFACE_IMAGE_API_V1
 
+// SK_CLOUDFLARE_FLUX2_KLEIN_V1
+app.post('/api/ai/image/cloudflare', async (req, res) => {
+  try {
+    const prompt = String(req.body?.prompt || '').trim();
+
+    if (!prompt) {
+      return res.status(400).json({
+        ok: false,
+        error: 'Please enter an image description.'
+      });
+    }
+
+    if (prompt.length > 6000) {
+      return res.status(413).json({
+        ok: false,
+        error: 'Image description is too long.'
+      });
+    }
+
+    const account = process.env.CLOUDFLARE_ACCOUNT_ID;
+    const token = process.env.CLOUDFLARE_API_TOKEN;
+
+    if (!account || !token) {
+      return res.status(503).json({
+        ok: false,
+        error: 'Cloudflare AI credentials are missing on the server.'
+      });
+    }
+
+    const form = new FormData();
+    form.append('prompt', prompt);
+    form.append('width', '1024');
+    form.append('height', '1024');
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 120000);
+
+    let response;
+    try {
+      response = await fetch(
+        'https://api.cloudflare.com/client/v4/accounts/' +
+          encodeURIComponent(account) +
+          '/ai/run/@cf/black-forest-labs/flux-2-klein-4b',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer ' + token
+          },
+          body: form,
+          signal: controller.signal
+        }
+      );
+    } finally {
+      clearTimeout(timer);
+    }
+
+    const data = await response.json();
+
+    if (!response.ok || data.success === false) {
+      console.error(
+        '[Cloudflare FLUX.2 Image API]',
+        response.status,
+        JSON.stringify(data.errors || []).slice(0, 1000)
+      );
+
+      return res.status(response.status === 429 ? 429 : 502).json({
+        ok: false,
+        error: 'Cloudflare FLUX.2 image generation failed. Check model access, API permissions, and billing.'
+      });
+    }
+
+    let image = data.result?.image;
+
+    if (typeof image !== 'string' || !image.trim()) {
+      console.error(
+        '[Cloudflare FLUX.2 Image API] No image in response:',
+        JSON.stringify(data).slice(0, 1000)
+      );
+
+      return res.status(502).json({
+        ok: false,
+        error: 'Cloudflare returned no usable image. Please try again.'
+      });
+    }
+
+    if (!image.startsWith('data:image/')) {
+      image = 'data:image/png;base64,' + image;
+    }
+
+    return res.json({
+      ok: true,
+      imageUrl: image,
+      model: '@cf/black-forest-labs/flux-2-klein-4b'
+    });
+  } catch (err) {
+    console.error('[Cloudflare FLUX.2 Image API]', err.message);
+
+    return res.status(502).json({
+      ok: false,
+      error: err.name === 'AbortError'
+        ? 'Cloudflare image generation timed out. Please try again.'
+        : 'Cloudflare FLUX.2 image generation failed.'
+    });
+  }
+});
+// END SK_CLOUDFLARE_FLUX2_KLEIN_V1
+
+
 app.post('/api/any-content', async (req, res) => {
   try {
     const content = String(req.body?.content || '').trim();

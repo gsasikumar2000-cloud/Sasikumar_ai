@@ -54,6 +54,7 @@ button{width:100%;margin-top:14px;padding:14px;border:0;border-radius:14px;font-
 
 <button class="generate" onclick="generateImage()">✨ Generate Image</button>
 <button type="button" class="generate" style="background:#0f766e" onclick="generateImageWithHF()">🤗 Generate with Hugging Face</button>
+<button type="button" class="generate" style="background:#2563eb" onclick="generateImageWithCloudflare()">☁️ Generate with Cloudflare FLUX.2 Klein 4B</button>
 <button type="button" class="back" onclick="downloadPosterPNG()">⬇️ Download Poster PNG</button>
 
 <div class="tool-title">🛠️ All Tools</div>
@@ -420,6 +421,57 @@ async function generateImageWithHF() {
     status.textContent = '❌ Hugging Face image generation failed: ' + error.message;
   }
 }
+
+// SK_CLOUDFLARE_FLUX_KLEIN_UI_V1
+async function generateImageWithCloudflare() {
+  const prompt = document.getElementById('prompt').value.trim();
+  const status = document.getElementById('status');
+  const result = document.getElementById('result');
+
+  result.innerHTML = '';
+
+  if (!prompt) {
+    status.textContent = 'Please enter an image description.';
+    return;
+  }
+
+  status.textContent = '☁️ Generating image with Cloudflare FLUX Klein...';
+
+  try {
+    const response = await fetch('/api/ai/image/cloudflare', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || !data.ok || !data.imageUrl) {
+      throw new Error(data.error || `Request failed (${response.status})`);
+    }
+
+    skLocalPosterUrl = '';
+
+    const img = document.createElement('img');
+    img.src = data.imageUrl;
+    img.alt = prompt;
+    img.style.maxWidth = '100%';
+    img.style.height = 'auto';
+    img.onload = () => {
+      status.textContent = '✅ Cloudflare FLUX Klein image generated successfully.';
+    };
+    img.onerror = () => {
+      status.textContent = '❌ Image returned, but the preview could not be loaded.';
+    };
+
+    result.appendChild(img);
+    status.textContent = '⏳ Loading generated image...';
+  } catch (error) {
+    status.textContent = '❌ Cloudflare FLUX image generation failed: ' + error.message;
+  }
+}
+// END SK_CLOUDFLARE_FLUX_KLEIN_UI_V1
+
 // END SK_HUGGINGFACE_IMAGE_UI_V1
 
 </script>
