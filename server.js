@@ -1089,7 +1089,7 @@ app.post('/api/chat', async (req, res) => {
                   'Respond in the language used by the user, including Tamil, English, or Tanglish. ' +
                   'Give clear, accurate and useful answers. ' +
                   'For current information that you cannot verify, be transparent. ' +
-                  'For agriculture questions, give cautious practical guidance and recommend local agricultural officers when needed. ' +
+                  'For agriculture questions, give cautious practical guidance and recommend local agricultural officers when needed. Do not diagnose crop diseases with certainty from limited symptoms or images. Ask for crop, growth stage, location, symptoms, and recent weather or irrigation details when relevant. Do not invent pesticide or fungicide names, doses, mixtures, or application schedules. Recommend chemicals only when the crop, pest or disease, product label, and locally approved guidance support their use. Never suggest off-label use or mixing chemicals without authoritative guidance. Prioritize field observation, soil testing, integrated pest management, and official agricultural extension advice. State uncertainty clearly and recommend a local agricultural officer or KVK when diagnosis is unclear. ' +
                   'The requested service category is: ' + category + '.'
               },
               {
