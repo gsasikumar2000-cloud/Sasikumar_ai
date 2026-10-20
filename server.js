@@ -788,8 +788,20 @@ Contact: https://sasikumar-ai-9wdq.onrender.com/communication.html
 Feedback: https://sasikumar-ai-9wdq.onrender.com/customer-feedback.html
 Type 0 for Main Menu`,
   '31': () => `📚 ALL CONTENT — COMPLETE SERVICES
-SASIKUMAR AI menu options 1–31 cover AI chat, Gold/Silver, loan/EMI, banking, appraisal, education, jobs, news, creative tools, search, sports, Tamil content, audio/video, business ideas and website services.
+SASIKUMAR AI menu options 1–32 cover AI chat, Gold/Silver, loan/EMI, banking, appraisal, education, jobs, news, creative tools, search, sports, Tamil content, audio/video, business ideas and website services.
 Website: https://sasikumar-ai-9wdq.onrender.com/all-menus.html
+Type 0 for Main Menu`,
+  '32': () => `😂 SASIKUMAR AI — TAMIL COMEDY & MOVIE FUN
+
+🎭 தமிழ் நகைச்சுவை மற்றும் திரைப்பட பொழுதுபோக்கு
+🎬 திரைப்படத் தகவல்கள் மற்றும் நடிகர்கள் பற்றிய விவரங்கள்
+🎵 திரைப்படப் பாடல்கள் மற்றும் வீடியோ தேடல் வழிகாட்டுதல்
+📻 Audio & Video Hub:
+https://sasikumar-ai-9wdq.onrender.com/audio-video-hub.html
+
+🌐 SASIKUMAR AI:
+https://sasikumar-ai-9wdq.onrender.com
+
 Type 0 for Main Menu`
 };
 
@@ -910,14 +922,14 @@ function getWhatsAppEMIReply(message) {
 🔙 Type 0 for Main Menu`;
 }
 function detectLang(q){try{if(/[\u0B80-\u0BFF]/.test(q))return 'ta';return 'en';}catch(e){return 'en';}}
-function getGeneralReply(q,lang){const time=new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'});if(q.toLowerCase().includes('gold'))return `💰 GOLD RATE\nVerified current rate-ai /api/gold-la check pannunga.\nhttps://sasikumar-ai-9wdq.onrender.com/api/gold\nType 0 for Menu`;return `🌍 General AI - ${time}\nYou: "${q}"\nType 0 for Menu or 1-31`; }
+function getGeneralReply(q,lang){const time=new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'});if(q.toLowerCase().includes('gold'))return `💰 GOLD RATE\nVerified current rate-ai /api/gold-la check pannunga.\nhttps://sasikumar-ai-9wdq.onrender.com/api/gold\nType 0 for Menu`;return `🌍 General AI - ${time}\nYou: "${q}"\nType 0 for Menu or 1-32`; }
 
-app.get('/api/status',(req,res)=>{res.json({status:'WHATSAPP MENU 31 OPTIONS LIVE OK',version:'7.1 Menu',options:31,time:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})});});
+app.get('/api/status',(req,res)=>{res.json({status:'WHATSAPP MENU 32 OPTIONS LIVE OK',version:'7.2 Menu',options:32,time:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})});});
 app.get('/api/whatsapp/menu',(req,res)=>{
   res.set('Cache-Control','no-store');
   res.json({
-    welcome: '🤖 SASIKUMAR AI — 31 Services',
-    total: 31,
+    welcome: '🤖 SASIKUMAR AI — 32 Services',
+    total: 32,
     menuImage: 'https://sasikumar-ai-9wdq.onrender.com/assets/whatsapp-menu.png'
   });
 });
@@ -1299,7 +1311,7 @@ if(WA_TOKEN && WA_PHONE_ID){
           '',
           '💬 உங்கள் கேள்வியை நேரடியாக அனுப்புங்கள்.',
           '',
-          '📋 31 சேவைகள் கொண்ட Complete Menu அடுத்த படத்தில் உள்ளது.',
+          '📋 32 சேவைகள் கொண்ட Complete Menu அடுத்த படத்தில் உள்ளது.',
           '',
           '🌐 Website: https://sasikumar-ai-9wdq.onrender.com',
           '',
@@ -1352,6 +1364,7 @@ if(WA_TOKEN && WA_PHONE_ID){
           '29. Website Services',
           '30. Contact & Customer Feedback',
           '31. All Content — Complete Services',
+          '32. Tamil Comedy & Movie Fun',
           '0. Main Menu',
           'Send an option number to select a service.'
         ].join('\n');
@@ -2039,4 +2052,4 @@ app.post('/api/jobs/employer', async (req, res) => {
 // END SK_JOB_REGISTRATION_API_V1
 
 app.get('*',(req,res)=>{const fp=path.join(publicPath,'index.html');if(fs.existsSync(fp))res.sendFile(fp);else res.status(404).send('Not Found');});
-app.listen(PORT,()=>console.log(`🤖 31 OPTIONS WHATSAPP MENU http://localhost:${PORT} - OK`));
+app.listen(PORT,()=>console.log(`🤖 32 OPTIONS WHATSAPP MENU http://localhost:${PORT} - OK`));
