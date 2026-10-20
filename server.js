@@ -2546,5 +2546,86 @@ app.post('/api/any-content', async (req, res) => {
 /* END SASIKUMAR AI IMAGE GENERATION API */
 
 
+/* SASIKUMAR AI POLLINATIONS IMAGE ROUTE */
+app.post('/api/ai/image/pollinations', async (req, res) => {
+  try {
+    const apiKey = process.env.POLLINATIONS_API_KEY;
+
+    if (!apiKey) {
+      return res.status(503).json({
+        ok: false,
+        error: 'Pollinations API key is not configured.'
+      });
+    }
+
+    const prompt = String(req.body?.prompt || req.body?.content || '')
+      .trim()
+      .slice(0, 1500);
+
+    if (!prompt) {
+      return res.status(400).json({
+        ok: false,
+        error: 'Please enter an image prompt.'
+      });
+    }
+
+    return res.status(501).json({
+      ok: false,
+      configured: true,
+      generationEnabled: false,
+      model: 'tongyi-mai/z-image-turbo',
+      message: 'Image generation is disabled until cost is confirmed.'
+    });
+  } catch (err) {
+    console.error('[Pollinations Image API]', err.message);
+    return res.status(500).json({
+      ok: false,
+      error: 'Pollinations route encountered an internal error.'
+    });
+  }
+});
+/* END SASIKUMAR AI POLLINATIONS IMAGE ROUTE */
+
+
+
+app.post('/api/translate', async (req, res) => {
+  try {
+    const input = String(req.body?.text || '').trim();
+    const rawSource = String(req.body?.sourceLanguage || 'auto').trim();
+    const rawTarget = String(req.body?.targetLanguage || 'en').trim();
+    const names = { auto: 'automatically detected language', ta: 'Tamil', en: 'English', hi: 'Hindi', te: 'Telugu', ml: 'Malayalam', kn: 'Kannada', bn: 'Bengali', mr: 'Marathi', ur: 'Urdu', fr: 'French', es: 'Spanish', de: 'German', ar: 'Arabic', zh: 'Chinese', ja: 'Japanese', ko: 'Korean', pt: 'Portuguese', ru: 'Russian', it: 'Italian', id: 'Indonesian', th: 'Thai', tr: 'Turkish', vi: 'Vietnamese' };
+    const aliases = Object.fromEntries(Object.entries(names).map(([code, name]) => [name, code]));
+    const sourceLanguage = names[rawSource] ? rawSource : (aliases[rawSource] || rawSource);
+    const targetLanguage = names[rawTarget] ? rawTarget : (aliases[rawTarget] || rawTarget);
+    if (!input) return res.status(400).json({ ok: false, error: 'Please enter text to translate.' });
+    if (input.length > 12000) return res.status(400).json({ ok: false, error: 'Text must be 12000 characters or fewer.' });
+    if (!names[sourceLanguage] || !names[targetLanguage] || targetLanguage === 'auto' || sourceLanguage === targetLanguage) return res.status(400).json({ ok: false, error: 'Please select valid, different languages.' });
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) return res.status(503).json({ ok: false, error: 'Gemini translation service is not configured.' });
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 45000);
+    let upstream, result;
+    try {
+      upstream = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=' + encodeURIComponent(apiKey), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: 'Translate the following text into ' + names[targetLanguage] + '. Source language: ' + names[sourceLanguage] + '. If source language is automatic, detect it. Preserve meaning and formatting. Return only the translation.\n\nText:\n' + input }] }], generationConfig: { temperature: 0.1, maxOutputTokens: 4096 } }),
+        signal: controller.signal
+      });
+      result = await upstream.json();
+    } finally { clearTimeout(timer); }
+    if (!upstream.ok) {
+      console.error('Gemini Translator provider HTTP status:', upstream.status);
+      return res.status(502).json({ ok: false, error: 'Gemini translation provider is temporarily unavailable.' });
+    }
+    const translation = result?.candidates?.[0]?.content?.parts?.map(part => part.text || '').join('').trim();
+    if (!translation) return res.status(502).json({ ok: false, error: 'No translation was returned.' });
+    return res.json({ ok: true, translation, sourceLanguage, targetLanguage });
+  } catch (error) {
+    if (error?.name === 'AbortError') return res.status(504).json({ ok: false, error: 'Translation timed out. Please try again.' });
+    console.error('Gemini Translator API error:', error?.message || 'Unknown error');
+    return res.status(500).json({ ok: false, error: 'Translation failed. Please try again.' });
+  }
+});
 app.get('*',(req,res)=>{const fp=path.join(publicPath,'index.html');if(fs.existsSync(fp))res.sendFile(fp);else res.status(404).send('Not Found');});
 app.listen(PORT,()=>console.log(`🤖 33 OPTIONS WHATSAPP MENU http://localhost:${PORT} - OK`));
