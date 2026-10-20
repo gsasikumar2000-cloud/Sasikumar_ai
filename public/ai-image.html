@@ -50,6 +50,15 @@ button{width:100%;margin-top:14px;padding:14px;border:0;border-radius:14px;font-
 <h1>🖼️ SASIKUMAR AI Image Maker</h1>
 <p class="small">Describe the image you want to create.</p>
 
+<label for="skPosterType" style="display:block;margin:12px 0 6px;font-weight:bold;">🎨 Choose Poster Type</label>
+<select id="skPosterType" style="width:100%;box-sizing:border-box;padding:14px;border-radius:12px;background:#fff;color:#172554;border:2px solid #60a5fa;font-size:16px;margin-bottom:12px;">
+<option value="business">🏪 Business Advertisement</option>
+<option value="birthday">🎂 Birthday Wishes</option>
+<option value="festival">🪔 Festival Wishes</option>
+<option value="gold">💰 Gold Rate Information</option>
+<option value="general" selected>✨ General Poster</option>
+</select>
+
 <textarea id="prompt" placeholder="Example: A beautiful peacock in a natural garden, realistic digital art"></textarea>
 
 <button class="generate" onclick="generateImage()">✨ Generate Image</button>
@@ -216,42 +225,66 @@ function skWrapPosterText(value, maxChars) {
 }
 
 function createLocalPoster(prompt) {
-  const safePrompt = String(prompt || '').trim();
+  const text = String(prompt || '').trim();
+  if (!text) throw new Error('Please enter poster content first.');
 
-  if (!safePrompt) {
-    throw new Error('Please enter poster content first.');
-  }
+  const typeEl = document.getElementById('skPosterType');
+  const type = typeEl ? typeEl.value : 'general';
 
-  const lines = skWrapPosterText(safePrompt,  thirtyChars());
-  const textSvg = lines.map((line, index) =>
-    '<text x="540" y="' + (570 + index * 58) +
+  const themes = {
+    business: {
+      title: 'BUSINESS PROMOTION',
+      c1: '#064e3b', c2: '#16a34a', accent: '#fde047'
+    },
+    birthday: {
+      title: 'HAPPY BIRTHDAY',
+      c1: '#831843', c2: '#9333ea', accent: '#fef08a'
+    },
+    festival: {
+      title: 'FESTIVAL WISHES',
+      c1: '#9a3412', c2: '#ea580c', accent: '#fef08a'
+    },
+    gold: {
+      title: 'GOLD RATE UPDATE',
+      c1: '#713f12', c2: '#b45309', accent: '#fde047'
+    },
+    general: {
+      title: 'SPECIAL ANNOUNCEMENT',
+      c1: '#075985', c2: '#6d28d9', accent: '#fde047'
+    }
+  };
+
+  const theme = themes[type] || themes.general;
+  const lines = skWrapPosterText(text, 26);
+  const textSvg = lines.map((line, i) =>
+    '<text x="540" y="' + (520 + i * 62) +
     '" text-anchor="middle" font-family="Arial,sans-serif" ' +
-    'font-size="31" fill="#ffffff">' +
+    'font-size="34" fill="#ffffff">' +
     skEscapeXml(line) + '</text>'
   ).join('');
 
   const svg =
     '<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">' +
     '<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">' +
-    '<stop offset="0" stop-color="#075985"/>' +
-    '<stop offset="0.55" stop-color="#4338ca"/>' +
-    '<stop offset="1" stop-color="#7e22ce"/>' +
+    '<stop offset="0" stop-color="' + theme.c1 + '"/>' +
+    '<stop offset="1" stop-color="' + theme.c2 + '"/>' +
     '</linearGradient></defs>' +
     '<rect width="1080" height="1350" rx="42" fill="url(#bg)"/>' +
-    '<rect x="35" y="35" width="1010" height="1280" rx="30" fill="none" stroke="#facc15" stroke-width="7"/>' +
-    '<circle cx="540" cy="245" r="112" fill="#ffffff" opacity=".13"/>' +
-    '<text x="540" y="225" text-anchor="middle" font-family="Arial,sans-serif" font-size="68" font-weight="bold" fill="#facc15">SK</text>' +
-    '<text x="540" y="395" text-anchor="middle" font-family="Arial,sans-serif" font-size="57" font-weight="bold" fill="#ffffff">SASIKUMAR AI</text>' +
-    '<text x="540" y="455" text-anchor="middle" font-family="Arial,sans-serif" font-size="28" fill="#e0f2fe">YOUR IDEA • YOUR POSTER</text>' +
+    '<circle cx="80" cy="100" r="170" fill="#ffffff" opacity=".07"/>' +
+    '<circle cx="1000" cy="1200" r="220" fill="#ffffff" opacity=".08"/>' +
+    '<rect x="32" y="32" width="1016" height="1286" rx="32" fill="none" stroke="' + theme.accent + '" stroke-width="8"/>' +
+    '<rect x="95" y="95" width="890" height="185" rx="28" fill="#ffffff" opacity=".12"/>' +
+    '<text x="540" y="165" text-anchor="middle" font-family="Arial,sans-serif" font-size="32" font-weight="bold" fill="' + theme.accent + '">SASIKUMAR AI</text>' +
+    '<text x="540" y="225" text-anchor="middle" font-family="Arial,sans-serif" font-size="40" font-weight="bold" fill="#ffffff">' + theme.title + '</text>' +
+    '<path d="M180 330 H900" stroke="' + theme.accent + '" stroke-width="5"/>' +
     textSvg +
-    '<rect x="210" y="1120" width="660" height="3" fill="#facc15"/>' +
-    '<text x="540" y="1185" text-anchor="middle" font-family="Arial,sans-serif" font-size="30" font-weight="bold" fill="#facc15">CREATED WITH SASIKUMAR AI</text>' +
-    '<text x="540" y="1240" text-anchor="middle" font-family="Arial,sans-serif" font-size="23" fill="#ffffff">Smart Digital Services</text>' +
+    '<rect x="140" y="1050" width="800" height="150" rx="24" fill="#ffffff" opacity=".12"/>' +
+    '<text x="540" y="1115" text-anchor="middle" font-family="Arial,sans-serif" font-size="30" font-weight="bold" fill="' + theme.accent + '">CREATED WITH SASIKUMAR AI</text>' +
+    '<text x="540" y="1165" text-anchor="middle" font-family="Arial,sans-serif" font-size="25" fill="#ffffff">Smart Digital Services</text>' +
     '</svg>';
 
   return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
 }
-
 function thirtyChars() {
   return 30;
 }
