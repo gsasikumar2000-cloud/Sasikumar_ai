@@ -34,6 +34,40 @@ button{cursor:pointer}
 footer{text-align:center;padding:24px 12px;background:#e0f7e5;margin-top:25px}
 a{overflow-wrap:anywhere}
 [hidden]{display:none!important}
+
+.voice-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0;
+}
+.voice-tools button {
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #e4f1ff;
+  color: #123b67;
+  font-weight: 700;
+  cursor: pointer;
+}
+#agriVoiceStatus {
+  padding: 10px;
+  border-radius: 8px;
+  background: #fff8dc;
+  overflow-wrap: anywhere;
+}
+.ai-reply {
+  margin-top: 16px;
+  padding: 16px;
+  border: 2px solid #218838;
+  border-radius: 12px;
+  background: #f0fff4;
+  color: #183b24;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.7;
+}
+
 </style>
 </head>
 <body>
@@ -117,7 +151,16 @@ a{overflow-wrap:anywhere}
 <input id="crop" placeholder="எ.கா. நெல், வாழை, தென்னை">
 <label for="question">உங்கள் கேள்வி</label>
 <textarea id="question" rows="4" required placeholder="எ.கா. நெல் பயிரில் இலை மஞ்சளாக மாறுகிறது. என்ன செய்யலாம்?"></textarea>
-<button class="submit" type="submit">🔎 கேள்வியைத் தேடுங்கள்</button>
+<div class="voice-tools">
+<button type="button" id="agriMic">🎤 பேசிக் கேளுங்கள்</button>
+<button type="button" id="agriSpeak">🔊 பதிலைக் கேளுங்கள்</button>
+<button type="button" id="agriVolDown">➖ ஒலி</button>
+<button type="button" id="agriVolUp">➕ ஒலி</button>
+<button type="button" id="agriStop">⏹️ நிறுத்து</button>
+</div>
+<p id="agriVoiceStatus" role="status" aria-live="polite">🎙️ குரல் வசதி தயார்</p>
+<button class="submit" type="submit">🤖 AI பதில் பெறுங்கள்</button>
+<div id="aiReply" class="ai-reply" role="status" aria-live="polite" hidden></div>
 </form>
 <p class="note">குறிப்பு: இந்தப் படிவம் தற்போது உங்கள் கேள்விக்கான இணையத் தேடலைத் திறக்கும். நேரடி AI பதில், வானிலை மற்றும் சந்தை விலைகள் செயல்பட தனித்தனி API இணைப்புகள் தேவை.</p>
 </section>
@@ -145,13 +188,167 @@ searchInput.addEventListener('input', () => {
   });
 });
 
-document.getElementById('agriForm').addEventListener('submit', event => {
+const agriForm = document.getElementById('agriForm');
+const agriQuestion = document.getElementById('question');
+const agriReply = document.getElementById('aiReply');
+const agriStatus = document.getElementById('agriVoiceStatus');
+
+let agriVoiceVolume = 0.8;
+let agriLastReply = '';
+
+function updateAgriVolume() {
+  agriStatus.textContent =
+    '🔊 பேச்சு ஒலி: ' + Math.round(agriVoiceVolume * 100) + '%';
+}
+
+function speakAgriReply(text) {
+  if (!('speechSynthesis' in window)) {
+    agriStatus.textContent = 'இந்த browser குரல் வெளியீட்டை ஆதரிக்கவில்லை.';
+    return;
+  }
+
+  if (!text || !text.trim()) {
+    agriStatus.textContent = 'முதலில் AI பதிலைப் பெறுங்கள்.';
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = /[\u0B80-\u0BFF]/.test(text) ? 'ta-IN' : 'en-IN';
+  utterance.volume = agriVoiceVolume;
+  utterance.onstart = () => {
+    agriStatus.textContent = '🔊 AI பதிலைப் படிக்கிறது...';
+  };
+  utterance.onend = () => {
+    agriStatus.textContent = '✅ குரல் முடிந்தது';
+  };
+  utterance.onerror = () => {
+    agriStatus.textContent = 'குரல் இயக்க முடியவில்லை. Browser ஒலி அமைப்பைச் சரிபார்க்கவும்.';
+  };
+
+  window.speechSynthesis.speak(utterance);
+}
+
+document.getElementById('agriMic').addEventListener('click', () => {
+  const Recognition = window.SpeechRecognition ||
+                     window.webkitSpeechRecognition;
+
+  if (!Recognition) {
+    agriStatus.textContent =
+      'இந்த browser-ல் voice input கிடைக்கவில்லை. Chrome-ல் முயற்சிக்கவும்.';
+    return;
+  }
+
+  const recognition = new Recognition();
+  recognition.lang = 'ta-IN';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  recognition.onstart = () => {
+    agriStatus.textContent = '🎤 தமிழில் உங்கள் கேள்வியைப் பேசுங்கள்...';
+  };
+
+  recognition.onresult = event => {
+    const transcript = event.results[0][0].transcript;
+    agriQuestion.value = agriQuestion.value.trim()
+      ? agriQuestion.value.trim() + ' ' + transcript
+      : transcript;
+    agriQuestion.dispatchEvent(new Event('input', { bubbles: true }));
+    agriStatus.textContent = '✅ குரல் கேள்வியாக மாற்றப்பட்டது';
+    agriQuestion.focus();
+  };
+
+  recognition.onerror = event => {
+    agriStatus.textContent =
+      'மைக் பிழை: ' + event.error + '. மைக் அனுமதியைச் சரிபார்க்கவும்.';
+  };
+
+  recognition.onend = () => {
+    if (agriStatus.textContent.includes('பேசுங்கள்')) {
+      agriStatus.textContent = '🎙️ குரல் பதிவு முடிந்தது';
+    }
+  };
+
+  try {
+    recognition.start();
+  } catch (error) {
+    agriStatus.textContent = 'மைக் தொடங்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.';
+  }
+});
+
+document.getElementById('agriSpeak').addEventListener('click', () => {
+  speakAgriReply(agriLastReply);
+});
+
+document.getElementById('agriVolUp').addEventListener('click', () => {
+  agriVoiceVolume = Math.min(1, Math.round((agriVoiceVolume + 0.1) * 10) / 10);
+  updateAgriVolume();
+});
+
+document.getElementById('agriVolDown').addEventListener('click', () => {
+  agriVoiceVolume = Math.max(0, Math.round((agriVoiceVolume - 0.1) * 10) / 10);
+  updateAgriVolume();
+});
+
+document.getElementById('agriStop').addEventListener('click', () => {
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  agriStatus.textContent = '⏹️ குரல் நிறுத்தப்பட்டது';
+});
+
+agriForm.addEventListener('submit', async event => {
   event.preventDefault();
+
   const district = document.getElementById('district').value.trim();
   const crop = document.getElementById('crop').value.trim();
-  const question = document.getElementById('question').value.trim();
-  const query = ['விவசாயம்', district, crop, question].filter(Boolean).join(' ');
-  window.open('https://www.google.com/search?q=' + encodeURIComponent(query), '_blank', 'noopener');
+  const question = agriQuestion.value.trim();
+
+  if (!question) {
+    agriStatus.textContent = 'உங்கள் விவசாயக் கேள்வியை எழுதுங்கள் அல்லது பேசுங்கள்.';
+    agriQuestion.focus();
+    return;
+  }
+
+  const message = [
+    'விவசாயக் கேள்வி',
+    district ? 'மாவட்டம் / பகுதி: ' + district : '',
+    crop ? 'பயிர்: ' + crop : '',
+    'கேள்வி: ' + question,
+    'தமிழில் எளிமையாகவும் பாதுகாப்பாகவும் வழிகாட்டுங்கள். நோய் அல்லது பூச்சியை உறுதியாக அடையாளம் காண முடியாவிட்டால் அதைக் குறிப்பிடுங்கள்.'
+  ].filter(Boolean).join('\n');
+
+  agriReply.hidden = false;
+  agriReply.textContent = '⏳ SASIKUMAR AI பதில் தயாரிக்கிறது...';
+  agriStatus.textContent = '🤖 AI-யுடன் இணைக்கிறது...';
+
+  try {
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message,
+        category: 'Agriculture AI'
+      })
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(data.error || data.message || ('HTTP ' + response.status));
+    }
+
+    agriLastReply = String(data.reply || data.answer || '').trim();
+
+    if (!agriLastReply) {
+      throw new Error('AI பதில் காலியாக உள்ளது.');
+    }
+
+    agriReply.textContent = agriLastReply;
+    agriStatus.textContent = '✅ AI பதில் கிடைத்தது. கேட்க 🔊 பொத்தானை அழுத்துங்கள்.';
+  } catch (error) {
+    agriReply.textContent = 'AI பதிலைப் பெற முடியவில்லை: ' + error.message;
+    agriStatus.textContent = 'இணைப்பைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.';
+  }
 });
 </script>
 </body>

@@ -987,18 +987,84 @@ app.post('/api/chat', async (req, res) => {
     }
 
     let userMessage = message;
+    let imageData = '';
+    let attachmentText = '';
 
-    if (attachment) {
-      const fileName =
-        typeof attachment === 'object'
-          ? String(attachment.name || attachment.filename || 'uploaded file')
-          : 'uploaded file';
+    if (attachment && typeof attachment === 'object') {
+      const fileName = String(
+        attachment.name || attachment.filename || 'uploaded file'
+      ).slice(0, 200);
 
-      userMessage +=
-        (userMessage ? '\n\n' : '') +
-        '[User attached a file: ' + fileName +
-        '. If its contents are not available to you, ask the user to paste the relevant text.]';
+      const data = typeof attachment.data === 'string'
+        ? attachment.data
+        : '';
+
+      if (data) {
+        if (data.length > 14 * 1024 * 1024) {
+          return res.status(413).json({
+            reply: 'படம் மிகவும் பெரியது. சிறிய படத்தைத் தேர்ந்தெடுக்கவும்.',
+            answer: 'படம் மிகவும் பெரியது. சிறிய படத்தைத் தேர்ந்தெடுக்கவும்.'
+          });
+        }
+
+        if (!/^data:image\/(jpeg|png|webp);base64,/i.test(data)) {
+          return res.status(400).json({
+            reply: 'JPG, PNG அல்லது WebP படத்தைத் தேர்ந்தெடுக்கவும்.',
+            answer: 'JPG, PNG அல்லது WebP படத்தைத் தேர்ந்தெடுக்கவும்.'
+          });
+        }
+
+        imageData = data;
+      }
+
+      if (typeof attachment.text === 'string' && attachment.text.trim()) {
+        if (attachment.text.length > 120000) {
+          return res.status(413).json({
+            reply: 'ஆவணம் மிகவும் பெரியது. சிறிய TXT அல்லது CSV கோப்பைப் பயன்படுத்தவும்.',
+            answer: 'ஆவணம் மிகவும் பெரியது. சிறிய TXT அல்லது CSV கோப்பைப் பயன்படுத்தவும்.'
+          });
+        }
+        attachmentText = attachment.text;
+      }
+
+      if (attachmentText) {
+        userMessage += (userMessage ? '\n\n' : '') +
+          'Attached document: ' + fileName + '\n' + attachmentText;
+      } else if (!imageData) {
+        userMessage += (userMessage ? '\n\n' : '') +
+          '[User attached: ' + fileName +
+          '. The file contents were not provided.]';
+      }
+    } else if (attachment) {
+      userMessage += (userMessage ? '\n\n' : '') +
+        '[User attached a file, but its contents were not provided.]';
     }
+
+    if (!userMessage && !imageData) {
+      return res.status(400).json({
+        reply: 'கேள்வி அல்லது ஆதரிக்கப்படும் கோப்பை அனுப்புங்கள்.',
+        answer: 'கேள்வி அல்லது ஆதரிக்கப்படும் கோப்பை அனுப்புங்கள்.'
+      });
+    }
+
+    const requestModel = imageData
+      ? 'qwen/qwen3.8-27b'
+      : 'openai/gpt-oss-20b';
+
+    const requestContent = imageData
+      ? [
+          {
+            type: 'text',
+            text: (userMessage || 'இந்தப் படத்தை ஆய்வு செய்து தமிழில் விளக்கவும்.') +
+              '\nபடத்தில் தெரியும் தகவல்களை மட்டும் அடிப்படையாகக் கொண்டு பதிலளிக்கவும். ' +
+              'பயிர் நோயை உறுதியாகக் கண்டறிய முடியாவிட்டால் அதைக் குறிப்பிடவும்.'
+          },
+          {
+            type: 'image_url',
+            image_url: { url: imageData }
+          }
+        ]
+      : userMessage;
 
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 60000);
@@ -1014,7 +1080,7 @@ app.post('/api/chat', async (req, res) => {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            model: 'openai/gpt-oss-20b',
+            model: requestModel,
             messages: [
               {
                 role: 'system',
@@ -1023,11 +1089,12 @@ app.post('/api/chat', async (req, res) => {
                   'Respond in the language used by the user, including Tamil, English, or Tanglish. ' +
                   'Give clear, accurate and useful answers. ' +
                   'For current information that you cannot verify, be transparent. ' +
+                  'For agriculture questions, give cautious practical guidance and recommend local agricultural officers when needed. ' +
                   'The requested service category is: ' + category + '.'
               },
               {
                 role: 'user',
-                content: userMessage
+                content: requestContent
               }
             ],
             temperature: 0.7,
