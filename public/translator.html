@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SASIKUMAR AI — Translator</title>
+<style>
+:root{font-family:Arial,sans-serif;color:#183153;background:#eef6ff}
+*{box-sizing:border-box}
+body{margin:0;padding:16px}
+.wrap{max-width:760px;margin:auto}
+header,.card{background:#fff;border-radius:18px;padding:18px;margin-bottom:15px;box-shadow:0 5px 20px #18315312}
+header{text-align:center;background:linear-gradient(120deg,#0878f9,#6b48ff);color:white}
+.logo{font-size:35px}
+h1{font-size:24px;margin:8px 0}
+p{line-height:1.5}
+label{display:block;font-weight:bold;margin:12px 0 7px}
+select,textarea,button{font:inherit;width:100%;border-radius:11px;padding:12px}
+select,textarea{border:1px solid #cbd8ea;background:#fff;color:#183153}
+textarea{min-height:145px;resize:vertical}
+.languages{display:grid;grid-template-columns:1fr auto 1fr;gap:9px;align-items:end}
+.languages button{width:48px;height:45px;padding:5px}
+.actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px}
+button{border:0;background:#0878f9;color:white;font-weight:bold;cursor:pointer}
+button.secondary{background:#e8efff;color:#1645a0}
+button:disabled{opacity:.55}
+.result{min-height:120px;white-space:pre-wrap;overflow-wrap:anywhere;background:#f5f8ff;border:1px solid #dce7f8;border-radius:12px;padding:14px}
+.status{font-size:14px;color:#526782;min-height:22px;margin-top:10px}
+footer{text-align:center;color:#526782;font-size:13px;padding:12px}
+@media(max-width:430px){body{padding:10px}.languages{gap:5px}.languages button{width:40px}.card{padding:14px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="logo">🤖</div>
+  <h1>SASIKUMAR AI</h1>
+  <p>🌍 All-Language Translator • 🎙️ Voice In • 🔊 Voice Out</p>
+</header>
+
+<section class="card">
+  <div class="languages">
+    <div>
+      <label for="sourceLang">From language</label>
+      <select id="sourceLang">
+        <option value="auto">Auto Detect</option>
+        <option value="Tamil">தமிழ் (Tamil)</option>
+        <option value="English">English</option>
+        <option value="Hindi">हिन्दी (Hindi)</option>
+        <option value="Telugu">తెలుగు (Telugu)</option>
+        <option value="Malayalam">മലയാളം (Malayalam)</option>
+        <option value="Kannada">ಕನ್ನಡ (Kannada)</option>
+        <option value="Bengali">বাংলা (Bengali)</option>
+        <option value="Marathi">मराठी (Marathi)</option>
+        <option value="Urdu">اردو (Urdu)</option>
+        <option value="French">French</option>
+        <option value="Spanish">Spanish</option>
+        <option value="German">German</option>
+        <option value="Arabic">Arabic</option>
+        <option value="Chinese">Chinese</option>
+        <option value="Japanese">Japanese</option>
+        <option value="Korean">Korean</option>
+        <option value="Portuguese">Portuguese</option>
+        <option value="Russian">Russian</option>
+        <option value="Italian">Italian</option>
+        <option value="Indonesian">Indonesian</option>
+        <option value="Thai">Thai</option>
+        <option value="Turkish">Turkish</option>
+        <option value="Vietnamese">Vietnamese</option>
+      </select>
+    </div>
+    <button class="secondary" type="button" id="swapBtn" aria-label="Swap languages">⇄</button>
+    <div>
+      <label for="targetLang">To language</label>
+      <select id="targetLang">
+        <option value="English">English</option>
+        <option value="Tamil" selected>தமிழ் (Tamil)</option>
+        <option value="Hindi">हिन्दी (Hindi)</option>
+        <option value="Telugu">తెలుగు (Telugu)</option>
+        <option value="Malayalam">മലയാളം (Malayalam)</option>
+        <option value="Kannada">ಕನ್ನಡ (Kannada)</option>
+        <option value="Bengali">বাংলা (Bengali)</option>
+        <option value="Marathi">मराठी (Marathi)</option>
+        <option value="Urdu">اردو (Urdu)</option>
+        <option value="French">French</option>
+        <option value="Spanish">Spanish</option>
+        <option value="German">German</option>
+        <option value="Arabic">Arabic</option>
+        <option value="Chinese">Chinese</option>
+        <option value="Japanese">Japanese</option>
+        <option value="Korean">Korean</option>
+        <option value="Portuguese">Portuguese</option>
+        <option value="Russian">Russian</option>
+        <option value="Italian">Italian</option>
+        <option value="Indonesian">Indonesian</option>
+        <option value="Thai">Thai</option>
+        <option value="Turkish">Turkish</option>
+        <option value="Vietnamese">Vietnamese</option>
+      </select>
+    </div>
+  </div>
+
+  <label for="sourceText">Enter text to translate</label>
+  <textarea id="sourceText" maxlength="12000" placeholder="Type or use the microphone to speak..."></textarea>
+
+  <div class="actions">
+    <button type="button" id="micBtn">🎙️ Voice Input</button>
+    <button type="button" id="translateBtn">🌐 Translate</button>
+  </div>
+  <div class="status" id="inputStatus" role="status" aria-live="polite"></div>
+</section>
+
+<section class="card">
+  <label>Translation</label>
+  <div class="result" id="result" aria-live="polite">Your translation will appear here.</div>
+  <div class="actions">
+    <button type="button" id="speakBtn">🔊 Speak</button>
+    <button type="button" class="secondary" id="stopBtn">⏹️ Stop Voice</button>
+    <button type="button" class="secondary" id="copyBtn">📋 Copy</button>
+    <button type="button" class="secondary" id="clearBtn">🧹 Clear</button>
+  </div>
+  <div class="status" id="resultStatus" role="status" aria-live="polite"></div>
+</section>
+
+<footer>🤖 SASIKUMAR AI • Translation quality depends on the AI service.</footer>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const sourceLang = $('sourceLang');
+  const targetLang = $('targetLang');
+  const sourceText = $('sourceText');
+  const result = $('result');
+  const inputStatus = $('inputStatus');
+  const resultStatus = $('resultStatus');
+  const translateBtn = $('translateBtn');
+  let recognition = null;
+  let listening = false;
+
+  function langCode(name) {
+    return ({
+      Tamil:'ta-IN', English:'en-US', Hindi:'hi-IN', Telugu:'te-IN',
+      Malayalam:'ml-IN', Kannada:'kn-IN', Bengali:'bn-IN',
+      Marathi:'mr-IN', Urdu:'ur-PK', French:'fr-FR', Spanish:'es-ES',
+      German:'de-DE', Arabic:'ar-SA', Chinese:'zh-CN', Japanese:'ja-JP',
+      Korean:'ko-KR', Portuguese:'pt-PT', Russian:'ru-RU', Italian:'it-IT',
+      Indonesian:'id-ID', Thai:'th-TH', Turkish:'tr-TR', Vietnamese:'vi-VN'
+    })[name] || 'en-US';
+  }
+
+  $('swapBtn').addEventListener('click', () => {
+    if (sourceLang.value === 'auto') {
+      inputStatus.textContent = 'Swap செய்வதற்கு முதலில் மூல மொழியைத் தேர்ந்தெடுக்கவும்.';
+      return;
+    }
+    const oldSource = sourceLang.value;
+    sourceLang.value = targetLang.value;
+    targetLang.value = oldSource;
+    if (result.textContent !== 'Your translation will appear here.' && result.textContent.trim()) {
+      const oldText = sourceText.value;
+      sourceText.value = result.textContent;
+      result.textContent = oldText || 'Your translation will appear here.';
+    }
+  });
+
+  translateBtn.addEventListener('click', async () => {
+    const content = sourceText.value.trim();
+    if (!content) {
+      inputStatus.textContent = 'மொழிபெயர்க்க முதலில் உரையை உள்ளிடுங்கள்.';
+      sourceText.focus();
+      return;
+    }
+    if (sourceLang.value !== 'auto' && sourceLang.value === targetLang.value) {
+      inputStatus.textContent = 'மூல மொழியும் இலக்கு மொழியும் வேறுபட்டிருக்க வேண்டும்.';
+      return;
+    }
+
+    translateBtn.disabled = true;
+    translateBtn.textContent = '⏳ Translating...';
+    resultStatus.textContent = '';
+    result.textContent = 'மொழிபெயர்க்கப்படுகிறது...';
+    inputStatus.textContent = '';
+
+    try {
+      const response = await fetch('/api/translate', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+          text: content,
+          sourceLanguage: sourceLang.value,
+          targetLanguage: targetLang.value
+        })
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.ok || typeof data.translation !== 'string') {
+        throw new Error(data.error || 'மொழிபெயர்ப்பு தோல்வியடைந்தது.');
+      }
+      result.textContent = data.translation;
+      resultStatus.textContent = 'மொழிபெயர்ப்பு முடிந்தது.';
+    } catch (error) {
+      result.textContent = 'மொழிபெயர்ப்பு கிடைக்கவில்லை.';
+      resultStatus.textContent = error.message + ' Server/API அமைப்பைச் சரிபார்க்கவும்.';
+    } finally {
+      translateBtn.disabled = false;
+      translateBtn.textContent = '🌐 Translate';
+    }
+  });
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (SpeechRecognition) {
+    recognition = new SpeechRecognition();
+    recognition.interimResults = true;
+    recognition.continuous = false;
+    recognition.onstart = () => {
+      listening = true;
+      $('micBtn').textContent = '🛑 Stop Listening';
+      inputStatus.textContent = 'கேட்கிறது... இப்போது பேசுங்கள்.';
+    };
+    recognition.onresult = event => {
+      let transcript = '';
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      sourceText.value = transcript;
+    };
+    recognition.onerror = event => {
+      inputStatus.textContent = 'Voice Input பிழை: ' + event.error + '. Microphone permission மற்றும் browser support-ஐச் சரிபார்க்கவும்.';
+    };
+    recognition.onend = () => {
+      listening = false;
+      $('micBtn').textContent = '🎙️ Voice Input';
+    };
+    $('micBtn').addEventListener('click', () => {
+      if (listening) recognition.stop();
+      else {
+        recognition.lang = sourceLang.value === 'auto' ? 'en-US' : langCode(sourceLang.value);
+        try { recognition.start(); }
+        catch (_) { inputStatus.textContent = 'மைக்ரோஃபோனை மீண்டும் தொடங்கச் சிறிது நேரம் காத்திருக்கவும்.'; }
+      }
+    });
+  } else {
+    $('micBtn').addEventListener('click', () => {
+      inputStatus.textContent = 'இந்த browser-ல் Voice Input ஆதரவு இல்லை. Chrome போன்ற ஆதரவு உள்ள browser-ஐ முயற்சிக்கவும்.';
+    });
+  }
+
+  $('speakBtn').addEventListener('click', () => {
+    const text = result.textContent;
+    if (!text || text === 'Your translation will appear here.' || text === 'மொழிபெயர்ப்பு கிடைக்கவில்லை.') {
+      resultStatus.textContent = 'முதலில் மொழிபெயர்ப்பு செய்யுங்கள்.';
+      return;
+    }
+    if (!('speechSynthesis' in window)) {
+      resultStatus.textContent = 'இந்த browser-ல் Voice Output ஆதரவு இல்லை.';
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = langCode(targetLang.value);
+    utterance.onerror = () => { resultStatus.textContent = 'இந்த மொழிக்கான குரல் சாதனத்தில் கிடைக்காமல் இருக்கலாம்.'; };
+    window.speechSynthesis.speak(utterance);
+    resultStatus.textContent = 'குரல் வாசிப்பு தொடங்கியது.';
+  });
+
+  $('stopBtn').addEventListener('click', () => {
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    if (recognition && listening) recognition.stop();
+    resultStatus.textContent = 'குரல் நிறுத்தப்பட்டது.';
+  });
+
+  $('copyBtn').addEventListener('click', async () => {
+    const text = result.textContent;
+    if (!text || text === 'Your translation will appear here.' || text === 'மொழிபெயர்ப்பு கிடைக்கவில்லை.') {
+      resultStatus.textContent = 'நகலெடுக்க மொழிபெயர்ப்பு இல்லை.';
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(text);
+      resultStatus.textContent = 'மொழிபெயர்ப்பு நகலெடுக்கப்பட்டது.';
+    } catch (_) {
+      const area = document.createElement('textarea');
+      area.value = text;
+      document.body.appendChild(area);
+      area.select();
+      const ok = document.execCommand('copy');
+      area.remove();
+      resultStatus.textContent = ok ? 'மொழிபெயர்ப்பு நகலெடுக்கப்பட்டது.' : 'Text-ஐ அழுத்திப் பிடித்து Copy செய்யவும்.';
+    }
+  });
+
+  $('clearBtn').addEventListener('click', () => {
+    sourceText.value = '';
+    result.textContent = 'Your translation will appear here.';
+    inputStatus.textContent = '';
+    resultStatus.textContent = '';
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  });
+})();
+</script>
+</body>
+</html>
