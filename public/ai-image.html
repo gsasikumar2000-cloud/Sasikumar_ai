@@ -59,7 +59,33 @@ button{width:100%;margin-top:14px;padding:14px;border:0;border-radius:14px;font-
 <option value="general" selected>✨ General Poster</option>
 </select>
 
-<textarea id="prompt" placeholder="Example: A beautiful peacock in a natural garden, realistic digital art"></textarea>
+
+<div id="skAdvancedPosterEditor" style="margin:14px 0;padding:14px;border:2px solid #93c5fd;border-radius:16px;background:#eff6ff;color:#172554;">
+  <h3 style="margin:0 0 12px;">🎨 Advanced Poster Editor</h3>
+
+  <label for="skPosterBg" style="display:block;margin:8px 0;">Background Color</label>
+  <input id="skPosterBg" type="color" value="#075985"
+    style="width:100%;height:48px;padding:4px;border:1px solid #93c5fd;border-radius:8px;">
+
+  <label for="skPosterTextColor" style="display:block;margin:12px 0 8px;">Main Text Color</label>
+  <input id="skPosterTextColor" type="color" value="#ffffff"
+    style="width:100%;height:48px;padding:4px;border:1px solid #93c5fd;border-radius:8px;">
+
+  <label for="skPosterBrand" style="display:block;margin:12px 0 6px;">Brand / Business Name</label>
+  <input id="skPosterBrand" type="text" maxlength="45"
+    value="SASIKUMAR AI" placeholder="Your business name"
+    style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #93c5fd;border-radius:9px;font-size:16px;">
+
+  <label for="skPosterFooter" style="display:block;margin:12px 0 6px;">Footer Text</label>
+  <input id="skPosterFooter" type="text" maxlength="70"
+    value="Smart Digital Services" placeholder="Contact or tagline"
+    style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #93c5fd;border-radius:9px;font-size:16px;">
+
+  <button type="button" class="generate"
+    style="background:#0f766e;"
+    onclick="refreshAdvancedPoster()">🔄 Update Poster Preview</button>
+</div>
+\n<textarea id="prompt" placeholder="Example: A beautiful peacock in a natural garden, realistic digital art"></textarea>
 
 <button class="generate" onclick="generateImage()">✨ Generate Image</button>
 <button type="button" class="generate" style="background:#0f766e" onclick="generateImageWithHF()">🤗 Generate with Hugging Face</button>
@@ -254,12 +280,35 @@ function createLocalPoster(prompt) {
     }
   };
 
-  const theme = themes[type] || themes.general;
+  const theme = { ...(themes[type] || themes.general) };
+
+  const bgPicker = document.getElementById('skPosterBg');
+  const textPicker = document.getElementById('skPosterTextColor');
+  const brandInput = document.getElementById('skPosterBrand');
+  const footerInput = document.getElementById('skPosterFooter');
+
+  const customBg = bgPicker ? bgPicker.value : '';
+  const customText = textPicker ? textPicker.value : '#ffffff';
+  const brandText = brandInput && brandInput.value.trim()
+    ? brandInput.value.trim()
+    : 'SASIKUMAR AI';
+  const footerText = footerInput && footerInput.value.trim()
+    ? footerInput.value.trim()
+    : 'Smart Digital Services';
+
+  if (/^#[0-9a-fA-F]{6}$/.test(customBg)) {
+    theme.c1 = customBg;
+    theme.c2 = customBg;
+  }
+
   const lines = skWrapPosterText(text, 26);
+  const safeTextColor = /^#[0-9a-fA-F]{6}$/.test(customText)
+    ? customText
+    : '#ffffff';
   const textSvg = lines.map((line, i) =>
     '<text x="540" y="' + (520 + i * 62) +
     '" text-anchor="middle" font-family="Arial,sans-serif" ' +
-    'font-size="34" fill="#ffffff">' +
+    'font-size="34" fill="' + safeTextColor + '">' +
     skEscapeXml(line) + '</text>'
   ).join('');
 
@@ -274,7 +323,7 @@ function createLocalPoster(prompt) {
     '<circle cx="1000" cy="1200" r="220" fill="#ffffff" opacity=".08"/>' +
     '<rect x="32" y="32" width="1016" height="1286" rx="32" fill="none" stroke="' + theme.accent + '" stroke-width="8"/>' +
     '<rect x="95" y="95" width="890" height="185" rx="28" fill="#ffffff" opacity=".12"/>' +
-    '<text x="540" y="165" text-anchor="middle" font-family="Arial,sans-serif" font-size="32" font-weight="bold" fill="' + theme.accent + '">SASIKUMAR AI</text>' +
+    '<text x="540" y="165" text-anchor="middle" font-family="Arial,sans-serif" font-size="32" font-weight="bold" fill="' + theme.accent + '">' + skEscapeXml(brandText) + '</text>' +
     '<text x="540" y="225" text-anchor="middle" font-family="Arial,sans-serif" font-size="40" font-weight="bold" fill="#ffffff">' + theme.title + '</text>' +
     '<path d="M180 330 H900" stroke="' + theme.accent + '" stroke-width="5"/>' +
     textSvg +
@@ -285,6 +334,24 @@ function createLocalPoster(prompt) {
 
   return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
 }
+function refreshAdvancedPoster() {
+  const prompt = document.getElementById('prompt').value.trim();
+  if (!prompt) {
+    document.getElementById('status').textContent =
+      'Please enter poster content before updating the preview.';
+    return;
+  }
+
+  try {
+    makeLocalPoster(prompt);
+    document.getElementById('status').textContent =
+      '✅ Advanced poster preview updated. You can download the PNG.';
+  } catch (err) {
+    document.getElementById('status').textContent =
+      '❌ ' + err.message;
+  }
+}
+
 function thirtyChars() {
   return 30;
 }
