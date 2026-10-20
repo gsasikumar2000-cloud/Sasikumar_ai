@@ -67,6 +67,8 @@ const WELCOME_MENU = `🤖 SASIKUMAR AI — MAIN MENU
 29. 🌐 Website Services
 30. 📞 Contact & Customer Feedback
 31. 📚 ALL CONTENT — Complete Services & Details
+32. 🎭 Tamil Comedy & Movie Fun
+33. 🌾 Agriculture — விவசாய உதவியாளர்
 
 0. 🏠 Main Menu
 
@@ -809,9 +811,26 @@ https://sasikumar-ai-9wdq.onrender.com/audio-video-hub.html
 🌐 SASIKUMAR AI:
 https://sasikumar-ai-9wdq.onrender.com
 
+Type 0 for Main Menu`,
+
+  '33': () => `🤖 SASIKUMAR AI
+🌾 AGRICULTURE — விவசாய உதவியாளர்
+
+🌱 பயிர் சாகுபடி
+🌿 மண் வளம் மற்றும் உரங்கள்
+🐛 பூச்சி மற்றும் நோய் மேலாண்மை
+💧 நீர்ப்பாசன வழிகாட்டுதல்
+🌦️ வானிலைத் தகவல்கள்
+💰 விவசாயச் சந்தை விலைகள்
+🏛️ அரசு விவசாயத் திட்டங்கள்
+🐄 கால்நடை வளர்ப்பு
+🤖 AI விவசாய வழிகாட்டுதல்
+
+🌐 Agriculture Page:
+https://sasikumar-ai-9wdq.onrender.com/agriculture.html
+
 Type 0 for Main Menu`
 };
-
 async function getLiveGoldSilverWhatsAppReply() {
   const goldUrl = 'https://sasikumar-ai-9wdq.onrender.com/api/gold-rate?state=Tamil%20Nadu&district=Thanjavur';
   const silverUrl = 'https://sasikumar-ai-9wdq.onrender.com/api/silver-rate?state=Tamil%20Nadu&district=Thanjavur';
@@ -929,14 +948,14 @@ function getWhatsAppEMIReply(message) {
 🔙 Type 0 for Main Menu`;
 }
 function detectLang(q){try{if(/[\u0B80-\u0BFF]/.test(q))return 'ta';return 'en';}catch(e){return 'en';}}
-function getGeneralReply(q,lang){const time=new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'});if(q.toLowerCase().includes('gold'))return `💰 GOLD RATE\nVerified current rate-ai /api/gold-la check pannunga.\nhttps://sasikumar-ai-9wdq.onrender.com/api/gold\nType 0 for Menu`;return `🌍 General AI - ${time}\nYou: "${q}"\nType 0 for Menu or 1-32`; }
+function getGeneralReply(q,lang){const time=new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'});if(q.toLowerCase().includes('gold'))return `💰 GOLD RATE\nVerified current rate-ai /api/gold-la check pannunga.\nhttps://sasikumar-ai-9wdq.onrender.com/api/gold\nType 0 for Menu`;return `🌍 General AI - ${time}\nYou: "${q}"\nType 0 for Menu or 1-33`; }
 
-app.get('/api/status',(req,res)=>{res.json({status:'WHATSAPP MENU 32 OPTIONS LIVE OK',version:'7.2 Menu',options:32,time:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})});});
+app.get('/api/status',(req,res)=>{res.json({status:'WHATSAPP MENU 33 OPTIONS LIVE OK',version:'7.3 Menu',options:33,time:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})});});
 app.get('/api/whatsapp/menu',(req,res)=>{
   res.set('Cache-Control','no-store');
   res.json({
-    welcome: '🤖 SASIKUMAR AI — 32 Services',
-    total: 32,
+    welcome: '🤖 SASIKUMAR AI — 33 Services',
+    total: 33,
     menuImage: 'https://sasikumar-ai-9wdq.onrender.com/assets/whatsapp-menu.png'
   });
 });
@@ -1214,7 +1233,7 @@ const isWelcome = !trimmed || trimmed === '0' ||
 let reply = WELCOME_MENU;
 
 if (!isWelcome) {
-  const num = trimmed.match(/^\s*(3[012]|[12][0-9]|[0-9])\s*$/);
+  const num = trimmed.match(/^\s*(3[0-3]|[12][0-9]|[0-9])\s*$/);
 
   if (num) {
     reply = num[1] === '10'
@@ -1372,6 +1391,7 @@ if(WA_TOKEN && WA_PHONE_ID){
           '30. Contact & Customer Feedback',
           '31. All Content — Complete Services',
           '32. Tamil Comedy & Movie Fun',
+          '33. Agriculture — விவசாய உதவியாளர்',
           '0. Main Menu',
           'Send an option number to select a service.'
         ].join('\n');
@@ -2059,4 +2079,4 @@ app.post('/api/jobs/employer', async (req, res) => {
 // END SK_JOB_REGISTRATION_API_V1
 
 app.get('*',(req,res)=>{const fp=path.join(publicPath,'index.html');if(fs.existsSync(fp))res.sendFile(fp);else res.status(404).send('Not Found');});
-app.listen(PORT,()=>console.log(`🤖 32 OPTIONS WHATSAPP MENU http://localhost:${PORT} - OK`));
+app.listen(PORT,()=>console.log(`🤖 33 OPTIONS WHATSAPP MENU http://localhost:${PORT} - OK`));
