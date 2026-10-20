@@ -793,9 +793,16 @@ Website: https://sasikumar-ai-9wdq.onrender.com/all-menus.html
 Type 0 for Main Menu`,
   '32': () => `😂 SASIKUMAR AI — TAMIL COMEDY & MOVIE FUN
 
-🎭 தமிழ் நகைச்சுவை மற்றும் திரைப்பட பொழுதுபோக்கு
-🎬 திரைப்படத் தகவல்கள் மற்றும் நடிகர்கள் பற்றிய விவரங்கள்
-🎵 திரைப்படப் பாடல்கள் மற்றும் வீடியோ தேடல் வழிகாட்டுதல்
+🎭 தமிழ் காமெடி — பழைய மற்றும் புதிய திரைப்படங்கள்
+🎬 திரைப்படங்கள் • நடிகர்கள் • காமெடி காட்சிகள்
+💬 பஞ்ச் • காதல் • நட்பு • மாஸ் வசனங்கள்
+
+🔎 Movie & Dialogue Search:
+https://sasikumar-ai-9wdq.onrender.com/tamil-comedy.html
+
+✍️ உங்கள் சொந்த புதிய வசனத்தை உருவாக்கவும்!
+📺 YouTube திரைப்படத் தேடலும் இதில் உள்ளது.
+
 📻 Audio & Video Hub:
 https://sasikumar-ai-9wdq.onrender.com/audio-video-hub.html
 

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0878f9">
+<meta name="description" content="SASIKUMAR AI Tamil Comedy and Movie Dialogue Search. Search old and new Tamil movies, comedy scenes, actors and create original dialogues.">
+<title>Tamil Comedy & Movie Dialogue | SASIKUMAR AI</title>
+<style>
+:root{--blue:#0878f9;--purple:#7438db;--bg:#f3f7ff;--ink:#17233b}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,"Noto Sans Tamil",sans-serif;background:var(--bg);color:var(--ink)}
+header{background:linear-gradient(120deg,#0878f9,#7438db);color:white;text-align:center;padding:22px 14px}
+.logo{width:82px;height:82px;object-fit:contain;border-radius:50%;background:white;padding:5px}
+h1{font-size:25px;margin:10px 0}
+header p{margin:7px 0;line-height:1.6}
+nav{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+nav a{background:white;color:#075bc0;text-decoration:none;font-weight:bold;padding:10px 13px;border-radius:10px}
+main{max-width:850px;margin:auto;padding:14px}
+.card{background:white;padding:17px;margin:13px 0;border-radius:16px;box-shadow:0 3px 13px #19345c12}
+h2{font-size:20px;margin:0 0 12px;color:#5632c8}
+label{display:block;font-weight:bold;margin:12px 0 6px}
+input,select,textarea{width:100%;padding:12px;border:1px solid #ccd7ed;border-radius:10px;font-size:16px;background:#fff;color:#17233b}
+textarea{min-height:105px;resize:vertical}
+button,.btn{border:0;border-radius:10px;background:var(--blue);color:white;padding:12px 14px;font-size:15px;font-weight:bold;cursor:pointer;text-decoration:none;display:inline-block;margin:5px 4px 3px 0}
+button.purple,.btn.purple{background:var(--purple)}
+button.green,.btn.green{background:#14834b}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.topic{background:#f0f4ff;border:1px solid #dbe5ff;border-radius:12px;padding:12px;text-align:center;cursor:pointer;font-weight:bold;color:#253b72}
+.small{font-size:13px;color:#52617a;line-height:1.6}
+.result{background:#f6f3ff;border-radius:10px;padding:12px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}
+footer{text-align:center;padding:20px;color:#53617b;font-size:13px}
+@media(min-width:600px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}main{padding:22px}}
+</style>
+</head>
+<body>
+<header>
+<img class="logo" src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI Logo" onerror="this.style.display='none'">
+<h1>🤖 SASIKUMAR AI</h1>
+<p>😂 தமிழ் காமெடி • திரைப்பட வசனங்கள் • Movie Fun</p>
+<p>பழைய மற்றும் புதிய தமிழ் திரைப்படங்களைத் தேடுங்கள்!</p>
+<nav>
+<a href="/">🏠 Home</a>
+<a href="/all-menus.html">📋 All Services</a>
+<a href="/audio-video-hub.html">📻 Audio & Video</a>
+</nav>
+</header>
+
+<main>
+<section class="card">
+<h2>🔎 திரைப்படம் / நடிகர் / வசனம் தேடல்</h2>
+<label for="query">எதைத் தேட விரும்புகிறீர்கள்?</label>
+<input id="query" placeholder="உதா: பழைய தமிழ் காமெடி, நடிகர், திரைப்படம்">
+<label for="era">திரைப்பட காலம்</label>
+<select id="era">
+<option value="all">பழைய மற்றும் புதிய திரைப்படங்கள்</option>
+<option value="old">பழைய தமிழ் திரைப்படங்கள்</option>
+<option value="new">புதிய தமிழ் திரைப்படங்கள்</option>
+</select>
+<label for="kind">வகை</label>
+<select id="kind">
+<option>Comedy Scenes</option>
+<option>Famous Dialogues</option>
+<option>Punch Dialogues</option>
+<option>Love Dialogues</option>
+<option>Friendship Dialogues</option>
+<option>Family Dialogues</option>
+<option>Mass Dialogues</option>
+<option>Emotional Dialogues</option>
+<option>Actors and Movies</option>
+<option>Movie Songs</option>
+</select>
+<button onclick="searchYouTube()">▶ YouTube-ல் தேடுங்கள்</button>
+<button class="purple" onclick="searchGoogle()">🌐 Google தேடல்</button>
+<p class="small">இந்தப் பக்கம் தேடல் முடிவுகளைத் திறக்கும். திரைப்பட வசனங்களின் முழு உரிமையுள்ள தொகுப்பை இங்கே சேமிப்பதில்லை.</p>
+</section>
+
+<section class="card">
+<h2>🎭 விரைவான தலைப்புகள்</h2>
+<div class="grid">
+<button class="topic" onclick="quick('பழைய தமிழ் காமெடி காட்சிகள்','Comedy Scenes','old')">📼 பழைய காமெடி</button>
+<button class="topic" onclick="quick('புதிய தமிழ் காமெடி காட்சிகள்','Comedy Scenes','new')">🎬 புதிய காமெடி</button>
+<button class="topic" onclick="quick('தமிழ் திரைப்பட பஞ்ச் வசனங்கள்','Punch Dialogues','all')">🔥 பஞ்ச் வசனங்கள்</button>
+<button class="topic" onclick="quick('தமிழ் திரைப்பட நடிகர்கள் காமெடி','Comedy Scenes','all')">😂 நடிகர்கள் காமெடி</button>
+<button class="topic" onclick="quick('தமிழ் திரைப்பட நட்பு வசனங்கள்','Friendship Dialogues','all')">🤝 நட்பு வசனங்கள்</button>
+<button class="topic" onclick="quick('தமிழ் திரைப்பட காதல் வசனங்கள்','Love Dialogues','all')">❤️ காதல் வசனங்கள்</button>
+<button class="topic" onclick="quick('தமிழ் திரைப்பட குடும்ப உணர்ச்சி வசனங்கள்','Family Dialogues','all')">👨‍👩‍👧 குடும்பம்</button>
+<button class="topic" onclick="quick('தமிழ் திரைப்பட மாஸ் வசனங்கள்','Mass Dialogues','all')">💥 மாஸ் வசனங்கள்</button>
+<button class="topic" onclick="quick('தமிழ் திரைப்பட பாடல்கள்','Movie Songs','all')">🎵 திரைப்படப் பாடல்கள்</button>
+</div>
+</section>
+
+<section class="card">
+<h2>✍️ புதிய சொந்த வசனம் எழுதுங்கள்</h2>
+<p class="small">பழைய திரைப்பட வசனத்தை அப்படியே நகலெடுப்பதற்குப் பதிலாக, உங்கள் தலைப்புக்கு ஏற்ற புதிய வசனத்தை உருவாக்க AI-யிடம் கேட்க இந்த உதவியைப் பயன்படுத்துங்கள்.</p>
+<label for="topic">வசனத்தின் தலைப்பு</label>
+<input id="topic" placeholder="உதா: நண்பர்கள், நகைச்சுவை, தன்னம்பிக்கை">
+<label for="style">வசனத்தின் பாணி</label>
+<select id="style">
+<option>நகைச்சுவை</option>
+<option>பஞ்ச் வசனம்</option>
+<option>நட்பு</option>
+<option>காதல்</option>
+<option>உணர்ச்சிப்பூர்வம்</option>
+<option>மாஸ் ஹீரோ பாணி</option>
+<option>குடும்பம்</option>
+</select>
+<label for="language">மொழி</label>
+<select id="language">
+<option>எளிய தமிழ்</option>
+<option>Tanglish</option>
+<option>English</option>
+</select>
+<label for="extra">கூடுதல் விவரம் (விருப்பம்)</label>
+<textarea id="extra" placeholder="உதா: 2 நண்பர்கள் பேசுவது போல, 4 வரிகளில்"></textarea>
+<button class="green" onclick="makePrompt()">📝 வசனக் கோரிக்கை உருவாக்கு</button>
+<div id="promptResult" class="result" hidden></div>
+<button id="copyBtn" onclick="copyPrompt()" hidden>📋 Copy</button>
+<button id="askBtn" class="purple" onclick="openAI()" hidden>🌐 AI தேடல் திறக்க</button>
+</section>
+
+<section class="card">
+<h2>📻 மேலும் பொழுதுபோக்கு</h2>
+<a class="btn" href="/audio-video-hub.html">🎵 Audio & Video Hub</a>
+<a class="btn purple" href="/all-menus.html">📋 அனைத்து சேவைகள்</a>
+<a class="btn green" href="/">🏠 SASIKUMAR AI Home</a>
+</section>
+</main>
+
+<footer>🤖 SASIKUMAR AI • Tamil Comedy & Movie Fun<br>தேடல் முடிவுகள் வெளிப்புற தளங்களில் திறக்கப்படும்.</footer>
+
+<script>
+function searchText(){
+ const q=document.getElementById('query').value.trim();
+ const era=document.getElementById('era').value;
+ const kind=document.getElementById('kind').value;
+ const period=era==='old'?'old Tamil':era==='new'?'new latest Tamil':'Tamil';
+ return [period,q||'movie',kind].filter(Boolean).join(' ');
+}
+function searchYouTube(){
+ const q=searchText();
+ window.open('https://www.youtube.com/results?search_query='+encodeURIComponent(q),'_blank','noopener');
+}
+function searchGoogle(){
+ const q=searchText();
+ window.open('https://www.google.com/search?q='+encodeURIComponent(q),'_blank','noopener');
+}
+function quick(q,kind,era){
+ document.getElementById('query').value=q;
+ document.getElementById('kind').value=kind;
+ document.getElementById('era').value=era;
+ document.querySelector('#query').scrollIntoView({behavior:'smooth',block:'center'});
+}
+let generatedPrompt='';
+function makePrompt(){
+ const topic=document.getElementById('topic').value.trim();
+ if(!topic){alert('முதலில் வசனத்தின் தலைப்பை எழுதுங்கள்.');return;}
+ const style=document.getElementById('style').value;
+ const language=document.getElementById('language').value;
+ const extra=document.getElementById('extra').value.trim();
+ generatedPrompt='Write an original '+style+' dialogue about: '+topic+'. Language: '+language+'. Make it fresh and original; do not copy dialogue from any existing movie. '+extra;
+ const box=document.getElementById('promptResult');
+ box.textContent=generatedPrompt;
+ box.hidden=false;
+ document.getElementById('copyBtn').hidden=false;
+ document.getElementById('askBtn').hidden=false;
+}
+async function copyPrompt(){
+ try{
+  await navigator.clipboard.writeText(generatedPrompt);
+  alert('கோரிக்கை Copy செய்யப்பட்டது!');
+ }catch(e){
+  const t=document.createElement('textarea');t.value=generatedPrompt;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();alert('கோரிக்கை Copy செய்யப்பட்டது!');
+ }
+}
+function openAI(){
+ if(!generatedPrompt)return;
+ window.open('https://www.google.com/search?q='+encodeURIComponent(generatedPrompt),'_blank','noopener');
+}
+</script>
+</body>
+</html>
