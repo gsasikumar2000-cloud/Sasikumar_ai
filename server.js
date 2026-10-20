@@ -2404,8 +2404,11 @@ app.post('/api/ai/image/huggingface', async (req, res) => {
 });
 // END SK_HUGGINGFACE_IMAGE_API_V1
 
-// SK_CLOUDFLARE_FLUX2_KLEIN_V1
+// SK_CLOUDFLARE_FLUX3_IMAGE_KLEIN_V1
 app.post('/api/ai/image/cloudflare', async (req, res) => {
+  const controller = new AbortController();
+  let timer;
+
   try {
     const prompt = String(req.body?.prompt || '').trim();
 
@@ -2433,53 +2436,51 @@ app.post('/api/ai/image/cloudflare', async (req, res) => {
       });
     }
 
-    const form = new FormData();
-    form.append('prompt', prompt);
-    form.append('width', '1024');
-    form.append('height', '1024');
+    timer = setTimeout(() => controller.abort(), 120000);
 
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 120000);
-
-    let response;
-    try {
-      response = await fetch(
-        'https://api.cloudflare.com/client/v4/accounts/' +
-          encodeURIComponent(account) +
-          '/ai/run/@cf/black-forest-labs/flux-2-klein-4b',
-        {
-          method: 'POST',
-          headers: {
-            Authorization: 'Bearer ' + token
-          },
-          body: form,
-          signal: controller.signal
-        }
-      );
-    } finally {
-      clearTimeout(timer);
-    }
+    const response = await fetch(
+      'https://api.cloudflare.com/client/v4/accounts/' +
+        encodeURIComponent(account) +
+        '/ai/run',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'black-forest-labs/flux-3-image-klein',
+          input: {
+            prompt,
+            resolution: '1k'
+          }
+        }),
+        signal: controller.signal
+      }
+    );
 
     const data = await response.json();
 
     if (!response.ok || data.success === false) {
       console.error(
-        '[Cloudflare FLUX.2 Image API]',
+        '[Cloudflare FLUX 3 Image Klein]',
         response.status,
         JSON.stringify(data.errors || []).slice(0, 1000)
       );
 
       return res.status(response.status === 429 ? 429 : 502).json({
         ok: false,
-        error: 'Cloudflare FLUX.2 image generation failed. Check model access, API permissions, and billing.'
+        error: response.status === 429
+          ? 'Cloudflare rate limit reached. Please try again later.'
+          : 'Cloudflare FLUX 3 generation failed. Check model access, API permissions, and billing.'
       });
     }
 
-    let image = data.result?.image;
+    const image = data.result?.image;
 
     if (typeof image !== 'string' || !image.trim()) {
       console.error(
-        '[Cloudflare FLUX.2 Image API] No image in response:',
+        '[Cloudflare FLUX 3 Image Klein] No image URL:',
         JSON.stringify(data).slice(0, 1000)
       );
 
@@ -2489,27 +2490,25 @@ app.post('/api/ai/image/cloudflare', async (req, res) => {
       });
     }
 
-    if (!image.startsWith('data:image/')) {
-      image = 'data:image/png;base64,' + image;
-    }
-
     return res.json({
       ok: true,
       imageUrl: image,
-      model: '@cf/black-forest-labs/flux-2-klein-4b'
+      model: 'black-forest-labs/flux-3-image-klein'
     });
   } catch (err) {
-    console.error('[Cloudflare FLUX.2 Image API]', err.message);
+    console.error('[Cloudflare FLUX 3 Image Klein]', err.message);
 
     return res.status(502).json({
       ok: false,
       error: err.name === 'AbortError'
         ? 'Cloudflare image generation timed out. Please try again.'
-        : 'Cloudflare FLUX.2 image generation failed.'
+        : 'Cloudflare FLUX 3 image generation failed.'
     });
+  } finally {
+    if (timer) clearTimeout(timer);
   }
 });
-// END SK_CLOUDFLARE_FLUX2_KLEIN_V1
+// END SK_CLOUDFLARE_FLUX3_IMAGE_KLEIN_V1
 
 
 app.post('/api/any-content', async (req, res) => {
