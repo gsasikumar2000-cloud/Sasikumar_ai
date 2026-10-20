@@ -55,6 +55,7 @@ button{width:100%;margin-top:14px;padding:14px;border:0;border-radius:14px;font-
 <button class="generate" onclick="generateImage()">✨ Generate Image</button>
 <button type="button" class="generate" style="background:#0f766e" onclick="generateImageWithHF()">🤗 Generate with Hugging Face</button>
 <button type="button" class="generate" style="background:#2563eb" onclick="generateImageWithCloudflare()">☁️ Generate with Cloudflare FLUX 3 Image Klein</button>
+<button type="button" class="generate" style="background:#7c3aed" onclick="generateImageAuto()">🤖 Automatic AI Image Generation</button>
 <button type="button" class="back" onclick="downloadPosterPNG()">⬇️ Download Poster PNG</button>
 
 <div class="tool-title">🛠️ All Tools</div>
@@ -471,6 +472,75 @@ async function generateImageWithCloudflare() {
   }
 }
 // END SK_CLOUDFLARE_FLUX_KLEIN_UI_V1
+
+
+async function generateImageAuto() {
+  const prompt = document.getElementById('prompt').value.trim();
+  const status = document.getElementById('status');
+  const result = document.getElementById('result');
+
+  result.innerHTML = '';
+
+  if (!prompt) {
+    status.textContent = '⚠️ Please enter an image description.';
+    return;
+  }
+
+  const providers = [
+    { name: 'Gemini AI', url: '/api/ai/image' },
+    { name: 'Hugging Face', url: '/api/ai/image/huggingface' },
+    { name: 'Cloudflare FLUX 3', url: '/api/ai/image/cloudflare' }
+  ];
+
+  const failures = [];
+
+  for (const provider of providers) {
+    status.textContent = '⏳ Trying ' + provider.name + '...';
+
+    try {
+      const response = await fetch(provider.url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.ok || !data.imageUrl) {
+        throw new Error(data.error || 'HTTP ' + response.status);
+      }
+
+      const img = new Image();
+      img.alt = prompt;
+      img.style.maxWidth = '100%';
+      img.style.height = 'auto';
+
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = () => reject(new Error('Image preview failed'));
+        img.src = data.imageUrl;
+      });
+
+      skLocalPosterUrl = '';
+      result.appendChild(img);
+      status.textContent = '✅ Image generated successfully with ' + provider.name + '!';
+      return;
+
+    } catch (error) {
+      failures.push(provider.name + ': ' + error.message);
+      status.textContent = '⚠️ ' + provider.name + ' failed. Trying the next provider...';
+    }
+  }
+
+  console.warn('[Automatic Image Generation] All AI providers failed:', failures);
+
+  try {
+    makeLocalPoster(prompt);
+    status.textContent = '🎨 AI providers unavailable. Local Poster fallback displayed.';
+  } catch (error) {
+    status.textContent = '❌ AI providers failed and Local Poster could not be created: ' + error.message;
+  }
+}
 
 // END SK_HUGGINGFACE_IMAGE_UI_V1
 
