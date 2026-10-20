@@ -2265,20 +2265,36 @@ Tamil + English • Gold • General Q&A</div>
   window.skMiniOfficeWord = function(){
     var title = prompt('Word document title:', 'My Document');
     if (title === null) return;
+
     var content = prompt('Enter document content:');
     if (content === null) return;
-    var safe = content.replace(/&/g,'&amp;').replace(/</g,'&lt;')
-      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    var html = '<!doctype html><html><head><meta charset="utf-8">
 
+    function toRtf(value) {
+      var result = '';
+      for (var i = 0; i < value.length; i++) {
+        var ch = value.charAt(i);
+        var code = value.charCodeAt(i);
 
-</head><body><h1>' +
-      title.replace(/&/g,'&amp;').replace(/</g,'&lt;') +
-      '</h1><p style="white-space:pre-wrap">' + safe + '</p>
+        if (ch === '\\' || ch === '{' || ch === '}') {
+          result += '\\' + ch;
+        } else if (ch === '\r') {
+          if (value.charAt(i + 1) === '\n') i++;
+          result += '\\par\n';
+        } else if (ch === '\n') {
+          result += '\\par\n';
+        } else if (code >= 32 && code <= 126) {
+          result += ch;
+        } else {
+          result += '\\u' + (code > 32767 ? code - 65536 : code) + '?';
+        }
+      }
+      return result;
+    }
 
+    var rtf = '{\\rtf1\\ansi\\deff0{\\fonttbl{\\f0 Arial;}}\\viewkind4\\uc1\\pard\\f0\\fs24\\b ' +
+      toRtf(title) + '\\b0\\par\\par ' + toRtf(content) + '\\par}';
 
-</body></html>';
-    skOfficeDownload('Sasikumar-AI-Document.doc', html, 'application/msword');
+    skOfficeDownload('Sasikumar-AI-Document.rtf', rtf, 'application/rtf');
   };
 
   window.skMiniOfficeExcel = function(){
@@ -6608,7 +6624,7 @@ else skRefreshPay2AllWallet();
     }
 
     let anchor = welcome;
-    [loginSection, globalSearch, heading, quick, reply, chat, designMaker, creatorCards].concat(miniOffice ? [miniOffice] : []).forEach(function (element) {
+    [globalSearch, heading, quick, reply, chat].concat(miniOffice ? [miniOffice] : []).concat([designMaker, creatorCards, loginSection]).forEach(function (element) {
       anchor.insertAdjacentElement("afterend", element);
       anchor = element;
     });
@@ -6643,11 +6659,6 @@ else skRefreshPay2AllWallet();
     const initialGreeting = document.querySelector("#chat .skInitialGreeting");
     if (initialGreeting) initialGreeting.style.display = "none";
 
-    const goldButton = document.getElementById("skGoldPriceToggle");
-    if (goldButton) {
-      goldButton.style.setProperty("display", "none", "important");
-      goldButton.style.setProperty("visibility", "hidden", "important");
-    }
 
     console.log("SASIKUMAR AI: Unified Reply toolbar positioned below Welcome.");
   }
@@ -6711,7 +6722,7 @@ else skRefreshPay2AllWallet();
 }
 
 /* Hide service sections, but preserve the three main live cards */
-section:not(.skMainFeatureCard):not(#skDesignMakerGlobal):not(#skGlobalSearchTop) {
+section:not(.skMainFeatureCard):not(#skDesignMakerGlobal):not(#skGlobalSearchTop):not(#skMiniOfficeV1) {
   display: none !important;
 }
 
@@ -10554,6 +10565,16 @@ table {
 
 </style>
 <!-- END SK_THREE_SIZE_COLOR_MOBILE_FIT_V1 -->
+
+
+<!-- SK_HOME_TRANSLATOR_CARD_V1 -->
+<section id="skHomeTranslatorCardV1" style="box-sizing:border-box;width:calc(100% - 24px);max-width:720px;margin:22px auto;padding:20px 16px;border-radius:20px;background:linear-gradient(120deg,#e0f2fe,#f3e8ff,#dcfce7);border:2px solid #60a5fa;text-align:center;font-family:Arial,sans-serif;color:#172554;box-shadow:0 5px 16px rgba(30,64,175,.12)">
+  <div style="font-size:38px;margin-bottom:8px">🌐</div>
+  <h2 style="margin:4px 0 10px;font-size:22px;color:#1d4ed8">AI Language Translator</h2>
+  <p style="margin:8px auto 16px;line-height:1.6;font-size:14px">தமிழ், English, हिन्दी மற்றும் பல மொழிகளில் மொழிபெயர்க்கவும். Voice Input மற்றும் Voice Output வசதிகளும் உள்ளன.</p>
+  <a href="/translator.html" style="display:inline-block;box-sizing:border-box;padding:12px 22px;border-radius:30px;background:linear-gradient(90deg,#2563eb,#7c3aed);color:white;text-decoration:none;font-weight:bold;font-size:16px">🌍 Open Translator</a>
+</section>
+<!-- END SK_HOME_TRANSLATOR_CARD_V1 -->
 
 </body>
 </html>
