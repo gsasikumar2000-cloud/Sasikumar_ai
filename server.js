@@ -1207,7 +1207,7 @@ const isWelcome = !trimmed || trimmed === '0' ||
 let reply = WELCOME_MENU;
 
 if (!isWelcome) {
-  const num = trimmed.match(/^\s*(3[01]|[12][0-9]|[0-9])\s*$/);
+  const num = trimmed.match(/^\s*(3[012]|[12][0-9]|[0-9])\s*$/);
 
   if (num) {
     reply = num[1] === '10'
