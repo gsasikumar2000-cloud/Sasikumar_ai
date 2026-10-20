@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#198754">
+<meta name="description" content="SASIKUMAR AI Agriculture - தமிழ் விவசாய வழிகாட்டி, பயிர் சாகுபடி, உரம், பூச்சி மேலாண்மை, வானிலை, சந்தை விலைகள் மற்றும் அரசு திட்டங்கள்.">
+<title>🌾 Agriculture | SASIKUMAR AI</title>
+<style>
+:root{--green:#198754;--dark:#14532d;--light:#f0fff4;--blue:#0878f9}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,"Noto Sans Tamil",sans-serif;background:#f4fff5;color:#17351f;line-height:1.65}
+header{background:linear-gradient(135deg,#087f3e,#35b96b);color:white;text-align:center;padding:22px 14px}
+.logo{width:100px;height:100px;object-fit:contain;border-radius:50%;background:white;padding:5px}
+h1{font-size:25px;margin:8px 0}
+header p{margin:5px auto;max-width:600px}
+nav{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;padding:12px;background:white;position:sticky;top:0;z-index:5;box-shadow:0 2px 8px #0001}
+nav a,.btn{display:inline-block;text-decoration:none;border:0;border-radius:20px;padding:9px 14px;background:var(--blue);color:white;font-weight:bold;font-size:14px}
+main{max-width:1000px;margin:auto;padding:14px}
+.hero{background:#fff4cf;border:1px solid #ffe08a;border-radius:16px;padding:18px;text-align:center;margin-bottom:16px}
+.hero h2{margin:0;color:#765000}
+.search{width:100%;padding:13px;border:1px solid #b8d8bf;border-radius:12px;font-size:16px;margin:5px 0 16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:13px}
+.card{background:white;border-radius:15px;padding:16px;border:1px solid #d9efdc;box-shadow:0 3px 12px #164e2410}
+.card h3{color:var(--green);margin:0 0 8px;font-size:18px}
+.card p{margin:5px 0}
+.card ul{padding-left:22px;margin:6px 0}
+.icon{font-size:29px}
+.question{background:white;padding:17px;border-radius:15px;margin-top:18px;border:1px solid #d9efdc}
+textarea,input,select{width:100%;padding:12px;border:1px solid #c7d9cb;border-radius:10px;font-size:16px;margin:5px 0 12px}
+button{cursor:pointer}
+.submit{background:var(--green);color:white;border:0;border-radius:10px;padding:12px 16px;font-size:16px;font-weight:bold;width:100%}
+.note{background:#fff8df;border-left:4px solid #e3a008;padding:12px;border-radius:8px;font-size:14px}
+footer{text-align:center;padding:24px 12px;background:#e0f7e5;margin-top:25px}
+a{overflow-wrap:anywhere}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header>
+<img class="logo" src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI Logo">
+<h1>🤖 SASIKUMAR AI</h1>
+<h2>🌾 AGRICULTURE</h2>
+<p>விவசாயம் செழிக்கட்டும்! விவசாயிகள் வாழ்வு உயரட்டும்!</p>
+<p>தமிழில் விவசாயத் தகவல்கள் மற்றும் வழிகாட்டுதல் ஒரே இடத்தில்.</p>
+</header>
+
+<nav>
+<a href="/">🏠 Home</a>
+<a href="/all-menus.html">📋 All Services</a>
+<a href="/audio-video-hub.html">📻 Audio & Video</a>
+</nav>
+
+<main>
+<section class="hero">
+<h2>🌱 உங்கள் விவசாயத்திற்கு ஒரு டிஜிட்டல் உதவியாளர்</h2>
+<p>பயிர் சாகுபடி முதல் சந்தைத் தகவல்கள் வரை விவசாயம் தொடர்பான தகவல்களைத் தேடுங்கள்.</p>
+</section>
+
+<input id="search" class="search" type="search" placeholder="🔎 விவசாயத் தகவலைத் தேடுங்கள்..." aria-label="விவசாய சேவைகளைத் தேடுங்கள்">
+
+<section class="grid" id="services">
+<article class="card" data-search="நெல் நெல் சாகுபடி கரும்பு வாழை தென்னை காய்கறி பயிர்">
+<div class="icon">🌱</div><h3>1. பயிர் சாகுபடி</h3>
+<ul><li>நெல், கரும்பு, வாழை</li><li>தென்னை, காய்கறிகள்</li><li>பயிர் பருவம் மற்றும் விதைத் தேர்வு</li><li>இயற்கை விவசாய முறைகள்</li></ul>
+</article>
+<article class="card" data-search="மண் உரம் மண் பரிசோதனை கம்போஸ்ட் உயிர் உரம்">
+<div class="icon">🌿</div><h3>2. மண் வளம் மற்றும் உரங்கள்</h3>
+<ul><li>மண் பரிசோதனை வழிகாட்டுதல்</li><li>இயற்கை உரம், கம்போஸ்ட்</li><li>உயிர் உரங்கள்</li><li>பயிருக்கு ஏற்ற உர மேலாண்மை</li></ul>
+</article>
+<article class="card" data-search="பூச்சி நோய் இலை மஞ்சள் பயிர் பாதுகாப்பு">
+<div class="icon">🐛</div><h3>3. பூச்சி மற்றும் நோய் மேலாண்மை</h3>
+<ul><li>பயிர் பாதிப்பு அறிகுறிகள்</li><li>பூச்சி மேலாண்மை முறைகள்</li><li>ஒருங்கிணைந்த பயிர் பாதுகாப்பு</li><li>பாதுகாப்பான பயன்பாட்டு வழிகாட்டுதல்</li></ul>
+</article>
+<article class="card" data-search="நீர் பாசனம் சொட்டு நீர் மழைநீர்">
+<div class="icon">💧</div><h3>4. நீர்ப்பாசனம்</h3>
+<ul><li>சொட்டுநீர்ப் பாசனம்</li><li>தெளிப்புநீர்ப் பாசனம்</li><li>நீர் சேமிப்பு</li><li>மழைநீர் சேகரிப்பு</li></ul>
+</article>
+<article class="card" data-search="வானிலை மழை வெப்பநிலை காற்று முன்னறிவிப்பு">
+<div class="icon">🌦️</div><h3>5. வானிலைத் தகவல்கள்</h3>
+<p>மழை முன்னறிவிப்பு, வெப்பநிலை, காற்றின் வேகம் மற்றும் விவசாய வானிலை ஆலோசனைகள்.</p>
+<p><a href="https://mausam.imd.gov.in/" target="_blank" rel="noopener">🌐 இந்திய வானிலை ஆய்வு மையம்</a></p>
+</article>
+<article class="card" data-search="சந்தை விலை நெல் காய்கறி தேங்காய் விளைபொருள்">
+<div class="icon">💰</div><h3>6. விவசாயச் சந்தை விலைகள்</h3>
+<p>நெல், காய்கறிகள், பழங்கள், தேங்காய் மற்றும் பிற விளைபொருட்களின் விலைகளைத் தேடுங்கள்.</p>
+<p><a href="https://agmarknet.gov.in/" target="_blank" rel="noopener">🌐 AGMARKNET சந்தைத் தகவல்கள்</a></p>
+</article>
+<article class="card" data-search="அரசு திட்டம் மானியம் பயிர் காப்பீடு விவசாய கடன்">
+<div class="icon">🏛️</div><h3>7. அரசு விவசாயத் திட்டங்கள்</h3>
+<ul><li>விவசாய மானியங்கள்</li><li>பயிர்க் காப்பீடு</li><li>பாசனத் திட்டங்கள்</li><li>விவசாயக் கடன் தகவல்கள்</li></ul>
+<p><a href="https://pmkisan.gov.in/" target="_blank" rel="noopener">🌐 PM-KISAN அதிகாரப்பூர்வ தளம்</a></p>
+<p><a href="https://www.tnagrisnet.tn.gov.in/" target="_blank" rel="noopener">🌐 தமிழ்நாடு வேளாண்மைத் துறை</a></p>
+</article>
+<article class="card" data-search="இயந்திரம் ட்ரோன் நவீன தொழில்நுட்பம் பசுமைக்குடில்">
+<div class="icon">🚜</div><h3>8. நவீன விவசாயம்</h3>
+<ul><li>விவசாய இயந்திரங்கள்</li><li>ட்ரோன் தொழில்நுட்பம்</li><li>பசுமைக்குடில் சாகுபடி</li><li>அறுவடைக்குப் பிந்தைய சேமிப்பு</li></ul>
+</article>
+<article class="card" data-search="கால்நடை மாடு ஆடு கோழி தீவனம்">
+<div class="icon">🐄</div><h3>9. கால்நடை வளர்ப்பு</h3>
+<ul><li>மாடு மற்றும் எருமை வளர்ப்பு</li><li>ஆடு, கோழி வளர்ப்பு</li><li>தீவன மேலாண்மை</li><li>கால்நடைப் பராமரிப்பு</li></ul>
+</article>
+<article class="card" data-search="AI ஆலோசகர் கேள்வி பதில் விவசாய உதவி">
+<div class="icon">🤖</div><h3>10. AI விவசாய ஆலோசகர்</h3>
+<p>உங்கள் பயிர், மண், நீர்ப்பாசனம் அல்லது விவசாயத் திட்டம் பற்றிய கேள்வியை எழுதுங்கள்.</p>
+<button class="submit" type="button" onclick="document.getElementById('question').focus()">✍️ கேள்வி கேளுங்கள்</button>
+</article>
+</section>
+
+<section class="question">
+<h2>🤖 உங்கள் விவசாயக் கேள்வியை எழுதுங்கள்</h2>
+<p>சிறந்த வழிகாட்டுதலுக்கு உங்கள் பகுதி மற்றும் பயிர் விவரங்களைச் சேர்க்கவும்.</p>
+<form id="agriForm">
+<label for="district">மாவட்டம் / பகுதி</label>
+<input id="district" placeholder="எ.கா. தஞ்சாவூர்">
+<label for="crop">பயிர்</label>
+<input id="crop" placeholder="எ.கா. நெல், வாழை, தென்னை">
+<label for="question">உங்கள் கேள்வி</label>
+<textarea id="question" rows="4" required placeholder="எ.கா. நெல் பயிரில் இலை மஞ்சளாக மாறுகிறது. என்ன செய்யலாம்?"></textarea>
+<button class="submit" type="submit">🔎 கேள்வியைத் தேடுங்கள்</button>
+</form>
+<p class="note">குறிப்பு: இந்தப் படிவம் தற்போது உங்கள் கேள்விக்கான இணையத் தேடலைத் திறக்கும். நேரடி AI பதில், வானிலை மற்றும் சந்தை விலைகள் செயல்பட தனித்தனி API இணைப்புகள் தேவை.</p>
+</section>
+
+<section class="question">
+<h3>📌 விவசாயிகளுக்கான முக்கிய குறிப்பு</h3>
+<p>உரம் அல்லது பூச்சிக்கொல்லியைப் பயன்படுத்துவதற்கு முன் பயிர், வளர்ச்சி நிலை மற்றும் பாதிப்பைச் சரிபார்க்கவும். சரியான அளவு மற்றும் பாதுகாப்பு வழிமுறைகளுக்கு வேளாண்மை அலுவலரை அணுகவும். மானியம் மற்றும் சந்தை விலைகளின் தற்போதைய விவரங்களை அதிகாரப்பூர்வ தளங்களில் சரிபார்க்கவும்.</p>
+</section>
+</main>
+
+<footer>
+<strong>🤖 SASIKUMAR AI — 🌾 Agriculture</strong>
+<p>விவசாயம் வளரட்டும்! விவசாயிகள் வாழ்வு உயரட்டும்!</p>
+<a class="btn" href="/">🏠 Home</a>
+<a class="btn" href="/all-menus.html">📋 All Services</a>
+</footer>
+
+<script>
+const searchInput = document.getElementById('search');
+searchInput.addEventListener('input', () => {
+  const term = searchInput.value.trim().toLocaleLowerCase();
+  document.querySelectorAll('#services .card').forEach(card => {
+    card.hidden = !card.innerText.toLocaleLowerCase().includes(term)
+      && !card.dataset.search.toLocaleLowerCase().includes(term);
+  });
+});
+
+document.getElementById('agriForm').addEventListener('submit', event => {
+  event.preventDefault();
+  const district = document.getElementById('district').value.trim();
+  const crop = document.getElementById('crop').value.trim();
+  const question = document.getElementById('question').value.trim();
+  const query = ['விவசாயம்', district, crop, question].filter(Boolean).join(' ');
+  window.open('https://www.google.com/search?q=' + encodeURIComponent(query), '_blank', 'noopener');
+});
+</script>
+</body>
+</html>
