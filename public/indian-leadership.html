@@ -32,6 +32,14 @@ footer{text-align:center;padding:22px}
  #detail{margin:10px;padding:14px}
 }
 </style>
+
+<style id="sk_all_logo_spin_v2">
+@keyframes skAllLogoSpinV2 {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+</style>
+
 </head>
 <body>
 <header>
@@ -61,6 +69,57 @@ footer{text-align:center;padding:22px}
 <button onclick="location.href='/'">MAIN</button>
 </div>
 </article>
+
+<style id="skBirthdayMemorialMergeStyle">
+#skBirthdayMemorialMerge {
+  max-width: 1200px;
+  margin: 24px auto;
+  padding: 12px;
+}
+#skBirthdayMemorialMerge .merge-heading {
+  text-align: center;
+  padding: 20px 12px;
+  border-radius: 16px;
+  background: linear-gradient(120deg,#ffedd5,#dbeafe,#dcfce7);
+  color: #1d4ed8;
+}
+#skBirthdayMemorialMerge iframe {
+  display: block;
+  width: 100%;
+  height: 1600px;
+  border: 2px solid #bfdbfe;
+  border-radius: 16px;
+  background: white;
+}
+@media(max-width:600px) {
+  #skBirthdayMemorialMerge { padding: 8px; }
+  #skBirthdayMemorialMerge iframe { height: 1800px; }
+}
+</style>
+
+<section id="skBirthdayMemorialMerge">
+  <div class="merge-heading">
+    <h2>🎂 Birthday & Memorial Live Book</h2>
+    <p>தலைவர்களின் பிறந்தநாள் • நினைவஞ்சலி • Poster Download</p>
+    <p>SASIKUMAR AI — Indian Leadership Learning Library</p>
+    <button type="button" id="skOpenBirthdayBook">
+      Open Birthday & Memorial Book
+    </button>
+  </div>
+  <iframe
+    src="/political-birthday-live.html"
+    title="SASIKUMAR AI Birthday and Memorial Poster Book"
+    loading="lazy">
+  </iframe>
+</section>
+
+<script>
+document.getElementById("skOpenBirthdayBook").addEventListener("click", function () {
+  document.getElementById("skBirthdayMemorialMerge")
+    .scrollIntoView({behavior: "smooth"});
+});
+</script>
+
 <footer>SASIKUMAR AI • Indian Leadership Learning Library</footer>
 <script>
 const people=[
@@ -162,5 +221,30 @@ document.getElementById("search").addEventListener("input",render);
 document.getElementById("category").addEventListener("change",render);
 render();
 </script>
+
+<script id="sk_all_logo_spin_v2-script">
+(function () {
+  function spinLogo(img) {
+    if (!img || !/sasikumar-ai-logo\.png/i.test(img.getAttribute('src') || '')) return;
+    img.style.setProperty('animation', 'skAllLogoSpinV2 3s linear infinite', 'important');
+  }
+  function scan(root) {
+    if (root.matches && root.matches('img')) spinLogo(root);
+    if (root.querySelectorAll) root.querySelectorAll('img').forEach(spinLogo);
+  }
+  scan(document);
+  new MutationObserver(function (records) {
+    records.forEach(function (record) {
+      if (record.type === 'attributes') spinLogo(record.target);
+      else record.addedNodes.forEach(function (node) {
+        if (node.nodeType === 1) scan(node);
+      });
+    });
+  }).observe(document.documentElement, {
+    subtree: true, childList: true, attributes: true, attributeFilter: ['src']
+  });
+})();
+</script>
+
 </body>
 </html>
