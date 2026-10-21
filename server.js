@@ -2004,8 +2004,17 @@ app.get('/api/global-search', async (req, res) => {
     }]
   });
 
-  const normalize = (items) =>
-    (Array.isArray(items) ? items : [])
+  const normalize = (items) => {
+    const terms = query.toLowerCase()
+      .replace(/[^a-z0-9\s]/g, ' ')
+      .split(/\s+/)
+      .filter(word => word.length > 2);
+
+    const isGoldQuery = /gold|silver|bullion|karat|carat|தங்கம்|வெள்ளி/i.test(query);
+    const isTamilNewsQuery = /tamil.?nadu|tamilnadu|chennai|தமிழ்நாடு|தமிழகம்/i.test(query);
+    const isNewsQuery = /news|latest|today|breaking|செய்தி|இன்று/i.test(query);
+
+    return (Array.isArray(items) ? items : [])
       .map(item => ({
         title: String(item.title || item.name || 'Search result'),
         url: String(item.url || item.link || ''),
@@ -2014,7 +2023,30 @@ app.get('/api/global-search', async (req, res) => {
         )
       }))
       .filter(item => /^https?:\/\//i.test(item.url))
-      .slice(0, 8);
+      .map(item => {
+        const text = (item.title + ' ' + item.content + ' ' + item.url).toLowerCase();
+        let score = terms.reduce(
+          (total, term) => total + (text.includes(term) ? 2 : 0), 0
+        );
+
+        if (isGoldQuery && /gold|silver|bullion|gold-rate|gold-rate|precious-metal/i.test(text)) {
+          score += 5;
+        }
+
+        if (isTamilNewsQuery && /tamil.?nadu|tamilnadu|chennai|dtnext|maalaimalar/i.test(text)) {
+          score += 5;
+        }
+
+        if (isNewsQuery && /news|latest|breaking|published|updated/i.test(text)) {
+          score += 2;
+        }
+
+        return { ...item, _relevanceScore: score };
+      })
+      .sort((a, b) => b._relevanceScore - a._relevanceScore)
+      .slice(0, 8)
+      .map(({ _relevanceScore, ...item }) => item);
+  };
 
   // Provider 1: Tavily
   if (process.env.TAVILY_API_KEY) {
