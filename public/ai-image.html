@@ -219,6 +219,7 @@ async function pastePrompt(){
 
 /* SK_LOCAL_POSTER_PNG_V1 */
 let skLocalPosterUrl = '';
+let skGeneratedImageUrl = '';
 
 function skEscapeXml(value) {
   return String(value).replace(/[&<>"']/g, ch => ({
@@ -360,6 +361,7 @@ function makeLocalPoster(prompt) {
   const result = document.getElementById('result');
   const status = document.getElementById('status');
 
+  skGeneratedImageUrl = '';
   skLocalPosterUrl = createLocalPoster(prompt);
 
   result.innerHTML = '';
@@ -373,62 +375,79 @@ function makeLocalPoster(prompt) {
 }
 
 async function downloadPosterPNG() {
-  if (!skLocalPosterUrl) {
-    const prompt = document.getElementById('prompt').value.trim();
+  const status = document.getElementById('status');
 
+  if (!skGeneratedImageUrl && !skLocalPosterUrl) {
+    const prompt = document.getElementById('prompt').value.trim();
     if (!prompt) {
-      document.getElementById('status').textContent =
-        'Please enter a description first.';
+      status.textContent = 'Please enter a description first.';
       return;
     }
-
     try {
       makeLocalPoster(prompt);
     } catch (err) {
-      document.getElementById('status').textContent = '❌ ' + err.message;
+      status.textContent = '❌ Could not create poster: ' + err.message;
       return;
     }
   }
 
-  const status = document.getElementById('status');
-  const image = new Image();
+  const sourceUrl = skGeneratedImageUrl || skLocalPosterUrl;
+  status.textContent = '⏳ Preparing PNG download...';
 
-  image.onload = function () {
-    try {
-      const canvas = document.createElement('canvas');
-      canvas.width = 1080;
-      canvas.height = 1350;
-
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-
-      canvas.toBlob(blob => {
-        if (!blob) {
-          status.textContent = '❌ PNG export failed. Please try again.';
-          return;
-        }
-
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'sasikumar-ai-poster.png';
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-
-        setTimeout(() => URL.revokeObjectURL(url), 2000);
-        status.textContent = '✅ Poster PNG download started.';
-      }, 'image/png');
-    } catch (err) {
-      status.textContent = '❌ PNG export failed: ' + err.message;
+  try {
+    const image = new Image();
+    if (!sourceUrl.startsWith('data:') && !sourceUrl.startsWith('blob:')) {
+      image.crossOrigin = 'anonymous';
     }
-  };
 
-  image.onerror = function () {
-    status.textContent = '❌ Poster preview could not be loaded.';
-  };
+    await new Promise((resolve, reject) => {
+      image.onload = resolve;
+      image.onerror = () => reject(new Error('Image could not be loaded for PNG export.'));
+      image.src = sourceUrl;
+    });
 
-  image.src = skLocalPosterUrl;
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1350;
+    const ctx = canvas.getContext('2d');
+
+    if (!ctx) throw new Error('Canvas is not supported by this browser.');
+
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const scale = Math.min(
+      canvas.width / image.naturalWidth,
+      canvas.height / image.naturalHeight
+    );
+    const width = Math.round(image.naturalWidth * scale);
+    const height = Math.round(image.naturalHeight * scale);
+    ctx.drawImage(
+      image,
+      Math.round((canvas.width - width) / 2),
+      Math.round((canvas.height - height) / 2),
+      width,
+      height
+    );
+
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    if (!blob) throw new Error('PNG conversion failed.');
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'sasikumar-ai-poster.png';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+
+    status.textContent = '✅ PNG download started.';
+  } catch (err) {
+    status.textContent =
+      '❌ PNG export failed: ' + err.message +
+      ' Try Local Poster if the AI image provider blocks browser export.';
+  }
 }
 /* END SK_LOCAL_POSTER_PNG_V1 */
 
@@ -621,6 +640,7 @@ async function generateImageAuto() {
         img.src = data.imageUrl;
       });
 
+      skGeneratedImageUrl = data.imageUrl;
       skLocalPosterUrl = '';
       result.appendChild(img);
       status.textContent = '✅ Image generated successfully with ' + provider.name + '!';
