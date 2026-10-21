@@ -3010,4 +3010,73 @@ app.post('/api/translate', async (req, res) => {
   }
 });
 app.get('*',(req,res)=>{const fp=path.join(publicPath,'index.html');if(fs.existsSync(fp))res.sendFile(fp);else res.status(404).send('Not Found');});
+
+// SASIKUMAR AI FAL IMAGE API V1
+app.post('/api/fal-image', async (req, res) => {
+  try {
+    const apiKey = process.env.FAL_KEY;
+    if (!apiKey) {
+      return res.status(503).json({
+        success: false,
+        error: 'Fal AI API key is not configured on the server.'
+      });
+    }
+
+    const prompt = String(req.body?.prompt || '').trim();
+    if (!prompt || prompt.length > 1000) {
+      return res.status(400).json({
+        success: false,
+        error: 'Please provide a prompt of 1–1000 characters.'
+      });
+    }
+
+    const response = await fetch(
+      'https://fal.run/fal-ai/flux/schnell',
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Key ${apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          prompt,
+          image_size: 'square_hd',
+          num_images: 1
+        }),
+        signal: AbortSignal.timeout(120000)
+      }
+    );
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      console.error('[Fal AI] Request failed:', response.status);
+      return res.status(502).json({
+        success: false,
+        error: 'Fal AI image generation failed.',
+        providerStatus: response.status
+      });
+    }
+
+    const images = Array.isArray(data.images) ? data.images : [];
+
+    return res.json({
+      success: true,
+      provider: 'fal.ai',
+      images: images.map(img => ({
+        url: img.url,
+        width: img.width,
+        height: img.height
+      }))
+    });
+  } catch (error) {
+    console.error('[Fal AI] Error:', error.message);
+    return res.status(500).json({
+      success: false,
+      error: 'Unable to generate image right now.'
+    });
+  }
+});
+// END SASIKUMAR AI FAL IMAGE API V1
+
 app.listen(PORT,()=>console.log(`🤖 33 OPTIONS WHATSAPP MENU http://localhost:${PORT} - OK`));
