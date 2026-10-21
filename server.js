@@ -1439,7 +1439,66 @@ async function getWhatsAppAIReply(question, mode = 'normal') {
     }
   }
 
-  // 2. If a news question has no web results, try NewsData.io.
+    // Firecrawl fallback when Tavily returns no results.
+  if (
+    needsLiveSearch &&
+    liveSearchResults.length === 0 &&
+    process.env.FIRECRAWL_API_KEY
+  ) {
+    try {
+      const firecrawlResponse = await fetch(
+        'https://api.firecrawl.dev/v2/search',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${process.env.FIRECRAWL_API_KEY.trim()}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            query,
+            limit: 5
+          }),
+          signal: AbortSignal.timeout(15000)
+        }
+      );
+
+      const firecrawlData = await firecrawlResponse.json().catch(() => ({}));
+      const webResults = firecrawlData?.data?.web;
+
+      if (
+        firecrawlResponse.ok &&
+        firecrawlData.success === true &&
+        Array.isArray(webResults)
+      ) {
+        liveSearchResults = webResults
+          .filter(item =>
+            item &&
+            typeof item.url === 'string' &&
+            /^https?:\/\//i.test(item.url)
+          )
+          .slice(0, 5)
+          .map(item => ({
+            title: String(item.title || 'Web source').slice(0, 200),
+            url: item.url,
+            content: String(item.description || item.title || '').slice(0, 1000),
+            published_date: item.publishedDate || null
+          }));
+
+        if (liveSearchResults.length) {
+          liveSearchProvider = 'Firecrawl Search';
+        }
+      } else {
+        console.warn(
+          '[WhatsApp Live Search] Firecrawl HTTP:',
+          firecrawlResponse.status
+        );
+      }
+    } catch (error) {
+      console.warn('[WhatsApp Live Search] Firecrawl:', error.message);
+    }
+  }
+
+// 2. If a news question has no web results, try NewsData.io.
   if (
     asksForNews &&
     liveSearchResults.length === 0 &&
