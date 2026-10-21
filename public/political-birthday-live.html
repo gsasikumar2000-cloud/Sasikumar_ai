@@ -199,21 +199,100 @@ function shareFacebook(){
   const url=location.origin+"/political-birthday-live.html";
   window.open("https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent(url),"_blank","noopener");
 }
-function downloadPoster(){
-  const c=document.getElementById("poster"),x=c.getContext("2d");
-  x.fillStyle="#fff7ed";x.fillRect(0,0,c.width,c.height);
-  x.fillStyle="#1d4ed8";x.textAlign="center";
-  x.font="bold 48px Arial";x.fillText("SASIKUMAR AI",540,100);
-  x.font="bold 42px Arial";
-  const e=todayEvents().slice(0,Number(document.getElementById("count").value))[index];
-  const title=e?e.name:"Birthday & Memorial Live Book";
-  x.fillText(title.slice(0,30),540,260);
-  x.font="36px Arial";
-  const lines=(e?(e.ta||""):"No verified event added for today").match(/.{1,24}/gu)||[];
-  lines.slice(0,8).forEach((line,i)=>x.fillText(line,540,380+i*65));
-  x.font="30px Arial";x.fillText(new Date().toLocaleDateString("en-IN"),540,1050);
-  x.font="bold 32px Arial";x.fillText(mode==="birthday"?"BIRTHDAY WISHES":"MEMORIAL TRIBUTE",540,1160);
-  const a=document.createElement("a");a.download="sasikumar-ai-birthday-memorial.png";a.href=c.toDataURL("image/png");a.click();
+async function downloadPoster(){
+  const c = document.getElementById("poster");
+  const x = c.getContext("2d");
+  const limit = Number(document.getElementById("count").value);
+  const list = todayEvents().slice(0, limit);
+  const e = list[index] || list[0] || null;
+
+  x.clearRect(0, 0, c.width, c.height);
+  x.fillStyle = "#fff7ed";
+  x.fillRect(0, 0, c.width, c.height);
+
+  x.fillStyle = "#1d4ed8";
+  x.textAlign = "center";
+  x.font = "bold 38px Arial";
+  x.fillText("SASIKUMAR AI", 540, 205);
+
+  const drawDetails = () => {
+    x.textAlign = "center";
+    x.fillStyle = "#1e3a8a";
+    x.font = "bold 42px Arial";
+    const title = e ? e.name : "Birthday & Memorial Live Book";
+    x.fillText(title.slice(0, 32), 540, 310);
+
+    x.fillStyle = "#b45309";
+    x.font = "bold 32px Arial";
+    x.fillText(
+      mode === "birthday" ? "🎂 BIRTHDAY WISHES" : "🕯️ MEMORIAL TRIBUTE",
+      540, 375
+    );
+
+    x.fillStyle = "#292524";
+    x.font = "30px Arial";
+
+    const wrap = (text, max = 34) => {
+      const words = String(text || "").split(/\s+/);
+      const lines = [];
+      let line = "";
+      for (const word of words) {
+        const next = line ? line + " " + word : word;
+        if (next.length > max && line) {
+          lines.push(line);
+          line = word;
+        } else {
+          line = next;
+        }
+      }
+      if (line) lines.push(line);
+      return lines;
+    };
+
+    let y = 455;
+    const tamil = e ? e.ta : "இன்றைய நிகழ்வுக்கான தகவல் விரைவில் சேர்க்கப்படும்.";
+    const english = e ? e.en : "SASIKUMAR AI — Birthday & Memorial Live Book";
+
+    for (const line of wrap(tamil, 32).slice(0, 5)) {
+      x.fillText(line, 540, y);
+      y += 48;
+    }
+
+    y += 22;
+    x.fillStyle = "#475569";
+    x.font = "27px Arial";
+    for (const line of wrap(english, 42).slice(0, 4)) {
+      x.fillText(line, 540, y);
+      y += 42;
+    }
+
+    x.fillStyle = "#1d4ed8";
+    x.font = "bold 30px Arial";
+    x.fillText(new Date().toLocaleDateString("en-IN"), 540, 1110);
+
+    x.font = "24px Arial";
+    x.fillText("sasikumar-ai-9wdq.onrender.com", 540, 1190);
+
+    x.font = "bold 28px Arial";
+    x.fillText("SASIKUMAR AI • Tamil & English", 540, 1260);
+
+    const a = document.createElement("a");
+    a.download = "sasikumar-ai-birthday-memorial.png";
+    a.href = c.toDataURL("image/png");
+    a.click();
+  };
+
+  const logo = new Image();
+  logo.onload = () => {
+    const size = 150;
+    x.drawImage(logo, (c.width - size) / 2, 25, size, size);
+    drawDetails();
+  };
+  logo.onerror = () => {
+    console.warn("SASIKUMAR AI logo could not be loaded; generating poster without image logo.");
+    drawDetails();
+  };
+  logo.src = "/assets/sasikumar-ai-logo.png";
 }
 timer=setInterval(next,120000);
 render();
