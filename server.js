@@ -1385,7 +1385,7 @@ async function getWhatsAppAIReply(question, mode = 'normal') {
   const query = String(question || '').trim().slice(0, 1000);
 
   const needsLiveSearch =
-    /(?:latest|current|today|now|recent|live|news|headlines|breaking|weather|gold|silver|price|rate|stock|market|business|election|இன்றைய|தற்போதைய|சமீபத்திய|விலை|செய்தி|செய்திகள்|வானிலை|தங்கம்|வெள்ளி|பங்கு|சந்தை)/i.test(query);
+    /(?:latest|current|today|now|recent|live|news|headlines|breaking|weather|gold|silver|price|rate|stock|market|business|election|movie|movies|film|films|cinema|release|releases|upcoming|box office|திரைப்படம்|திரைப்படங்கள்|படம்|படங்கள்|வெளியீடு|வெளியீட்டுத் தேதி|நடிகர்|நடிகைகள்|இன்றைய|தற்போதைய|சமீபத்திய|விலை|செய்தி|செய்திகள்|வானிலை|தங்கம்|வெள்ளி|பங்கு|சந்தை)/i.test(query);
 
   const asksForNews =
     /(?:news|headlines|breaking|தமிழ்நாடு செய்திகள்|இந்திய செய்திகள்|உலக செய்திகள்|இன்றைய செய்திகள்|தலைப்புச் செய்திகள்|செய்தி|செய்திகள்)/i.test(query);
