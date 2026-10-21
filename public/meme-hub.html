@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#6c3bdb">
+<title>SASIKUMAR AI — Meme Head</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,"Noto Sans Tamil",sans-serif;background:linear-gradient(135deg,#fff4d9,#f3e8ff,#e0f7ff);color:#24203a}
+header{text-align:center;padding:24px 16px 18px}
+.logo{width:112px;height:112px;object-fit:contain;border-radius:24px;background:#fff;box-shadow:0 5px 22px #0002}
+h1{margin:12px 0 6px;font-size:clamp(25px,6vw,38px)}
+p{line-height:1.65}
+.wrap{max-width:900px;margin:auto;padding:0 14px 30px}
+.intro,.maker{background:#fff;border-radius:20px;padding:18px;margin:14px 0;box-shadow:0 6px 22px #35205b12}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+.card{border:0;border-radius:17px;padding:18px 10px;min-height:115px;background:linear-gradient(145deg,#fff,#f0e8ff);box-shadow:0 4px 14px #35205b12;text-align:center;font-size:16px;font-weight:700;color:#34235b;cursor:pointer}
+.card span{display:block;font-size:30px;margin-bottom:8px}
+.card:focus,.card:hover{outline:2px solid #8054dc}
+label{display:block;font-weight:700;margin:12px 0 6px}
+input,select,textarea{width:100%;padding:12px;border:1px solid #d7cbe9;border-radius:12px;font:inherit}
+button.action{border:0;border-radius:12px;background:#6c3bdb;color:white;padding:12px 16px;font-weight:700;margin:8px 5px 0 0;cursor:pointer}
+button.secondary{background:#168a79}
+#result{white-space:pre-wrap;background:#fff6dc;padding:14px;border-radius:12px;margin-top:14px;min-height:45px}
+footer{text-align:center;padding:20px;font-size:14px}
+a{color:#5c32c8}
+</style>
+</head>
+<body>
+<header>
+<img class="logo" src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI Logo">
+<h1>😂 SASIKUMAR AI — MEME HEAD</h1>
+<p>உங்கள் விருப்பமான மீம் வகையைத் தேர்ந்தெடுத்து, வேடிக்கையான caption உருவாக்குங்கள்!</p>
+</header>
+<main class="wrap">
+<section class="intro">
+<h2>🔥 Meme Categories</h2>
+<div class="grid" id="categories">
+<button class="card" data-name="தமிழ் காமெடி மீம்ஸ்"><span>😂</span>தமிழ் காமெடி</button>
+<button class="card" data-name="டிரெண்டிங் ஃபன்னி மீம்ஸ்"><span>🤣</span>டிரெண்டிங் ஃபன்னி</button>
+<button class="card" data-name="தங்க விலை மீம்ஸ்"><span>💰</span>தங்க விலை</button>
+<button class="card" data-name="WhatsApp Status மீம்ஸ்"><span>📱</span>WhatsApp Status</button>
+<button class="card" data-name="காதல் மீம்ஸ்"><span>❤️</span>காதல்</button>
+<button class="card" data-name="குடும்ப மீம்ஸ்"><span>👨‍👩‍👧</span>குடும்பம்</button>
+<button class="card" data-name="நண்பர்கள் மீம்ஸ்"><span>😎</span>நண்பர்கள்</button>
+<button class="card" data-name="திரைப்பட வசன மீம்ஸ்"><span>🎬</span>திரைப்படம்</button>
+<button class="card" data-name="கிரிக்கெட் மீம்ஸ்"><span>🏏</span>கிரிக்கெட்</button>
+<button class="card" data-name="சொந்த மீம்"><span>🎨</span>உங்கள் சொந்த மீம்</button>
+</div>
+</section>
+<section class="maker">
+<h2>🎨 Meme Caption Maker</h2>
+<label for="category">மீம் வகை</label>
+<select id="category">
+<option>தமிழ் காமெடி மீம்ஸ்</option><option>டிரெண்டிங் ஃபன்னி மீம்ஸ்</option>
+<option>தங்க விலை மீம்ஸ்</option><option>WhatsApp Status மீம்ஸ்</option>
+<option>காதல் மீம்ஸ்</option><option>குடும்ப மீம்ஸ்</option>
+<option>நண்பர்கள் மீம்ஸ்</option><option>திரைப்பட வசன மீம்ஸ்</option>
+<option>கிரிக்கெட் மீம்ஸ்</option><option>சொந்த மீம்</option>
+</select>
+<label for="idea">உங்கள் மீம் யோசனை</label>
+<textarea id="idea" rows="3" placeholder="உதாரணம்: நண்பன் கடன் வாங்கிய கதை..."></textarea>
+<button class="action" id="make">✨ Caption உருவாக்கு</button>
+<button class="action secondary" id="share">📲 Share</button>
+<div id="result" aria-live="polite">உங்கள் மீம் யோசனையை இங்கே உருவாக்கலாம்.</div>
+<p>குறிப்பு: இந்தப் பக்கம் caption உருவாக்க உதவுகிறது; படம் தானாக உருவாக்கப்படாது.</p>
+</section>
+</main>
+<footer>
+🤖 <strong>SASIKUMAR AI</strong><br>
+<a href="/">முகப்புப் பக்கம்</a> ·
+<a href="/audio-video-hub.html">Audio &amp; Video Hub</a>
+</footer>
+<script>
+const category=document.getElementById('category');
+const idea=document.getElementById('idea');
+const result=document.getElementById('result');
+document.querySelectorAll('.card').forEach(btn=>btn.addEventListener('click',()=>{
+ category.value=btn.dataset.name;
+ document.querySelector('.maker').scrollIntoView({behavior:'smooth'});
+}));
+document.getElementById('make').addEventListener('click',()=>{
+ const topic=idea.value.trim();
+ if(!topic){result.textContent='முதலில் உங்கள் மீம் யோசனையை எழுதுங்கள்.';return;}
+ result.textContent='😂 SASIKUMAR AI — MEME HEAD\\nவகை: '+category.value+
+ '\\n\\n'+topic+'\\n\\nஇதுதான் நம்ம லெவல்! 😂';
+});
+document.getElementById('share').addEventListener('click',async()=>{
+ const text=result.textContent+'\\n\\nSASIKUMAR AI Meme Hub: '+location.href;
+ if(navigator.share){try{await navigator.share({title:'SASIKUMAR AI Meme',text});}catch(e){}}
+ else if(navigator.clipboard){try{await navigator.clipboard.writeText(text);alert('Caption copied!');}catch(e){alert(text);}}
+ else alert(text);
+});
+</script>
+</body>
+</html>

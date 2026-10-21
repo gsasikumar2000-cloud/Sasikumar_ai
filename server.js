@@ -76,7 +76,9 @@ const WELCOME_MENU = `🤖 SASIKUMAR AI — MAIN MENU
 Any language-la unga question-ai type pannalaam.
 Option number anuppi service select pannunga.
 
-— SASIKUMAR AI`;
+— SASIKUMAR AI
+34. 😂 Meme Head — Trending Meme Hub
+`;
 
 const MENU_REPLIES = {
   '1': () => `🤖 AI ASSISTANT — ASK ANYTHING!
@@ -830,7 +832,27 @@ Type 0 for Main Menu`,
 🌐 Agriculture Page:
 https://sasikumar-ai-9wdq.onrender.com/agriculture.html
 
-Type 0 for Main Menu`
+Type 0 for Main Menu`,
+  '34': () => `😂 SASIKUMAR AI — MEME HEAD
+
+🔥 SUB MENU: TRENDING MEMES
+
+1️⃣ 😂 தமிழ் காமெடி மீம்ஸ்
+2️⃣ 🤣 டிரெண்டிங் ஃபன்னி மீம்ஸ்
+3️⃣ 💰 தங்க விலை மீம்ஸ்
+4️⃣ 📱 WhatsApp Status மீம்ஸ்
+5️⃣ ❤️ காதல் மீம்ஸ்
+6️⃣ 👨‍👩‍👧 குடும்ப மீம்ஸ்
+7️⃣ 😎 நண்பர்கள் மீம்ஸ்
+8️⃣ 🎬 திரைப்பட வசன மீம்ஸ்
+9️⃣ 🏏 கிரிக்கெட் மீம்ஸ்
+🔟 🎨 சொந்தமாக மீம் உருவாக்குங்கள்
+
+🌐 Meme Hub:
+https://sasikumar-ai-9wdq.onrender.com/meme-hub.html
+
+🤖 SASIKUMAR AI வழங்குகிறது
+🔙 Type 0 for Main Menu`
 };
 async function getLiveGoldSilverWhatsAppReply() {
   const goldUrl = 'https://sasikumar-ai-9wdq.onrender.com/api/gold-rate?state=Tamil%20Nadu&district=Thanjavur';
@@ -949,14 +971,14 @@ function getWhatsAppEMIReply(message) {
 🔙 Type 0 for Main Menu`;
 }
 function detectLang(q){try{if(/[\u0B80-\u0BFF]/.test(q))return 'ta';return 'en';}catch(e){return 'en';}}
-function getGeneralReply(q,lang){const time=new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'});if(q.toLowerCase().includes('gold'))return `💰 GOLD RATE\nVerified current rate-ai /api/gold-la check pannunga.\nhttps://sasikumar-ai-9wdq.onrender.com/api/gold\nType 0 for Menu`;return `🌍 General AI - ${time}\nYou: "${q}"\nType 0 for Menu or 1-33`; }
+function getGeneralReply(q,lang){const time=new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'});if(q.toLowerCase().includes('gold'))return `💰 GOLD RATE\nVerified current rate-ai /api/gold-la check pannunga.\nhttps://sasikumar-ai-9wdq.onrender.com/api/gold\nType 0 for Menu`;return `🌍 General AI - ${time}\nYou: "${q}"\nType 0 for Menu or 1-34`; }
 
-app.get('/api/status',(req,res)=>{res.json({status:'WHATSAPP MENU 33 OPTIONS LIVE OK',version:'7.3 Menu',options:33,time:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})});});
+app.get('/api/status',(req,res)=>{res.json({status:'WHATSAPP MENU 34 OPTIONS LIVE OK',version:'7.4 Menu',options:34,time:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})});});
 app.get('/api/whatsapp/menu',(req,res)=>{
   res.set('Cache-Control','no-store');
   res.json({
-    welcome: '🤖 SASIKUMAR AI — 33 Services',
-    total: 33,
+    welcome: '🤖 SASIKUMAR AI — 34 Services',
+    total: 34,
     menuImage: 'https://sasikumar-ai-9wdq.onrender.com/assets/whatsapp-menu.png'
   });
 });
@@ -1695,7 +1717,7 @@ const isWelcome = !trimmed || trimmed === '0' ||
 let reply = WELCOME_MENU;
 
 if (!isWelcome) {
-  const num = trimmed.match(/^\s*(3[0-3]|[12][0-9]|[0-9])\s*$/);
+  const num = trimmed.match(/^\s*(3[0-4]|[12][0-9]|[0-9])\s*$/);
 
   if (num) {
     reply = num[1] === '10'
@@ -3173,4 +3195,4 @@ app.post('/api/fal-image', async (req, res) => {
 });
 // END SASIKUMAR AI FAL IMAGE API V1
 
-app.listen(PORT,()=>console.log(`🤖 33 OPTIONS WHATSAPP MENU http://localhost:${PORT} - OK`));
+app.listen(PORT,()=>console.log(`🤖 34 OPTIONS WHATSAPP MENU http://localhost:${PORT} - OK`));
