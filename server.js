@@ -2785,6 +2785,100 @@ app.post('/api/ai/image/huggingface', async (req, res) => {
 });
 // END SK_HUGGINGFACE_IMAGE_API_V1
 
+
+// SK_STABILITY_IMAGE_API_V1
+app.post('/api/ai/image/stability', async (req, res) => {
+  try {
+    const prompt = String(req.body?.prompt || '').trim();
+
+    if (!prompt) {
+      return res.status(400).json({
+        ok: false,
+        error: 'Please enter an image description.'
+      });
+    }
+
+    if (prompt.length > 6000) {
+      return res.status(413).json({
+        ok: false,
+        error: 'Image description is too long.'
+      });
+    }
+
+    const apiKey = process.env.STABILITY_API_KEY;
+
+    if (!apiKey) {
+      return res.status(503).json({
+        ok: false,
+        error: 'Stability AI API key is not configured on the server.'
+      });
+    }
+
+    const form = new FormData();
+    form.append('prompt', prompt);
+    form.append('output_format', 'png');
+    form.append('aspect_ratio', '1:1');
+
+    const response = await fetch(
+      'https://api.stability.ai/v2beta/stable-image/generate/core',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          Accept: 'image/*'
+        },
+        body: form,
+        signal: AbortSignal.timeout(120000)
+      }
+    );
+
+    if (!response.ok) {
+      const details = (await response.text()).slice(0, 1000);
+      console.error(
+        '[Stability AI] Provider request failed:',
+        response.status,
+        details
+      );
+
+      return res.status(502).json({
+        ok: false,
+        error: 'Stability AI image generation failed.',
+        providerStatus: response.status
+      });
+    }
+
+    const mime = response.headers.get('content-type') || 'image/png';
+
+    if (!mime.startsWith('image/')) {
+      console.error('[Stability AI] Unexpected response content type:', mime);
+      return res.status(502).json({
+        ok: false,
+        error: 'Stability AI returned an unexpected response.'
+      });
+    }
+
+    const imageBuffer = Buffer.from(await response.arrayBuffer());
+    const imageUrl =
+      `data:${mime};base64,${imageBuffer.toString('base64')}`;
+
+    return res.json({
+      ok: true,
+      provider: 'Stability AI',
+      imageUrl
+    });
+  } catch (err) {
+    console.error('[Stability AI Image API]', err.message);
+
+    return res.status(err.name === 'TimeoutError' ? 504 : 502).json({
+      ok: false,
+      error: err.name === 'TimeoutError'
+        ? 'Stability AI image generation timed out. Please try again.'
+        : 'Stability AI image generation failed. Please try again.'
+    });
+  }
+});
+// END SK_STABILITY_IMAGE_API_V1
+
 // SK_CLOUDFLARE_FLUX3_IMAGE_KLEIN_V1
 app.post('/api/ai/image/cloudflare', async (req, res) => {
   const controller = new AbortController();
