@@ -1972,6 +1972,7 @@ app.post('/api/whatsapp/share',(req,res)=>{
 // SASIKUMAR AI GLOBAL WEB SEARCH API
 app.get('/api/global-search', async (req, res) => {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-store');
 
   const query = String(req.query.q || '').trim();
 
@@ -1989,62 +1990,121 @@ app.get('/api/global-search', async (req, res) => {
     });
   }
 
-  const apiKey = process.env.TAVILY_API_KEY;
+  const googleUrl =
+    'https://www.google.com/search?q=' + encodeURIComponent(query);
 
-  if (!apiKey) {
-    return res.status(503).json({
-      error: 'Web Search is not configured. Please set TAVILY_API_KEY.',
-      results: []
-    });
-  }
+  const googleFallback = () => ({
+    query,
+    provider: 'google',
+    fallback: true,
+    results: [{
+      title: 'Google Search — ' + query,
+      url: googleUrl,
+      content: 'Open Google to view current search results.'
+    }]
+  });
 
-  try {
-    const response = await fetch('https://api.tavily.com/search', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        api_key: apiKey,
-        query,
-        search_depth: 'basic',
-        max_results: 8,
-        include_answer: false
-      }),
-      signal: AbortSignal.timeout(25000)
-    });
-
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-      console.error('Tavily Search HTTP error:', response.status);
-      const googleUrl = 'https://www.google.com/search?q=' + encodeURIComponent(query);
-      return res.json({
-        query,
-        fallback: 'google',
-        error: 'Tavily search is unavailable. Continue with Google Search.',
-        results: [{
-          title: 'Google Search — ' + query,
-          url: googleUrl,
-          content: 'Tap this result to open current Google search results.'
-        }]
-      });
-    }
-
-    const results = (Array.isArray(data.results) ? data.results : [])
+  const normalize = (items) =>
+    (Array.isArray(items) ? items : [])
       .map(item => ({
-        title: String(item.title || 'Search result'),
-        url: String(item.url || ''),
-        content: String(item.content || item.snippet || '')
+        title: String(item.title || item.name || 'Search result'),
+        url: String(item.url || item.link || ''),
+        content: String(
+          item.content || item.snippet || item.text || item.description || ''
+        )
       }))
-      .filter(item => item.url.startsWith('https://') || item.url.startsWith('http://'));
+      .filter(item => /^https?:\/\//i.test(item.url))
+      .slice(0, 8);
 
-    return res.json({ query, results });
-  } catch (error) {
-    console.error('Global Search request failed:', error.message);
-    return res.status(502).json({
-      error: 'Web Search is temporarily unavailable. Please try again.',
-      results: []
-    });
+  // Provider 1: Tavily
+  if (process.env.TAVILY_API_KEY) {
+    try {
+      const r = await fetch('https://api.tavily.com/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          api_key: process.env.TAVILY_API_KEY,
+          query,
+          search_depth: 'basic',
+          max_results: 8,
+          include_answer: false
+        }),
+        signal: AbortSignal.timeout(12000)
+      });
+
+      const d = await r.json().catch(() => ({}));
+      const results = normalize(d.results);
+
+      if (r.ok && results.length) {
+        return res.json({ query, provider: 'tavily', results });
+      }
+
+      console.error('[Global Search] Tavily unavailable:', r.status);
+    } catch (e) {
+      console.error('[Global Search] Tavily failed:', e.message);
+    }
   }
+
+  // Provider 2: Exa AI
+  if (process.env.EXA_API_KEY) {
+    try {
+      const r = await fetch('https://api.exa.ai/search', {
+        method: 'POST',
+        headers: {
+          'x-api-key': process.env.EXA_API_KEY,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          query,
+          type: 'auto',
+          numResults: 8,
+          contents: { text: { maxCharacters: 1200 } }
+        }),
+        signal: AbortSignal.timeout(12000)
+      });
+
+      const d = await r.json().catch(() => ({}));
+      const results = normalize(d.results);
+
+      if (r.ok && results.length) {
+        return res.json({ query, provider: 'exa', results });
+      }
+
+      console.error('[Global Search] Exa unavailable:', r.status);
+    } catch (e) {
+      console.error('[Global Search] Exa failed:', e.message);
+    }
+  }
+
+  // Provider 3: SerpAPI
+  if (process.env.SERPAPI_API_KEY) {
+    try {
+      const params = new URLSearchParams({
+        engine: 'google',
+        q: query,
+        api_key: process.env.SERPAPI_API_KEY,
+        num: '8'
+      });
+
+      const r = await fetch(
+        'https://serpapi.com/search.json?' + params.toString(),
+        { signal: AbortSignal.timeout(12000) }
+      );
+
+      const d = await r.json().catch(() => ({}));
+      const results = normalize(d.organic_results);
+
+      if (r.ok && results.length) {
+        return res.json({ query, provider: 'serpapi', results });
+      }
+
+      console.error('[Global Search] SerpAPI unavailable:', r.status);
+    } catch (e) {
+      console.error('[Global Search] SerpAPI failed:', e.message);
+    }
+  }
+
+  return res.json(googleFallback());
 });
 // END SASIKUMAR AI GLOBAL WEB SEARCH API
 
