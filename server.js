@@ -3050,7 +3050,7 @@ app.post('/api/fal-image', async (req, res) => {
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      console.error('[Fal AI] Request failed:', response.status);
+      console.error('[Fal AI] Request failed:', response.status, JSON.stringify(data).slice(0, 1500));
       return res.status(502).json({
         success: false,
         error: 'Fal AI image generation failed.',
