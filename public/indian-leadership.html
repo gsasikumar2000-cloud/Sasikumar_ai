@@ -51,8 +51,14 @@ footer{text-align:center;padding:22px}
 <input id="search" placeholder="Search leader name..." aria-label="Search leaders">
 <select id="category" aria-label="Filter leaders">
 <option value="All">All categories</option>
-<option>Independence</option><option>Politics</option><option>Social Reform</option>
-<option>Science</option><option>Tamil Nadu</option><option>Space</option>
+<option>Independence</option>
+<option>Tamil Poets</option>
+<option>Kings</option>
+<option>Politics</option>
+<option>Social Reform</option>
+<option>Science</option>
+<option>Tamil Nadu</option>
+<option>Space</option>
 </select>
 <button onclick="location.href='/'">MAIN</button>
 </div>
@@ -161,6 +167,28 @@ const people=[
 ["V. O. Chidambaram Pillai","Tamil Nadu","V. O. Chidambaram Pillai"],
 ["Tiruppur Kumaran","Tamil Nadu","Tiruppur Kumaran"],
 ["Dheeran Chinnamalai","Tamil Nadu","Dheeran Chinnamalai"]
+,
+["Veerapandiya Kattabomman","Independence","Veerapandiya Kattabomman"],
+["Maruthu Pandiyar","Independence","Maruthu Pandiyar"],
+["Velu Nachiyar","Independence","Velu Nachiyar"],
+["Puli Thevar","Independence","Puli Thevar"],
+["Subramania Siva","Independence","Subramania Siva"],
+["Vanchinathan","Independence","Vanchinathan"],
+["Thiruvalluvar","Tamil Poets","Thiruvalluvar"],
+["Avvaiyar","Tamil Poets","Avvaiyar"],
+["Kambar","Tamil Poets","Kambar"],
+["Ilango Adigal","Tamil Poets","Ilango Adigal"],
+["Sekkizhar","Tamil Poets","Sekkizhar"],
+["Subramania Bharati","Tamil Poets","Subramania Bharati"],
+["Bharathidasan","Tamil Poets","Bharathidasan"],
+["Rajaraja Chola I","Kings","Rajaraja Chola I"],
+["Rajendra Chola I","Kings","Rajendra Chola I"],
+["Karikala Chola","Kings","Karikala Chola"],
+["Cheran Senguttuvan","Kings","Cheran Senguttuvan"],
+["Krishnadevaraya","Kings","Krishnadevaraya"],
+
+
+
 ];
 const cache={};
 const fallback="/assets/sasikumar-ai-logo.png";
@@ -176,20 +204,58 @@ async function getInfo(p){
  return cache[p[0]];
 }
 function render(){
- const q=document.getElementById("search").value.toLowerCase();
+ const q=document.getElementById("search").value.toLowerCase().trim();
  const cat=document.getElementById("category").value;
- const list=people.filter(p=>(cat==="All"||p[1]===cat)&&p[0].toLowerCase().includes(q));
- const box=document.getElementById("leaders");box.innerHTML="";
- list.forEach(p=>{
-  const el=document.createElement("article");el.className="leader";
-  const img=document.createElement("img");img.loading="lazy";img.src=fallback;img.alt=p[0];
-  const title=document.createElement("h3");title.textContent=p[0];
-  const sub=document.createElement("p");sub.textContent=p[1];
-  el.append(img,title,sub);el.onclick=()=>showDetail(p);
-  box.appendChild(el);
-  getInfo(p).then(d=>{if(img.isConnected)img.src=d.image||fallback;});
+ const list=people.filter(p=>
+  (cat==="All"||p[1]===cat)&&
+  (p[0]+" "+p[1]).toLowerCase().includes(q)
+ );
+ const box=document.getElementById("leaders");
+ box.innerHTML="";
+
+ const headings={
+  "Independence":"⚔️ சுதந்திரப் போராட்ட வீரர்கள் • Freedom Fighters",
+  "Tamil Poets":"📚 தமிழ்ப் புலவர்கள் • Tamil Poets",
+  "Kings":"👑 மன்னர்கள் • Kings",
+  "Politics":"🏛️ அரசியல் தலைவர்கள் • Political Leaders",
+  "Social Reform":"🌟 சமூக சீர்திருத்தவாதிகள் • Social Reformers",
+  "Science":"🔬 விஞ்ஞானிகள் • Scientists",
+  "Space":"🚀 விஞ்ஞானிகள் மற்றும் விண்வெளி வீரர்கள் • Space",
+  "Tamil Nadu":"🌺 தமிழ்நாட்டுத் தலைவர்கள் • Tamil Nadu Leaders"
+ };
+
+ const categories=[...new Set(list.map(p=>p[1]))];
+ categories.forEach(category=>{
+  const members=list.filter(p=>p[1]===category);
+  const heading=document.createElement("h2");
+  heading.className="category-subheading";
+  heading.textContent=(headings[category]||category)+" ("+members.length+")";
+  heading.style.cssText="grid-column:1/-1;margin:22px 0 8px;padding:12px;border-radius:12px;background:#e8f3ff;color:#124b83;font-size:1.15rem;";
+  box.appendChild(heading);
+
+  members.forEach(p=>{
+   const el=document.createElement("article");
+   el.className="leader";
+   const img=document.createElement("img");
+   img.loading="lazy";
+   img.src=fallback;
+   img.alt=p[0];
+   const title=document.createElement("h3");
+   title.textContent=p[0];
+   const sub=document.createElement("p");
+   sub.textContent=p[1];
+   el.append(img,title,sub);
+   el.onclick=()=>showDetail(p);
+   box.appendChild(el);
+   getInfo(p).then(d=>{
+    if(img.isConnected)img.src=d.image||fallback;
+   });
+  });
  });
- document.getElementById("status").textContent=list.length+" leader profiles • Tap a card to read details";
+
+ document.getElementById("status").textContent=
+  list.length+" leader profiles • "+categories.length+
+  " categories • Tap a card to read details";
 }
 async function showDetail(p){
  const d=await getInfo(p);
