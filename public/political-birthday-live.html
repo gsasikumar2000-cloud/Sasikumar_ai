@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1d4ed8">
+<title>Birthday & Memorial Live Book | SASIKUMAR AI</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;color:#172554;background:linear-gradient(135deg,#fff7ed,#eff6ff,#f0fdf4)}
+header{text-align:center;padding:18px 12px;background:linear-gradient(120deg,#ffedd5,#dbeafe,#dcfce7)}
+.logo{width:66px;height:66px;object-fit:contain;animation:spin 12s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+h1{font-size:clamp(23px,5vw,35px);margin:8px}
+button,select{border:0;border-radius:12px;padding:12px 15px;font-size:15px;font-weight:bold;cursor:pointer}
+button{background:#1d4ed8;color:white}
+button.secondary{background:#0f766e}
+button.light{background:#e0e7ff;color:#1e3a8a}
+.controls{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;padding:14px}
+main{max-width:850px;margin:0 auto;padding:10px}
+.book{perspective:1200px;margin:10px auto;max-width:650px}
+.page{min-height:430px;background:#fffdf4;border:5px solid #d6a85f;border-radius:8px 22px 22px 8px;box-shadow:0 14px 30px #64748b55;padding:24px;text-align:center;transform-origin:left center;animation:openbook .8s ease both}
+@keyframes openbook{from{transform:rotateY(-18deg);opacity:.45}to{transform:rotateY(0);opacity:1}}
+.badge{display:inline-block;padding:7px 12px;border-radius:20px;background:#dbeafe;color:#1d4ed8;font-weight:bold}
+.person{font-size:clamp(24px,5vw,36px);color:#1d4ed8;margin:18px 0 8px}
+.quote{font-size:clamp(18px,4vw,23px);line-height:1.8;white-space:pre-line}
+.english{font-size:17px;line-height:1.7;color:#475569;white-space:pre-line}
+.note{background:#fff;border-radius:14px;padding:14px;line-height:1.65;margin:14px 0}
+#poster{max-width:100%;border-radius:12px}
+#status{text-align:center;color:#475569;padding:12px}
+footer{text-align:center;padding:22px}
+@media(max-width:500px){.page{padding:16px;min-height:400px}.controls button{flex:1 1 40%}}
+</style>
+</head>
+<body>
+<header>
+<img class="logo" src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI logo">
+<h1>📖 Birthday & Memorial Live Book</h1>
+<p>🇮🇳 Indian Leaders • Tamil Nadu • Social Reformers</p>
+<p>தமிழ் மற்றும் ஆங்கிலம் | Tamil & English</p>
+</header>
+
+<div class="controls">
+<button onclick="setMode('birthday')">🎂 Birthday</button>
+<button class="secondary" onclick="setMode('memorial')">🕯️ Memorial</button>
+<select id="count" aria-label="Daily cards" onchange="render()">
+<option value="5">5 Cards</option>
+<option value="10">10 Cards</option>
+</select>
+<button class="light" onclick="previous()">◀ Previous</button>
+<button class="light" onclick="next()">Next ▶</button>
+<button onclick="toggleAuto()" id="autoBtn">⏸ Pause Auto Flip</button>
+<button class="secondary" onclick="shareWhatsApp()">WhatsApp Share</button>
+<button class="secondary" onclick="shareFacebook()">Facebook Share</button>
+<button onclick="downloadPoster()">⬇ Download Poster</button>
+<button class="light" onclick="location.href='/'">🏠 MAIN</button>
+</div>
+
+<main>
+<div id="status">Loading daily book…</div>
+<div class="book"><article class="page" id="page" aria-live="polite"></article></div>
+<div class="note">
+<b>ℹ️ Date verification notice</b><br>
+This page uses the device's India-local date. Only verified date records should be added to the event list. If no verified event is available for today, the page will clearly say so instead of inventing a birthday or memorial.
+<br><br>
+<b>குறிப்பு:</b> உறுதிப்படுத்தப்பட்ட தேதி உள்ளவர்களையே தினசரி பட்டியலில் சேர்க்க வேண்டும். தகவல் இல்லையெனில் தவறான பிறந்தநாள் அல்லது நினைவு நாள் காட்டப்படாது.
+</div>
+<canvas id="poster" width="1080" height="1350" hidden></canvas>
+</main>
+<footer>© SASIKUMAR AI • Birthday & Memorial Live Book</footer>
+
+<script>
+const events = [
+{name:"Mahatma Gandhi",category:"India",type:"birthday",date:"10-02",birthYear:1869,ta:"மகாத்மா காந்தியின் பிறந்தநாள் வாழ்த்துகள்.",en:"Remember the values of truth and non-violence."},
+{name:"Mahatma Gandhi",category:"India",type:"memorial",date:"01-30",birthYear:1869,ta:"உங்கள் நினைவுகள் எங்கள் இதயங்களில் என்றும் வாழும்.",en:"Your legacy of peace and non-violence lives on."},
+{name:"Subhas Chandra Bose",category:"India",type:"birthday",date:"01-23",birthYear:1897,ta:"நேதாஜியின் பிறந்தநாளை மரியாதையுடன் நினைவுகூர்வோம்.",en:"Honouring Netaji Subhas Chandra Bose."},
+{name:"Dr. B. R. Ambedkar",category:"India • Social Reform",type:"birthday",date:"04-14",birthYear:1891,ta:"சமத்துவத்திற்கும் சமூக நீதிக்கும் வழிகாட்டிய அம்பேத்கரைப் போற்றுவோம்.",en:"Honouring Dr. B. R. Ambedkar and his legacy of equality."},
+{name:"Dr. B. R. Ambedkar",category:"India • Social Reform",type:"memorial",date:"12-06",birthYear:1891,ta:"சமூக நீதிக்கான உங்கள் பணி என்றும் நினைவில் நிற்கும்.",en:"Remembering Dr. B. R. Ambedkar and his lasting contribution to social justice."},
+{name:"Periyar E. V. Ramasamy",category:"Tamil Nadu • Social Reform",type:"birthday",date:"09-17",birthYear:1879,ta:"பெரியாரின் சமூகச் சீர்திருத்தப் பங்களிப்பை நினைவுகூர்வோம்.",en:"Remembering Periyar's legacy of social reform."},
+{name:"Periyar E. V. Ramasamy",category:"Tamil Nadu • Social Reform",type:"memorial",date:"12-24",birthYear:1879,ta:"பெரியாரின் சிந்தனைகளும் பங்களிப்புகளும் நினைவில் நிலைத்திருக்கும்.",en:"Remembering Periyar E. V. Ramasamy and his social reform legacy."},
+{name:"K. Kamaraj",category:"Tamil Nadu • Politics",type:"birthday",date:"07-15",birthYear:1903,ta:"பெருந்தலைவர் காமராஜரின் பிறந்தநாளை மரியாதையுடன் கொண்டாடுவோம்.",en:"Honouring K. Kamaraj and his public service."},
+{name:"K. Kamaraj",category:"Tamil Nadu • Politics",type:"memorial",date:"10-02",birthYear:1903,ta:"காமராஜரின் பொதுச் சேவையை நன்றியுடன் நினைவுகூர்வோம்.",en:"Remembering K. Kamaraj and his service to the people."},
+{name:"C. N. Annadurai",category:"Tamil Nadu • Politics",type:"birthday",date:"09-15",birthYear:1909,ta:"பேரறிஞர் அண்ணாவின் பிறந்தநாளை மரியாதையுடன் நினைவுகூர்வோம்.",en:"Honouring C. N. Annadurai and his public legacy."},
+{name:"C. N. Annadurai",category:"Tamil Nadu • Politics",type:"memorial",date:"02-03",birthYear:1909,ta:"அண்ணாவின் நினைவும் பங்களிப்பும் என்றும் நிலைத்திருக்கும்.",en:"Remembering C. N. Annadurai and his legacy."},
+{name:"M. G. Ramachandran",category:"Tamil Nadu • Politics",type:"birthday",date:"01-17",birthYear:1917,ta:"எம்.ஜி.ஆரின் பிறந்தநாளை மரியாதையுடன் நினைவுகூர்வோம்.",en:"Honouring M. G. Ramachandran."},
+{name:"M. G. Ramachandran",category:"Tamil Nadu • Politics",type:"memorial",date:"12-24",birthYear:1917,ta:"எம்.ஜி.ஆரின் நினைவுகளை மரியாதையுடன் போற்றுவோம்.",en:"Remembering M. G. Ramachandran."},
+{name:"J. Jayalalithaa",category:"Tamil Nadu • Politics",type:"birthday",date:"02-24",birthYear:1948,ta:"ஜெயலலிதாவின் பிறந்தநாளை நினைவுகூர்வோம்.",en:"Remembering J. Jayalalithaa on her birth anniversary."},
+{name:"J. Jayalalithaa",category:"Tamil Nadu • Politics",type:"memorial",date:"12-05",birthYear:1948,ta:"அவரது நினைவுகளை மரியாதையுடன் நினைவுகூர்வோம்.",en:"Remembering J. Jayalalithaa."},
+{name:"M. Karunanidhi",category:"Tamil Nadu • Politics",type:"birthday",date:"06-03",birthYear:1924,ta:"கலைஞர் கருணாநிதியின் பிறந்தநாளை நினைவுகூர்வோம்.",en:"Remembering M. Karunanidhi and his contributions."},
+{name:"M. Karunanidhi",category:"Tamil Nadu • Politics",type:"memorial",date:"08-07",birthYear:1924,ta:"கலைஞரின் பங்களிப்புகளை மரியாதையுடன் நினைவுகூர்வோம்.",en:"Remembering M. Karunanidhi."},
+{name:"V. O. Chidambaram Pillai",category:"Tamil Nadu • Freedom Movement",type:"birthday",date:"09-05",birthYear:1872,ta:"வ.உ.சிதம்பரனாரின் தியாகத்தையும் துணிவையும் நினைவுகூர்வோம்.",en:"Honouring V. O. Chidambaram Pillai."},
+{name:"V. O. Chidambaram Pillai",category:"Tamil Nadu • Freedom Movement",type:"memorial",date:"11-18",birthYear:1872,ta:"விடுதலைப் போராட்டத்தில் அவருடைய பங்களிப்பை நினைவுகூர்வோம்.",en:"Remembering V. O. Chidambaram Pillai."},
+{name:"Dr. A. P. J. Abdul Kalam",category:"India • Science",type:"birthday",date:"10-15",birthYear:1931,ta:"டாக்டர் அப்துல் கலாமின் கனவுகளையும் அறிவுப் பணியையும் போற்றுவோம்.",en:"Honouring Dr. A. P. J. Abdul Kalam and his inspiration to young people."},
+{name:"Dr. A. P. J. Abdul Kalam",category:"India • Science",type:"memorial",date:"07-27",birthYear:1931,ta:"அறிவுக்கும் கனவுகளுக்கும் ஊக்கம் தந்த கலாமை நினைவுகூர்வோம்.",en:"Remembering Dr. A. P. J. Abdul Kalam."},
+{name:"Jawaharlal Nehru",category:"India • Politics",type:"birthday",date:"11-14",birthYear:1889,ta:"ஜவஹர்லால் நேருவின் பிறந்தநாளை நினைவுகூர்வோம்.",en:"Remembering Jawaharlal Nehru."},
+{name:"Jawaharlal Nehru",category:"India • Politics",type:"memorial",date:"05-27",birthYear:1889,ta:"நேருவின் வாழ்க்கை மற்றும் பங்களிப்புகளை நினைவுகூர்வோம்.",en:"Remembering Jawaharlal Nehru and his public legacy."},
+{name:"Indira Gandhi",category:"India • Politics",type:"birthday",date:"11-19",birthYear:1917,ta:"இந்திரா காந்தியின் பிறந்தநாளை நினைவுகூர்வோம்.",en:"Remembering Indira Gandhi."},
+{name:"Indira Gandhi",category:"India • Politics",type:"memorial",date:"10-31",birthYear:1917,ta:"இந்திரா காந்தியை மரியாதையுடன் நினைவுகூர்வோம்.",en:"Remembering Indira Gandhi."},
+{name:"Sardar Vallabhbhai Patel",category:"India • Politics",type:"birthday",date:"10-31",birthYear:1875,ta:"சர்தார் வல்லபாய் பட்டேலின் பங்களிப்பைப் போற்றுவோம்.",en:"Honouring Sardar Vallabhbhai Patel."},
+{name:"Sardar Vallabhbhai Patel",category:"India • Politics",type:"memorial",date:"12-15",birthYear:1875,ta:"இந்திய ஒற்றுமைக்கான பட்டேலின் பங்களிப்பை நினைவுகூர்வோம்.",en:"Remembering Sardar Vallabhbhai Patel."},
+{name:"Bhagat Singh",category:"India • Freedom Movement",type:"birthday",date:"09-28",birthYear:1907,ta:"பகத் சிங்கின் துணிவையும் தியாகத்தையும் நினைவுகூர்வோம்.",en:"Honouring Bhagat Singh's courage and sacrifice."},
+{name:"Bhagat Singh",category:"India • Freedom Movement",type:"memorial",date:"03-23",birthYear:1907,ta:"பகத் சிங்கின் தியாகத்தை மரியாதையுடன் நினைவுகூர்வோம்.",en:"Remembering Bhagat Singh and his sacrifice."},
+{name:"Sarojini Naidu",category:"India • Social Service",type:"birthday",date:"02-13",birthYear:1879,ta:"சரோஜினி நாயுடுவின் வாழ்க்கையையும் பணியையும் போற்றுவோம்.",en:"Honouring Sarojini Naidu."},
+{name:"Ashfaqulla Khan",category:"India • Freedom Movement",type:"birthday",date:"10-22",birthYear:1900,ta:"அஷ்ஃபாகுல்லா கானின் துணிவையும் தியாகத்தையும் நினைவுகூர்வோம்.",en:"Remembering freedom fighter Ashfaqulla Khan."},
+{name:"Ashfaqulla Khan",category:"India • Freedom Movement",type:"memorial",date:"12-19",birthYear:1900,ta:"அவரது தியாகத்தை மரியாதையுடன் நினைவுகூர்வோம்.",en:"Remembering Ashfaqulla Khan and his sacrifice."}
+];
+
+const today = new Date();
+const mmdd = String(today.getMonth()+1).padStart(2,'0') + '-' +
+             String(today.getDate()).padStart(2,'0');
+let mode = "birthday", index = 0, auto = true, timer;
+
+function todayEvents(){
+  const matching = events.filter(e => e.type === mode);
+  const todayMatch = matching.filter(e => e.date === mmdd);
+  if (todayMatch.length) return todayMatch;
+
+  const currentMonthDay = Number(mmdd.slice(0,2)) * 100 + Number(mmdd.slice(3,5));
+  return matching
+    .map(e => {
+      const parts = e.date.split("-").map(Number);
+      const dayKey = parts[0] * 100 + parts[1];
+      return {...e, _daysUntil: (dayKey - currentMonthDay + 1232) % 1232};
+    })
+    .sort((a,b) => a._daysUntil - b._daysUntil)
+    .slice(0,10);
+}
+function escapeHTML(s){
+  return String(s || "").replace(/[&<>"']/g,c=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+}
+function render(){
+  const list = todayEvents();
+  const page = document.getElementById("page");
+  const status = document.getElementById("status");
+  const limit = Number(document.getElementById("count").value);
+  const shown = list.slice(0,limit);
+  if(index >= shown.length) index = 0;
+
+  if(!shown.length){
+    page.innerHTML = `
+      <div class="badge">${mode==="birthday"?"🎂 BIRTHDAY BOOK":"🕯️ MEMORIAL BOOK"}</div>
+      <h2 class="person">SASIKUMAR AI</h2>
+      <p class="quote">${mode==="birthday"?
+      "இன்றைய தேதிக்கான உறுதிப்படுத்தப்பட்ட பிறந்தநாள் பதிவு இன்னும் சேர்க்கப்படவில்லை.":
+      "இன்றைய தேதிக்கான உறுதிப்படுத்தப்பட்ட நினைவு நாள் பதிவு இன்னும் சேர்க்கப்படவில்லை."}</p>
+      <p class="english">${mode==="birthday"?
+      "No verified birthday record has been added for today's date yet.":
+      "No verified memorial record has been added for today's date yet."}</p>
+      <p>${today.toLocaleDateString("en-IN",{day:"numeric",month:"long",year:"numeric"})}</p>
+      <img src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI" style="width:72px;height:72px;object-fit:contain">`;
+    status.textContent = "0 verified events for today • தினசரி சரிபார்க்கப்பட்ட பதிவுகள்: 0";
+    return;
+  }
+  const e = shown[index];
+  const year = e.birthYear ? `<p>${mode==="birthday"?"Born":"Remembering"}: ${escapeHTML(e.birthYear)}</p>` : "";
+  const messageTA = e.ta || (mode==="birthday"?"இனிய பிறந்தநாள் வாழ்த்துகள்!":"உங்கள் நினைவுகள் எங்கள் இதயங்களில் என்றும் வாழும். உங்கள் ஆன்மா சாந்தியடைய இறைவனை வேண்டுகிறோம்.");
+  const messageEN = e.en || (mode==="birthday"?"Wishing you a happy birthday!":"Your memories will live in our hearts forever. May your soul rest in peace.");
+  page.innerHTML = `
+    <div class="badge">${mode==="birthday"?"🎂 பிறந்தநாள் வாழ்த்து • BIRTHDAY":"🕯️ நினைவஞ்சலி • MEMORIAL"}</div>
+    <h2 class="person">${escapeHTML(e.name)}</h2>
+    <p>${escapeHTML(e.category||"India")}</p>
+    ${e.photo?`<img src="${escapeHTML(e.photo)}" alt="${escapeHTML(e.name)}" style="max-width:190px;max-height:190px;object-fit:contain;border-radius:12px" onerror="this.style.display='none'">`:""}
+    ${year}
+    <p class="quote">${escapeHTML(messageTA)}</p>
+    <p class="english">${escapeHTML(messageEN)}</p>
+    <p>${today.toLocaleDateString("en-IN",{day:"numeric",month:"long",year:"numeric"})}</p>
+    <img src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI" style="width:62px;height:62px;object-fit:contain">
+    <p><b>SASIKUMAR AI</b></p>`;
+  status.textContent = `${index+1} / ${shown.length} • Verified daily entries`;
+}
+function setMode(m){mode=m;index=0;render();}
+function next(){
+  const list=todayEvents().slice(0,Number(document.getElementById("count").value));
+  if(list.length) index=(index+1)%list.length;
+  render();
+}
+function previous(){
+  const list=todayEvents().slice(0,Number(document.getElementById("count").value));
+  if(list.length) index=(index-1+list.length)%list.length;
+  render();
+}
+function toggleAuto(){
+  auto=!auto;
+  document.getElementById("autoBtn").textContent=auto?"⏸ Pause Auto Flip":"▶ Resume Auto Flip";
+  if(timer) clearInterval(timer);
+  if(auto) timer=setInterval(next,120000);
+}
+function shareText(){
+  const e=todayEvents().slice(0,Number(document.getElementById("count").value))[index];
+  if(!e) return "SASIKUMAR AI — Birthday & Memorial Live Book";
+  return `${mode==="birthday"?"🎂 Birthday Wishes":"🕯️ Memorial Tribute"}\n${e.name}\n${e.ta||""}\n${e.en||""}\nSASIKUMAR AI\n${location.origin}/political-birthday-live.html`;
+}
+function shareWhatsApp(){
+  window.open("https://wa.me/?text="+encodeURIComponent(shareText()),"_blank","noopener");
+}
+function shareFacebook(){
+  const url=location.origin+"/political-birthday-live.html";
+  window.open("https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent(url),"_blank","noopener");
+}
+function downloadPoster(){
+  const c=document.getElementById("poster"),x=c.getContext("2d");
+  x.fillStyle="#fff7ed";x.fillRect(0,0,c.width,c.height);
+  x.fillStyle="#1d4ed8";x.textAlign="center";
+  x.font="bold 48px Arial";x.fillText("SASIKUMAR AI",540,100);
+  x.font="bold 42px Arial";
+  const e=todayEvents().slice(0,Number(document.getElementById("count").value))[index];
+  const title=e?e.name:"Birthday & Memorial Live Book";
+  x.fillText(title.slice(0,30),540,260);
+  x.font="36px Arial";
+  const lines=(e?(e.ta||""):"No verified event added for today").match(/.{1,24}/gu)||[];
+  lines.slice(0,8).forEach((line,i)=>x.fillText(line,540,380+i*65));
+  x.font="30px Arial";x.fillText(new Date().toLocaleDateString("en-IN"),540,1050);
+  x.font="bold 32px Arial";x.fillText(mode==="birthday"?"BIRTHDAY WISHES":"MEMORIAL TRIBUTE",540,1160);
+  const a=document.createElement("a");a.download="sasikumar-ai-birthday-memorial.png";a.href=c.toDataURL("image/png");a.click();
+}
+timer=setInterval(next,120000);
+render();
+</script>
+</body>
+</html>
