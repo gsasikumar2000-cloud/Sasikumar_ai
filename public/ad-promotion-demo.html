@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0878f9">
+<title>Live Ad Promotion Demo | SASIKUMAR AI</title>
+<meta name="description" content="Preview business advertisements on SASIKUMAR AI.">
+<style>
+:root {
+  --blue:#0878f9;
+  --purple:#713bdb;
+  --ink:#17243b;
+  --muted:#64748b;
+  --bg:#f3f7ff;
+  --line:#dce6f5;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,sans-serif;
+  color:var(--ink);
+  background:linear-gradient(160deg,#edf5ff,#fff 50%,#f4efff);
+}
+button,a { font:inherit; }
+.topbar {
+  background:linear-gradient(110deg,#0757c9,#6338d5);
+  color:#fff;
+  padding:15px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.brand { font-size:19px;font-weight:850; }
+.brand small { display:block;font-size:11px;letter-spacing:2px;opacity:.85; }
+.navbtn {
+  color:#0757c9;background:white;text-decoration:none;
+  border:0;border-radius:12px;padding:10px 15px;
+  font-weight:800;display:inline-block;
+}
+main { max-width:1100px;margin:auto;padding:24px 15px 45px; }
+.hero { text-align:center;padding:18px 0 24px; }
+.badge {
+  display:inline-block;background:#e0ecff;color:#0757c9;
+  border-radius:30px;padding:7px 13px;font-size:12px;font-weight:850;
+}
+h1 { font-size:clamp(27px,5vw,42px);margin:13px 0 8px;line-height:1.15; }
+.hero p { color:var(--muted);max-width:650px;margin:0 auto;line-height:1.7; }
+.layout { display:grid;grid-template-columns:minmax(0,1.15fr) minmax(270px,.85fr);gap:20px;align-items:start; }
+.panel {
+  background:#fff;border:1px solid var(--line);border-radius:20px;
+  padding:17px;box-shadow:0 10px 30px #1a43810c;min-width:0;
+}
+.panel h2 { margin:0 0 5px;font-size:19px; }
+.sub { color:var(--muted);font-size:13px;margin:0 0 16px;line-height:1.5; }
+.controls { display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px; }
+.controls button {
+  border:1px solid var(--line);background:#f5f8ff;color:#334155;
+  border-radius:10px;padding:9px 13px;font-weight:750;cursor:pointer;
+}
+.controls button.active { background:var(--blue);color:#fff;border-color:var(--blue); }
+.preview-wrap { background:#edf2fa;border:1px dashed #c4d3e8;border-radius:16px;padding:13px;overflow:auto; }
+.preview {
+  width:100%;max-width:100%;margin:auto;background:white;
+  border:1px solid #e2e8f0;border-radius:15px;overflow:hidden;
+  box-shadow:0 5px 18px #13294b12;transition:max-width .2s;
+}
+.preview.mobile { max-width:340px; }
+.ad-visual {
+  min-height:205px;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;padding:25px 18px;color:white;
+  background:radial-gradient(circle at 80% 20%,#ffdf8b,transparent 30%),
+             linear-gradient(135deg,#0867d7,#6e36d5 65%,#b12da9);
+}
+.ad-visual .mini { font-size:12px;letter-spacing:2px;font-weight:850;opacity:.9; }
+.ad-visual h3 { font-size:clamp(27px,4vw,39px);margin:13px 0 6px;line-height:1.1; }
+.ad-visual p { margin:0;font-size:14px; }
+.offer {
+  display:inline-block;margin-top:16px;background:#ffdf65;color:#432d00;
+  border-radius:9px;padding:9px 15px;font-weight:900;
+}
+.ad-body { padding:18px; }
+.company { display:flex;align-items:center;gap:11px; }
+.logo {
+  flex:0 0 46px;width:46px;height:46px;border-radius:13px;
+  display:grid;place-items:center;background:#e4edff;color:#0757c9;
+  font-size:23px;font-weight:900;
+}
+.company h4 { margin:0;font-size:17px;overflow-wrap:anywhere; }
+.company small { color:var(--muted); }
+.ad-description { color:#475569;line-height:1.65;font-size:14px;margin:14px 0; }
+.ad-actions { display:flex;gap:9px;flex-wrap:wrap; }
+.ad-action {
+  flex:1;text-align:center;text-decoration:none;border-radius:10px;
+  padding:11px 10px;font-size:13px;font-weight:850;
+}
+.call { color:white;background:#0878f9; }
+.wa { color:#087744;background:#d9fbe8; }
+.demo-note { font-size:11px;color:#64748b;margin:13px 0 0; }
+.stats { display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:14px; }
+.stat { border:1px solid var(--line);background:#f8faff;border-radius:12px;padding:12px 7px;text-align:center; }
+.stat strong { display:block;font-size:19px;color:#0757c9; }
+.stat span { font-size:11px;color:var(--muted); }
+.status { font-size:12px;color:var(--muted);margin-top:10px; }
+.live-list { display:grid;gap:12px;margin-top:14px; }
+.live-card { border:1px solid var(--line);border-radius:14px;padding:13px; }
+.live-card h3 { margin:0 0 6px;font-size:16px;overflow-wrap:anywhere; }
+.live-card p { margin:5px 0;color:#64748b;font-size:13px;line-height:1.5; }
+.live-card img { max-width:100%;max-height:170px;object-fit:cover;border-radius:10px; }
+.empty { background:#f8faff;border:1px dashed #b8c9e2;border-radius:13px;padding:16px;color:#64748b;font-size:13px;line-height:1.6; }
+.footer { text-align:center;color:#64748b;font-size:12px;padding:22px 10px; }
+@media(max-width:760px) {
+  .layout { grid-template-columns:1fr; }
+  main { padding:17px 11px 30px; }
+  .panel { padding:13px; }
+  .ad-visual { min-height:185px; }
+  .topbar { padding:13px; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">🤖 SASIKUMAR AI<small>BUSINESS PROMOTION</small></div>
+  <a class="navbtn" href="/">🏠 Main Page</a>
+</header>
+
+<main>
+  <section class="hero">
+    <span class="badge">✨ INTERACTIVE PREVIEW</span>
+    <h1>Live Ad Promotion Demo</h1>
+    <p>See how a business advertisement can appear on SASIKUMAR AI.
+       Preview the sample design on mobile and desktop, and browse published company ads.</p>
+  </section>
+
+  <div class="layout">
+    <section class="panel">
+      <h2>📱 Advertisement Preview</h2>
+      <p class="sub">Example layout only — this is not a paid or published campaign.</p>
+
+      <div class="controls" aria-label="Preview size">
+        <button id="mobileBtn" class="active" type="button">📱 Mobile</button>
+        <button id="desktopBtn" type="button">💻 Desktop</button>
+      </div>
+
+      <div class="preview-wrap">
+        <article id="preview" class="preview mobile">
+          <div class="ad-visual">
+            <span class="mini">YOUR BUSINESS • YOUR BRAND</span>
+            <h3>BIG OFFER<br>BIG SAVINGS!</h3>
+            <p>Showcase your product or service</p>
+            <span class="offer">SPECIAL OFFER</span>
+          </div>
+          <div class="ad-body">
+            <div class="company">
+              <div class="logo">🏢</div>
+              <div>
+                <h4>Example Business</h4>
+                <small>Sponsored • Demo Advertisement</small>
+              </div>
+            </div>
+            <p class="ad-description">
+              Promote your shop, products or services with an attractive
+              advertisement preview. Replace this sample with your approved
+              business campaign.
+            </p>
+            <div class="ad-actions">
+              <a href="#" class="ad-action call" id="demoCall">📞 Call Now</a>
+              <a href="#" class="ad-action wa" id="demoWhatsApp">💬 WhatsApp</a>
+            </div>
+            <p class="demo-note">Demo buttons are examples; no call or message will be sent.</p>
+          </div>
+        </article>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><strong>128</strong><span>Demo Views</span></div>
+        <div class="stat"><strong>12</strong><span>Demo Clicks</span></div>
+        <div class="stat"><strong>9.4%</strong><span>Sample CTR</span></div>
+      </div>
+      <p class="demo-note">⚠️ All figures above are illustrative demo data, not real analytics.</p>
+    </section>
+
+    <section class="panel">
+      <h2>🌐 Published Company Ads</h2>
+      <p class="sub">Advertisements returned by the SASIKUMAR AI Company Ads API.</p>
+      <div id="apiStatus" class="status" role="status">Loading published ads…</div>
+      <div id="liveAds" class="live-list"></div>
+      <button id="refreshAds" class="navbtn" type="button" style="border:0;cursor:pointer;margin-top:13px;">🔄 Refresh Ads</button>
+      <p class="demo-note">Only ads returned by the existing API are shown here. Sample preview content is separate.</p>
+    </section>
+  </div>
+</main>
+
+<footer class="footer">© SASIKUMAR AI • Live Ad Promotion Demo</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  const preview = document.getElementById("preview");
+  const mobileBtn = document.getElementById("mobileBtn");
+  const desktopBtn = document.getElementById("desktopBtn");
+
+  function setMode(mode) {
+    const mobile = mode === "mobile";
+    preview.classList.toggle("mobile", mobile);
+    mobileBtn.classList.toggle("active", mobile);
+    desktopBtn.classList.toggle("active", !mobile);
+  }
+
+  mobileBtn.addEventListener("click", () => setMode("mobile"));
+  desktopBtn.addEventListener("click", () => setMode("desktop"));
+
+  function demoButton(event) {
+    event.preventDefault();
+    alert("This is a demonstration button. No call or message was sent.");
+  }
+  document.getElementById("demoCall").addEventListener("click", demoButton);
+  document.getElementById("demoWhatsApp").addEventListener("click", demoButton);
+
+  const statusBox = document.getElementById("apiStatus");
+  const liveAds = document.getElementById("liveAds");
+  const refresh = document.getElementById("refreshAds");
+
+  function textElement(tag, value) {
+    const el = document.createElement(tag);
+    el.textContent = value == null ? "" : String(value);
+    return el;
+  }
+
+  function firstValue(ad, keys) {
+    for (const key of keys) {
+      if (ad && ad[key] != null && String(ad[key]).trim()) return String(ad[key]).trim();
+    }
+    return "";
+  }
+
+  function safeImageUrl(value) {
+    if (!value) return "";
+    try {
+      const u = new URL(value, location.origin);
+      return ["https:", "http:"].includes(u.protocol) ? u.href : "";
+    } catch (_) {
+      return "";
+    }
+  }
+
+  function makeAdCard(ad) {
+    const card = document.createElement("article");
+    card.className = "live-card";
+
+    const title = firstValue(ad, [
+      "business_name", "company_name", "companyName", "title", "name", "advertiser"
+    ]) || "Business Advertisement";
+
+    const description = firstValue(ad, [
+      "description", "ad_description", "message", "content", "details", "offer_text"
+    ]) || "Published business promotion.";
+
+    const image = safeImageUrl(firstValue(ad, [
+      "image_url", "imageUrl", "banner_url", "banner", "image", "logo_url"
+    ]));
+
+    const heading = textElement("h3", "🏢 " + title);
+    const label = textElement("p", "Published company advertisement");
+    const body = textElement("p", description);
+    card.append(heading, label);
+
+    if (image) {
+      const img = document.createElement("img");
+      img.src = image;
+      img.alt = title + " advertisement";
+      img.loading = "lazy";
+      img.referrerPolicy = "no-referrer";
+      card.append(img);
+    }
+
+    card.append(body);
+
+    const offer = firstValue(ad, ["offer", "offer_text", "discount", "price"]);
+    if (offer) card.append(textElement("p", "🎁 " + offer));
+
+    const website = safeImageUrl(firstValue(ad, [
+      "website_url", "website", "landing_url", "target_url", "url"
+    ]));
+
+    if (website) {
+      const link = document.createElement("a");
+      link.className = "ad-action call";
+      link.href = website;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = "Visit Website";
+      link.style.display = "inline-block";
+      card.append(link);
+    }
+
+    return card;
+  }
+
+  async function loadAds() {
+    refresh.disabled = true;
+    statusBox.textContent = "Loading published ads…";
+
+    try {
+      const response = await fetch("/api/company-ads", {
+        headers: { "Accept": "application/json" },
+        cache: "no-store"
+      });
+
+      if (!response.ok) throw new Error("HTTP " + response.status);
+
+      const data = await response.json();
+      const ads = Array.isArray(data) ? data :
+        (Array.isArray(data.ads) ? data.ads : []);
+
+      liveAds.replaceChildren();
+
+      if (!ads.length) {
+        statusBox.textContent = "API connected • No published company ads yet.";
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent =
+          "No published advertisements are available right now. The sample preview on the left demonstrates how an ad can look.";
+        liveAds.append(empty);
+      } else {
+        statusBox.textContent = "API connected • " + ads.length + " advertisement(s) loaded.";
+        ads.forEach(ad => liveAds.append(makeAdCard(ad)));
+      }
+    } catch (error) {
+      statusBox.textContent = "Could not load published ads. Please try again.";
+      liveAds.replaceChildren();
+      const msg = document.createElement("div");
+      msg.className = "empty";
+      msg.textContent = "The live ads service is temporarily unavailable. The sample preview remains available.";
+      liveAds.append(msg);
+      console.error("Company Ads Demo:", error);
+    } finally {
+      refresh.disabled = false;
+    }
+  }
+
+  refresh.addEventListener("click", loadAds);
+  loadAds();
+  window.setInterval(loadAds, 60000);
+})();
+</script>
+</body>
+</html>
