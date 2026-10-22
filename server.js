@@ -24,7 +24,7 @@ app.use(express.json({limit:'16mb'}));
 app.use((req,res,next)=>{
   res.header('Access-Control-Allow-Origin','*');
   res.header('Access-Control-Allow-Methods','GET,POST,OPTIONS');
-  res.header('Access-Control-Allow-Headers','Content-Type');
+  res.header('Access-Control-Allow-Headers','Content-Type, Authorization');
   if(req.method==='OPTIONS') return res.sendStatus(200);
   next();
 });
@@ -3125,6 +3125,222 @@ app.post('/api/translate', async (req, res) => {
     return res.status(500).json({ ok: false, error: 'Translation failed. Please try again.' });
   }
 });
+
+// SKAI_REFERRAL_API_V1
+// Referral tracking using the existing public.referrals table.
+app.post('/api/referral/track', async (req, res) => {
+  try {
+    if (!jobDbPool) {
+      return res.status(503).json({
+        status_id: 0,
+        error: 'Referral database is not configured.'
+      });
+    }
+
+    const code = String(req.body?.code || '').trim().toUpperCase();
+    const visitorId = String(req.body?.visitor_id || '').trim();
+
+    if (!/^[A-Z0-9-]{3,40}$/.test(code)) {
+      return res.status(400).json({
+        status_id: 0,
+        error: 'Invalid referral code.'
+      });
+    }
+
+    if (!/^[A-Za-z0-9_-]{8,100}$/.test(visitorId)) {
+      return res.status(400).json({
+        status_id: 0,
+        error: 'Invalid visitor ID.'
+      });
+    }
+
+    await jobDbPool.query(
+      'INSERT INTO public.referrals (referral_code, visitor_id) VALUES ($1, $2) ON CONFLICT (referral_code, visitor_id) DO NOTHING',
+      [code, visitorId]
+    );
+
+    const result = await jobDbPool.query(
+      'SELECT COUNT(DISTINCT visitor_id)::int AS unique_referrals FROM public.referrals WHERE referral_code = $1',
+      [code]
+    );
+
+    return res.json({
+      status_id: 1,
+      data: {
+        unique_referrals: result.rows[0].unique_referrals
+      }
+    });
+  } catch (error) {
+    console.error('[Referral Track] Database error:', error.message);
+    return res.status(500).json({
+      status_id: 0,
+      error: 'Unable to record referral right now.'
+    });
+  }
+});
+
+app.get('/api/referral/status', async (req, res) => {
+  try {
+    if (!jobDbPool) {
+      return res.status(503).json({
+        status_id: 0,
+        error: 'Referral database is not configured.'
+      });
+    }
+
+    const code = String(req.query.code || '').trim().toUpperCase();
+
+    if (!/^[A-Z0-9-]{3,40}$/.test(code)) {
+      return res.status(400).json({
+        status_id: 0,
+        error: 'Invalid referral code.'
+      });
+    }
+
+    const result = await jobDbPool.query(
+      'SELECT COUNT(DISTINCT visitor_id)::int AS unique_referrals FROM public.referrals WHERE referral_code = $1',
+      [code]
+    );
+
+    return res.json({
+      status_id: 1,
+      data: {
+        unique_referrals: result.rows[0].unique_referrals
+      }
+    });
+  } catch (error) {
+    console.error('[Referral Status] Database error:', error.message);
+    return res.status(500).json({
+      status_id: 0,
+      error: 'Unable to load referral status right now.'
+    });
+  }
+});
+// END SKAI_REFERRAL_API_V1
+
+
+/* SASIKUMAR_COMPANY_ADS_API_V1 */
+async function requireCompanyAdsAdmin(req, res, next) {
+  const expected = process.env.ADS_ADMIN_TOKEN || '';
+  const auth = req.headers.authorization || '';
+  const supplied = auth.replace(/^Bearer\\s+/i, '');
+  if (!expected || supplied.length !== expected.length || supplied !== expected) {
+    return res.status(401).json({ error: 'Unauthorized: valid Ads Admin token required.' });
+  }
+  next();
+}
+
+app.get('/api/company-ads', async (req, res) => {
+  if (!jobDbPool) return res.status(503).json({ error: 'Database is not configured.' });
+  try {
+    const result = await jobDbPool.query(`
+      SELECT id, company_name, title, description, image_url,
+             target_url, contact_url, start_at, end_at
+      FROM public.company_ads
+      WHERE is_active = TRUE
+        AND (start_at IS NULL OR start_at <= NOW())
+        AND (end_at IS NULL OR end_at >= NOW())
+      ORDER BY created_at DESC
+      LIMIT 100
+    `);
+    res.set('Cache-Control', 'no-store');
+    res.json({ ads: result.rows });
+  } catch (e) {
+    console.error('Company Ads public API:', e.message);
+    res.status(500).json({ error: 'Unable to load advertisements.' });
+  }
+});
+
+app.get('/api/company-ads/admin', requireCompanyAdsAdmin, async (req, res) => {
+  if (!jobDbPool) return res.status(503).json({ error: 'Database is not configured.' });
+  try {
+    const result = await jobDbPool.query(
+      'SELECT * FROM public.company_ads ORDER BY created_at DESC LIMIT 200'
+    );
+    res.json({ ads: result.rows });
+  } catch (e) {
+    console.error('Company Ads admin list:', e.message);
+    res.status(500).json({ error: 'Unable to load advertisements.' });
+  }
+});
+
+app.post('/api/company-ads/admin', requireCompanyAdsAdmin, async (req, res) => {
+  if (!jobDbPool) return res.status(503).json({ error: 'Database is not configured.' });
+  const b = req.body || {};
+  const company = String(b.company_name || '').trim();
+  const title = String(b.title || '').trim();
+  if (!company || !title || company.length > 200 || title.length > 250) {
+    return res.status(400).json({ error: 'Company name and title are required (within length limits).' });
+  }
+  const description = String(b.description || '').slice(0, 5000);
+  const image = String(b.image_url || '').trim();
+  const target = String(b.target_url || '').trim();
+  const contact = String(b.contact_url || '').trim();
+  for (const value of [image, target, contact]) {
+    if (value && !/^https?:\/\//i.test(value)) {
+      return res.status(400).json({ error: 'Image, website and contact links must use http:// or https://.' });
+    }
+  }
+  const start = b.start_at || null;
+  const end = b.end_at || null;
+  if (start && Number.isNaN(Date.parse(start))) return res.status(400).json({ error: 'Invalid start date.' });
+  if (end && Number.isNaN(Date.parse(end))) return res.status(400).json({ error: 'Invalid end date.' });
+  if (start && end && Date.parse(end) <= Date.parse(start)) {
+    return res.status(400).json({ error: 'End date must be later than start date.' });
+  }
+  try {
+    const result = await jobDbPool.query(`
+      INSERT INTO public.company_ads
+        (company_name, title, description, image_url, target_url, contact_url,
+         is_active, start_at, end_at, updated_at)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,NOW())
+      RETURNING *
+    `, [company, title, description, image, target, contact,
+         b.is_active === true, start, end]);
+    res.status(201).json({ ad: result.rows[0] });
+  } catch (e) {
+    console.error('Company Ads create:', e.message);
+    res.status(500).json({ error: 'Unable to save advertisement.' });
+  }
+});
+
+app.put('/api/company-ads/admin/:id', requireCompanyAdsAdmin, async (req, res) => {
+  if (!jobDbPool) return res.status(503).json({ error: 'Database is not configured.' });
+  const id = Number(req.params.id);
+  if (!Number.isSafeInteger(id) || id < 1) return res.status(400).json({ error: 'Invalid ad ID.' });
+  const b = req.body || {};
+  const active = b.is_active === true;
+  try {
+    const result = await jobDbPool.query(
+      'UPDATE public.company_ads SET is_active=$1, updated_at=NOW() WHERE id=$2 RETURNING *',
+      [active, id]
+    );
+    if (!result.rowCount) return res.status(404).json({ error: 'Advertisement not found.' });
+    res.json({ ad: result.rows[0] });
+  } catch (e) {
+    console.error('Company Ads update:', e.message);
+    res.status(500).json({ error: 'Unable to update advertisement.' });
+  }
+});
+
+app.delete('/api/company-ads/admin/:id', requireCompanyAdsAdmin, async (req, res) => {
+  if (!jobDbPool) return res.status(503).json({ error: 'Database is not configured.' });
+  const id = Number(req.params.id);
+  if (!Number.isSafeInteger(id) || id < 1) return res.status(400).json({ error: 'Invalid ad ID.' });
+  try {
+    const result = await jobDbPool.query(
+      'DELETE FROM public.company_ads WHERE id=$1 RETURNING id', [id]
+    );
+    if (!result.rowCount) return res.status(404).json({ error: 'Advertisement not found.' });
+    res.json({ deleted: true, id });
+  } catch (e) {
+    console.error('Company Ads delete:', e.message);
+    res.status(500).json({ error: 'Unable to delete advertisement.' });
+  }
+});
+/* END SASIKUMAR_COMPANY_ADS_API_V1 */
+
+
 app.get('*',(req,res)=>{const fp=path.join(publicPath,'index.html');if(fs.existsSync(fp))res.sendFile(fp);else res.status(404).send('Not Found');});
 
 // SASIKUMAR AI FAL IMAGE API V1
