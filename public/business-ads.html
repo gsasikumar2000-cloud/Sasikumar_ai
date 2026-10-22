@@ -68,7 +68,30 @@ const message=[
 'Contact link: '+contact
 ].join('\n');
 document.getElementById('status').textContent='WhatsApp திறக்கத் தயாராகிறது…';
-window.location.href='https://wa.me/919585080842?text='+encodeURIComponent(message);
+const waUrl = 'https://wa.me/919585080842?text=' + encodeURIComponent(message);
+const status = document.getElementById('status');
+status.textContent = 'WhatsApp திறக்கப்படுகிறது…';
+
+const link = document.createElement('a');
+link.href = waUrl;
+link.target = '_blank';
+link.rel = 'noopener noreferrer';
+link.style.display = 'inline-block';
+link.style.marginTop = '12px';
+link.style.padding = '14px 18px';
+link.style.background = '#16a34a';
+link.style.color = '#ffffff';
+link.style.borderRadius = '10px';
+link.style.fontWeight = 'bold';
+link.textContent = '📲 WhatsApp-ஐத் திறக்க மீண்டும் அழுத்தவும்';
+
+status.replaceChildren(
+  document.createTextNode('விண்ணப்பம் தயாராகிவிட்டது. WhatsApp திறக்கவில்லை என்றால் கீழே அழுத்துங்கள்.'),
+  document.createElement('br'),
+  link
+);
+
+window.location.assign(waUrl);
 });
 </script>
 </body>
