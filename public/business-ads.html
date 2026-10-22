@@ -1,0 +1,75 @@
+<!doctype html>
+
+<html lang="ta">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Business Ads — SASIKUMAR AI</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:18px;font-family:Arial,sans-serif;background:#eef7ff;color:#17324d}
+header{text-align:center;padding:18px;background:linear-gradient(120deg,#0878f9,#05b8a5);color:white;border-radius:18px}
+header img{width:85px;height:85px;object-fit:contain}
+main{max-width:620px;margin:18px auto;background:white;padding:20px;border-radius:18px;box-shadow:0 5px 22px #0001}
+label{display:block;font-weight:bold;margin-top:14px}
+input,textarea{width:100%;padding:12px;margin-top:6px;border:1px solid #cbd8e6;border-radius:10px;font:inherit}
+button,.btn{display:block;width:100%;margin-top:16px;padding:13px;border:0;border-radius:10px;background:#0878f9;color:white;font-size:16px;font-weight:bold;text-align:center;text-decoration:none}
+.note{font-size:14px;line-height:1.6;color:#526579}
+#status{margin-top:15px;overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+<header>
+<img src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI">
+<h1>SASIKUMAR AI</h1>
+<p>📢 Business Advertisement Enquiry</p>
+</header>
+<main>
+<h2>விளம்பர விண்ணப்பம்</h2>
+<p>உங்கள் நிறுவனத்தை SASIKUMAR AI தளத்தில் விளம்பரப்படுத்த விசாரிக்கவும்.</p>
+<form id="adForm">
+<label>நிறுவனத்தின் பெயர் *</label>
+<input name="company" maxlength="200" required>
+<label>விளம்பரத் தலைப்பு *</label>
+<input name="title" maxlength="250" required>
+<label>விளக்கம்</label>
+<textarea name="description" maxlength="2000" rows="4"></textarea>
+<label>உங்கள் இணையதள முகவரி</label>
+<input name="website" type="url" placeholder="https://example.com">
+<label>தொடர்பு WhatsApp / இணைய இணைப்பு</label>
+<input name="contact" type="url" placeholder="https://wa.me/...">
+<p class="note">இது விளம்பர விசாரணை மட்டுமே. உங்கள் விண்ணப்பம் பரிசீலிக்கப்பட்ட பிறகே விளம்பரம் வெளியிடப்படும். கடவுச்சொல் அல்லது வங்கி விவரங்களை இங்கே உள்ளிட வேண்டாம்.</p>
+<button type="submit">📩 WhatsApp மூலம் விசாரிக்கவும்</button>
+</form>
+<div id="status" role="status"></div>
+<a class="btn" href="/">🏠 முகப்புப் பக்கத்திற்குத் திரும்பு</a>
+</main>
+<script>
+document.getElementById('adForm').addEventListener('submit',function(e){
+e.preventDefault();
+const f=new FormData(this);
+const company=String(f.get('company')||'').trim();
+const title=String(f.get('title')||'').trim();
+const description=String(f.get('description')||'').trim();
+const website=String(f.get('website')||'').trim();
+const contact=String(f.get('contact')||'').trim();
+for(const url of [website,contact]){
+if(url&&!/^https?:\/\//i.test(url)){
+document.getElementById('status').textContent='சரியான https:// அல்லது http:// இணைய முகவரியை உள்ளிடுங்கள்.';
+return;
+}
+}
+const message=[
+'SASIKUMAR AI — Business Ads Enquiry',
+'Company: '+company,
+'Ad title: '+title,
+'Description: '+description,
+'Website: '+website,
+'Contact link: '+contact
+].join('\n');
+document.getElementById('status').textContent='WhatsApp திறக்கத் தயாராகிறது…';
+window.location.href='https://wa.me/?text='+encodeURIComponent(message);
+});
+</script>
+</body>
+</html>
