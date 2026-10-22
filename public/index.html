@@ -6625,6 +6625,7 @@ else skRefreshPay2AllWallet();
     const welcome = document.getElementById("skWelcomeHero");
     const loginSection = document.getElementById("sasikumarLoginScreen");
     const globalSearch = document.getElementById("skGlobalSearchTop");
+    const translatorCard = document.getElementById("skHomeTranslatorCardV1");
     const heading = document.getElementById("skReplyHeading");
     const quick = document.getElementById("skAIQuickQuestions");
     const reply = document.getElementById("sasikumarAIReplySection");
@@ -6640,7 +6641,7 @@ else skRefreshPay2AllWallet();
     }
 
     let anchor = welcome;
-    [globalSearch, heading, quick, reply, chat].concat(miniOffice ? [miniOffice] : []).concat([designMaker, creatorCards, loginSection]).forEach(function (element) {
+    (translatorCard ? [translatorCard] : []).concat([globalSearch, heading, quick, reply, chat]).concat(miniOffice ? [miniOffice] : []).concat([designMaker, creatorCards, loginSection]).forEach(function (element) {
       anchor.insertAdjacentElement("afterend", element);
       anchor = element;
     });
