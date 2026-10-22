@@ -54,13 +54,47 @@ button{width:100%;margin-top:14px;padding:14px;border:0;border-radius:14px;font-
 <select id="skPosterType" style="width:100%;box-sizing:border-box;padding:14px;border-radius:12px;background:#fff;color:#172554;border:2px solid #60a5fa;font-size:16px;margin-bottom:12px;">
 <option value="business">🏪 Business Advertisement</option>
 <option value="birthday">🎂 Birthday Wishes</option>
-<option value="festival">🪔 Festival Wishes</option>
+<option value="festival">🪔 God & Festival Wishes</option>
 <option value="gold">💰 Gold Rate Information</option>
-<option value="general" selected>✨ General Poster</option>
+<option value="business">🏪 Business Advertisement</option>
+<option value="motivation">💪 Motivation Poster</option>
+<option value="news">📰 News Poster</option>
+<option value="youtube">▶️ YouTube Thumbnail</option>
+<option value="voice">🎙️ Voice Announcement</option>
+<option value="general" selected>🎨 Custom / General Poster</option>
 </select>
 
 
-<div id="skAdvancedPosterEditor" style="margin:14px 0;padding:14px;border:2px solid #93c5fd;border-radius:16px;background:#eff6ff;color:#172554;">
+<!-- SK_VOICE_POSTER_MAKER_V1 -->
+<div id="skVoicePosterMaker" style="margin:14px 0;padding:16px;border:2px solid #7c3aed;border-radius:18px;background:linear-gradient(135deg,#eff6ff,#fdf2f8);color:#172554;">
+  <h3 style="margin:0 0 8px;">🎙️ Voice Poster Maker</h3>
+  <p style="margin:0 0 12px;">தமிழ் அல்லது English-ல் பேசுங்கள். உங்கள் பேச்சு Poster Content பெட்டியில் சேர்க்கப்படும்.</p>
+
+  <label for="skVoiceLanguage" style="display:block;font-weight:bold;margin:8px 0;">🗣️ Voice Language</label>
+  <select id="skVoiceLanguage" style="width:100%;padding:12px;border:1px solid #a78bfa;border-radius:10px;background:#fff;color:#172554;font-size:16px;">
+    <option value="ta-IN">தமிழ் — Tamil</option>
+    <option value="en-IN">English</option>
+  </select>
+
+  <button type="button" class="generate" style="background:#7c3aed;" onclick="skStartPosterVoice()">🎤 Speak Poster Content</button>
+  <button type="button" class="back" onclick="skStopPosterVoice()">⏹️ Stop Listening</button>
+
+  <div id="skVoiceStatus" role="status" aria-live="polite" style="margin:8px 0;font-weight:bold;">Ready to listen.</div>
+
+  <label for="skVoiceHeading" style="display:block;font-weight:bold;margin:10px 0 6px;">✍️ Poster Heading (optional)</label>
+  <input id="skVoiceHeading" type="text" maxlength="100" placeholder="உங்கள் தலைப்பு / Poster heading" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #a78bfa;border-radius:10px;font-size:16px;">
+
+  <label for="skVoiceSubheading" style="display:block;font-weight:bold;margin:10px 0 6px;">📝 Subheading (optional)</label>
+  <input id="skVoiceSubheading" type="text" maxlength="180" placeholder="துணைத்தலைப்பு / Additional details" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #a78bfa;border-radius:10px;font-size:16px;">
+
+  <button type="button" class="generate" style="background:#0f766e;" onclick="skBuildVoicePosterText()">📝 Add Heading & Details</button>
+  <button type="button" class="generate" style="background:#ea580c;" onclick="skSpeakPosterAnnouncement()">🔊 Hear Announcement</button>
+  <button type="button" class="back" onclick="skStopPosterAnnouncement()">🔇 Stop Announcement</button>
+  <button type="button" class="generate" style="background:#2563eb;" onclick="skGenerateVoicePoster()">🎨 Create Poster Preview</button>
+  <button type="button" class="back" onclick="skSharePosterWhatsApp()">📲 Share on WhatsApp</button>
+  <button type="button" class="back" onclick="skSharePosterFacebook()">📘 Share on Facebook</button>
+</div>
+\n<div id="skAdvancedPosterEditor" style="margin:14px 0;padding:14px;border:2px solid #93c5fd;border-radius:16px;background:#eff6ff;color:#172554;">
   <h3 style="margin:0 0 12px;">🎨 Advanced Poster Editor</h3>
 
   <label for="skPosterBg" style="display:block;margin:8px 0;">Background Color</label>
@@ -274,6 +308,22 @@ function createLocalPoster(prompt) {
     gold: {
       title: 'GOLD RATE UPDATE',
       c1: '#713f12', c2: '#b45309', accent: '#fde047'
+    },
+    motivation: {
+      title: 'DAILY MOTIVATION',
+      c1: '#312e81', c2: '#7c3aed', accent: '#fde047'
+    },
+    news: {
+      title: 'LATEST NEWS',
+      c1: '#7f1d1d', c2: '#dc2626', accent: '#fef08a'
+    },
+    youtube: {
+      title: 'YOUTUBE THUMBNAIL',
+      c1: '#7f1d1d', c2: '#ea580c', accent: '#ffffff'
+    },
+    voice: {
+      title: 'VOICE ANNOUNCEMENT',
+      c1: '#164e63', c2: '#0f766e', accent: '#fde047'
     },
     general: {
       title: 'SPECIAL ANNOUNCEMENT',
@@ -752,5 +802,152 @@ async function generateImageAuto() {
 })();
 </script>
 
-</body>
+
+<script id="SK_VOICE_POSTER_MAKER_V1">
+(function () {
+  let recognition = null;
+
+  const $ = id => document.getElementById(id);
+  const setVoiceStatus = message => {
+    const el = $("skVoiceStatus");
+    if (el) el.textContent = message;
+  };
+
+  window.skStartPosterVoice = function () {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      setVoiceStatus("Voice recognition is not supported in this browser. Please use a supported browser or type your content.");
+      return;
+    }
+
+    try {
+      if (recognition) recognition.stop();
+      recognition = new SpeechRecognition();
+      recognition.lang = $("skVoiceLanguage").value || "ta-IN";
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      recognition.maxAlternatives = 1;
+
+      recognition.onstart = () => setVoiceStatus("🎤 Listening… Please speak now.");
+      recognition.onresult = event => {
+        let transcript = "";
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+        }
+        if (transcript) {
+          $("prompt").value = transcript.trim();
+          setVoiceStatus("Recognised: " + transcript.trim());
+        }
+      };
+      recognition.onerror = event => setVoiceStatus("Voice error: " + event.error + ". You can type the text instead.");
+      recognition.onend = () => {
+        if ($("skVoiceStatus").textContent.includes("Listening")) {
+          setVoiceStatus("Listening stopped. Check the poster text.");
+        }
+      };
+      recognition.start();
+    } catch (error) {
+      setVoiceStatus("Could not start the microphone. Check browser microphone permission.");
+    }
+  };
+
+  window.skStopPosterVoice = function () {
+    if (recognition) {
+      try { recognition.stop(); } catch (_) {}
+    }
+    setVoiceStatus("Voice listening stopped.");
+  };
+
+  window.skBuildVoicePosterText = function () {
+    const heading = $("skVoiceHeading").value.trim();
+    const subheading = $("skVoiceSubheading").value.trim();
+    const spoken = $("prompt").value.trim();
+    const parts = [];
+    if (heading) parts.push(heading);
+    if (subheading) parts.push(subheading);
+    if (spoken && spoken !== heading && spoken !== subheading) parts.push(spoken);
+    if (!parts.length) {
+      setVoiceStatus("Please speak or enter a heading or poster content first.");
+      return;
+    }
+    $("prompt").value = parts.join("\\n\\n");
+    setVoiceStatus("Heading and details added to Poster Content.");
+  };
+
+  window.skSpeakPosterAnnouncement = function () {
+    const text = [
+      $("skVoiceHeading").value.trim(),
+      $("skVoiceSubheading").value.trim(),
+      $("prompt").value.trim()
+    ].filter(Boolean).join(". ");
+
+    if (!text) {
+      setVoiceStatus("Enter or speak announcement text first.");
+      return;
+    }
+    if (!("speechSynthesis" in window)) {
+      setVoiceStatus("Text-to-speech is not supported in this browser.");
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = $("skVoiceLanguage").value || "ta-IN";
+    utterance.rate = 0.9;
+    utterance.onend = () => setVoiceStatus("Announcement finished.");
+    window.speechSynthesis.speak(utterance);
+    setVoiceStatus("🔊 Speaking announcement…");
+  };
+
+  window.skStopPosterAnnouncement = function () {
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+    setVoiceStatus("Announcement stopped.");
+  };
+
+  window.skGenerateVoicePoster = function () {
+    const heading = $("skVoiceHeading").value.trim();
+    const subheading = $("skVoiceSubheading").value.trim();
+    const current = $("prompt").value.trim();
+    const content = [heading, subheading, current]
+      .filter((value, index, arr) => value && arr.indexOf(value) === index)
+      .join("\\n\\n");
+
+    if (!content) {
+      setVoiceStatus("Please speak or type poster content first.");
+      return;
+    }
+
+    $("prompt").value = content;
+    try {
+      if (typeof makeLocalPoster !== "function") throw new Error("Poster generator is unavailable.");
+      makeLocalPoster(content);
+      setVoiceStatus("✅ Poster preview created. Use Download Poster PNG to save it.");
+      $("result").scrollIntoView({ behavior: "smooth", block: "center" });
+    } catch (error) {
+      setVoiceStatus("Poster error: " + error.message);
+    }
+  };
+
+  window.skSharePosterWhatsApp = function () {
+    const text = [
+      $("skVoiceHeading").value.trim(),
+      $("skVoiceSubheading").value.trim(),
+      $("prompt").value.trim(),
+      "Created with SASIKUMAR AI",
+      window.location.origin + "/ai-image.html"
+    ].filter(Boolean).join("\\n\\n");
+    window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank", "noopener");
+  };
+
+  window.skSharePosterFacebook = function () {
+    const shareUrl = window.location.origin + "/ai-image.html";
+    window.open(
+      "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(shareUrl),
+      "_blank",
+      "noopener"
+    );
+  };
+})();
+</script>
+\n</body>
 </html>
