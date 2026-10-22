@@ -10673,5 +10673,292 @@ box-sizing:border-box!important;">
 <span style="display:inline-block!important;color:#1d4ed8!important;">🤖 AI Active</span>
 </section>
 
+
+<!-- SK_COMPANY_ADS_LIVE_RENDER_V1 -->
+<style>
+#skCompanyAdsLivePanel {
+  margin:16px 0;
+  padding:14px;
+  border:2px solid #16a34a;
+  border-radius:16px;
+  background:linear-gradient(135deg,#ecfdf5,#eff6ff,#fff7ed);
+  box-sizing:border-box;
+}
+#skCompanyAdsLivePanel .skAdsLiveHeading {
+  margin:0 0 8px;
+  text-align:center;
+  color:#166534;
+  font-size:20px;
+  font-weight:800;
+}
+#skCompanyAdsLiveStatus {
+  margin:0 0 12px;
+  text-align:center;
+  color:#475569;
+  font-size:13px;
+}
+#skCompanyAdsLiveGrid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));
+  gap:12px;
+}
+#skCompanyAdsLiveGrid .skCompanyAdCard {
+  min-width:0;
+  overflow:hidden;
+  border:1px solid #bbf7d0;
+  border-radius:14px;
+  background:#fff;
+  box-shadow:0 3px 12px rgba(0,0,0,.07);
+}
+#skCompanyAdsLiveGrid .skCompanyAdImage {
+  display:block;
+  width:100%;
+  max-height:210px;
+  object-fit:contain;
+  background:#f8fafc;
+}
+#skCompanyAdsLiveGrid .skCompanyAdBody {
+  padding:12px;
+  overflow-wrap:anywhere;
+}
+#skCompanyAdsLiveGrid .skCompanyAdCompany {
+  color:#15803d;
+  font-size:13px;
+  font-weight:800;
+}
+#skCompanyAdsLiveGrid .skCompanyAdTitle {
+  margin:5px 0 8px;
+  color:#1e3a8a;
+  font-size:17px;
+}
+#skCompanyAdsLiveGrid .skCompanyAdDescription {
+  color:#475569;
+  font-size:14px;
+  line-height:1.5;
+  white-space:pre-wrap;
+}
+#skCompanyAdsLiveGrid .skCompanyAdButtons {
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:12px;
+}
+#skCompanyAdsLiveGrid .skCompanyAdButtons a {
+  display:inline-block;
+  padding:10px 12px;
+  border-radius:9px;
+  font-size:13px;
+  font-weight:800;
+  text-decoration:none;
+  overflow-wrap:anywhere;
+}
+#skCompanyAdsLiveGrid .skCompanyAdWebsite {
+  color:#fff;
+  background:#2563eb;
+}
+#skCompanyAdsLiveGrid .skCompanyAdContact {
+  color:#fff;
+  background:#16a34a;
+}
+#skCompanyAdsLiveGrid .skCompanyAdsEmpty {
+  grid-column:1/-1;
+  padding:16px;
+  border-radius:12px;
+  background:#fff;
+  color:#475569;
+  text-align:center;
+  line-height:1.6;
+}
+#skCompanyAdsLivePanel .skCompanyAdsPromote {
+  display:block;
+  width:max-content;
+  max-width:100%;
+  box-sizing:border-box;
+  margin:14px auto 0;
+  padding:12px 18px;
+  border-radius:11px;
+  background:#ea580c;
+  color:#fff;
+  font-weight:800;
+  text-decoration:none;
+  text-align:center;
+}
+</style>
+<script>
+(function () {
+  "use strict";
+
+  function initSkCompanyAdsLive() {
+    var section = document.getElementById("skAllLivePromotionAds");
+    if (!section || document.getElementById("skCompanyAdsLivePanel")) return;
+
+    var panel = document.createElement("div");
+    panel.id = "skCompanyAdsLivePanel";
+
+    var heading = document.createElement("h3");
+    heading.className = "skAdsLiveHeading";
+    heading.textContent = "🟢 LIVE COMPANY ADVERTISEMENTS";
+
+    var status = document.createElement("p");
+    status.id = "skCompanyAdsLiveStatus";
+    status.setAttribute("role", "status");
+    status.textContent = "Loading live advertisements…";
+
+    var grid = document.createElement("div");
+    grid.id = "skCompanyAdsLiveGrid";
+
+    var promote = document.createElement("a");
+    promote.className = "skCompanyAdsPromote";
+    promote.href = "/business-ads.html";
+    promote.textContent = "📢 Promote Your Business";
+
+    panel.append(heading, status, grid, promote);
+
+    var cta = section.lastElementChild;
+    if (cta) section.insertBefore(panel, cta);
+    else section.appendChild(panel);
+
+    function safeUrl(value) {
+      if (typeof value !== "string" || !value.trim()) return "";
+      try {
+        var url = new URL(value, location.origin);
+        return ["https:", "http:"].includes(url.protocol) ? url.href : "";
+      } catch (_) {
+        return "";
+      }
+    }
+
+    function addText(parent, tag, className, value) {
+      var el = document.createElement(tag);
+      el.className = className;
+      el.textContent = value || "";
+      parent.appendChild(el);
+      return el;
+    }
+
+    function renderAds(ads) {
+      grid.replaceChildren();
+
+      if (!ads.length) {
+        addText(
+          grid, "div", "skCompanyAdsEmpty",
+          "📣 No active company advertisements right now. Businesses can submit promotions through SASIKUMAR AI."
+        );
+        status.textContent = "🟢 Advertisement service checked";
+        return;
+      }
+
+      ads.forEach(function (ad) {
+        if (!ad || typeof ad !== "object") return;
+
+        var card = document.createElement("article");
+        card.className = "skCompanyAdCard";
+
+        var imageUrl = safeUrl(ad.image_url);
+        if (imageUrl) {
+          var img = document.createElement("img");
+          img.className = "skCompanyAdImage";
+          img.src = imageUrl;
+          img.alt = String(ad.title || ad.company_name || "Company advertisement");
+          img.loading = "lazy";
+          img.referrerPolicy = "no-referrer";
+          img.onerror = function () { img.remove(); };
+          card.appendChild(img);
+        }
+
+        var body = document.createElement("div");
+        body.className = "skCompanyAdBody";
+
+        addText(body, "div", "skCompanyAdCompany",
+          String(ad.company_name || "Company promotion"));
+
+        addText(body, "h4", "skCompanyAdTitle",
+          String(ad.title || "Advertisement"));
+
+        if (ad.description) {
+          addText(body, "p", "skCompanyAdDescription",
+            String(ad.description));
+        }
+
+        var buttons = document.createElement("div");
+        buttons.className = "skCompanyAdButtons";
+
+        var target = safeUrl(ad.target_url);
+        if (target) {
+          var website = document.createElement("a");
+          website.className = "skCompanyAdWebsite";
+          website.href = target;
+          website.target = "_blank";
+          website.rel = "noopener noreferrer sponsored";
+          website.textContent = "🌐 View Offer";
+          buttons.appendChild(website);
+        }
+
+        var contactUrl = safeUrl(ad.contact_url);
+        if (contactUrl) {
+          var contact = document.createElement("a");
+          contact.className = "skCompanyAdContact";
+          contact.href = contactUrl;
+          contact.target = "_blank";
+          contact.rel = "noopener noreferrer";
+          contact.textContent = "📱 Contact";
+          buttons.appendChild(contact);
+        }
+
+        if (buttons.childElementCount) body.appendChild(buttons);
+        card.appendChild(body);
+        grid.appendChild(card);
+      });
+
+      status.textContent = "🟢 " + grid.childElementCount +
+        " active advertisement(s) • Refreshes every 60 seconds";
+    }
+
+    var loading = false;
+
+    async function loadAds() {
+      if (loading) return;
+      loading = true;
+
+      try {
+        var response = await fetch("/api/company-ads", {
+          cache: "no-store",
+          headers: { Accept: "application/json" }
+        });
+
+        if (!response.ok) throw new Error("HTTP " + response.status);
+
+        var data = await response.json();
+        if (!data || !Array.isArray(data.ads)) {
+          throw new Error("Invalid API response");
+        }
+
+        renderAds(data.ads);
+      } catch (error) {
+        console.error("[SASIKUMAR AI Company Ads]", error);
+        status.textContent =
+          "⚠️ Live advertisements are temporarily unavailable.";
+        if (!grid.childElementCount) {
+          addText(grid, "div", "skCompanyAdsEmpty",
+            "Please try again later. Businesses can submit promotions through the button below.");
+        }
+      } finally {
+        loading = false;
+      }
+    }
+
+    loadAds();
+    window.setInterval(loadAds, 60000);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initSkCompanyAdsLive, { once: true });
+  } else {
+    initSkCompanyAdsLive();
+  }
+})();
+</script>
+<!-- END SK_COMPANY_ADS_LIVE_RENDER_V1 -->
+
 </body>
 </html>
