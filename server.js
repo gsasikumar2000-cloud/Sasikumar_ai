@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { InferenceClient } from '@huggingface/inference';
 import express from 'express';
 import pg from 'pg';
+import { createAuthMiddleware, registerAuthRoutes } from './auth-routes.js';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -3340,6 +3341,12 @@ app.delete('/api/company-ads/admin/:id', requireCompanyAdsAdmin, async (req, res
 });
 /* END SASIKUMAR_COMPANY_ADS_API_V1 */
 
+
+
+/* SKAI_AUTH_API_V1 */
+const auth = createAuthMiddleware(jobDbPool);
+registerAuthRoutes(app, jobDbPool, auth);
+/* END SKAI_AUTH_API_V1 */
 
 app.get('*',(req,res)=>{const fp=path.join(publicPath,'index.html');if(fs.existsSync(fp))res.sendFile(fp);else res.status(404).send('Not Found');});
 
