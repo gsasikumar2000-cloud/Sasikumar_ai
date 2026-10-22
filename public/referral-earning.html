@@ -1,60 +1,34 @@
 <!DOCTYPE html>
-<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Referral - Any Purchase | Sasikumar AI</title>
-<style>body{font-family:system-ui;background:#f0f9ff;margin:0;padding:12px;} .card{border:3px solid #0f172a;border-radius:16px;padding:14px;background:#fff;margin:10px auto;max-width:550px;} .bold{color:#000!important;font-weight:900!important;} .btn{background:linear-gradient(135deg,#0f172a,#1e40af);color:#FFD700;border:2px solid #FFD700;border-radius:12px;padding:10px;font-weight:900;width:100%;cursor:pointer;margin:4px 0;} .prod{border:2px solid #000;border-radius:12px;padding:10px;display:flex;gap:10px;align-items:center;margin:8px 0;background:#fff;}</style>
-</head><body>
-<div style="text-align:center;"><h2 class="bold">💸 REFERRAL - ANY PURCHASE TRACKING</h2><div class="bold" style="font-size:11px;">【entity-Meesho¦canonical_name=Meesho】 Model • Any product purchase = Commission</div></div>
-
-<div class="card" style="background:linear-gradient(135deg,#e0e7ff,#fff);">
-  <div class="bold">🔗 Your Link: <span style="font-size:10px;background:#000;color:#FFD700;padding:4px 8px;border-radius:8px;">?ref=SKUSER123</span></div>
-  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px;text-align:center;">
-    <div style="border:2px solid #000;border-radius:10px;padding:8px;background:#fff;"><div class="bold" style="font-size:16px;" id="vCount">0</div><div style="font-size:9px;font-weight:800;">VISITS<br>₹2</div></div>
-    <div style="border:2px solid #000;border-radius:10px;padding:8px;background:#fff;"><div class="bold" style="font-size:16px;" id="pCount">0</div><div style="font-size:9px;font-weight:800;">PURCHASE<br>Any</div></div>
-    <div style="border:2px solid #FFD700;border-radius:10px;padding:8px;background:#000;"><div class="bold" style="font-size:16px;color:#FFD700!important;" id="eCount">₹0</div><div style="font-size:9px;font-weight:800;color:#FFD700;">EARN</div></div>
-  </div>
-</div>
-
-<div class="card">
-  <div class="bold">🛒 ANY PURCHASE - Shop</div>
-  <div class="prod"><div style="font-size:26px;">📱</div><div style="flex:1;"><div class="bold" style="font-size:12px;">Mobile - ₹12,000</div><div style="font-size:10px;">Commission ₹1,200 (10%)</div></div><button class="btn" style="width:80px;font-size:10px;" onclick="buyProduct('Mobile',12000,1200)">Buy</button></div>
-  <div class="prod"><div style="font-size:26px;">👗</div><div style="flex:1;"><div class="bold" style="font-size:12px;">Saree - ₹800</div><div style="font-size:10px;">Commission ₹80</div></div><button class="btn" style="width:80px;font-size:10px;" onclick="buyProduct('Saree',800,80)">Buy</button></div>
-  <div class="prod"><div style="font-size:26px;">💍</div><div style="flex:1;"><div class="bold" style="font-size:12px;">Gold Chain - ₹2,500</div><div style="font-size:10px;">Commission ₹250</div></div><button class="btn" style="width:80px;font-size:10px;" onclick="buyProduct('Gold',2500,250)">Buy</button></div>
-  <div class="prod"><div style="font-size:26px;">📚</div><div style="flex:1;"><div class="bold" style="font-size:12px;">Books - ₹300</div><div style="font-size:10px;">Commission ₹30</div></div><button class="btn" style="width:80px;font-size:10px;" onclick="buyProduct('Books',300,30)">Buy</button></div>
-  <div class="prod"><div style="font-size:26px;">🎮</div><div style="flex:1;"><div class="bold" style="font-size:12px;">Games - ₹500</div><div style="font-size:10px;">Commission ₹50</div></div><button class="btn" style="width:80px;font-size:10px;" onclick="buyProduct('Games',500,50)">Buy</button></div>
-</div>
-
-<div class="card" style="background:linear-gradient(135deg,#fffbeb,#fef3c7);">
-  <div class="bold">📋 Purchase History - Any Purchase Tracking</div>
-  <div id="history" style="font-size:11px;font-weight:700;margin-top:8px;max-height:150px;overflow-y:auto;">No purchases yet</div>
-</div>
-
-<script>
-let urlParams = new URLSearchParams(window.location.search);
-let ref = urlParams.get('ref');
-if(ref){
-  let visits = parseInt(localStorage.getItem('ref_visits')||'0')+1;
-  localStorage.setItem('ref_visits', visits);
-  let earn = parseInt(localStorage.getItem('ref_earn')||'0')+2;
-  localStorage.setItem('ref_earn', earn);
-}
-function loadStats(){
-  document.getElementById('vCount').innerText = localStorage.getItem('ref_visits')||'0';
-  document.getElementById('pCount').innerText = localStorage.getItem('ref_purchases')||'0';
-  document.getElementById('eCount').innerText = '₹'+(localStorage.getItem('ref_earn')||'0');
-  let h = localStorage.getItem('ref_history')||'';
-  if(h) document.getElementById('history').innerHTML = h;
-}
-function buyProduct(name, price, comm){
-  let purchases = parseInt(localStorage.getItem('ref_purchases')||'0')+1;
-  let earn = parseInt(localStorage.getItem('ref_earn')||'0')+comm;
-  localStorage.setItem('ref_purchases', purchases);
-  localStorage.setItem('ref_earn', earn);
-  let history = localStorage.getItem('ref_history')||'';
-  let entry = `<div style="border-bottom:1px solid #ccc;padding:4px 0;">✅ ${name} - ₹${price} - Commission ₹${comm} - ${new Date().toLocaleTimeString()}</div>` + history;
-  localStorage.setItem('ref_history', entry);
-  alert(name + ' Purchased! Commission ₹'+comm+' added!');
-  loadStats();
-}
-loadStats();
-setInterval(()=>{let v=parseInt(localStorage.getItem('ref_visits')||'0'); if(Math.random()>0.7){localStorage.setItem('ref_visits',v+1); localStorage.setItem('ref_earn', parseInt(localStorage.getItem('ref_earn')||'0')+2); loadStats();}},8000);
-</script>
-</body></html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Affiliate Information — SASIKUMAR AI</title>
+<style>
+body{font-family:system-ui,Arial,sans-serif;margin:0;padding:16px;
+background:linear-gradient(135deg,#eff6ff,#f0fdf4);color:#172554}
+.card{max-width:600px;margin:16px auto;padding:20px;background:#fff;
+border:2px solid #bfdbfe;border-radius:18px;line-height:1.7}
+.logo{display:block;width:76px;height:76px;object-fit:contain;margin:auto}
+h1{text-align:center;color:#1d4ed8;font-size:25px}
+.btn{display:block;text-align:center;text-decoration:none;background:#1d4ed8;
+color:#fff;font-weight:800;padding:13px;border-radius:12px;margin-top:16px}
+</style>
+</head>
+<body>
+<section class="card">
+<img class="logo" src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI logo">
+<h1>💸 Affiliate & Referral Information</h1>
+<p>Welcome to SASIKUMAR AI Shopping Hub.</p>
+<p><strong>Affiliate tracking status:</strong> Not configured yet.</p>
+<p>Shopping visits and purchases are not automatically tracked by this page.
+No commission is credited merely by pressing a Buy button or opening a link.</p>
+<p>To enable real affiliate earnings, join each company's applicable affiliate
+program, obtain its approved tracking link, and configure tracking according
+to that program's rules. Commission amounts and approved purchases must be
+verified through the affiliate provider's reports.</p>
+<a class="btn" href="/shop.html">🛍️ Explore All Shopping Companies</a>
+<a class="btn" href="/">🏠 Return to Homepage</a>
+</section>
+</body>
+</html>
