@@ -37,7 +37,7 @@ button,.btn{display:block;width:100%;margin-top:16px;padding:13px;border:0;borde
 <label>உங்கள் இணையதள முகவரி</label>
 <input name="website" type="url" placeholder="https://example.com">
 <label>தொடர்பு WhatsApp / இணைய இணைப்பு</label>
-<input name="contact" type="url" placeholder="https://wa.me/...">
+<input name="contact" type="text" inputmode="url" placeholder="WhatsApp number or https://wa.me/..." autocomplete="tel">
 <p class="note">இது விளம்பர விசாரணை மட்டுமே. உங்கள் விண்ணப்பம் பரிசீலிக்கப்பட்ட பிறகே விளம்பரம் வெளியிடப்படும். கடவுச்சொல் அல்லது வங்கி விவரங்களை இங்கே உள்ளிட வேண்டாம்.</p>
 <button type="submit">📩 WhatsApp மூலம் விசாரிக்கவும்</button>
 </form>
@@ -53,11 +53,25 @@ const title=String(f.get('title')||'').trim();
 const description=String(f.get('description')||'').trim();
 const website=String(f.get('website')||'').trim();
 const contact=String(f.get('contact')||'').trim();
-for(const url of [website,contact]){
-if(url&&!/^https?:\/\//i.test(url)){
-document.getElementById('status').textContent='சரியான https:// அல்லது http:// இணைய முகவரியை உள்ளிடுங்கள்.';
+if(website && !/^https?:\/\//i.test(website)){
+document.getElementById('status').textContent='இணையதளத்திற்கு சரியான https:// அல்லது http:// முகவரியை உள்ளிடுங்கள்.';
 return;
 }
+
+let contactLink = contact;
+if(contact && /^\+?[0-9\s()-]{7,20}$/.test(contact)){
+const digits = contact.replace(/\D/g, '');
+if(digits.length === 10){
+contactLink = 'https://wa.me/91' + digits;
+} else if(digits.length >= 11 && digits.length <= 15){
+contactLink = 'https://wa.me/' + digits;
+} else {
+document.getElementById('status').textContent='சரியான WhatsApp மொபைல் எண்ணை உள்ளிடுங்கள்.';
+return;
+}
+} else if(contact && !/^https?:\/\//i.test(contact)){
+document.getElementById('status').textContent='WhatsApp எண்ணையோ அல்லது https:// இணைப்பையோ உள்ளிடுங்கள்.';
+return;
 }
 const message=[
 'SASIKUMAR AI — Business Ads Enquiry',
@@ -65,7 +79,7 @@ const message=[
 'Ad title: '+title,
 'Description: '+description,
 'Website: '+website,
-'Contact link: '+contact
+'Contact link: '+contactLink
 ].join('\n');
 document.getElementById('status').textContent='WhatsApp திறக்கத் தயாராகிறது…';
 const waUrl = 'https://wa.me/919585080842?text=' + encodeURIComponent(message);
