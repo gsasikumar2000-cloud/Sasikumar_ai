@@ -321,5 +321,107 @@ footer{text-align:center;color:#526782;font-size:13px;padding:12px}
   });
 })();
 </script>
+
+<!-- SK_TRANSLATOR_ALL_TOOLS_V1 -->
+<div id="skTranslatorAllToolsV1" style="max-width:720px;margin:24px auto;padding:16px;box-sizing:border-box;border:2px solid #93c5fd;border-radius:20px;background:linear-gradient(135deg,#eff6ff,#f5f3ff,#ecfdf5);text-align:center;">
+  <h3 style="margin:4px 0 14px;color:#1d4ed8;">🧰 Text Tools</h3>
+  <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px;">
+    <button type="button" id="skTranslatorCut" style="padding:11px 16px;border:0;border-radius:24px;background:#f97316;color:white;font-weight:bold;">✂️ CUT</button>
+    <button type="button" id="skTranslatorPaste" style="padding:11px 16px;border:0;border-radius:24px;background:#0d9488;color:white;font-weight:bold;">📋 PASTE</button>
+    <button type="button" id="skTranslatorShare" style="padding:11px 16px;border:0;border-radius:24px;background:#7c3aed;color:white;font-weight:bold;">📤 SHARE</button>
+    <button type="button" id="skTranslatorCopy" style="padding:11px 16px;border:0;border-radius:24px;background:#2563eb;color:white;font-weight:bold;">📄 COPY RESULT</button>
+    <button type="button" id="skTranslatorClear" style="padding:11px 16px;border:0;border-radius:24px;background:#dc2626;color:white;font-weight:bold;">🗑️ CLEAR</button>
+    <a href="/" style="display:inline-block;padding:11px 18px;border-radius:24px;background:#16a34a;color:white;text-decoration:none;font-weight:bold;">🏠 MAIN</a>
+    <button type="button" id="skTranslatorClose" style="padding:11px 18px;border:0;border-radius:24px;background:#475569;color:white;font-weight:bold;">✖ CLOSE</button>
+  </div>
+  <p id="skTranslatorToolsStatus" role="status" style="margin:12px 0 0;color:#334155;font-size:13px;"></p>
+</div>
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const source = $('sourceText');
+  const result = $('result');
+  const status = $('skTranslatorToolsStatus');
+  if (!source || !result) {
+    if (status) status.textContent = 'Text box கிடைக்கவில்லை.';
+    return;
+  }
+  function resultText(){
+    const t = result.innerText || result.textContent || '';
+    return t === 'Your translation will appear here.' ? '' : t.trim();
+  }
+  $('skTranslatorCut').addEventListener('click', async function(){
+    const start = source.selectionStart, end = source.selectionEnd;
+    if (start === end) {
+      status.textContent = 'முதலில் input text-ஐ தேர்ந்தெடுக்கவும்.';
+      return;
+    }
+    const selected = source.value.slice(start,end);
+    try {
+      await navigator.clipboard.writeText(selected);
+      source.setRangeText('',start,end,'start');
+      status.textContent = 'தேர்ந்தெடுத்த உரை CUT செய்யப்பட்டது.';
+    } catch(e) {
+      status.textContent = 'Clipboard அனுமதி இல்லை. உரையைத் தேர்ந்தெடுத்து அழுத்திப் பிடிக்கவும்.';
+    }
+  });
+  $('skTranslatorPaste').addEventListener('click', async function(){
+    try {
+      const clip = await navigator.clipboard.readText();
+      const start = source.selectionStart ?? source.value.length;
+      const end = source.selectionEnd ?? start;
+      source.setRangeText(clip,start,end,'end');
+      source.focus();
+      status.textContent = 'Clipboard உரை ஒட்டப்பட்டது.';
+    } catch(e) {
+      status.textContent = 'Input பெட்டியை அழுத்திப் பிடித்து Paste தேர்வு செய்யவும்.';
+    }
+  });
+  $('skTranslatorShare').addEventListener('click', async function(){
+    const text = resultText() || source.value.trim();
+    if (!text) {
+      status.textContent = 'பகிர்வதற்கு உரை இல்லை.';
+      return;
+    }
+    try {
+      if (navigator.share) {
+        await navigator.share({title:'SASIKUMAR AI Translator',text});
+        status.textContent = 'Share திறக்கப்பட்டது.';
+      } else {
+        await navigator.clipboard.writeText(text);
+        status.textContent = 'Share ஆதரவு இல்லை; உரை Copy செய்யப்பட்டது.';
+      }
+    } catch(e) {
+      if (e.name !== 'AbortError') status.textContent = 'உரையை Copy செய்து பகிரவும்.';
+    }
+  });
+  $('skTranslatorCopy').addEventListener('click', async function(){
+    const text = resultText();
+    if (!text) {
+      status.textContent = 'முதலில் மொழிபெயர்க்கவும்.';
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(text);
+      status.textContent = 'மொழிபெயர்ப்பு Copy செய்யப்பட்டது.';
+    } catch(e) {
+      status.textContent = 'மொழிபெயர்ப்பை அழுத்திப் பிடித்து Copy செய்யவும்.';
+    }
+  });
+  $('skTranslatorClear').addEventListener('click', function(){
+    source.value = '';
+    source.focus();
+    status.textContent = 'Input text அழிக்கப்பட்டது.';
+  });
+  $('skTranslatorClose').addEventListener('click', function(){
+    try { window.close(); } catch(e) {}
+    setTimeout(function(){
+      if (!window.closed) location.href = '/';
+    },150);
+  });
+})();
+</script>
+<!-- END SK_TRANSLATOR_ALL_TOOLS_V1 -->
+
 </body>
 </html>
