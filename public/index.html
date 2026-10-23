@@ -7258,19 +7258,15 @@ section:not(.skMainFeatureCard):not(#skDesignMakerGlobal):not(#skGlobalSearchTop
     }
 
 
-    /* Place LIVE NEWS immediately after the Login section. */
+    /* SK_LIVE_NEWS_MINI_ROW_V2 */
     var loginSection = document.getElementById("sasikumarLoginScreen");
     if (loginSection && loginSection.parentNode) {
       loginSection.insertAdjacentElement("afterend", loginAdsMini);
-  loginAdsMini.insertAdjacentElement("afterend", shopping);
-      shopping.insertAdjacentElement("afterend", news);
-  refreshSKLoginCompanyAdsMini();
-  window.setInterval(refreshSKLoginCompanyAdsMini, 60000);
-      news.style.setProperty("display", "block", "important");
-      news.style.setProperty("width", "calc(100% - 24px)");
-      news.style.setProperty("max-width", "900px");
-      news.style.setProperty("margin", "16px auto");
-      news.style.setProperty("box-sizing", "border-box");
+      loginAdsMini.insertAdjacentElement("afterend", shopping);
+      refreshSKLoginCompanyAdsMini();
+      window.setInterval(refreshSKLoginCompanyAdsMini, 60000);
+      row.appendChild(shopping);
+      row.appendChild(news);
     } else {
       row.appendChild(shopping);
       row.appendChild(news);
@@ -11161,6 +11157,41 @@ box-sizing:border-box!important;">
 })();
 </script>
 <!-- END SK_COMPANY_ADS_LIVE_RENDER_V1 -->
+
+
+<!-- SK_LIVE_CARDS_UNIFORM_MINI_V2 -->
+<style id="skLiveCardsUniformMiniV2">
+.skMainLiveGrid,#skLiveBookCardsRow{
+ display:flex!important;flex-flow:row nowrap!important;align-items:stretch!important;
+ gap:10px!important;width:100%!important;max-width:100%!important;
+ box-sizing:border-box!important;overflow-x:auto!important;overflow-y:hidden!important;
+ padding:10px 12px 14px!important;scroll-snap-type:x proximity!important;
+ -webkit-overflow-scrolling:touch!important;
+}
+.skMainLiveGrid>.skMainFeatureCard,#skLiveBookCardsRow>*{
+ position:relative!important;box-sizing:border-box!important;
+ flex:0 0 200px!important;width:200px!important;min-width:200px!important;max-width:200px!important;
+ height:190px!important;min-height:190px!important;max-height:190px!important;
+ margin:0!important;padding:48px 10px 10px!important;overflow:auto!important;
+ overflow-wrap:anywhere!important;border-radius:14px!important;scroll-snap-align:start!important;
+}
+.skMainLiveGrid>.skMainFeatureCard h2,.skMainLiveGrid>.skMainFeatureCard h3,
+#skLiveBookCardsRow>* h2,#skLiveBookCardsRow>* h3{
+ font-size:14px!important;line-height:1.3!important;overflow-wrap:anywhere!important;
+}
+#skLiveBookCardsRow .skLiveBookText{font-size:12px!important;line-height:1.4!important;overflow-wrap:anywhere!important}
+#skLiveBookCardsRow a{max-width:100%!important;overflow-wrap:anywhere!important}
+#skVideoAdCard iframe{display:block!important;width:100%!important;max-width:100%!important;height:95px!important;min-height:95px!important;aspect-ratio:auto!important}
+#skVideoAdCard video,#skLiveImagesCard img{max-height:75px!important;object-fit:contain!important}
+.skCardBrandBadge{width:34px!important;height:34px!important;min-width:34px!important;top:7px!important;right:7px!important}
+@media(max-width:420px){
+ .skMainLiveGrid>.skMainFeatureCard,#skLiveBookCardsRow>*{
+  flex-basis:180px!important;width:180px!important;min-width:180px!important;max-width:180px!important;
+  height:185px!important;min-height:185px!important;max-height:185px!important;
+ }
+}
+</style>
+<!-- END SK_LIVE_CARDS_UNIFORM_MINI_V2 -->
 
 </body>
 </html>
