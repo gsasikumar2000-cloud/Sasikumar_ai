@@ -10647,6 +10647,79 @@ table {
     📢 PROMOTE YOUR BUSINESS WITH SASIKUMAR AI
   </div>
 </section>
+
+<!-- SK_COMPANY_ADS_STATIC_FALLBACK_V1 -->
+<section id="skCompanyAdsStaticFallback" style="margin:16px auto;padding:16px;max-width:660px;border:2px solid #16a34a;border-radius:16px;background:#f0fdf4;color:#166534;font-family:Arial,sans-serif;box-sizing:border-box;">
+  <h3 style="margin:0 0 10px;text-align:center;">🟢 LIVE COMPANY ADVERTISEMENTS</h3>
+  <p id="skCompanyAdsFallbackStatus" style="text-align:center;">Loading advertisements…</p>
+  <div id="skCompanyAdsFallbackGrid"></div>
+  <div style="text-align:center;margin-top:12px;">
+    <a href="/business-ads.html" style="display:inline-block;padding:12px 18px;border-radius:10px;background:#15803d;color:white;text-decoration:none;font-weight:bold;">📢 Promote Your Business</a>
+  </div>
+</section>
+<script>
+(function () {
+  async function loadCompanyAdsFallback() {
+    var status = document.getElementById("skCompanyAdsFallbackStatus");
+    var grid = document.getElementById("skCompanyAdsFallbackGrid");
+    if (!status || !grid) return;
+    try {
+      var response = await fetch("/api/company-ads", { cache: "no-store" });
+      if (!response.ok) throw new Error("HTTP " + response.status);
+      var data = await response.json();
+      grid.replaceChildren();
+      var ads = Array.isArray(data.ads) ? data.ads : [];
+      if (!ads.length) {
+        status.textContent = "No active advertisements right now.";
+        return;
+      }
+      ads.forEach(function (ad) {
+        var card = document.createElement("article");
+        card.style.cssText = "margin:12px 0;padding:14px;border:1px solid #86efac;border-radius:12px;background:white;color:#17324d;";
+        var company = document.createElement("div");
+        company.style.cssText = "font-weight:bold;color:#15803d;margin-bottom:6px;";
+        company.textContent = String(ad.company_name || "Company promotion");
+        var title = document.createElement("h4");
+        title.style.cssText = "margin:6px 0;font-size:18px;";
+        title.textContent = String(ad.title || "Advertisement");
+        card.append(company, title);
+        if (ad.description && !/^https?:\/\//i.test(String(ad.description))) {
+          var desc = document.createElement("p");
+          desc.textContent = String(ad.description);
+          card.appendChild(desc);
+        }
+        if (typeof ad.target_url === "string" && /^https?:\/\//i.test(ad.target_url)) {
+          try {
+            var url = new URL(ad.target_url);
+            if (url.protocol === "https:" || url.protocol === "http:") {
+              var link = document.createElement("a");
+              link.href = url.href;
+              link.target = "_blank";
+              link.rel = "noopener noreferrer sponsored";
+              link.textContent = "🌐 View Offer";
+              link.style.cssText = "display:inline-block;margin-top:8px;padding:10px 14px;background:#2563eb;color:white;border-radius:8px;text-decoration:none;font-weight:bold;";
+              card.appendChild(link);
+            }
+          } catch (_) {}
+        }
+        grid.appendChild(card);
+      });
+      status.textContent = "🟢 " + ads.length + " active advertisement(s)";
+    } catch (error) {
+      console.error("[Company Ads fallback]", error);
+      status.textContent = "⚠️ Advertisements could not be loaded. Please refresh.";
+    }
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", loadCompanyAdsFallback, { once: true });
+  } else {
+    loadCompanyAdsFallback();
+  }
+  window.setInterval(loadCompanyAdsFallback, 60000);
+})();
+</script>
+<!-- END SK_COMPANY_ADS_STATIC_FALLBACK_V1 -->
+
 <!-- /SK_ALL_LIVE_PROMOTION_ADS_V1 -->
 
 <!-- SK_BOTTOM_SERVER_AI_STATUS_V1 -->
