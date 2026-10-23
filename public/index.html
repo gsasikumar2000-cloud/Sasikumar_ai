@@ -2188,7 +2188,7 @@ style="position:absolute;top:8px;right:8px;padding:9px 13px;border:0;border-radi
 </script>
 
 <!-- SK_ASTROLOGY_BUTTON_ABOVE_DESIGN_MAKER_V1 -->
-<div style="margin:18px 0;padding:4px;border-radius:23px;background:linear-gradient(110deg,#7c3aed,#ec4899,#f59e0b);box-shadow:0 8px 24px #9333ea30;box-sizing:border-box;">
+<div id="skAstrologyButtonAboveDesignMaker" style="margin:18px 0;padding:4px;border-radius:23px;background:linear-gradient(110deg,#7c3aed,#ec4899,#f59e0b);box-shadow:0 8px 24px #9333ea30;box-sizing:border-box;">
   <a href="/spiritual-astrology.html" aria-label="Open SASIKUMAR AI ஆன்மிகம் மற்றும் ஜோதிடம்" style="display:block;padding:20px 14px;border-radius:20px;background:linear-gradient(135deg,#fff7ed 0%,#fce7f3 48%,#ede9fe 100%);color:#4c1d95;text-decoration:none;text-align:center;box-sizing:border-box;">
     <span style="display:block;font-size:32px;line-height:1.3;">🔮 ✨ 🙏</span>
     <strong style="display:block;margin-top:5px;font-size:clamp(19px,4.5vw,25px);font-weight:900;">ஆன்மிகம் &amp; ஜோதிடம்</strong>
@@ -6949,6 +6949,30 @@ else skRefreshPay2AllWallet();
 })();
 </script>
 
+
+<script id="SK_ASTROLOGY_POSITION_FIX_V1">
+(function () {
+  function positionAstrologyButton() {
+    const button = document.getElementById("skAstrologyButtonAboveDesignMaker");
+    const designMaker = document.getElementById("skDesignMakerGlobal");
+
+    if (button && designMaker && designMaker.parentNode) {
+      designMaker.parentNode.insertBefore(button, designMaker);
+      button.style.setProperty("display", "block", "important");
+      button.style.setProperty("visibility", "visible", "important");
+      button.style.setProperty("opacity", "1", "important");
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", positionAstrologyButton);
+  } else {
+    positionAstrologyButton();
+  }
+
+  window.addEventListener("load", positionAstrologyButton);
+})();
+</script>
 
 <script id="SK_REPLY_TOP_MOVE_V1">
 (function () {
