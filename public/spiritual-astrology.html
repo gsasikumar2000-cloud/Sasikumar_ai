@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#673ab7">
+<title>ஆன்மிகம் & ஜோதிடம் | SASIKUMAR AI</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,"Noto Sans Tamil",sans-serif;background:linear-gradient(160deg,#fff8e7,#f2eaff,#eaf7ff);color:#30204b}
+header{padding:22px 15px;text-align:center;background:linear-gradient(135deg,#5424a5,#9c42c9,#e16b9a);color:white;border-radius:0 0 26px 26px}
+.logo{width:76px;height:76px;object-fit:contain;border-radius:50%;background:#fff;padding:5px}
+h1{font-size:23px;margin:10px 0 6px}
+header p{font-size:13px;margin:5px}
+.container{max-width:650px;margin:auto;padding:14px}
+.card{background:#fff;border:1px solid #eadcfb;border-radius:17px;padding:16px;margin:12px 0;box-shadow:0 4px 14px #55308012}
+.card h2{font-size:18px;color:#7035a9;margin:0 0 12px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.sign{border:1px solid #e4d6fa;border-radius:12px;padding:12px 5px;background:#fbf8ff;color:#4f267c;font-size:14px;font-weight:bold;cursor:pointer}
+button,.btn{border:0;border-radius:11px;background:#713ab1;color:#fff;padding:11px 14px;font-weight:bold;cursor:pointer;text-decoration:none;display:inline-block}
+select{width:100%;padding:12px;border:1px solid #cbb3e8;border-radius:10px;background:#fff;font-size:15px}
+.info{font-size:14px;line-height:1.8}
+.highlight{background:#fff5d9;border-radius:10px;padding:12px;margin-top:10px}
+.muted{font-size:12px;color:#756781;line-height:1.6}
+footer{text-align:center;padding:20px;font-size:12px;color:#71637e}
+a{color:#6934a4}
+</style>
+</head>
+<body>
+<header>
+<img class="logo" src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI Logo" onerror="this.style.display='none'">
+<h1>🙏 ஆன்மிகம் & ஜோதிடம் 🔮</h1>
+<p>SASIKUMAR AI – உங்கள் ஆன்மிகத் தகவல் மையம்</p>
+<p id="todayDate">இன்றைய தேதி</p>
+<p id="todayTime"></p>
+</header>
+
+<main class="container">
+<div class="card">
+<h2>🛕 தினசரி ஆன்மிகம்</h2>
+<div class="info">
+🌺 நல்ல எண்ணங்களுடன் நாளைத் தொடங்குங்கள்.<br>
+🪔 உங்கள் வழிபாட்டு மரபின்படி இறைவனை வணங்குங்கள்.<br>
+🙏 அன்பு, பொறுமை, நேர்மை ஆகியவற்றைப் பின்பற்றுங்கள்.
+</div>
+<div class="highlight" id="dailyThought">✨ இன்றைய சிந்தனை: நல்ல எண்ணங்கள் நல்ல செயல்களுக்கு வழிகாட்டும்.</div>
+</div>
+
+<div class="card">
+<h2>🔮 12 ராசிகள் – தினசரி வழிகாட்டி</h2>
+<p class="info">உங்கள் ராசியைத் தேர்வு செய்யுங்கள்:</p>
+<div class="grid" id="zodiacGrid"></div>
+<div id="horoscopeResult" class="highlight info" style="display:none" aria-live="polite"></div>
+<p class="muted">குறிப்பு: இவை பொதுவான சிந்தனைக்கான வழிகாட்டுதல்கள் மட்டுமே; தனிப்பட்ட ஜோதிடக் கணிப்பு அல்ல.</p>
+</div>
+
+<div class="card">
+<h2>📅 பஞ்சாங்கம் & கால விவரங்கள்</h2>
+<div class="info">
+<div>📆 தேதி: <strong id="pDate">—</strong></div>
+<div>🗓️ கிழமை: <strong id="pDay">—</strong></div>
+<div>🕒 தற்போதைய நேரம்: <strong id="pTime">—</strong></div>
+</div>
+<div class="highlight info">
+🌙 திதி, நட்சத்திரம், யோகம், கரணம், ராகு காலம், எமகண்டம் மற்றும் குளிகை நேரங்களைத் துல்லியமாகக் காட்ட சரிபார்க்கப்பட்ட பஞ்சாங்கத் தரவு தேவை.
+</div>
+<p class="muted">சரியான நல்ல நேரம் மற்றும் பஞ்சாங்க விவரங்கள் தரவு இணைக்கப்பட்ட பிறகே காட்டப்படும். இங்கு கணித்த நேரங்கள் அல்லது உறுதிப்படுத்தப்படாத தகவல்கள் காட்டப்படாது.</p>
+</div>
+
+<div class="card">
+<h2>🌦️ இன்றைய வானிலை</h2>
+<p class="info">உங்கள் பகுதியின் தற்போதைய வானிலை:</p>
+<div id="weatherResult" class="highlight info" aria-live="polite">வானிலைத் தகவல் பெறப்படுகிறது...</div>
+<button id="weatherButton" type="button">🔄 வானிலையைப் புதுப்பிக்கவும்</button>
+<p class="muted">வானிலைத் தகவலுக்கு இணைய இணைப்பு தேவை. இருப்பிடம் அனுமதிக்கப்படாவிட்டால் Papanasam பகுதி பயன்படுத்தப்படும்.</p>
+</div>
+
+<div class="card">
+<h2>🌼 ஆன்மிகப் பயனுள்ளவை</h2>
+<div class="grid">
+<a class="btn" href="/">🏠 Home</a>
+<a class="btn" href="/all-menus.html">📋 All Menus</a>
+<a class="btn" href="/live-news.html">📰 Live News</a>
+<a class="btn" href="/audio-video-hub.html">🎵 Audio & Video</a>
+</div>
+</div>
+</main>
+
+<footer>
+<img src="/assets/sasikumar-ai-logo.png" alt="" width="35" onerror="this.style.display='none'"><br>
+© SASIKUMAR AI – Smart Digital Services
+</footer>
+
+<script>
+const signs=[
+{name:"மேஷம்",symbol:"♈",text:"முயற்சிகளில் பொறுமையுடன் செயல்படுங்கள். முக்கிய முடிவுகளை நன்கு ஆராய்ந்து எடுங்கள்."},
+{name:"ரிஷபம்",symbol:"♉",text:"பண விஷயங்களில் திட்டமிடுங்கள். குடும்பத்தினருடன் அன்பாகப் பேசுங்கள்."},
+{name:"மிதுனம்",symbol:"♊",text:"புதிய விஷயங்களைக் கற்றுக்கொள்ள நல்ல நாளாக மாற்றிக்கொள்ளுங்கள்."},
+{name:"கடகம்",symbol:"♋",text:"குடும்ப நலனுக்கு முக்கியத்துவம் கொடுங்கள். ஓய்வுக்கும் நேரம் ஒதுக்குங்கள்."},
+{name:"சிம்மம்",symbol:"♌",text:"தன்னம்பிக்கையுடன் செயல்படுங்கள். பிறரின் கருத்துகளையும் கவனமாகக் கேளுங்கள்."},
+{name:"கன்னி",symbol:"♍",text:"உங்கள் வேலைகளைத் திட்டமிட்டு முடிக்கவும். செலவுகளைப் பதிவு செய்யுங்கள்."},
+{name:"துலாம்",symbol:"♎",text:"உறவுகளில் சமநிலையைக் கடைப்பிடியுங்கள். பேசுவதற்கு முன் சிந்தியுங்கள்."},
+{name:"விருச்சிகம்",symbol:"♏",text:"அவசரப்படாமல் செயல்படுங்கள். முக்கிய தகவல்களைச் சரிபார்த்துப் பாருங்கள்."},
+{name:"தனுசு",symbol:"♐",text:"புதிய திறன்களை வளர்த்துக்கொள்ளுங்கள். உங்கள் இலக்கில் கவனம் செலுத்துங்கள்."},
+{name:"மகரம்",symbol:"♑",text:"தொடர்ச்சியான முயற்சியில் கவனம் செலுத்துங்கள். ஓய்வையும் மறக்காதீர்கள்."},
+{name:"கும்பம்",symbol:"♒",text:"புதிய யோசனைகளை ஆராயுங்கள். பிறருடன் இணைந்து செயல்படுங்கள்."},
+{name:"மீனம்",symbol:"♓",text:"மன அமைதிக்கு நேரம் ஒதுக்குங்கள். நம்பகமான தகவல்களின் அடிப்படையில் முடிவெடுங்கள்."}
+];
+const grid=document.getElementById("zodiacGrid");
+signs.forEach((s,i)=>{
+const b=document.createElement("button");
+b.className="sign";
+b.textContent=s.symbol+" "+s.name;
+b.onclick=()=>showSign(i);
+grid.appendChild(b);
+});
+function showSign(i){
+const s=signs[i],el=document.getElementById("horoscopeResult");
+el.style.display="block";
+el.textContent=s.symbol+" "+s.name+" ராசி – பொதுவான வழிகாட்டி: "+s.text;
+}
+function updateClock(){
+const now=new Date();
+const date=now.toLocaleDateString("ta-IN",{year:"numeric",month:"long",day:"numeric"});
+const day=now.toLocaleDateString("ta-IN",{weekday:"long"});
+const time=now.toLocaleTimeString("ta-IN",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+document.getElementById("todayDate").textContent="📅 "+date+" ("+day+")";
+document.getElementById("todayTime").textContent="🕒 "+time;
+document.getElementById("pDate").textContent=date;
+document.getElementById("pDay").textContent=day;
+document.getElementById("pTime").textContent=time;
+}
+updateClock();setInterval(updateClock,1000);
+
+async function loadWeather(lat=10.93,lon=79.27,place="Papanasam"){
+const el=document.getElementById("weatherResult");
+el.textContent="வானிலைத் தகவல் பெறப்படுகிறது...";
+try{
+const url="https://api.open-meteo.com/v1/forecast?latitude="+lat+"&longitude="+lon+"&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&timezone=Asia%2FKolkata";
+const r=await fetch(url);
+if(!r.ok)throw Error("Weather unavailable");
+const d=await r.json(),c=d.current;
+const codes={0:"தெளிவான வானம்",1:"பெரும்பாலும் தெளிவு",2:"பகுதி மேகமூட்டம்",3:"மேகமூட்டம்",45:"மூடுபனி",48:"உறைபனி மூடுபனி",51:"லேசான தூறல்",53:"தூறல்",55:"அதிக தூறல்",61:"லேசான மழை",63:"மிதமான மழை",65:"கனமழை",80:"மழை வாய்ப்பு",81:"மழை",82:"கனமழை",95:"இடியுடன் கூடிய மழை"};
+el.textContent="📍 "+place+" | "+(codes[c.weather_code]||"வானிலை நிலை")+
+" | 🌡️ "+c.temperature_2m+"°C | உணரும் வெப்பநிலை "+c.apparent_temperature+"°C"+
+" | 💧 ஈரப்பதம் "+c.relative_humidity_2m+"% | 💨 காற்று "+c.wind_speed_10m+" km/h";
+}catch(e){
+el.textContent="தற்போது வானிலைத் தகவலைப் பெற முடியவில்லை. இணைய இணைப்பைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.";
+}
+}
+function refreshWeather(){
+if(navigator.geolocation){
+navigator.geolocation.getCurrentPosition(
+p=>loadWeather(p.coords.latitude,p.coords.longitude,"உங்கள் இருப்பிடம்"),
+()=>loadWeather()
+,{timeout:7000,maximumAge:600000}
+);
+}else{loadWeather();}
+}
+document.getElementById("weatherButton").addEventListener("click",refreshWeather);
+refreshWeather();
+</script>
+</body>
+</html>
