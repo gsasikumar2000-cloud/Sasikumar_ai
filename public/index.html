@@ -6944,8 +6944,8 @@ section:not(.skMainFeatureCard):not(#skDesignMakerGlobal):not(#skGlobalSearchTop
     /* SK_LOGIN_COMPANY_LIVE_ADS_MINI_V1 */
     var loginAdsMini = document.createElement("article");
     loginAdsMini.id = "skLoginCompanyAdsMiniCard";
-    loginAdsMini.style.cssText = "box-sizing:border-box;width:calc(100% - 24px);max-width:560px;margin:12px auto;padding:12px;border:1px solid #86efac;border-radius:16px;background:linear-gradient(135deg,#f0fdf4,#eff6ff);color:#164e63;text-align:center;";
-    loginAdsMini.innerHTML = '<strong>🟢 ALL COMPANY LIVE ADS</strong><div id="skLoginCompanyAdsMiniContent" style="font-size:13px;margin-top:7px">Loading offers...</div>';
+    loginAdsMini.style.cssText = "box-sizing:border-box;width:calc(100% - 32px);max-width:420px;margin:6px auto;padding:6px 9px;border:1px solid #86efac;border-radius:10px;background:linear-gradient(135deg,#f0fdf4,#eff6ff);color:#164e63;text-align:center;";
+    loginAdsMini.innerHTML = '<strong style="font-size:12px">🟢 ALL COMPANY LIVE ADS</strong><div id="skLoginCompanyAdsMiniContent" style="font-size:11px;margin-top:3px">Loading offers...</div>';
 
     function refreshSKLoginCompanyAdsMini() {
       var target = document.getElementById("skLoginCompanyAdsMiniContent");
@@ -6961,7 +6961,7 @@ section:not(.skMainFeatureCard):not(#skDesignMakerGlobal):not(#skGlobalSearchTop
           }
           ads.slice(0,3).forEach(function(ad) {
             var item = document.createElement("div");
-            item.style.cssText = "padding:7px 0;border-top:1px solid #bbf7d0;";
+            item.style.cssText = "padding:3px 0;border-top:1px solid #bbf7d0;";
             var name = document.createElement("strong");
             name.textContent = String(ad.company_name || ad.company || ad.name || "Company Offer");
             var title = document.createElement("div");
@@ -6976,7 +6976,7 @@ section:not(.skMainFeatureCard):not(#skDesignMakerGlobal):not(#skGlobalSearchTop
                 a.target = "_blank";
                 a.rel = "noopener noreferrer";
                 a.textContent = "🔗 View Offer";
-                a.style.cssText = "display:inline-block;margin-top:5px;padding:6px 12px;border-radius:9px;background:#15803d;color:#fff;font-weight:800;text-decoration:none;";
+                a.style.cssText = "display:inline-block;margin-top:3px;padding:3px 8px;border-radius:6px;font-size:11px;background:#15803d;color:#fff;font-weight:800;text-decoration:none;";
                 item.appendChild(a);
               }
             } catch(e) {}
