@@ -2169,57 +2169,19 @@ app.get('/api/global-search', async (req, res) => {
 app.get('/api/breaking-news', async (req, res) => {
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate');
 
-  const key = process.env.NEWSDATA_API_KEY;
-  if (!key || !key.trim()) {
-    return res.status(503).json({
-      ok: false,
-      error: 'News API key is not configured.',
-      articles: []
-    });
-  }
-
   const requested = String(req.query.category || 'tamil-nadu')
     .trim().toLowerCase().replace(/\s+/g, '-');
 
   const configs = {
-    'tamil-nadu': {
-      label: 'Tamil Nadu',
-      country: 'in',
-      language: 'ta',
-      q: 'தமிழ்நாடு OR இந்தியா'
-    },
-    'india': {
-      label: 'India',
-      country: 'in',
-      language: 'en'
-    },
-    'world': {
-      label: 'World',
-      language: 'en',
-      category: 'world'
-    },
-    'business': {
-      label: 'Business',
-      country: 'in',
-      language: 'en',
-      category: 'business'
-    },
-    'technology': {
-      label: 'Technology',
-      country: 'in',
-      language: 'en',
-      category: 'technology'
-    },
-    'sports': {
-      label: 'Sports',
-      country: 'in',
-      language: 'en',
-      category: 'sports'
-    }
+    'tamil-nadu': { label: 'Tamil Nadu', q: 'Tamil Nadu OR Chennai OR தமிழ்நாடு', country: 'in', language: 'ta' },
+    'india': { label: 'India', q: 'India', country: 'in', language: 'en' },
+    'world': { label: 'World', q: 'world news', language: 'en' },
+    'business': { label: 'Business', q: 'business', country: 'in', language: 'en' },
+    'technology': { label: 'Technology', q: 'technology', country: 'in', language: 'en' },
+    'sports': { label: 'Sports', q: 'sports', country: 'in', language: 'en' }
   };
 
   const config = configs[requested];
-
   if (!config) {
     return res.status(400).json({
       ok: false,
@@ -2229,75 +2191,102 @@ app.get('/api/breaking-news', async (req, res) => {
     });
   }
 
-  try {
-    const values = {
-      apikey: key.trim(),
-      language: config.language
-    };
+  const normalize = items => (Array.isArray(items) ? items : [])
+    .filter(item => {
+      const url = item.url || item.link;
+      return item && item.title && url && /^https?:\/\//i.test(String(url));
+    })
+    .slice(0, 5)
+    .map(item => ({
+      title: String(item.title).slice(0, 250),
+      url: String(item.url || item.link),
+      content: String(item.description || item.content || '').slice(0, 500),
+      published_date: item.publishedAt || item.published_at || item.pubDate || null
+    }));
 
-    if (config.country) values.country = config.country;
-    if (config.category) values.category = config.category;
-    if (config.q) values.q = config.q;
+  const providers = [];
 
-    const params = new URLSearchParams(values);
-
-    const response = await fetch(
-      'https://newsdata.io/api/1/latest?' + params.toString(),
-      { signal: AbortSignal.timeout(20000) }
-    );
-
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok || data.status === 'error') {
-      const errorInfo =
-        data.results || data.message || data.error || 'Unknown provider error';
-
-      console.error(
-        '[Live News] NewsData error:',
-        response.status,
-        JSON.stringify(errorInfo).slice(0, 300)
-      );
-
-      return res.status(502).json({
-        ok: false,
-        error: 'News provider is temporarily unavailable.',
-        category: config.label,
-        articles: []
-      });
-    }
-
-    const articles = (Array.isArray(data.results) ? data.results : [])
-      .filter(item =>
-        item &&
-        item.title &&
-        item.link &&
-        /^https?:\/\//i.test(String(item.link))
-      )
-      .slice(0, 5)
-      .map(item => ({
-        title: String(item.title).slice(0, 250),
-        url: String(item.link),
-        content: String(item.description || '').slice(0, 500),
-        published_date: item.pubDate || null
-      }));
-
-    return res.json({
-      ok: true,
-      provider: 'NewsData.io',
-      category: config.label,
-      language: config.language,
-      updatedAt: new Date().toISOString(),
-      articles
-    });
-  } catch (error) {
-    console.error('[Live News] Request failed:', error.message || error);
-
-    return res.status(502).json({
-      ok: false,
-      error: 'News search temporarily failed.',
-      articles: []
+  if (process.env.GNEWS_API_KEY?.trim()) {
+    providers.push({
+      name: 'GNews',
+      url: () => {
+        const params = new URLSearchParams({
+          apikey: process.env.GNEWS_API_KEY.trim(),
+          lang: config.language === 'ta' ? 'ta' : 'en',
+          max: '5',
+          q: config.q
+        });
+        if (config.country) params.set('country', config.country);
+        return 'https://gnews.io/api/v4/search?' + params.toString();
+      },
+      extract: data => data.articles
     });
   }
+
+  if (process.env.MEDIASTACK_ACCESS_KEY?.trim()) {
+    providers.push({
+      name: 'Mediastack',
+      url: () => {
+        const params = new URLSearchParams({
+          access_key: process.env.MEDIASTACK_ACCESS_KEY.trim(),
+          limit: '5',
+          sort: 'published_desc'
+        });
+        if (config.country) params.set('countries', config.country);
+        if (config.language === 'en') params.set('languages', 'en');
+        const categoryMap = {
+          business: 'business',
+          technology: 'technology',
+          sports: 'sports'
+        };
+        if (categoryMap[requested]) params.set('categories', categoryMap[requested]);
+        return 'https://api.mediastack.com/v1/news?' + params.toString();
+      },
+      extract: data => data.data
+    });
+  }
+
+  let lastError = 'No news API keys configured.';
+
+  for (const provider of providers) {
+    try {
+      const response = await fetch(provider.url(), {
+        signal: AbortSignal.timeout(12000)
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok || data.errors || data.status === 'error') {
+        lastError = provider.name + ' HTTP ' + response.status;
+        console.error('[Live News]', lastError);
+        continue;
+      }
+
+      const articles = normalize(provider.extract(data));
+      if (!articles.length) {
+        lastError = provider.name + ' returned no usable articles.';
+        continue;
+      }
+
+      return res.json({
+        ok: true,
+        provider: provider.name,
+        category: config.label,
+        language: config.language,
+        updatedAt: new Date().toISOString(),
+        articles
+      });
+    } catch (error) {
+      lastError = provider.name + ': ' + (error.message || 'request failed');
+      console.error('[Live News]', lastError);
+    }
+  }
+
+  return res.status(502).json({
+    ok: false,
+    error: 'News providers are temporarily unavailable.',
+    category: config.label,
+    articles: []
+  });
 });
 // END SK_LIVE_TAMIL_NEWS_JSON_API_V1
 
