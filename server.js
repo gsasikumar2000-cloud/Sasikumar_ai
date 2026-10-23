@@ -3224,7 +3224,7 @@ app.get('/api/referral/status', async (req, res) => {
 async function requireCompanyAdsAdmin(req, res, next) {
   const expected = process.env.ADS_ADMIN_TOKEN || '';
   const auth = req.headers.authorization || '';
-  const supplied = auth.replace(/^Bearer\\s+/i, '');
+  const supplied = auth.replace(/^Bearer\s+/i, '');
   if (!expected || supplied.length !== expected.length || supplied !== expected) {
     return res.status(401).json({ error: 'Unauthorized: valid Ads Admin token required.' });
   }
