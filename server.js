@@ -2166,6 +2166,9 @@ app.get('/api/global-search', async (req, res) => {
 
 
 // SK_LIVE_TAMIL_NEWS_JSON_API_V1
+const SK_NEWS_CACHE_MS = 5 * 60 * 1000;
+const skNewsCache = new Map();
+
 app.get('/api/breaking-news', async (req, res) => {
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate');
 
@@ -2180,6 +2183,11 @@ app.get('/api/breaking-news', async (req, res) => {
     'technology': { label: 'Technology', q: 'technology', country: 'in', language: 'en' },
     'sports': { label: 'Sports', q: 'sports', country: 'in', language: 'en' }
   };
+
+  const cached = skNewsCache.get(requested);
+  if (cached && Date.now() - cached.time < SK_NEWS_CACHE_MS) {
+    return res.json({ ...cached.payload, cached: true });
+  }
 
   const config = configs[requested];
   if (!config) {
@@ -2272,14 +2280,16 @@ app.get('/api/breaking-news', async (req, res) => {
         continue;
       }
 
-      return res.json({
+      const payload = {
         ok: true,
         provider: provider.name,
         category: config.label,
         language: config.language,
         updatedAt: new Date().toISOString(),
         articles
-      });
+      };
+      skNewsCache.set(requested, { time: Date.now(), payload });
+      return res.json(payload);
     } catch (error) {
       lastError = provider.name + ': ' + (error.message || 'request failed');
       console.error('[Live News]', lastError);
