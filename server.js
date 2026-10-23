@@ -2246,7 +2246,7 @@ app.get('/api/breaking-news', async (req, res) => {
           sort: 'published_desc'
         });
         if (config.country) params.set('countries', config.country);
-        if (config.language === 'en') params.set('languages', 'en');
+        if (config.language === 'en' || config.language === 'ta') params.set('languages', config.language);
         const categoryMap = {
           business: 'business',
           technology: 'technology',
