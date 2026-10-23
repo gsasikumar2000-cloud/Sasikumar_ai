@@ -176,15 +176,27 @@ const panchangTamilNames = {
 
 function panchangTamil(type, value) {
   if (!value) return "தகவல் இல்லை";
+
   const key = String(value).trim();
-  const normalized = key.replace(/[\s_-]/g, "").toLowerCase();
+  const normalized = key
+    .replace(/\\([^)]*\\)/g, "")
+    .replace(/[\\s_-]/g, "")
+    .toLowerCase();
+
   const map = panchangTamilNames[type] || {};
+
   for (const [english, tamil] of Object.entries(map)) {
-    if (english.replace(/[\s_-]/g, "").toLowerCase() === normalized) return tamil;
+    const candidate = english
+      .replace(/[\\s_-]/g, "")
+      .toLowerCase();
+
+    if (candidate === normalized || normalized.startsWith(candidate)) {
+      return tamil;
+    }
   }
+
   return key;
 }
-
 async function loadPanchang(){
   const el = document.getElementById("panchangResult");
   el.textContent = "தஞ்சாவூர் பஞ்சாங்கத் தகவல் பெறப்படுகிறது...";
