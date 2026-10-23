@@ -132,6 +132,59 @@ updateClock();setInterval(updateClock,1000);
 
 
 // SK_LIVE_PANCHANG_API_V1
+const panchangTamilNames = {
+  tithi: {
+    Pratipada:"பிரதமை", Prathama:"பிரதமை",
+    Dwitiya:"துவிதியை", Tritiya:"திரிதியை",
+    Chaturthi:"சதுர்த்தி", Panchami:"பஞ்சமி",
+    Shashthi:"சஷ்டி", Saptami:"சப்தமி",
+    Ashtami:"அஷ்டமி", Navami:"நவமி",
+    Dashami:"தசமி", Ekadashi:"ஏகாதசி",
+    Dwadashi:"துவாதசி", Trayodashi:"திரயோதசி",
+    Chaturdashi:"சதுர்த்தசி", Purnima:"பௌர்ணமி",
+    Amavasya:"அமாவாசை"
+  },
+  nakshatra: {
+    Ashwini:"அசுவினி", Bharani:"பரணி", Krittika:"கார்த்திகை",
+    Rohini:"ரோகிணி", Mrigashira:"மிருகசீரிடம்", Ardra:"திருவாதிரை",
+    Punarvasu:"புனர்பூசம்", Pushya:"பூசம்", Ashlesha:"ஆயில்யம்",
+    Magha:"மகம்", PurvaPhalguni:"பூரம்", UttaraPhalguni:"உத்திரம்",
+    Hasta:"அஸ்தம்", Chitra:"சித்திரை", Swati:"சுவாதி",
+    Vishakha:"விசாகம்", Anuradha:"அனுஷம்", Jyeshtha:"கேட்டை",
+    Mula:"மூலம்", PurvaAshadha:"பூராடம்", UttaraAshadha:"உத்திராடம்",
+    Shravana:"திருவோணம்", Dhanishta:"அவிட்டம்",
+    Shatabhisha:"சதயம்", PurvaBhadrapada:"பூரட்டாதி",
+    UttaraBhadrapada:"உத்திரட்டாதி", Revati:"ரேவதி"
+  },
+  yoga: {
+    Vishkambha:"விஷ்கம்பம்", Priti:"பிரீதி",
+    Ayushman:"ஆயுஷ்மான்", Saubhagya:"சௌபாக்கியம்",
+    Shobhana:"சோபனம்", Atiganda:"அதிகண்டம்",
+    Sukarma:"சுகர்மம்", Dhriti:"திருதி",
+    Shula:"சூலம்", Ganda:"கண்டம்",
+    Vriddhi:"விருத்தி", Dhruva:"துருவம்",
+    Vyaghata:"வ்யாகாதம்"
+  },
+  karana: {
+    Bava:"பவம்", Balava:"பாலவம்", Kaulava:"கௌலவம்",
+    Taitila:"தைதிலம்", Gara:"கரஜை", Vanija:"வணிஜை",
+    Vishti:"பத்திரை", Bhadra:"பத்திரை",
+    Shakuni:"சகுனி", Chatushpada:"சதுஷ்பாதம்",
+    Naga:"நாகம்", Kimstughna:"கிம்ஸ்துக்னம்"
+  }
+};
+
+function panchangTamil(type, value) {
+  if (!value) return "தகவல் இல்லை";
+  const key = String(value).trim();
+  const normalized = key.replace(/[\s_-]/g, "").toLowerCase();
+  const map = panchangTamilNames[type] || {};
+  for (const [english, tamil] of Object.entries(map)) {
+    if (english.replace(/[\s_-]/g, "").toLowerCase() === normalized) return tamil;
+  }
+  return key;
+}
+
 async function loadPanchang(){
   const el = document.getElementById("panchangResult");
   el.textContent = "தஞ்சாவூர் பஞ்சாங்கத் தகவல் பெறப்படுகிறது...";
@@ -152,10 +205,10 @@ async function loadPanchang(){
     if (!d.tithi || !d.nakshatra) throw new Error("Incomplete Panchang data");
 
     const rows = [
-      ["🌙 திதி", d.tithi?.name],
-      ["⭐ நட்சத்திரம்", d.nakshatra?.name],
-      ["🪔 யோகம்", d.yoga?.name],
-      ["🔱 கரணம்", d.karana?.name],
+      ["🌙 திதி", panchangTamil("tithi", d.tithi?.name)],
+      ["⭐ நட்சத்திரம்", panchangTamil("nakshatra", d.nakshatra?.name)],
+      ["🪔 யோகம்", panchangTamil("yoga", d.yoga?.name)],
+      ["🔱 கரணம்", panchangTamil("karana", d.karana?.name)],
       ["🌅 சூரிய உதயம்", d.sun?.sunrise],
       ["🌇 சூரிய மறைவு", d.sun?.sunset],
       ["⏰ ராகு காலம்", d.muhurta?.rahu_kalam],
@@ -165,6 +218,12 @@ async function loadPanchang(){
     ];
 
     el.replaceChildren();
+    const dateRow = document.createElement("div");
+    const dateLabel = document.createElement("strong");
+    dateLabel.textContent = "📅 பஞ்சாங்கத் தேதி: ";
+    dateRow.append(dateLabel, document.createTextNode(date));
+    el.appendChild(dateRow);
+
     for (const [label, value] of rows) {
       const row = document.createElement("div");
       const strong = document.createElement("strong");
@@ -188,6 +247,23 @@ async function loadPanchang(){
   }
 }
 document.getElementById("panchangButton").addEventListener("click", loadPanchang);
+loadPanchang();
+setInterval(() => {
+  const now = new Date();
+  const date = [
+    now.getFullYear(),
+    String(now.getMonth()+1).padStart(2,"0"),
+    String(now.getDate()).padStart(2,"0")
+  ].join("-");
+  if (date !== window.skPanchangLastDate) {
+    window.skPanchangLastDate = date;
+    loadPanchang();
+  }
+}, 60000);
+window.skPanchangLastDate = new Date().getFullYear() + "-"
+  + String(new Date().getMonth()+1).padStart(2,"0") + "-"
+  + String(new Date().getDate()).padStart(2,"0");
+
 loadPanchang();
 
 async function loadWeather(lat=10.93,lon=79.27,place="Papanasam"){
