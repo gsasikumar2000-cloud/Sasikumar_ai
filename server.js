@@ -2217,6 +2217,11 @@ app.get('/api/breaking-news', async (req, res) => {
           q: config.q
         });
         if (config.country) params.set('country', config.country);
+        if (requested === 'sports') {
+          params.delete('q');
+          params.set('category', 'sports');
+          return 'https://gnews.io/api/v4/top-headlines?' + params.toString();
+        }
         return 'https://gnews.io/api/v4/search?' + params.toString();
       },
       extract: data => data.articles
