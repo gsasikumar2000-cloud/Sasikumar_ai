@@ -55,18 +55,16 @@ a{color:#6934a4}
 </div>
 
 <div class="card">
-<h2>📅 பஞ்சாங்கம் & கால விவரங்கள்</h2>
+<h2>📅 தஞ்சாவூர் பஞ்சாங்கம்</h2>
 <div class="info">
 <div>📆 தேதி: <strong id="pDate">—</strong></div>
 <div>🗓️ கிழமை: <strong id="pDay">—</strong></div>
 <div>🕒 தற்போதைய நேரம்: <strong id="pTime">—</strong></div>
 </div>
-<div class="highlight info">
-🌙 திதி, நட்சத்திரம், யோகம், கரணம், ராகு காலம், எமகண்டம் மற்றும் குளிகை நேரங்களைத் துல்லியமாகக் காட்ட சரிபார்க்கப்பட்ட பஞ்சாங்கத் தரவு தேவை.
+<div id="panchangResult" class="highlight info" aria-live="polite">பஞ்சாங்கத் தகவல் பெறப்படுகிறது...</div>
+<button id="panchangButton" type="button">🔄 பஞ்சாங்கத்தைப் புதுப்பிக்கவும்</button>
+<p class="muted">தரவு மூலம்: <a href="https://nityapanchangam.com/api/" target="_blank" rel="noopener noreferrer">Nitya Panchangam Free API</a>. பஞ்சாங்கத் தரவு சேவையின் பதிலைப் பொறுத்தது.</p>
 </div>
-<p class="muted">சரியான நல்ல நேரம் மற்றும் பஞ்சாங்க விவரங்கள் தரவு இணைக்கப்பட்ட பிறகே காட்டப்படும். இங்கு கணித்த நேரங்கள் அல்லது உறுதிப்படுத்தப்படாத தகவல்கள் காட்டப்படாது.</p>
-</div>
-
 <div class="card">
 <h2>🌦️ இன்றைய வானிலை</h2>
 <p class="info">உங்கள் பகுதியின் தற்போதைய வானிலை:</p>
@@ -131,6 +129,66 @@ document.getElementById("pDay").textContent=day;
 document.getElementById("pTime").textContent=time;
 }
 updateClock();setInterval(updateClock,1000);
+
+
+// SK_LIVE_PANCHANG_API_V1
+async function loadPanchang(){
+  const el = document.getElementById("panchangResult");
+  el.textContent = "தஞ்சாவூர் பஞ்சாங்கத் தகவல் பெறப்படுகிறது...";
+  try {
+    const now = new Date();
+    const date = [
+      now.getFullYear(),
+      String(now.getMonth()+1).padStart(2,"0"),
+      String(now.getDate()).padStart(2,"0")
+    ].join("-");
+
+    const url = "https://nityapanchangam.com/api/panchangam.php"
+      + "?lat=10.787&lng=79.137&date=" + encodeURIComponent(date);
+    const r = await fetch(url);
+    if (!r.ok) throw new Error("Panchang API unavailable");
+
+    const d = await r.json();
+    if (!d.tithi || !d.nakshatra) throw new Error("Incomplete Panchang data");
+
+    const rows = [
+      ["🌙 திதி", d.tithi?.name],
+      ["⭐ நட்சத்திரம்", d.nakshatra?.name],
+      ["🪔 யோகம்", d.yoga?.name],
+      ["🔱 கரணம்", d.karana?.name],
+      ["🌅 சூரிய உதயம்", d.sun?.sunrise],
+      ["🌇 சூரிய மறைவு", d.sun?.sunset],
+      ["⏰ ராகு காலம்", d.muhurta?.rahu_kalam],
+      ["⏰ எமகண்டம்", d.muhurta?.yamagandam],
+      ["🕯️ குளிகை", d.muhurta?.gulika_kalam],
+      ["✨ அபிஜித் முகூர்த்தம்", d.muhurta?.abhijit_muhurtam]
+    ];
+
+    el.replaceChildren();
+    for (const [label, value] of rows) {
+      const row = document.createElement("div");
+      const strong = document.createElement("strong");
+      strong.textContent = label + ": ";
+      row.append(strong, document.createTextNode(value || "தகவல் இல்லை"));
+      el.appendChild(row);
+    }
+
+    const attribution = document.createElement("p");
+    attribution.className = "muted";
+    attribution.textContent = "ஆதாரம்: Nitya Panchangam API — CC BY";
+    const link = document.createElement("a");
+    link.href = "https://nityapanchangam.com/api/";
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = " API விவரங்கள்";
+    attribution.appendChild(link);
+    el.appendChild(attribution);
+  } catch (e) {
+    el.textContent = "பஞ்சாங்கத் தகவலை இப்போது பெற முடியவில்லை. இணைய இணைப்பைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.";
+  }
+}
+document.getElementById("panchangButton").addEventListener("click", loadPanchang);
+loadPanchang();
 
 async function loadWeather(lat=10.93,lon=79.27,place="Papanasam"){
 const el=document.getElementById("weatherResult");
