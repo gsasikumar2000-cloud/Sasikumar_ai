@@ -6,7 +6,15 @@ body{font-family:Arial;margin:0;background:linear-gradient(135deg,#111827,#37415
 .card{max-width:650px;margin:25px auto;padding:25px;background:#ffffff18;border-radius:24px}
 button{font-size:22px;padding:17px 28px;margin:10px;border:0;border-radius:15px;cursor:pointer}
 .pins{font-size:80px;margin:20px}.info{background:#0004;padding:15px;border-radius:15px;text-align:left}
-</style></head><body>
+</style>
+<style id="sk_all_logo_spin_v2">
+@keyframes skAllLogoSpinV2 {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+</style>
+
+</head><body>
 
 <!-- SASIKUMAR AI BRAND HEADER -->
 <div id="skGlobalBrandHeader" style="box-sizing:border-box;width:100%;display:flex;align-items:center;gap:10px;padding:9px 14px;margin:0 0 12px;background:linear-gradient(110deg,#071b38,#123f65,#075b55);color:#fff;border-bottom:2px solid #d8b54a;font-family:Arial,sans-serif;position:relative;z-index:5;">
@@ -92,6 +100,31 @@ function roll(){if(n>=10)return;n++;let pins=Math.floor(Math.random()*11);score+
   });
 
   document.body.appendChild(btn);
+})();
+</script>
+
+
+<script id="sk_all_logo_spin_v2-script">
+(function () {
+  function spinLogo(img) {
+    if (!img || !/sasikumar-ai-logo\.png/i.test(img.getAttribute('src') || '')) return;
+    img.style.setProperty('animation', 'skAllLogoSpinV2 3s linear infinite', 'important');
+  }
+  function scan(root) {
+    if (root.matches && root.matches('img')) spinLogo(root);
+    if (root.querySelectorAll) root.querySelectorAll('img').forEach(spinLogo);
+  }
+  scan(document);
+  new MutationObserver(function (records) {
+    records.forEach(function (record) {
+      if (record.type === 'attributes') spinLogo(record.target);
+      else record.addedNodes.forEach(function (node) {
+        if (node.nodeType === 1) scan(node);
+      });
+    });
+  }).observe(document.documentElement, {
+    subtree: true, childList: true, attributes: true, attributeFilter: ['src']
+  });
 })();
 </script>
 

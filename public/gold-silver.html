@@ -34,6 +34,14 @@ footer{text-align:center;padding:12px;color:#64748b;font-size:12px}
 @media(max-width:420px){body{padding:9px}.rates{grid-template-columns:1fr}.actions{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media print{body{background:white;padding:0}.no-print{display:none!important}.panel,header{box-shadow:none;border:1px solid #ddd}.wrap{max-width:none}}
 </style>
+
+<style id="sk_all_logo_spin_v2">
+@keyframes skAllLogoSpinV2 {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+</style>
+
 </head>
 <body>
 <div class="wrap">
@@ -332,5 +340,30 @@ function closePreview(){
 refreshRates();
 setInterval(()=>{if(!window.skRatesDisplayCleared)refreshRates();},5*60*1000);
 </script>
+
+<script id="sk_all_logo_spin_v2-script">
+(function () {
+  function spinLogo(img) {
+    if (!img || !/sasikumar-ai-logo\.png/i.test(img.getAttribute('src') || '')) return;
+    img.style.setProperty('animation', 'skAllLogoSpinV2 3s linear infinite', 'important');
+  }
+  function scan(root) {
+    if (root.matches && root.matches('img')) spinLogo(root);
+    if (root.querySelectorAll) root.querySelectorAll('img').forEach(spinLogo);
+  }
+  scan(document);
+  new MutationObserver(function (records) {
+    records.forEach(function (record) {
+      if (record.type === 'attributes') spinLogo(record.target);
+      else record.addedNodes.forEach(function (node) {
+        if (node.nodeType === 1) scan(node);
+      });
+    });
+  }).observe(document.documentElement, {
+    subtree: true, childList: true, attributes: true, attributeFilter: ['src']
+  });
+})();
+</script>
+
 </body>
 </html>
