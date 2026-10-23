@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Company Ads Admin — SASIKUMAR AI</title>
+<style>
+:root{font-family:Arial,sans-serif;color:#17324d;background:#f0f7ff}
+*{box-sizing:border-box}
+body{margin:0;padding:16px}
+header,.panel{max-width:900px;margin:0 auto 16px;background:#fff;border-radius:18px;padding:18px;box-shadow:0 5px 20px #163d5c12}
+header{text-align:center;border-top:5px solid #0878f9}
+.logo{width:76px;height:76px;object-fit:contain;animation:spin 8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+h1{font-size:25px;margin:8px 0;color:#0878f9}
+h2{font-size:20px;margin-top:0}
+p{line-height:1.5}
+label{display:block;font-weight:700;margin:12px 0 5px}
+input,textarea,button{font:inherit;width:100%;padding:12px;border-radius:10px}
+input,textarea{border:1px solid #c9d9e8;background:#fff}
+textarea{min-height:85px;resize:vertical}
+button{border:0;background:#0878f9;color:#fff;font-weight:700;cursor:pointer;margin-top:10px}
+button.secondary{background:#60758a}
+button.danger{background:#d93445}
+button.green{background:#07864b}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.status{padding:12px;border-radius:10px;background:#edf6ff;overflow-wrap:anywhere}
+.ad{border:1px solid #d7e5f2;border-radius:12px;padding:14px;margin:12px 0}
+.ad img{max-width:100%;max-height:180px;object-fit:contain;display:block}
+.small{font-size:13px;color:#5a6f82}
+a{color:#0878f9}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<header>
+<img class="logo" src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI logo">
+<h1>SASIKUMAR AI</h1>
+<p>🏢 Company Ads Administration</p>
+<a href="/ads3d/">← Advertisement Hub</a> · <a href="/">Main Website</a>
+</header>
+
+<section class="panel">
+<h2>🔐 Admin Authentication</h2>
+<p class="small">Enter your ADS_ADMIN_TOKEN for this session. It is not saved in local storage or embedded in this page.</p>
+<label for="token">Admin token</label>
+<input id="token" type="password" autocomplete="off" placeholder="Paste your admin token">
+<button id="connect">Connect to Ads Admin</button>
+<button id="logout" class="secondary">Clear token and disconnect</button>
+<div id="status" class="status" role="status">Not connected.</div>
+</section>
+
+<section id="formPanel" class="panel hidden">
+<h2>➕ Create Company Ad</h2>
+<form id="adForm">
+<div class="grid">
+<div><label for="company">Company name *</label><input id="company" maxlength="200" required></div>
+<div><label for="title">Ad title *</label><input id="title" maxlength="250" required></div>
+</div>
+<label for="description">Description</label><textarea id="description" maxlength="5000"></textarea>
+<label for="image">Image URL (optional)</label><input id="image" type="url" placeholder="https://example.com/ad-image.jpg">
+<label for="website">Website URL (optional)</label><input id="website" type="url" placeholder="https://example.com">
+<label for="contact">Contact / WhatsApp URL (optional)</label><input id="contact" type="url" placeholder="https://wa.me/91XXXXXXXXXX">
+<div class="grid">
+<div><label for="start">Start date (optional)</label><input id="start" type="datetime-local"></div>
+<div><label for="end">End date (optional)</label><input id="end" type="datetime-local"></div>
+</div>
+<label><input id="active" type="checkbox" style="width:auto"> Publish this ad immediately</label>
+<button type="submit" class="green">Save Company Ad</button>
+</form>
+</section>
+
+<section id="adsPanel" class="panel hidden">
+<h2>📋 Saved Company Ads</h2>
+<button id="refresh">Refresh ads</button>
+<div id="adsList"></div>
+</section>
+
+<section class="panel">
+<h2>🚀 Promote SASIKUMAR AI</h2>
+<p>Share your website with customers and businesses.</p>
+<p><a href="/" target="_blank" rel="noopener">Open SASIKUMAR AI website</a></p>
+<button id="share">Share SASIKUMAR AI</button>
+<button id="copy" class="secondary">Copy website address</button>
+</section>
+
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+let token='';
+function message(text){$('status').textContent=text;}
+async function api(url,options={}){
+  const headers={...(options.headers||{}),'Authorization':'Bearer '+token};
+  if(options.body) headers['Content-Type']='application/json';
+  const response=await fetch(url,{...options,headers,cache:'no-store'});
+  const data=await response.json().catch(()=>({error:'Unexpected server response'}));
+  if(!response.ok) throw new Error(data.error||('HTTP '+response.status));
+  return data;
+}
+function escapeText(value){
+  return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+async function loadAds(){
+  $('adsList').textContent='Loading ads…';
+  try{
+    const data=await api('/api/company-ads/admin');
+    const ads=data.ads||[];
+    if(!ads.length){$('adsList').textContent='No company ads saved yet.';return;}
+    $('adsList').innerHTML=ads.map(ad=>`
+      <article class="ad">
+        <h3>${escapeText(ad.title)}</h3>
+        <p><b>${escapeText(ad.company_name)}</b></p>
+        ${ad.image_url?`<img src="${escapeText(ad.image_url)}" alt="Advertisement image" loading="lazy" referrerpolicy="no-referrer">`:''}
+        <p>${escapeText(ad.description)}</p>
+        ${ad.target_url?`<p><a href="${escapeText(ad.target_url)}" target="_blank" rel="noopener noreferrer">Website</a></p>`:''}
+        ${ad.contact_url?`<p><a href="${escapeText(ad.contact_url)}" target="_blank" rel="noopener noreferrer">Contact</a></p>`:''}
+        <p>Status: <b>${ad.is_active?'Active':'Inactive'}</b></p>
+        <p class="small">Starts: ${escapeText(ad.start_at||'Any time')} · Ends: ${escapeText(ad.end_at||'No end date')}</p>
+        <button class="secondary" data-toggle="${Number(ad.id)}" data-active="${ad.is_active?'true':'false'}">${ad.is_active?'Deactivate':'Activate'}</button>
+        <button class="danger" data-delete="${Number(ad.id)}">Delete ad</button>
+      </article>`).join('');
+  }catch(e){$('adsList').textContent='Could not load ads: '+e.message;}
+}
+$('connect').addEventListener('click',async()=>{
+  const candidate=$('token').value.trim();
+  if(!candidate){message('Enter the admin token first.');return;}
+  token=candidate;
+  try{
+    await api('/api/company-ads/admin');
+    $('formPanel').classList.remove('hidden');
+    $('adsPanel').classList.remove('hidden');
+    message('Connected securely. Token remains in memory for this page session.');
+    await loadAds();
+  }catch(e){token='';message('Connection failed: '+e.message);}
+});
+$('logout').addEventListener('click',()=>{
+  token='';$('token').value='';
+  $('formPanel').classList.add('hidden');$('adsPanel').classList.add('hidden');
+  $('adsList').textContent='';message('Disconnected. Token cleared from page memory.');
+});
+$('refresh').addEventListener('click',loadAds);
+$('adForm').addEventListener('submit',async event=>{
+  event.preventDefault();
+  const value=id=>$(id).value.trim();
+  const date=id=>value(id)?new Date(value(id)).toISOString():null;
+  const body={
+    company_name:value('company'),title:value('title'),
+    description:value('description'),image_url:value('image'),
+    target_url:value('website'),contact_url:value('contact'),
+    start_at:date('start'),end_at:date('end'),is_active:$('active').checked
+  };
+  try{
+    const result=await api('/api/company-ads/admin',{method:'POST',body:JSON.stringify(body)});
+    message('Saved advertisement #'+result.ad.id);
+    $('adForm').reset();
+    await loadAds();
+  }catch(e){message('Save failed: '+e.message);}
+});
+$('adsList').addEventListener('click',async event=>{
+  const toggle=event.target.closest('[data-toggle]');
+  const del=event.target.closest('[data-delete]');
+  try{
+    if(toggle){
+      await api('/api/company-ads/admin/'+toggle.dataset.toggle,{
+        method:'PUT',body:JSON.stringify({is_active:toggle.dataset.active!=='true'})
+      });
+      message('Advertisement status updated.');
+      await loadAds();
+    }else if(del){
+      if(!confirm('Permanently delete this advertisement?'))return;
+      await api('/api/company-ads/admin/'+del.dataset.delete,{method:'DELETE'});
+      message('Advertisement deleted.');
+      await loadAds();
+    }
+  }catch(e){message('Action failed: '+e.message);}
+});
+$('share').addEventListener('click',async()=>{
+  const info={title:'SASIKUMAR AI',text:'Explore SASIKUMAR AI — Smart Digital Services',url:location.origin+'/'};
+  if(navigator.share){try{await navigator.share(info);}catch(e){}}
+  else{try{await navigator.clipboard.writeText(info.url);message('Website address copied.');}catch(e){message(info.url);}}
+});
+$('copy').addEventListener('click',async()=>{
+  try{await navigator.clipboard.writeText(location.origin+'/');message('Website address copied.');}
+  catch(e){message('Website: '+location.origin+'/');}
+});
+})();
+</script>
+</body>
+</html>
