@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140">
+<rect width="120" height="140" rx="12" fill="#fff0bd"/>
+<circle cx="60" cy="48" r="35" fill="#f8dca5" stroke="#b77927" stroke-width="2"/>
+<path d="M20 137 Q23 88 48 82 L72 82 Q97 88 100 137" fill="#a94b24"/>
+<path d="M42 43 Q34 23 50 17 Q60 11 70 17 Q86 23 78 43 L72 33 Q60 27 48 33Z" fill="#f5eee0" stroke="#8c7c64" stroke-width="2"/>
+<path d="M43 40 Q39 51 47 66 Q53 76 60 76 Q67 76 73 66 Q81 51 77 40 Q60 28 43 40Z" fill="#d7b18a" stroke="#76523a" stroke-width="1.5"/>
+<path d="M47 49 L54 49 M66 49 L73 49" stroke="#38271e" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M51 62 Q60 68 69 62" fill="none" stroke="#59382b" stroke-width="2"/>
+<text x="60" y="126" font-family="sans-serif" font-size="10" font-weight="bold" text-anchor="middle" fill="#fff">திருவள்ளுவர்</text>
+</svg>
