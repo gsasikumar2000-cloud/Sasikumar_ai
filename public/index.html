@@ -11665,5 +11665,89 @@ box-sizing:border-box!important;">
 /* END SK_ALL_HOMEPAGE_CARDS_VISIBILITY_V1 */
 </style>
 
+
+<!-- SK_HOMEPAGE_ALL_CARDS_MOBILE_FIT_V1 -->
+<style id="skHomepageAllCardsMobileFitV1">
+/* Prevent homepage sections and cards from exceeding the screen */
+html, body {
+  max-width: 100% !important;
+}
+body {
+  overflow-x: clip !important;
+}
+img, video, iframe {
+  max-width: 100%;
+}
+.skMainLiveGrid,
+#skLiveBookCardsRow,
+#skMiniLiveCardsV1Grid {
+  box-sizing: border-box !important;
+  max-width: 100% !important;
+}
+
+/* Keep mini cards readable and within their grid cells */
+#skMiniLiveCardsV1Grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+  width: 100% !important;
+  padding: 8px !important;
+}
+#skMiniLiveCardsV1Grid .skMiniLiveItem {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  height: auto !important;
+  min-height: 100px !important;
+  padding: 10px 5px !important;
+  box-sizing: border-box !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+}
+#skMiniLiveCardsV1Grid .skMiniLiveTitle,
+#skMiniLiveCardsV1Grid .skMiniLiveAction {
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  word-break: normal !important;
+}
+
+/* Main card rows remain reachable on narrow screens */
+.skMainLiveGrid,
+#skLiveBookCardsRow {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+}
+
+/* Prevent card content from forcing page-wide overflow */
+.skMainLiveGrid > *,
+#skLiveBookCardsRow > *,
+#skMiniLiveCardsV1Grid > * {
+  box-sizing: border-box !important;
+  min-width: 0 !important;
+  overflow-wrap: anywhere !important;
+}
+
+@media (max-width: 420px) {
+  #skMiniLiveCardsV1Grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+  #skMiniLiveCardsV1Grid .skMiniLiveItem {
+    min-height: 96px !important;
+    padding: 9px 5px !important;
+  }
+  #skMiniLiveCardsV1Grid .skMiniLiveTitle {
+    font-size: 12px !important;
+    line-height: 1.35 !important;
+  }
+  #skMiniLiveCardsV1Grid .skMiniLiveAction {
+    font-size: 11px !important;
+  }
+}
+/* END SK_HOMEPAGE_ALL_CARDS_MOBILE_FIT_V1 */
+</style>
+
 </body>
 </html>
