@@ -24,6 +24,39 @@ select{width:100%;padding:12px;border:1px solid #cbb3e8;border-radius:10px;backg
 .muted{font-size:12px;color:#756781;line-height:1.6}
 footer{text-align:center;padding:20px;font-size:12px;color:#71637e}
 a{color:#6934a4}
+
+/* SK_ASTROLOGY_ALL_IN_ONE_COLOR_V1 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;500;600;700;800&display=swap');
+body{font-family:"Noto Sans Tamil",Arial,sans-serif}
+header{position:relative;overflow:hidden;background:linear-gradient(125deg,#5b21b6,#9333ea,#ec4899,#f59e0b);background-size:250% 250%;animation:skAstroGradient 12s ease infinite}
+@keyframes skAstroGradient{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.logo{box-shadow:0 0 0 4px #ffffff55,0 6px 20px #24103a33}
+.card{border-color:#e9d5ff;box-shadow:0 6px 22px #6332a51a;transition:transform .2s,box-shadow .2s}
+.card h2{line-height:1.6}
+.grid .sign:nth-child(4n+1){background:linear-gradient(135deg,#fff7ed,#ffedd5)}
+.grid .sign:nth-child(4n+2){background:linear-gradient(135deg,#f0fdf4,#dcfce7)}
+.grid .sign:nth-child(4n+3){background:linear-gradient(135deg,#eff6ff,#dbeafe)}
+.grid .sign:nth-child(4n){background:linear-gradient(135deg,#fdf2f8,#fce7f3)}
+.skAstroGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.skAstroTile{min-width:0;padding:13px 9px;border:1px solid #e9d5ff;border-radius:15px;background:linear-gradient(145deg,#fff,#f5f3ff);text-align:center;line-height:1.7}
+.skAstroTile .symbol{font-size:27px}
+.skAstroTile h3{font-size:15px;margin:5px 0;color:#6d28d9}
+.skAstroTile p{font-size:13px;margin:4px 0;color:#514260}
+.skAstroSearch{width:100%;padding:12px;border:1px solid #d8b4fe;border-radius:12px;font:inherit;margin:4px 0 12px;background:#fff}
+.skAstroForm{display:grid;grid-template-columns:1fr;gap:10px}
+.skAstroForm label{display:block;font-size:14px;font-weight:700;margin-bottom:5px}
+.skAstroForm select,.skAstroForm input{width:100%;min-width:0;padding:12px;border:1px solid #d8b4fe;border-radius:10px;font:inherit;background:#fff}
+.skAstroAction{width:100%;margin-top:10px;background:linear-gradient(100deg,#7c3aed,#db2777)}
+.skAstroNotice{padding:12px;border-radius:12px;background:#fff7ed;color:#7c2d12;line-height:1.8;font-size:13px}
+.skAstroLinks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.skAstroLinks a{text-align:center;padding:12px 6px;border-radius:12px;background:linear-gradient(120deg,#ede9fe,#fce7f3);text-decoration:none;font-weight:700;color:#5b21b6}
+.skAstroHero{margin:12px 0;padding:16px 12px;border-radius:17px;text-align:center;background:linear-gradient(135deg,#fef3c7,#fce7f3,#dbeafe)}
+.skAstroHero img{width:58px;height:58px;object-fit:contain}
+.skAstroHero p{margin:6px 0;line-height:1.8}
+@media(min-width:520px){.skAstroGrid{grid-template-columns:repeat(3,minmax(0,1fr))}.skAstroForm{grid-template-columns:1fr 1fr}}
+@media(max-width:360px){.container{padding:9px}.card{padding:12px}.skAstroGrid{gap:7px}.skAstroTile{padding:10px 5px}.skAstroLinks{gap:6px}}
+/* END SK_ASTROLOGY_ALL_IN_ONE_COLOR_V1 */
+
 </style>
 </head>
 <body>
@@ -72,6 +105,65 @@ a{color:#6934a4}
 <button id="weatherButton" type="button">🔄 வானிலையைப் புதுப்பிக்கவும்</button>
 <p class="muted">வானிலைத் தகவலுக்கு இணைய இணைப்பு தேவை. இருப்பிடம் அனுமதிக்கப்படாவிட்டால் Papanasam பகுதி பயன்படுத்தப்படும்.</p>
 </div>
+
+
+<!-- SK_ASTROLOGY_ALL_IN_ONE_HUB_V1 -->
+<div class="skAstroHero">
+  <img src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI" onerror="this.style.display='none'">
+  <h2 style="margin:5px;color:#6d28d9">🌟 தமிழ் ஜோதிட மையம்</h2>
+  <p>ராசிகள் • நட்சத்திரங்கள் • நவக்கிரகங்கள் • ஆன்மிகம்</p>
+</div>
+
+<div class="card" id="skNakshatraHub">
+  <h2>⭐ 27 நட்சத்திரங்கள்</h2>
+  <input class="skAstroSearch" id="skNakshatraSearch" type="search" placeholder="🔎 நட்சத்திரத்தைத் தேடுங்கள்..." aria-label="நட்சத்திரத்தைத் தேடுங்கள்">
+  <div class="skAstroGrid" id="skNakshatraGrid"></div>
+  <p class="muted">நட்சத்திரப் பெயர்கள் பாரம்பரிய தமிழ் ஜோதிடப் பெயர்களின் அடிப்படையில் வழங்கப்பட்டுள்ளன.</p>
+</div>
+
+<div class="card" id="skNavagrahaHub">
+  <h2>🪐 நவக்கிரகங்கள்</h2>
+  <div class="skAstroGrid" id="skNavagrahaGrid"></div>
+  <div class="skAstroNotice">🙏 வழிபாட்டு முறைகள் குடும்பம், சமயம் மற்றும் உள்ளூர் மரபுகளின்படி மாறுபடலாம்.</div>
+</div>
+
+<div class="card" id="skMarriageHub">
+  <h2>💑 திருமணப் பொருத்தம் — ஆரம்பப் படிவம்</h2>
+  <p class="info">மணமகன் மற்றும் மணமகளின் ராசி, நட்சத்திர விவரங்களைத் தேர்வு செய்யுங்கள்.</p>
+  <div class="skAstroForm">
+    <div>
+      <label for="skBrideRasi">👰 மணமகளின் ராசி</label>
+      <select id="skBrideRasi"></select>
+    </div>
+    <div>
+      <label for="skBrideStar">⭐ மணமகளின் நட்சத்திரம்</label>
+      <select id="skBrideStar"></select>
+    </div>
+    <div>
+      <label for="skGroomRasi">🤵 மணமகனின் ராசி</label>
+      <select id="skGroomRasi"></select>
+    </div>
+    <div>
+      <label for="skGroomStar">⭐ மணமகனின் நட்சத்திரம்</label>
+      <select id="skGroomStar"></select>
+    </div>
+  </div>
+  <button type="button" class="skAstroAction" id="skMarriageCheck">📋 விவரங்களைப் பார்க்கவும்</button>
+  <div id="skMarriageResult" class="highlight info" style="display:none" aria-live="polite"></div>
+  <p class="muted">இது விவரங்களை ஒழுங்குபடுத்தும் ஆரம்பப் படிவம் மட்டுமே; பொருத்த மதிப்பெண் அல்லது உறுதியான முடிவை வழங்காது. பாரம்பரியப் பொருத்தக் கணிப்புக்கு பிறந்த தேதி, நேரம், இடம் மற்றும் பயன்படுத்தப்படும் ஜோதிட முறை தேவைப்படும்.</p>
+</div>
+
+<div class="card" id="skTempleAstroLink">
+  <h2>🛕 கோயில்கள் &amp; ஆன்மிகச் சுற்றுலா</h2>
+  <p class="info">நவக்கிரகக் கோயில்கள், இந்தியாவின் முக்கியக் கோயில்கள் மற்றும் சுற்றுலாத் தலங்களைத் தேடுங்கள்.</p>
+  <div class="skAstroLinks">
+    <a href="/temple-pooja.html">🛕 Temple &amp; Pooja Hub</a>
+    <a href="/temple-pooja.html#navagrahaCards">🪐 நவக்கிரகக் கோயில்கள்</a>
+    <a href="/temple-pooja.html#tourismCards">🇮🇳 சுற்றுலாத் தலங்கள்</a>
+    <a href="/">🏠 முகப்புப் பக்கம்</a>
+  </div>
+</div>
+<!-- /SK_ASTROLOGY_ALL_IN_ONE_HUB_V1 -->
 
 <div class="card">
 <h2>🌼 ஆன்மிகப் பயனுள்ளவை</h2>
@@ -303,6 +395,89 @@ p=>loadWeather(p.coords.latitude,p.coords.longitude,"உங்கள் இர�
 }
 document.getElementById("weatherButton").addEventListener("click",refreshWeather);
 refreshWeather();
+
+/* SK_ASTROLOGY_ALL_IN_ONE_JS_V1 */
+(()=>{
+const stars=[
+"அசுவினி","பரணி","கார்த்திகை","ரோகிணி","மிருகசீரிடம்","திருவாதிரை",
+"புனர்பூசம்","பூசம்","ஆயில்யம்","மகம்","பூரம்","உத்திரம்","அஸ்தம்",
+"சித்திரை","சுவாதி","விசாகம்","அனுஷம்","கேட்டை","மூலம்","பூராடம்",
+"உத்திராடம்","திருவோணம்","அவிட்டம்","சதயம்","பூரட்டாதி","உத்திரட்டாதி","ரேவதி"
+];
+const starGrid=document.getElementById("skNakshatraGrid");
+const starSearch=document.getElementById("skNakshatraSearch");
+function renderStars(){
+ if(!starGrid)return;
+ const q=(starSearch?.value||"").trim().toLocaleLowerCase("ta");
+ starGrid.replaceChildren();
+ stars.filter(n=>n.toLocaleLowerCase("ta").includes(q)).forEach((n,i)=>{
+  const tile=document.createElement("div");tile.className="skAstroTile";
+  const sym=document.createElement("div");sym.className="symbol";sym.textContent="⭐";
+  const title=document.createElement("h3");title.textContent=n;
+  const desc=document.createElement("p");desc.textContent="நட்சத்திரம்";
+  tile.append(sym,title,desc);starGrid.appendChild(tile);
+ });
+ if(!starGrid.children.length){const p=document.createElement("p");p.textContent="பொருந்தும் நட்சத்திரம் கிடைக்கவில்லை.";starGrid.appendChild(p);}
+}
+starSearch?.addEventListener("input",renderStars);renderStars();
+
+const grahas=[
+["☀️","சூரியன்","பாரம்பரியமாக ஒளி, ஆற்றல் மற்றும் தலைமைத்துவத்துடன் தொடர்புபடுத்தப்படுகிறது."],
+["🌙","சந்திரன்","மனம் மற்றும் உணர்வுகளுடன் பாரம்பரியமாக தொடர்புபடுத்தப்படுகிறது."],
+["🔴","செவ்வாய்","தைரியம் மற்றும் செயலாற்றலுடன் தொடர்புபடுத்தப்படுகிறது."],
+["🟢","புதன்","கல்வி, தொடர்பு மற்றும் கணிதத்துடன் தொடர்புபடுத்தப்படுகிறது."],
+["🟡","குரு","அறிவு, வழிகாட்டுதல் மற்றும் வளர்ச்சியுடன் தொடர்புபடுத்தப்படுகிறது."],
+["⚪","சுக்கிரன்","கலை, அழகு மற்றும் உறவுகளுடன் தொடர்புபடுத்தப்படுகிறது."],
+["🪨","சனி","ஒழுக்கம், பொறுமை மற்றும் கடின உழைப்புடன் தொடர்புபடுத்தப்படுகிறது."],
+["☊","ராகு","வேத ஜோதிடத்தில் நிழல் கிரகமாகக் கருதப்படுகிறது."],
+["☋","கேது","வேத ஜோதிடத்தில் நிழல் கிரகமாகக் கருதப்படுகிறது."]
+];
+const grahaGrid=document.getElementById("skNavagrahaGrid");
+if(grahaGrid)grahas.forEach(([symbol,name,desc])=>{
+ const tile=document.createElement("div");tile.className="skAstroTile";
+ const icon=document.createElement("div");icon.className="symbol";icon.textContent=symbol;
+ const title=document.createElement("h3");title.textContent=name;
+ const text=document.createElement("p");text.textContent=desc;
+ tile.append(icon,title,text);grahaGrid.appendChild(tile);
+});
+
+const rasis=[
+"மேஷம்","ரிஷபம்","மிதுனம்","கடகம்","சிம்மம்","கன்னி",
+"துலாம்","விருச்சிகம்","தனுசு","மகரம்","கும்பம்","மீனம்"
+];
+function fillSelect(id,items,placeholder){
+ const el=document.getElementById(id);if(!el)return;
+ const first=document.createElement("option");first.value="";first.textContent=placeholder;el.appendChild(first);
+ items.forEach(name=>{const op=document.createElement("option");op.value=name;op.textContent=name;el.appendChild(op);});
+}
+fillSelect("skBrideRasi",rasis,"ராசியைத் தேர்வு செய்யவும்");
+fillSelect("skGroomRasi",rasis,"ராசியைத் தேர்வு செய்யவும்");
+fillSelect("skBrideStar",stars,"நட்சத்திரத்தைத் தேர்வு செய்யவும்");
+fillSelect("skGroomStar",stars,"நட்சத்திரத்தைத் தேர்வு செய்யவும்");
+
+document.getElementById("skMarriageCheck")?.addEventListener("click",()=>{
+ const br=document.getElementById("skBrideRasi")?.value;
+ const bs=document.getElementById("skBrideStar")?.value;
+ const gr=document.getElementById("skGroomRasi")?.value;
+ const gs=document.getElementById("skGroomStar")?.value;
+ const out=document.getElementById("skMarriageResult");
+ if(!out)return;
+ out.style.display="block";out.replaceChildren();
+ if(!br||!bs||!gr||!gs){
+  out.textContent="தயவுசெய்து இருவரின் ராசி மற்றும் நட்சத்திர விவரங்களையும் தேர்வு செய்யுங்கள்.";return;
+ }
+ const title=document.createElement("strong");title.textContent="📋 நீங்கள் தேர்வு செய்த விவரங்கள்";
+ const lines=[
+ "👰 மணமகள்: "+br+" — "+bs,
+ "🤵 மணமகன்: "+gr+" — "+gs,
+ "🔎 முழுமையான பாரம்பரியப் பொருத்தம் கணக்கிட இந்தப் படிவம் மட்டும் போதாது."
+ ];
+ out.appendChild(title);
+ lines.forEach(line=>{const row=document.createElement("div");row.textContent=line;out.appendChild(row);});
+});
+})();
+/* END SK_ASTROLOGY_ALL_IN_ONE_JS_V1 */
+
 </script>
 </body>
 </html>
