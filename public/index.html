@@ -11482,34 +11482,123 @@ box-sizing:border-box!important;">
 
 <!-- SK_LIVE_CARDS_UNIFORM_MINI_V2 -->
 <style id="skLiveCardsUniformMiniV2">
+/* Desktop: preserve horizontal card browsing */
 .skMainLiveGrid,#skLiveBookCardsRow{
- display:flex!important;flex-flow:row nowrap!important;align-items:stretch!important;
- gap:10px!important;width:100%!important;max-width:100%!important;
- box-sizing:border-box!important;overflow-x:auto!important;overflow-y:hidden!important;
- padding:10px 12px 14px!important;scroll-snap-type:x proximity!important;
- -webkit-overflow-scrolling:touch!important;
+  display:flex!important;
+  flex-flow:row nowrap!important;
+  align-items:stretch!important;
+  gap:10px!important;
+  width:100%!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  padding:10px 12px 14px!important;
+  scroll-snap-type:x proximity!important;
+  -webkit-overflow-scrolling:touch!important;
 }
 .skMainLiveGrid>.skMainFeatureCard,#skLiveBookCardsRow>*{
- position:relative!important;box-sizing:border-box!important;
- flex:0 0 200px!important;width:200px!important;min-width:200px!important;max-width:200px!important;
- height:190px!important;min-height:190px!important;max-height:190px!important;
- margin:0!important;padding:48px 10px 10px!important;overflow:auto!important;
- overflow-wrap:anywhere!important;border-radius:14px!important;scroll-snap-align:start!important;
+  position:relative!important;
+  box-sizing:border-box!important;
+  flex:0 0 200px!important;
+  width:200px!important;
+  min-width:200px!important;
+  max-width:200px!important;
+  min-height:185px!important;
+  height:auto!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:48px 10px 12px!important;
+  overflow-wrap:anywhere!important;
+  border-radius:14px!important;
+  scroll-snap-align:start!important;
 }
-.skMainLiveGrid>.skMainFeatureCard h2,.skMainLiveGrid>.skMainFeatureCard h3,
-#skLiveBookCardsRow>* h2,#skLiveBookCardsRow>* h3{
- font-size:14px!important;line-height:1.3!important;overflow-wrap:anywhere!important;
+.skMainLiveGrid>.skMainFeatureCard h2,
+.skMainLiveGrid>.skMainFeatureCard h3,
+#skLiveBookCardsRow>* h2,
+#skLiveBookCardsRow>* h3{
+  font-size:14px!important;
+  line-height:1.35!important;
+  overflow-wrap:anywhere!important;
 }
-#skLiveBookCardsRow .skLiveBookText{font-size:12px!important;line-height:1.4!important;overflow-wrap:anywhere!important}
-#skLiveBookCardsRow a{max-width:100%!important;overflow-wrap:anywhere!important}
-#skVideoAdCard iframe{display:block!important;width:100%!important;max-width:100%!important;height:95px!important;min-height:95px!important;aspect-ratio:auto!important}
-#skVideoAdCard video,#skLiveImagesCard img{max-height:75px!important;object-fit:contain!important}
-.skCardBrandBadge{width:34px!important;height:34px!important;min-width:34px!important;top:7px!important;right:7px!important}
-@media(max-width:420px){
- .skMainLiveGrid>.skMainFeatureCard,#skLiveBookCardsRow>*{
-  flex-basis:180px!important;width:180px!important;min-width:180px!important;max-width:180px!important;
-  height:185px!important;min-height:185px!important;max-height:185px!important;
- }
+#skLiveBookCardsRow .skLiveBookText{
+  font-size:12px!important;
+  line-height:1.4!important;
+  overflow-wrap:anywhere!important;
+}
+#skLiveBookCardsRow a{
+  max-width:100%!important;
+  overflow-wrap:anywhere!important;
+}
+#skVideoAdCard iframe{
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  height:95px!important;
+  min-height:95px!important;
+  aspect-ratio:auto!important;
+}
+#skVideoAdCard video,#skLiveImagesCard img{
+  max-height:75px!important;
+  object-fit:contain!important;
+}
+.skCardBrandBadge{
+  width:34px!important;
+  height:34px!important;
+  min-width:34px!important;
+  top:7px!important;
+  right:7px!important;
+}
+
+/* Mobile: wrap cards into a two-column grid */
+@media(max-width:600px){
+  .skMainLiveGrid,#skLiveBookCardsRow{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    grid-auto-flow:row!important;
+    align-items:stretch!important;
+    gap:10px!important;
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    overflow:visible!important;
+    padding:10px!important;
+    box-sizing:border-box!important;
+    scroll-snap-type:none!important;
+  }
+  .skMainLiveGrid>.skMainFeatureCard,
+  #skLiveBookCardsRow>*{
+    display:block!important;
+    width:auto!important;
+    min-width:0!important;
+    max-width:100%!important;
+    min-height:150px!important;
+    height:auto!important;
+    max-height:none!important;
+    margin:0!important;
+    padding:44px 9px 12px!important;
+    overflow-wrap:anywhere!important;
+    overflow:visible!important;
+  }
+  .skMainLiveGrid>.skMainFeatureCard h2,
+  .skMainLiveGrid>.skMainFeatureCard h3,
+  #skLiveBookCardsRow>* h2,
+  #skLiveBookCardsRow>* h3{
+    font-size:13px!important;
+    line-height:1.35!important;
+  }
+}
+@media(max-width:360px){
+  .skMainLiveGrid,#skLiveBookCardsRow{
+    gap:7px!important;
+    padding:7px!important;
+  }
+  .skMainLiveGrid>.skMainFeatureCard,
+  #skLiveBookCardsRow>*{
+    padding-left:7px!important;
+    padding-right:7px!important;
+    font-size:12px!important;
+  }
 }
 </style>
 <!-- END SK_LIVE_CARDS_UNIFORM_MINI_V2 -->
