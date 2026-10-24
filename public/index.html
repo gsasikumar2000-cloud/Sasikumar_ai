@@ -7296,9 +7296,11 @@ section:not(.skMainFeatureCard):not(#skDesignMakerGlobal):not(#skGlobalSearchTop
 @media (max-width: 420px) {
   #dailyThirukkural, #livePonmozhigal,
   #skLiveBookCardsRow > * {
-    flex-basis: 250px !important;
-    width: 250px !important;
-    min-width: 250px !important;
+    flex: 0 1 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
 }
 </style>
@@ -10725,14 +10727,16 @@ html body .skMainLiveGrid > .skMainFeatureCard {
 }
 @media(max-width:600px) {
   .skEditorialCardV1 {
-    min-height: 240px !important;
-    padding: 13px !important;
+    min-height: 150px !important;
+    padding: 10px !important;
+    box-sizing: border-box !important;
+    overflow-wrap: anywhere !important;
   }
   #skLiveBookCardsRow > .skEditorialCardV1 {
-    flex-basis: 250px !important;
-    width: 250px !important;
-    min-width: 250px !important;
-    max-width: 250px !important;
+    flex: 0 1 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
   }
 }
 </style>
