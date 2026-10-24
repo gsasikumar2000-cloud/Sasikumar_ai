@@ -179,15 +179,15 @@ function panchangTamil(type, value) {
 
   const key = String(value).trim();
   const normalized = key
-    .replace(/\\([^)]*\\)/g, "")
-    .replace(/[\\s_-]/g, "")
+    .replace(/\([^)]*\)/g, "")
+    .replace(/[\s_-]/g, "")
     .toLowerCase();
 
   const map = panchangTamilNames[type] || {};
 
   for (const [english, tamil] of Object.entries(map)) {
     const candidate = english
-      .replace(/[\\s_-]/g, "")
+      .replace(/[\s_-]/g, "")
       .toLowerCase();
 
     if (candidate === normalized || normalized.startsWith(candidate)) {
@@ -275,8 +275,6 @@ setInterval(() => {
 window.skPanchangLastDate = new Date().getFullYear() + "-"
   + String(new Date().getMonth()+1).padStart(2,"0") + "-"
   + String(new Date().getDate()).padStart(2,"0");
-
-loadPanchang();
 
 async function loadWeather(lat=10.93,lon=79.27,place="Papanasam"){
 const el=document.getElementById("weatherResult");
