@@ -2802,6 +2802,47 @@ Tamil + English • Gold • General Q&A</div>
 </style>
 <!-- END SK_ALL_HOME_MINI_CARDS_V1 -->
 
+
+<!-- SK_HOME_LIVE_CARDS_CLEAR_FINAL_V1 -->
+<style id="skHomeLiveCardsClearFinalV1">
+#skMiniLiveCardsV1Grid,
+#skLiveBookCardsRow,
+#dailyThirukkural,
+#livePonmozhigal,
+#skLoginCompanyAdsMiniCard,
+#skNewsLiveCard,
+#skPromotionAdsLiveCard,
+#skVideoAdCard {
+  display: none !important;
+}
+</style>
+<script id="skHomeLiveCardsClearFinalScriptV1">
+(function () {
+  function clearHomeLiveCards() {
+    [
+      "skMiniLiveCardsV1Grid",
+      "skLiveBookCardsRow",
+      "dailyThirukkural",
+      "livePonmozhigal",
+      "skLoginCompanyAdsMiniCard",
+      "skNewsLiveCard",
+      "skPromotionAdsLiveCard",
+      "skVideoAdCard"
+    ].forEach(function (id) {
+      document.getElementById(id)?.remove();
+    });
+  }
+
+  clearHomeLiveCards();
+  document.addEventListener("DOMContentLoaded", clearHomeLiveCards);
+  new MutationObserver(clearHomeLiveCards).observe(document.documentElement, {
+    childList: true,
+    subtree: true
+  });
+})();
+</script>
+<!-- END SK_HOME_LIVE_CARDS_CLEAR_FINAL_V1 -->
+
 </body></html>';
     skOfficeDownload('Sasikumar-AI-Presentation.html', html, 'text/html;charset=utf-8');
   };
