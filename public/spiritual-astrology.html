@@ -90,6 +90,46 @@ header{position:relative;overflow:hidden;background:linear-gradient(125deg,#5b21
   .skNameSearchGrid {grid-template-columns:1fr}
 }
 
+
+/* SK_ASTROLOGY_AI_CHAT_V1 */
+.skAstroAiCard{
+  box-sizing:border-box;width:100%;margin:18px auto;padding:18px;
+  border-radius:22px;background:linear-gradient(135deg,#fff7d6,#e5f4ff,#f5e7ff);
+  border:1px solid #c7dcff;box-shadow:0 8px 24px #315a8b18;
+  color:#172554;font-family:inherit
+}
+.skAstroAiCard *{box-sizing:border-box}
+.skAstroAiCard h2{margin:0 0 8px;font-size:23px;color:#1746a2}
+.skAstroAiCard p{line-height:1.6}
+.skAstroAiQuick{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.skAstroAiQuick button{
+  border:0;border-radius:18px;padding:9px 12px;background:#fff;
+  color:#1746a2;font-weight:700;box-shadow:0 2px 7px #00000012
+}
+#skAstroAiInput{
+  display:block;width:100%;min-height:100px;resize:vertical;padding:13px;
+  border:1px solid #a9c7f7;border-radius:14px;background:#fff;
+  color:#172554;font:inherit;font-size:16px
+}
+#skAstroAiSend{
+  display:block;width:100%;margin-top:10px;padding:13px;border:0;
+  border-radius:14px;background:linear-gradient(100deg,#0878f9,#7c3aed);
+  color:white;font-size:16px;font-weight:800
+}
+#skAstroAiSend:disabled{opacity:.6}
+#skAstroAiReply{
+  display:none;margin-top:14px;padding:14px;border-radius:14px;
+  background:#fff;border:1px solid #d7e4ff;white-space:pre-wrap;
+  overflow-wrap:anywhere;line-height:1.8;color:#172554
+}
+#skAstroAiReply a{overflow-wrap:anywhere}
+.skAstroAiDisclaimer{font-size:12px;color:#475569}
+@media(max-width:480px){
+  .skAstroAiCard{padding:13px;border-radius:17px}
+  .skAstroAiCard h2{font-size:20px}
+}
+/* END SK_ASTROLOGY_AI_CHAT_V1 */
+
 </style>
 </head>
 <body>
@@ -139,6 +179,33 @@ header{position:relative;overflow:hidden;background:linear-gradient(125deg,#5b21
 <p class="muted">வானிலைத் தகவலுக்கு இணைய இணைப்பு தேவை. இருப்பிடம் அனுமதிக்கப்படாவிட்டால் Papanasam பகுதி பயன்படுத்தப்படும்.</p>
 </div>
 
+
+
+<!-- SK_ASTROLOGY_AI_CHAT_V1 -->
+<section class="skAstroAiCard" id="skAstroAiChat">
+  <h2>🤖 SASIKUMAR AI — ஜோதிட உதவியாளர்</h2>
+  <p>ராசி, நட்சத்திரம், குழந்தைப் பெயர்கள், பஞ்சாங்கம் மற்றும் ஆன்மிகம் குறித்து தமிழில் கேளுங்கள்.</p>
+
+  <div class="skAstroAiQuick" aria-label="விரைவான கேள்விகள்">
+    <button type="button" data-astro-question="12 ராசிகளைப் பற்றித் தமிழில் விளக்குங்கள்.">♈ 12 ராசிகள்</button>
+    <button type="button" data-astro-question="27 நட்சத்திரங்களையும் தமிழில் பட்டியலிடுங்கள்.">⭐ 27 நட்சத்திரங்கள்</button>
+    <button type="button" data-astro-question="குழந்தைக்கு அழகான தமிழ் மற்றும் பாரம்பரியப் பெயர்களை அர்த்தத்துடன் பரிந்துரைக்கவும்.">👶 குழந்தைப் பெயர்கள்</button>
+    <button type="button" data-astro-question="இன்றைய பஞ்சாங்க விவரங்களைச் சொல்லுங்கள். உறுதிப்படுத்த முடியாத விவரங்களை ஊகிக்க வேண்டாம்.">📅 பஞ்சாங்கம்</button>
+    <button type="button" data-astro-question="தினசரி ராசிபலன் எவ்வாறு பாரம்பரியமாகக் கூறப்படுகிறது என்பதை விளக்குங்கள்.">🔮 ராசிபலன்</button>
+    <button type="button" data-astro-question="திருமணப் பொருத்தம் பார்க்க என்னென்ன பிறந்த விவரங்கள் தேவை?">💑 திருமண வழிகாட்டுதல்</button>
+  </div>
+
+  <label for="skAstroAiInput"><strong>உங்கள் கேள்வி</strong></label>
+  <textarea id="skAstroAiInput" maxlength="4000"
+    placeholder="உங்கள் ஜோதிடக் கேள்வியைத் தமிழில் எழுதுங்கள்..."></textarea>
+  <button type="button" id="skAstroAiSend">✨ AI-யிடம் கேளுங்கள்</button>
+  <div id="skAstroAiReply" role="status" aria-live="polite"></div>
+  <p class="skAstroAiDisclaimer">
+    குறிப்பு: ஜோதிடக் கருத்துகள் பாரம்பரிய நம்பிக்கைகளை அடிப்படையாகக் கொண்டவை;
+    உறுதியான எதிர்காலக் கணிப்புகளாகவோ, மருத்துவ அல்லது நிதி ஆலோசனையாகவோ கருத வேண்டாம்.
+  </p>
+</section>
+<!-- END SK_ASTROLOGY_AI_CHAT_V1 -->
 
 <!-- SK_ASTROLOGY_ALL_IN_ONE_HUB_V1 -->
 <div class="skAstroHero">
@@ -686,6 +753,77 @@ document.getElementById("skMarriageCheck")?.addEventListener("click",()=>{
 });
 })();
 /* END SK_ASTROLOGY_ALL_IN_ONE_JS_V1 */
+
+
+/* SK_ASTROLOGY_AI_CHAT_V1 */
+(()=>{
+  const input=document.getElementById("skAstroAiInput");
+  const send=document.getElementById("skAstroAiSend");
+  const output=document.getElementById("skAstroAiReply");
+  if(!input||!send||!output)return;
+
+  async function askAstrology(){
+    const question=input.value.trim();
+    if(!question){
+      output.style.display="block";
+      output.textContent="முதலில் உங்கள் கேள்வியை எழுதுங்கள்.";
+      return;
+    }
+    send.disabled=true;
+    send.textContent="⏳ பதில் தயாராகிறது...";
+    output.style.display="block";
+    output.textContent="உங்கள் கேள்வியை SASIKUMAR AI பரிசீலிக்கிறது...";
+
+    const prompt=
+      "நீங்கள் SASIKUMAR AI-யின் தமிழ் ஜோதிட மற்றும் ஆன்மிக உதவியாளர். "+
+      "பயனரின் மொழிக்கேற்ப, எளிய தமிழில் பதிலளிக்கவும். "+
+      "ராசி, நட்சத்திரம், குழந்தைப் பெயர்கள், பாரம்பரிய ஜோதிடம், "+
+      "பஞ்சாங்கம் மற்றும் திருமண வழிகாட்டுதல் பற்றிய கேள்விகளுக்கு உதவவும். "+
+      "தெரியாத பஞ்சாங்கத் தேதி, கிரக நிலை அல்லது நேரடி தகவலைக் கற்பனை செய்து கூறாதீர்கள். "+
+      "பிறந்த தேதி, நேரம், இடம் இல்லாமல் தனிப்பட்ட ஜாதகக் கணக்கீடு செய்ததாகக் கூறாதீர்கள். "+
+      "ஜோதிடத்தை பாரம்பரிய நம்பிக்கையாகவே விளக்கவும்; உறுதியான எதிர்காலம் எனக் கூறாதீர்கள். "+
+      "பயனர் கேட்ட கேள்வி: "+question;
+
+    try{
+      const response=await fetch("/api/chat",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({message:prompt,category:"Astrology"})
+      });
+      const data=await response.json().catch(()=>({}));
+      if(!response.ok){
+        throw new Error(data.reply||data.answer||("HTTP "+response.status));
+      }
+      const answer=data.reply||data.answer;
+      if(typeof answer!=="string"||!answer.trim()){
+        throw new Error("AI பதில் காலியாக உள்ளது.");
+      }
+      output.textContent=answer;
+    }catch(error){
+      output.textContent=
+        "AI பதிலைப் பெற முடியவில்லை. இணைய இணைப்பைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.\n"+
+        (error.message||"");
+    }finally{
+      send.disabled=false;
+      send.textContent="✨ AI-யிடம் கேளுங்கள்";
+    }
+  }
+
+  send.addEventListener("click",askAstrology);
+  input.addEventListener("keydown",event=>{
+    if(event.key==="Enter"&&!event.shiftKey){
+      event.preventDefault();
+      askAstrology();
+    }
+  });
+  document.querySelectorAll("[data-astro-question]").forEach(button=>{
+    button.addEventListener("click",()=>{
+      input.value=button.getAttribute("data-astro-question")||"";
+      input.focus();
+    });
+  });
+})();
+/* END SK_ASTROLOGY_AI_CHAT_V1 */
 
 </script>
 </body>
