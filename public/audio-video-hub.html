@@ -99,6 +99,44 @@ onerror="this.style.display='none'">
 </section>
 
 
+
+<!-- SK_AI_LIVE_VIDEO_PROMOTION_V1 -->
+<section class="panel" id="skAiLiveVideo">
+  <h2>🤖 SASIKUMAR AI Live Video</h2>
+  <p>📺 SASIKUMAR AI நேரலை அல்லது அதிகாரப்பூர்வ வீடியோ இணைப்பைத் திறக்கவும்.</p>
+  <label for="skAiLiveUrl">Live Video URL</label>
+  <input id="skAiLiveUrl" type="url"
+         placeholder="YouTube Live / அதிகாரப்பூர்வ வீடியோ URL">
+  <div class="actions">
+    <button class="blue" type="button" onclick="skOpenAiLive()">▶️ OPEN AI LIVE</button>
+    <button class="purple" type="button"
+            onclick="window.open('https://www.youtube.com/results?search_query='+encodeURIComponent('SASIKUMAR AI official live'),'_blank','noopener,noreferrer')">
+      🔎 FIND LIVE
+    </button>
+  </div>
+  <p id="skAiLiveStatus" role="status">
+    உண்மையான நேரலைக்கு செல்லுபடியாகும் Live Stream URL தேவை.
+  </p>
+</section>
+
+<section class="panel" id="skVideoPromotionAds">
+  <h2>📢 SASIKUMAR AI Video Promotion Ads</h2>
+  <p>🎬 அதிகாரப்பூர்வ விளம்பர வீடியோவை இங்கே இயக்கலாம்.</p>
+  <label for="skPromoVideoUrl">Promotion Video URL (MP4 / WebM)</label>
+  <input id="skPromoVideoUrl" type="url"
+         placeholder="https://example.com/promotion.mp4">
+  <div class="actions">
+    <button class="green" type="button" onclick="skPlayPromotion()">▶️ PLAY AD</button>
+    <button class="orange" type="button" onclick="skStopPromotion()">⏹️ STOP AD</button>
+  </div>
+  <video id="skPromoVideo" controls playsinline preload="metadata"
+         style="display:none;width:100%;max-width:720px;border-radius:14px;margin-top:12px;background:#eee">
+    உங்கள் உலாவி வீடியோவை இயக்க முடியவில்லை.
+  </video>
+  <p id="skPromoStatus" role="status">உங்கள் விளம்பர வீடியோ URL-ஐ உள்ளிடவும்.</p>
+</section>
+<!-- END SK_AI_LIVE_VIDEO_PROMOTION_V1 -->
+
 <!-- SK_GLOBAL_FM_RADIO_HUB_V1 -->
 <section class="panel" id="skGlobalFmRadio">
 <h2>🌍 Global FM Radio Hub</h2>
@@ -204,6 +242,74 @@ onerror="this.style.display='none'">
 </main>
 <script>
 const $=id=>document.getElementById(id);
+
+function skOpenAiLive(){
+  const input = document.getElementById('skAiLiveUrl');
+  const status = document.getElementById('skAiLiveStatus');
+  const raw = input.value.trim();
+
+  if(!raw){
+    status.textContent = 'Live URL இன்னும் சேர்க்கப்படவில்லை. FIND LIVE மூலம் தேடலாம்.';
+    return;
+  }
+
+  try {
+    const url = new URL(raw);
+    if(url.protocol !== 'https:' && url.protocol !== 'http:'){
+      throw new Error('Invalid protocol');
+    }
+    window.open(url.href, '_blank', 'noopener,noreferrer');
+    status.textContent = 'Live Video புதிய tab-ல் திறக்கப்பட்டது.';
+  } catch(e) {
+    status.textContent = 'சரியான https:// அல்லது http:// வீடியோ URL-ஐ உள்ளிடவும்.';
+  }
+}
+
+function skPlayPromotion(){
+  const input = document.getElementById('skPromoVideoUrl');
+  const video = document.getElementById('skPromoVideo');
+  const status = document.getElementById('skPromoStatus');
+  const raw = input.value.trim();
+
+  if(!raw){
+    status.textContent = 'முதலில் அனுமதிக்கப்பட்ட MP4 அல்லது WebM வீடியோ URL-ஐ உள்ளிடவும்.';
+    input.focus();
+    return;
+  }
+
+  let url;
+  try {
+    url = new URL(raw);
+    if(url.protocol !== 'https:' && url.protocol !== 'http:'){
+      throw new Error('Invalid protocol');
+    }
+  } catch(e) {
+    status.textContent = 'சரியான https:// அல்லது http:// வீடியோ URL-ஐ உள்ளிடவும்.';
+    return;
+  }
+
+  video.pause();
+  video.src = url.href;
+  video.style.display = 'block';
+  video.load();
+  status.textContent = 'வீடியோ ஏற்றப்படுகிறது...';
+
+  video.play().then(function(){
+    status.textContent = 'Promotion வீடியோ இயங்குகிறது.';
+  }).catch(function(){
+    status.textContent = 'வீடியோ ஏற்றப்பட்டது. Play அழுத்தவும் அல்லது நேரடி MP4/WebM இணைப்பைச் சரிபார்க்கவும்.';
+  });
+}
+
+function skStopPromotion(){
+  const video = document.getElementById('skPromoVideo');
+  video.pause();
+  video.removeAttribute('src');
+  video.load();
+  video.style.display = 'none';
+  document.getElementById('skPromoStatus').textContent = 'Promotion வீடியோ நிறுத்தப்பட்டது.';
+}
+
 function searchHub(type){
  const q=$('query').value.trim();
  if(!q){$('query').focus();$('status').textContent='முதலில் திரைப்படம் அல்லது பாடல் பெயரை உள்ளிடவும்.';return}
