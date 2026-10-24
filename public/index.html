@@ -1618,23 +1618,20 @@ style="position:absolute;top:8px;right:8px;padding:9px 13px;border:0;border-radi
     </button>
   </section>
 
-  <section class="skMainFeatureCard" id="skVideoAdCard">
-    <div class="skMainFeatureLogo">🎬</div>
-    <h3>VIDEO AD</h3>
-    <iframe
-      id="skSunNewsLiveFrame"
+
+  <section class="skMainFeatureCard" id="skNewsLiveCard">
+    <div class="skMainFeatureLogo">📰</div>
+    <h3>NEWS LIVE</h3>
+    <p>தமிழ் செய்திச் சேனல்கள்</p>
+    <iframe id="skSunNewsLiveFrame"
       src="https://www.youtube.com/embed/live_stream?channel=UCYlh4lH762HvHt6mmiecyWQ&autoplay=1&mute=1"
       title="Sun News Tamil Live"
       allow="autoplay; encrypted-media; picture-in-picture"
-      allowfullscreen
-      loading="eager"
+      allowfullscreen loading="lazy"
       referrerpolicy="strict-origin-when-cross-origin"
-      style="display:block;width:100%;height:auto;min-height:200px;aspect-ratio:16/9;border:0;border-radius:16px;margin:8px 0;background:#eaf2ff;">
+      style="display:block;width:100%;min-height:120px;aspect-ratio:16/9;border:0;border-radius:12px;margin:8px 0;background:#eaf2ff;">
     </iframe>
-    <video id="skVideoAd" controls muted playsinline preload="metadata"
-      style="display:none;width:100%;max-height:260px;border-radius:16px;margin:8px 0;"></video>
-    <p id="skVideoAdStatus">Loading video...</p>
-<div id="skTamilNewsChannelButtonsV1"
+    <div id="skTamilNewsChannelButtonsV1"
       style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0;">
       <button type="button" data-sk-news="Sun News Tamil">🔴 Sun News</button>
       <button type="button" data-sk-news="Thanthi TV Tamil">📰 Thanthi TV</button>
@@ -1647,51 +1644,35 @@ style="position:absolute;top:8px;right:8px;padding:9px 13px;border:0;border-radi
       <button type="button" data-sk-news="Raj News Tamil">📺 Raj News</button>
       <button type="button" data-sk-news="Malai Murasu News">📰 Malai Murasu</button>
     </div>
-    <style>
-      #skTamilNewsChannelButtonsV1 button {
-        min-height:42px;padding:9px 6px;border:0;border-radius:12px;
-        background:linear-gradient(135deg,#e8f2ff,#fff0d9);
-        color:#17345b;font-weight:700;font-size:13px;cursor:pointer;
-      }
-      #skTamilNewsChannelButtonsV1 button:focus-visible {
-        outline:3px solid #2878d0;outline-offset:2px;
-      }
-    </style>
-    <script>
-    (() => {
-      const box = document.getElementById("skTamilNewsChannelButtonsV1");
-      if (!box || box.dataset.bound === "1") return;
-      box.dataset.bound = "1";
+    <button type="button" id="skNewsOpen"
+      onclick="window.open('https://www.youtube.com/@sunnewstamil/live','_blank','noopener')">
+      ▶️ Open Sun News
+    </button>
+  </section>
 
-      box.addEventListener("click", event => {
-        const button = event.target.closest("button[data-sk-news]");
-        if (!button) return;
+  <section class="skMainFeatureCard" id="skPromotionAdsLiveCard">
+    <div class="skMainFeatureLogo">📢</div>
+    <h3>PROMOTION ADS LIVE</h3>
+    <p id="skPromotionAdsLiveStatus">விளம்பரங்களைச் சரிபார்க்கிறது...</p>
+    <button type="button"
+      onclick="window.skOpenLivePageWindowV1('/business-ads.html')">
+      📢 View Promotions
+    </button>
+  </section>
 
-        const channel = button.dataset.skNews;
-        const status = document.getElementById("skVideoAdStatus");
-
-        if (status) status.textContent = "🔎 Opening " + channel + " Live…";
-
-        if (channel === "Sun News Tamil") {
-          window.open(
-            "https://www.youtube.com/@sunnewstamil/live",
-            "_blank",
-            "noopener"
-          );
-          return;
-        }
-
-        const query = encodeURIComponent(channel + " official live Tamil");
-        window.open(
-          "https://www.youtube.com/results?search_query=" + query,
-          "_blank",
-          "noopener"
-        );
-      });
-    })();
-    </script>
-
-    <button type="button" id="skVideoAdOpen" style="display:inline-block;">▶️ Open Sun News</button>
+  <section class="skMainFeatureCard" id="skVideoAdCard">
+    <div class="skMainFeatureLogo">🎬</div>
+    <h3>SASIKUMAR AI VIDEO</h3>
+    <video id="skVideoAd" controls muted playsinline preload="metadata"
+      style="display:none;width:100%;max-height:260px;border-radius:16px;margin:8px 0;"></video>
+    <p id="skVideoAdStatus">Video Library-ஐ ஏற்றுகிறது...</p>
+    <button type="button" id="skVideoAdOpen" style="display:none;">
+      ▶️ Open Video
+    </button>
+    <button type="button"
+      onclick="window.skOpenLivePageWindowV1('/daily-video.html')">
+      🎞️ Open Video Library
+    </button>
   </section>
 </div>
 
@@ -1859,63 +1840,82 @@ style="position:absolute;top:8px;right:8px;padding:9px 13px;border:0;border-radi
   updateWelcomeClock();
   setInterval(updateWelcomeClock,1000);
 
-  async function loadVideoAd(){
-    const video=document.getElementById("skVideoAd");
-    const status=document.getElementById("skVideoAdStatus");
-    const open=document.getElementById("skVideoAdOpen");
-    if(!video)return;
 
-    const sunNews=document.getElementById("skSunNewsLiveFrame");
+async function loadVideoAd() {
+  const video = document.getElementById('skVideoAd');
+  const status = document.getElementById('skVideoAdStatus');
+  const open = document.getElementById('skVideoAdOpen');
+  if (!video || !status) return;
 
-    if(sunNews){
-      video.style.display="none";
-      sunNews.style.display="block";
-      status.textContent="🔴 SUN NEWS TAMIL LIVE";
-      open.style.display="inline-block";
-      open.textContent="▶️ Open Sun News";
-      open.onclick=()=>window.open(
-        "https://www.youtube.com/@sunnewstamil/live",
-        "_blank","noopener"
-      );
+  try {
+    const response = await fetch('/api/video/library', { cache: 'no-store' });
+    if (!response.ok) throw new Error('Video Library HTTP ' + response.status);
+
+    const data = await response.json();
+    const videos = Array.isArray(data) ? data : (data.videos || data.items || []);
+    const item = videos.find(v => v && (v.videoUrl || v.url));
+
+    if (!item) {
+      status.textContent = '🎬 Video Library காலியாக உள்ளது. Video Library பக்கத்தில் HTTPS direct MP4/WebM link சேர்க்கவும்.';
       return;
     }
 
-    try{
-      const r=await fetch("/api/video/library",{cache:"no-store"});
-      if(!r.ok)throw new Error("Video library HTTP "+r.status);
-      const data=await r.json();
-      const list=Array.isArray(data)?data:(data.items||data.videos||[]);
-      const item=list.find(x=>x && (x.videoUrl||x.url||x.file||x.id));
-      if(!item)throw new Error("No video available");
-      const url=item.videoUrl || item.url || item.file ||
-        (item.id ? "/api/video/file/"+encodeURIComponent(item.id) : "");
-      if(!url)throw new Error("Video URL missing");
-      video.pause();
-      video.loop = true;
-      video.muted = true;
-      video.autoplay = true;
-      video.playsInline = true;
-      video.setAttribute("loop", "");
-      video.setAttribute("muted", "");
-      video.setAttribute("autoplay", "");
-      video.setAttribute("playsinline", "");
-      video.src = url;
-      video.style.display = "block";
-      status.textContent = "SASIKUMAR AI • Video Ad";
-      open.style.display = "inline-block";
-      open.onclick = () => window.skOpenLivePageWindowV1(url);
-
-      video.load();
-      video.play().catch(err => {
-        console.warn("Video autoplay blocked:", err);
-        status.textContent = "🎬 Tap Play to watch SASIKUMAR AI Video Ad";
-      });
-    }catch(e){
-      console.warn("Video Ad:",e);
-      status.textContent="🎬 Video Ad library empty — add a video from HUB → Video Library";
+    const url = item.videoUrl || item.url;
+    video.src = url;
+    video.style.display = 'block';
+    status.textContent = '🎬 SASIKUMAR AI Video';
+    if (open) {
+      open.style.display = 'inline-block';
+      open.textContent = '▶️ Open Video';
+      open.onclick = () => window.open(url, '_blank', 'noopener');
     }
+    video.load();
+  } catch (error) {
+    console.warn('Video Library:', error);
+    status.textContent = 'Video Library இப்போது கிடைக்கவில்லை.';
   }
-  loadVideoAd();
+}
+
+async function loadPromotionAdsLive() {
+  const status = document.getElementById('skPromotionAdsLiveStatus');
+  if (!status) return;
+
+  try {
+    const response = await fetch('/api/company-ads', { cache: 'no-store' });
+    if (!response.ok) throw new Error('Company Ads HTTP ' + response.status);
+
+    const data = await response.json();
+    const ads = Array.isArray(data) ? data : (data.ads || []);
+    status.textContent = ads.length
+      ? '✅ ' + ads.length + ' active promotion(s)'
+      : '📢 தற்போது செயலில் உள்ள விளம்பரங்கள் இல்லை.';
+  } catch (error) {
+    console.warn('Promotion Ads:', error);
+    status.textContent = 'விளம்பர விவரங்களை இப்போது பெற முடியவில்லை.';
+  }
+}
+
+(() => {
+  const box = document.getElementById('skTamilNewsChannelButtonsV1');
+  if (!box || box.dataset.bound === '1') return;
+  box.dataset.bound = '1';
+
+  box.addEventListener('click', event => {
+    const button = event.target.closest('button[data-sk-news]');
+    if (!button) return;
+
+    const channel = button.dataset.skNews;
+    if (channel === 'Sun News Tamil') {
+      window.open('https://www.youtube.com/@sunnewstamil/live', '_blank', 'noopener');
+    } else {
+      const query = encodeURIComponent(channel + ' official live Tamil');
+      window.open('https://www.youtube.com/results?search_query=' + query, '_blank', 'noopener');
+    }
+  });
+})();
+
+loadVideoAd();
+loadPromotionAdsLive();
 })();
 </script>
 <script>
@@ -2524,6 +2524,16 @@ Tamil + English • Gold • General Q&A</div>
   <a href="/spiritual-astrology.html" style="display:inline-block;padding:12px 20px;border-radius:12px;background:linear-gradient(120deg,#713ab1,#a044c5);color:#fff;text-decoration:none;font-size:14px;font-weight:800">🌟 OPEN SPIRITUAL &amp; ASTROLOGY →</a>
 </section>
 <!-- /SK_SPIRITUAL_ASTROLOGY_CARD_V1 -->
+
+<!-- SK_ALL_INDIA_TEMPLE_POOJA_HUB_V1 -->
+<section id="skAllIndiaTemplePoojaHub" style="margin:16px auto;padding:18px;max-width:900px;border-radius:20px;background:linear-gradient(135deg,#fff8e1,#e0f7fa,#f3e5f5);border:2px solid #f9a825;box-shadow:0 5px 18px #00000012;text-align:center;box-sizing:border-box;">
+  <img src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI Logo" style="width:72px;height:72px;object-fit:contain;border-radius:50%;">
+  <h2 style="margin:10px 0;color:#8a4100;">🛕 All India Temple &amp; Pooja Hub</h2>
+  <p style="margin:8px 0;color:#263238;">இந்தியக் கோயில்கள் • நவக்கிரகத் தலங்கள் • பூஜைத் தகவல்கள் • சுற்றுலாத் தலங்கள்</p>
+  <a href="/temple-pooja.html" style="display:inline-block;margin-top:8px;padding:12px 22px;border-radius:30px;background:#0878f9;color:white;text-decoration:none;font-weight:700;">🙏 OPEN TEMPLE &amp; TOURISM HUB →</a>
+</section>
+<!-- /SK_ALL_INDIA_TEMPLE_POOJA_HUB_V1 -->
+
 
 <script>
 (function(){

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fff7ed">
+<title>All India Temple & Pooja Hub | SASIKUMAR AI</title>
+<meta name="description" content="இந்திய கோவில்கள், மாநிலம், மாவட்டம், தெய்வம் மூலம் தேடுங்கள். Google Maps, பூஜை வழிகாட்டி, திருவிழாக்கள் மற்றும் ஆன்மிகத் தகவல்கள்.">
+<style>
+:root{--ink:#44230e;--muted:#745a48;--line:#f0d9bf;--orange:#e87516;--purple:#7837ad}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#fff8e8,#fff 45%,#f0f9ff);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans Tamil",sans-serif}
+a{color:#8a3f12}
+.wrap{width:min(100% - 22px,900px);margin:auto}
+.top{padding:22px 12px;text-align:center;background:linear-gradient(130deg,#fff0bf,#ffe4e6,#ede9fe);border-bottom:1px solid var(--line)}
+.logo{width:68px;height:68px;object-fit:contain;border-radius:50%;background:#fff;padding:4px;animation:spin 14s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+h1{font-size:clamp(23px,5vw,34px);margin:9px 0;color:#8b3b12}
+.subtitle{line-height:1.8;font-size:14px;color:#684b3a;margin:6px auto;max-width:650px}
+.badges{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin-top:12px}
+.badge{padding:6px 10px;border-radius:30px;background:#fff;border:1px solid #f4d2a5;font-size:12px;font-weight:700}
+main{padding:15px 0 35px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:15px;margin:13px 0;box-shadow:0 5px 18px #7b45120b}
+h2{font-size:20px;margin:0 0 10px;color:#853d13}
+h3{font-size:17px;margin:7px 0}
+p{line-height:1.75}
+label{display:block;font-size:13px;font-weight:750;margin:8px 0 5px}
+input,select,button{font:inherit}
+input,select{width:100%;padding:12px;border:1px solid #e6cdb5;border-radius:11px;background:#fff;color:#332318;min-height:45px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.btn{display:inline-flex;justify-content:center;align-items:center;gap:6px;text-decoration:none;border:0;border-radius:11px;padding:11px 13px;background:linear-gradient(120deg,#e87516,#c2410c);color:#fff;font-size:13px;font-weight:800;cursor:pointer}
+.btn.alt{background:linear-gradient(120deg,#7837ad,#a044c5)}
+.btn.blue{background:linear-gradient(120deg,#0878f9,#0e7490)}
+.btn.light{background:#fff5e9;color:#8a3f12;border:1px solid #f2d1a8}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.temple{border:1px solid #f0d9bf;border-radius:15px;padding:12px;background:linear-gradient(145deg,#fff,#fff8ed);min-width:0}
+.temple .emoji{font-size:27px}
+.meta{font-size:12px;color:var(--muted);line-height:1.7}
+.temple p{font-size:13px;margin:6px 0}
+.temple a{display:inline-block;margin:8px 8px 0 0;font-size:12px;font-weight:750}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{background:#fff7ed;border:1px solid #f0d9bf;border-radius:25px;padding:8px 10px;font-size:12px}
+.note{font-size:12px;color:#735b49;background:#fff8e8;border-radius:10px;padding:10px;line-height:1.8}
+.stategrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.stateitem{padding:10px;border:1px solid #f0d9bf;border-radius:10px;background:#fffaf3;font-size:13px}
+.empty{padding:22px;text-align:center;color:#735b49}
+footer{text-align:center;padding:20px 12px;background:#fff1d9;font-size:12px;line-height:1.9}
+@media(min-width:650px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.cards{grid-template-columns:repeat(3,minmax(0,1fr))}.stategrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:370px){.cards{grid-template-columns:1fr}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="top">
+<div class="wrap">
+<a href="/" aria-label="SASIKUMAR AI Home"><img class="logo" src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI Logo"></a>
+<h1>🛕 இந்தியா முழுவதும் கோவில்கள்</h1>
+<div style="font-size:18px;font-weight:850">ALL INDIA TEMPLE & POOJA HUB</div>
+<p class="subtitle">🙏 கோவில் தேடல் • தெய்வங்கள் • மாநிலங்கள் • Google Maps • பூஜை வழிகாட்டி • திருவிழாக்கள்</p>
+<div class="badges"><span class="badge">🇮🇳 28 மாநிலங்கள்</span><span class="badge">🏝️ 8 யூனியன் பிரதேசங்கள்</span><span class="badge">📱 Mobile Friendly</span></div>
+<div class="actions" style="justify-content:center">
+<a class="btn alt" href="/">🏠 முகப்பு</a>
+<a class="btn light" href="/spiritual-astrology.html">🔮 ஆன்மிகம் & ஜோதிடம்</a>
+</div>
+</div>
+</header>
+
+<main class="wrap">
+<section class="panel">
+<h2>🔎 கோவில் தேடல்</h2>
+<p class="meta">கோவில் பெயர், தெய்வம், நகரம், மாவட்டம் அல்லது மாநிலத்தின் பெயரைத் தட்டச்சு செய்யுங்கள்.</p>
+<label for="q">கோவில் / தெய்வம் / இடம்</label>
+<input id="q" type="search" placeholder="எ.கா. மதுரை, முருகன், திருப்பதி..." autocomplete="off">
+<div class="grid">
+<div><label for="state">மாநிலம் / யூனியன் பிரதேசம்</label><select id="state"><option value="">அனைத்து மாநிலங்களும்</option></select></div>
+<div><label for="deity">தெய்வம்</label><select id="deity"><option value="">அனைத்து தெய்வங்களும்</option><option>சிவன்</option><option>விஷ்ணு</option><option>முருகன்</option><option>அம்மன்</option><option>விநாயகர்</option><option>ராமர்</option><option>கிருஷ்ணர்</option><option>ஐயப்பன்</option><option>வெங்கடேஸ்வரர்</option><option>ஜகந்நாதர்</option><option>சூரியன்</option><option>துர்கை</option><option>புத்தர்</option><option>ஜைனர்</option></select></div>
+</div>
+<div class="actions">
+<button class="btn" id="searchBtn" type="button">🔍 தேடு</button>
+<button class="btn light" id="resetBtn" type="button">↻ மீட்டமை</button>
+<a class="btn blue" href="https://www.google.com/maps/search/temples+in+India/" target="_blank" rel="noopener">📍 Maps-ல் தேடு</a>
+</div>
+<div id="resultCount" class="meta" style="margin-top:12px" aria-live="polite"></div>
+<div id="results" class="cards"></div>
+<p class="note">தகவல் குறிப்பு: கீழே உள்ளவை தேர்ந்தெடுக்கப்பட்ட கோவில்களின் தொடக்கப் பட்டியல் மட்டுமே; இந்தியாவில் உள்ள எல்லாக் கோவில்களும் இதில் இருப்பதாகக் கருத வேண்டாம். திறந்திருக்கும் நேரம், பூஜை, கட்டணம், திருவிழா மற்றும் பயண விதிகளைச் செல்லும் முன் கோவிலின் அதிகாரப்பூர்வ ஆதாரத்தில் உறுதிப்படுத்துங்கள்.</p>
+</section>
+
+<section class="panel">
+<h2>🪔 பூஜை & ஆன்மிக வழிகாட்டி</h2>
+<div class="cards">
+<article class="temple"><div class="emoji">🌺</div><h3>தினசரி வழிபாடு</h3><p>தனிப்பட்ட நம்பிக்கை மற்றும் குடும்ப வழக்கத்துக்கு ஏற்ப விளக்கு, பிரார்த்தனை, நாமஸ்மரணம் செய்யலாம்.</p></article>
+<article class="temple"><div class="emoji">🙏</div><h3>அர்ச்சனை / தரிசனம்</h3><p>கோவிலின் அறிவிப்பு அல்லது அதிகாரப்பூர்வ தளத்தில் நேரம், முன்பதிவு, உடை விதிகள் ஆகியவற்றைப் பார்க்கவும்.</p></article>
+<article class="temple"><div class="emoji">🌕</div><h3>விரதம் / பண்டிகை</h3><p>விரத நாட்கள் பிராந்திய வழக்கத்தையும் பஞ்சாங்கக் கணக்கையும் பொறுத்து மாறலாம்.</p></article>
+<article class="temple"><div class="emoji">🎉</div><h3>திருவிழாக்கள்</h3><p>தேரோட்டம், பிரம்மோற்சவம், தீபம் மற்றும் உள்ளூர் திருவிழாக்களின் தேதியை அதிகாரப்பூர்வ அறிவிப்பில் உறுதி செய்யவும்.</p></article>
+</div>
+<div class="actions">
+<a class="btn alt" href="/spiritual-astrology.html">📅 பஞ்சாங்கம் & ஜோதிடம்</a>
+<a class="btn light" href="https://www.google.com/search?q=official+temple+website+India" target="_blank" rel="noopener">🌐 அதிகாரப்பூர்வ தளம் தேடு</a>
+</div>
+</section>
+
+
+<!-- SK_NAVAGRAHA_TOURISM_HUB_V1 -->
+<section class="panel">
+  <h2>🪐 நவக்கிரகக் கோவில்கள் — தமிழ்நாடு</h2>
+  <p class="meta">கும்பகோணம் மற்றும் காவிரி டெல்டா பகுதிகளில் உள்ள பாரம்பரிய நவக்கிரகத் தலங்கள். பயணத்திற்கு முன் தரிசன நேரத்தை உறுதிப்படுத்தவும்.</p>
+  <div class="cards" id="navagrahaCards"></div>
+</section>
+
+<section class="panel">
+  <h2>🇮🇳 All India Tourism — இந்திய சுற்றுலா வழிகாட்டி</h2>
+  <p class="meta">மலைகள், கடற்கரைகள், அருவிகள், கோட்டைகள், வரலாற்றுத் தலங்கள், வனவிலங்கு பூங்காக்கள் மற்றும் நகரச் சுற்றுலா இடங்களைத் தேடுங்கள்.</p>
+  <div class="grid">
+    <div>
+      <label for="tourismType">சுற்றுலா வகை</label>
+      <select id="tourismType">
+        <option value="">அனைத்து வகைகளும்</option>
+        <option value="மலை">⛰️ மலைகள்</option>
+        <option value="கடற்கரை">🏖️ கடற்கரைகள்</option>
+        <option value="நீர்வீழ்ச்சி">💧 நீர்வீழ்ச்சிகள்</option>
+        <option value="வரலாறு">🏰 கோட்டைகள் / வரலாறு</option>
+        <option value="இயற்கை">🌳 இயற்கை / வனவிலங்கு</option>
+        <option value="நகரம்">🏙️ நகரச் சுற்றுலா</option>
+        <option value="ஆன்மிகம்">🛕 ஆன்மிகம்</option>
+      </select>
+    </div>
+    <div>
+      <label for="tourismState">மாநிலம் / யூனியன் பிரதேசம்</label>
+      <select id="tourismState"><option value="">அனைத்து பகுதிகளும்</option></select>
+    </div>
+  </div>
+  <label for="tourismQuery">சுற்றுலாத் தலம் / நகரம்</label>
+  <input id="tourismQuery" type="search" placeholder="எ.கா. ஊட்டி, கோவா, ஆக்ரா, லே..." autocomplete="off">
+  <div class="actions">
+    <button class="btn" type="button" id="tourismSearch">🔎 சுற்றுலாத் தலங்களைத் தேடு</button>
+    <button class="btn light" type="button" id="tourismReset">↻ மீட்டமை</button>
+    <a class="btn blue" href="https://www.google.com/maps/search/tourist+places+in+India/" target="_blank" rel="noopener">📍 இந்தியா Maps</a>
+  </div>
+  <div class="meta" id="tourismCount" aria-live="polite" style="margin-top:12px"></div>
+  <div class="cards" id="tourismCards"></div>
+  <p class="note">இது தேர்ந்தெடுக்கப்பட்ட சுற்றுலாத் தலங்களின் தொடக்கப் பட்டியல். பயணச் செலவு, வானிலை, திறந்திருக்கும் நேரம், அனுமதி மற்றும் பாதுகாப்பு அறிவிப்புகளைப் பயணத்திற்கு முன் அதிகாரப்பூர்வ ஆதாரங்களில் சரிபார்க்கவும்.</p>
+  <div class="actions">
+    <a class="btn alt" href="https://www.incredibleindia.gov.in/" target="_blank" rel="noopener">🌐 Incredible India</a>
+    <a class="btn light" href="https://www.google.com/search?q=official+state+tourism+website+India" target="_blank" rel="noopener">🏛️ மாநில சுற்றுலா இணையதளங்கள்</a>
+  </div>
+</section>
+<!-- /SK_NAVAGRAHA_TOURISM_HUB_V1 -->
+
+<section class="panel">
+<h2>🇮🇳 இந்திய மாநிலங்கள் & யூனியன் பிரதேசங்கள்</h2>
+<p class="meta">கீழே உள்ள பெயரைத் தட்டினால் அந்தப் பகுதிக்கான கோவில் தேடல் திறக்கப்படும். எல்லா இடங்களுக்கும் ஒரே அளவில் கோவில் தரவுகள் இன்னும் சேர்க்கப்படவில்லை.</p>
+<div id="stateList" class="stategrid"></div>
+</section>
+</main>
+
+<footer>
+<strong>🤖 SASIKUMAR AI</strong><br>
+All India Temple & Pooja Hub<br>
+தகவல்கள் வழிகாட்டுதலுக்காக மட்டுமே. கோவில் நிர்வாக அறிவிப்பே நேரம், கட்டணம் மற்றும் விதிகளுக்கான முதன்மை ஆதாரம்.
+</footer>
+
+<script>
+(function(){
+"use strict";
+const regions = [
+"ஆந்திரப் பிரதேசம்","அருணாசலப் பிரதேசம்","அசாம்","பீகார்","சத்தீஸ்கர்","கோவா","குஜராத்","ஹரியானா","இமாச்சலப் பிரதேசம்","ஜார்கண்ட்","கர்நாடகா","கேரளா","மத்தியப் பிரதேசம்","மகாராஷ்டிரா","மணிப்பூர்","மேகாலயா","மிசோரம்","நாகாலாந்து","ஒடிசா","பஞ்சாப்","ராஜஸ்தான்","சிக்கிம்","தமிழ்நாடு","தெலங்கானா","திரிபுரா","உத்தரப் பிரதேசம்","உத்தரகண்ட்","மேற்கு வங்காளம்",
+"அந்தமான் மற்றும் நிக்கோபார் தீவுகள்","சண்டிகர்","தாத்ரா மற்றும் நகர் ஹவேலி மற்றும் டாமன் மற்றும் டையூ","டெல்லி","ஜம்மு மற்றும் காஷ்மீர்","லடாக்","லட்சத்தீவு","புதுச்சேரி"
+];
+const temples = [
+{name:"மீனாட்சி அம்மன் கோவில்",en:"Meenakshi Amman Temple",state:"தமிழ்நாடு",city:"மதுரை",deity:"அம்மன், சிவன்",desc:"மதுரையின் புகழ்பெற்ற வரலாற்றுச் சிவன்–அம்மன் கோவில்."},
+{name:"அருள்மிகு பிரகதீஸ்வரர் கோவில்",en:"Brihadisvara Temple",state:"தமிழ்நாடு",city:"தஞ்சாவூர்",deity:"சிவன்",desc:"சோழர் கட்டிடக்கலைக்குப் புகழ்பெற்ற பெரிய கோவில்."},
+{name:"அருணாசலேஸ்வரர் கோவில்",en:"Arunachaleswarar Temple",state:"தமிழ்நாடு",city:"திருவண்ணாமலை",deity:"சிவன்",desc:"அண்ணாமலையார் திருக்கோவில்; கார்த்திகை தீபத்திற்குப் புகழ்பெற்றது."},
+{name:"பழனி தண்டாயுதபாணி சுவாமி கோவில்",en:"Palani Murugan Temple",state:"தமிழ்நாடு",city:"பழனி",deity:"முருகன்",desc:"முருகப் பெருமானின் அறுபடை வீடுகளில் ஒன்று."},
+{name:"ஸ்ரீரங்கம் ரங்கநாதசுவாமி கோவில்",en:"Sri Ranganathaswamy Temple",state:"தமிழ்நாடு",city:"ஸ்ரீரங்கம், திருச்சி",deity:"விஷ்ணு",desc:"புகழ்பெற்ற வைணவத் திருத்தலம்."},
+{name:"கபாலீஸ்வரர் கோவில்",en:"Kapaleeshwarar Temple",state:"தமிழ்நாடு",city:"மயிலாப்பூர், சென்னை",deity:"சிவன்",desc:"சென்னையின் புகழ்பெற்ற சிவன் கோவில்."},
+{name:"குமரி பகவதி அம்மன் கோவில்",en:"Kumari Amman Temple",state:"தமிழ்நாடு",city:"கன்னியாகுமரி",deity:"அம்மன்",desc:"இந்தியாவின் தென்கோடி முனையில் உள்ள சக்தித் தலம்."},
+{name:"திருப்பதி வெங்கடேஸ்வரர் கோவில்",en:"Tirumala Venkateswara Temple",state:"ஆந்திரப் பிரதேசம்",city:"திருமலை, திருப்பதி",deity:"வெங்கடேஸ்வரர், விஷ்ணு",desc:"திருமலை திருப்பதி தேவஸ்தானத்தின் புகழ்பெற்ற திருத்தலம்.",official:"https://www.tirumala.org/"},
+{name:"ஸ்ரீசைலம் மல்லிகார்ஜுனர் கோவில்",en:"Srisailam Mallikarjuna Temple",state:"ஆந்திரப் பிரதேசம்",city:"ஸ்ரீசைலம்",deity:"சிவன்",desc:"முக்கிய சிவத் திருத்தலம்."},
+{name:"ஜகந்நாதர் கோவில்",en:"Jagannath Temple",state:"ஒடிசா",city:"பூரி",deity:"ஜகந்நாதர், விஷ்ணு",desc:"ரத யாத்திரைக்குப் புகழ்பெற்ற பூரி திருத்தலம்."},
+{name:"காசி விஸ்வநாதர் கோவில்",en:"Kashi Vishwanath Temple",state:"உத்தரப் பிரதேசம்",city:"வாரணாசி",deity:"சிவன்",desc:"காசியின் புகழ்பெற்ற சிவன் திருத்தலம்.",official:"https://shrikashivishwanath.org/"},
+{name:"ஸ்ரீ ராம ஜன்மபூமி கோவில்",en:"Shri Ram Janmabhoomi Mandir",state:"உத்தரப் பிரதேசம்",city:"அயோத்தி",deity:"ராமர்",desc:"அயோத்தியில் உள்ள ராமர் கோவில்."},
+{name:"கிருஷ்ண ஜன்மபூமி",en:"Krishna Janmasthan",state:"உத்தரப் பிரதேசம்",city:"மதுரா",deity:"கிருஷ்ணர்",desc:"கிருஷ்ணர் வழிபாட்டுடன் தொடர்புடைய முக்கியத் தலம்."},
+{name:"வைஷ்ணோ தேவி கோவில்",en:"Vaishno Devi Temple",state:"ஜம்மு மற்றும் காஷ்மீர்",city:"கட்ரா",deity:"அம்மன்",desc:"திரிகூட மலையில் அமைந்துள்ள புகழ்பெற்ற சக்தித் தலம்.",official:"https://www.maavaishnodevi.org/"},
+{name:"கேதார்நாத் கோவில்",en:"Kedarnath Temple",state:"உத்தரகண்ட்",city:"கேதார்நாத்",deity:"சிவன்",desc:"இமயமலையில் உள்ள சார் தாம் மற்றும் ஜோதிர்லிங்கத் தலம்."},
+{name:"பத்ரிநாத் கோவில்",en:"Badrinath Temple",state:"உத்தரகண்ட்",city:"பத்ரிநாத்",deity:"விஷ்ணு",desc:"இமயமலையின் முக்கிய வைணவத் திருத்தலம்."},
+{name:"சோமநாதர் கோவில்",en:"Somnath Temple",state:"குஜராத்",city:"பிரபாஸ் படன்",deity:"சிவன்",desc:"அரபிக்கடல் கரையில் உள்ள புகழ்பெற்ற ஜோதிர்லிங்கத் தலம்.",official:"https://somnath.org/"},
+{name:"துவாரகாதீஷ் கோவில்",en:"Dwarkadhish Temple",state:"குஜராத்",city:"துவாரகை",deity:"கிருஷ்ணர்",desc:"கிருஷ்ணர் வழிபாட்டின் முக்கியத் தலம்."},
+{name:"ஸ்ரீ சித்திவிநாயகர் கோவில்",en:"Siddhivinayak Temple",state:"மகாராஷ்டிரா",city:"பிரபாதேவி, மும்பை",deity:"விநாயகர்",desc:"மும்பையின் புகழ்பெற்ற விநாயகர் கோவில்.",official:"https://www.siddhivinayak.org/"},
+{name:"ஷீரடி சாய்பாபா கோவில்",en:"Shirdi Sai Baba Temple",state:"மகாராஷ்டிரா",city:"ஷீரடி",deity:"சாய்பாபா",desc:"பக்தர்கள் அதிகம் வருகை தரும் ஷீரடி தலம்.",official:"https://sai.org.in/"},
+{name:"மகாகாளேஸ்வர் ஜோதிர்லிங்கம்",en:"Mahakaleshwar Temple",state:"மத்தியப் பிரதேசம்",city:"உஜ்ஜைன்",deity:"சிவன்",desc:"உஜ்ஜைனில் உள்ள முக்கிய ஜோதிர்லிங்கத் தலம்."},
+{name:"ஓங்காரேஸ்வர் கோவில்",en:"Omkareshwar Temple",state:"மத்தியப் பிரதேசம்",city:"ஓங்காரேஸ்வர்",deity:"சிவன்",desc:"நர்மதை ஆற்றுப் பகுதியில் அமைந்துள்ள ஜோதிர்லிங்கத் தலம்."},
+{name:"மகாபோதி கோவில்",en:"Mahabodhi Temple",state:"பீகார்",city:"போத்கயா",deity:"புத்தர்",desc:"புத்த மதத்தின் முக்கியமான புனிதத் தலம்."},
+{name:"காமாக்யா கோவில்",en:"Kamakhya Temple",state:"அசாம்",city:"நீலாச்சல் மலை, கவுகாத்தி",deity:"அம்மன்",desc:"சக்தி வழிபாட்டின் முக்கியத் தலம்."},
+{name:"குருவாயூர் ஸ்ரீ கிருஷ்ணர் கோவில்",en:"Guruvayur Temple",state:"கேரளா",city:"குருவாயூர்",deity:"கிருஷ்ணர்",desc:"கேரளாவின் புகழ்பெற்ற கிருஷ்ணர் கோவில்."},
+{name:"சபரிமலை ஐயப்பன் கோவில்",en:"Sabarimala Ayyappa Temple",state:"கேரளா",city:"சபரிமலை",deity:"ஐயப்பன்",desc:"விரதம் மற்றும் யாத்திரைக்குப் புகழ்பெற்ற ஐயப்பன் தலம்."},
+{name:"முருதேஸ்வரர் கோவில்",en:"Murudeshwar Temple",state:"கர்நாடகா",city:"முருதேஸ்வர்",deity:"சிவன்",desc:"அரபிக்கடல் கரையில் அமைந்துள்ள சிவன் கோவில்."},
+{name:"விருபாக்ஷர் கோவில்",en:"Virupaksha Temple",state:"கர்நாடகா",city:"ஹம்பி",deity:"சிவன்",desc:"ஹம்பியின் வரலாற்றுப் பாரம்பரியக் கோவில்."},
+{name:"கோனார்க் சூரியக் கோவில்",en:"Konark Sun Temple",state:"ஒடிசா",city:"கோனார்க்",deity:"சூரியன்",desc:"சூரியக் கடவுளுக்காக அமைக்கப்பட்ட வரலாற்றுச் சின்னம்."},
+{name:"தக்ஷிணேஸ்வர் காளி கோவில்",en:"Dakshineswar Kali Temple",state:"மேற்கு வங்காளம்",city:"கொல்கத்தா",deity:"காளி, அம்மன்",desc:"கொல்கத்தாவின் புகழ்பெற்ற காளி கோவில்."},
+{name:"காமாக்யா தேவி கோவில்",en:"Kamakhya Temple",state:"அசாம்",city:"கவுகாத்தி",deity:"அம்மன்",desc:"வடகிழக்கு இந்தியாவின் முக்கிய சக்தித் தலம்."},
+{name:"ஸ்ரீ பத்மநாபசுவாமி கோவில்",en:"Sree Padmanabhaswamy Temple",state:"கேரளா",city:"திருவனந்தபுரம்",deity:"விஷ்ணு",desc:"திருவனந்தபுரத்தின் புகழ்பெற்ற வைணவத் திருத்தலம்."},
+{name:"லிங்கராஜர் கோவில்",en:"Lingaraj Temple",state:"ஒடிசா",city:"புவனேஸ்வர்",deity:"சிவன்",desc:"ஒடிசாவின் முக்கிய வரலாற்றுச் சிவன் கோவில்."},
+{name:"ஸ்ரீ திகம்பர் ஜெயின் கோவில்",en:"Jain Temple",state:"டெல்லி",city:"சாந்தினி சௌக்",deity:"ஜைனர்",desc:"டெல்லியின் பழமையான ஜைனத் திருத்தலங்களில் ஒன்று."},
+{name:"ஸ்ரீ கோவிந்தஜி கோவில்",en:"Govindajee Temple",state:"மணிப்பூர்",city:"இம்பால்",deity:"கிருஷ்ணர்",desc:"மணிப்பூரின் முக்கிய வைணவக் கோவில்."},
+{name:"மகாலட்சுமி கோவில்",en:"Mahalakshmi Temple",state:"மகாராஷ்டிரா",city:"கோலாப்பூர்",deity:"அம்மன்",desc:"மகாலட்சுமி வழிபாட்டின் புகழ்பெற்ற தலம்."}
+];
+
+// Navagraha and tourism directory
+const navagraha = [
+  {name:"சூரியனார் கோவில்",planet:"சூரியன்",place:"திருமங்கலக்குடி அருகில், தஞ்சாவூர் மாவட்டம்",query:"Suryanar Kovil Tamil Nadu"},
+  {name:"திங்களூர் கைலாசநாதர் கோவில்",planet:"சந்திரன்",place:"திங்களூர், தஞ்சாவூர் மாவட்டம்",query:"Thingalur Kailasanathar Temple"},
+  {name:"வைத்தீஸ்வரன் கோவில்",planet:"செவ்வாய்",place:"சீர்காழி அருகில், மயிலாடுதுறை மாவட்டம்",query:"Vaitheeswaran Koil Tamil Nadu"},
+  {name:"திருவெண்காடு சுவேதாரண்யேஸ்வரர் கோவில்",planet:"புதன்",place:"திருவெண்காடு, மயிலாடுதுறை மாவட்டம்",query:"Thiruvenkadu Swetharanyeswarar Temple"},
+  {name:"ஆலங்குடி ஆபத்சகாயேஸ்வரர் கோவில்",planet:"குரு",place:"ஆலங்குடி, திருவாரூர் மாவட்டம்",query:"Alangudi Abathsahayeswarar Temple"},
+  {name:"கஞ்சனூர் அக்னீஸ்வரர் கோவில்",planet:"சுக்கிரன்",place:"கஞ்சனூர், தஞ்சாவூர் பகுதி",query:"Kanjanur Agneeswarar Temple"},
+  {name:"திருநள்ளாறு தர்பாரண்யேஸ்வரர் கோவில்",planet:"சனி",place:"திருநள்ளாறு, காரைக்கால் பகுதி",query:"Thirunallar Darbaranyeswarar Temple"},
+  {name:"திருநாகேஸ்வரம் நாகநாதசுவாமி கோவில்",planet:"ராகு",place:"திருநாகேஸ்வரம், கும்பகோணம் அருகில்",query:"Thirunageswaram Naganathaswamy Temple"},
+  {name:"கீழப்பெரும்பள்ளம் நாகநாதசுவாமி கோவில்",planet:"கேது",place:"கீழப்பெரும்பள்ளம், பூம்புகார் அருகில்",query:"Keezhaperumpallam Naganathaswamy Temple"}
+];
+
+const tourism = [
+  {name:"ஊட்டி",en:"Ooty",state:"தமிழ்நாடு",type:"மலை",desc:"நீலகிரி மலைகள், தோட்டங்கள் மற்றும் மலை ரயில்."},
+  {name:"கொடைக்கானல்",en:"Kodaikanal",state:"தமிழ்நாடு",type:"மலை",desc:"மலை ஏரி, காட்சிமுனைகள் மற்றும் இயற்கைச் சூழல்."},
+  {name:"கன்னியாகுமரி",en:"Kanyakumari",state:"தமிழ்நாடு",type:"கடற்கரை",desc:"மூன்று கடல்கள் சந்திக்கும் தென்கோடி சுற்றுலா நகரம்."},
+  {name:"மாமல்லபுரம்",en:"Mahabalipuram",state:"தமிழ்நாடு",type:"வரலாறு",desc:"பல்லவர் காலக் கலை மற்றும் கடற்கரைக் கோவில்கள்."},
+  {name:"குற்றாலம்",en:"Courtallam",state:"தமிழ்நாடு",type:"நீர்வீழ்ச்சி",desc:"பருவமழைக் கால அருவிகளுக்குப் புகழ்பெற்ற பகுதி."},
+  {name:"கோவா கடற்கரைகள்",en:"Goa beaches",state:"கோவா",type:"கடற்கரை",desc:"கடற்கரைப் பகுதிகள் மற்றும் போர்த்துகீசியப் பாரம்பரியம்."},
+  {name:"தாஜ்மகால்",en:"Taj Mahal",state:"உத்தரப் பிரதேசம்",type:"வரலாறு",desc:"ஆக்ராவில் உள்ள உலகப் புகழ்பெற்ற நினைவுச்சின்னம்."},
+  {name:"ஜெய்ப்பூர் நகரம்",en:"Jaipur",state:"ராஜஸ்தான்",type:"நகரம்",desc:"அரண்மனைகள், கோட்டைகள் மற்றும் பாரம்பரியக் கட்டிடக்கலை."},
+  {name:"ஜெய்சல்மேர் கோட்டை",en:"Jaisalmer Fort",state:"ராஜஸ்தான்",type:"வரலாறு",desc:"தார் பாலைவனப் பகுதியின் புகழ்பெற்ற கோட்டை."},
+  {name:"குல்மார்க்",en:"Gulmarg",state:"ஜம்மு மற்றும் காஷ்மீர்",type:"மலை",desc:"இமயமலைப் புல்வெளிகள் மற்றும் பனிச்சறுக்கு பகுதி."},
+  {name:"லே",en:"Leh",state:"லடாக்",type:"மலை",desc:"உயரமான மலைப் பாதைகள் மற்றும் புத்த மடாலயங்கள்."},
+  {name:"மணாலி",en:"Manali",state:"இமாச்சலப் பிரதேசம்",type:"மலை",desc:"இமயமலைப் பள்ளத்தாக்குகள் மற்றும் இயற்கைச் சுற்றுலா."},
+  {name:"காசி / வாரணாசி",en:"Varanasi",state:"உத்தரப் பிரதேசம்",type:"ஆன்மிகம்",desc:"கங்கை நதிக்கரைக் காட்கள் மற்றும் பாரம்பரிய நகரம்."},
+  {name:"கொச்சி",en:"Kochi",state:"கேரளா",type:"நகரம்",desc:"கடற்கரை, வரலாற்றுப் பகுதிகள் மற்றும் பின்நீர்ப் பாதைகள்."},
+  {name:"ஆலப்புழா",en:"Alappuzha",state:"கேரளா",type:"இயற்கை",desc:"கேரளாவின் பின்நீர்ப் பாதைகள் மற்றும் படகு பயணங்கள்."},
+  {name:"மைசூர் அரண்மனை",en:"Mysore Palace",state:"கர்நாடகா",type:"வரலாறு",desc:"அரண்மனை கட்டிடக்கலை மற்றும் கலாச்சாரப் பாரம்பரியம்."},
+  {name:"ஹம்பி",en:"Hampi",state:"கர்நாடகா",type:"வரலாறு",desc:"விஜயநகரப் பேரரசின் தொல்லியல் மற்றும் வரலாற்றுத் தலம்."},
+  {name:"அஜந்தா குகைகள்",en:"Ajanta Caves",state:"மகாராஷ்டிரா",type:"வரலாறு",desc:"பாறை வெட்டுக் குகைகள் மற்றும் பழமையான ஓவியங்கள்."},
+  {name:"காசிரங்கா தேசியப் பூங்கா",en:"Kaziranga National Park",state:"அசாம்",type:"இயற்கை",desc:"வனவிலங்கு பாதுகாப்புப் பகுதி; அனுமதி மற்றும் பருவகாலம் சரிபார்க்கவும்."},
+  {name:"சுந்தரவனக் காடுகள்",en:"Sundarbans",state:"மேற்கு வங்காளம்",type:"இயற்கை",desc:"மாங்குரோவ் காடுகள் மற்றும் வனவிலங்கு சூழல்."},
+  {name:"கோனார்க் சூரியக் கோவில்",en:"Konark Sun Temple",state:"ஒடிசா",type:"வரலாறு",desc:"வரலாற்றுச் சூரியக் கோவில் மற்றும் கலைச் சிறப்பு."},
+  {name:"ஸ்டேச்சு ஆஃப் யூனிட்டி",en:"Statue of Unity",state:"குஜராத்",type:"நகரம்",desc:"சர்தார் வல்லபாய் பட்டேலுக்கான நினைவுச் சின்னம்."},
+  {name:"நைனித்தால்",en:"Nainital",state:"உத்தரகண்ட்",type:"மலை",desc:"மலை ஏரி மற்றும் இமயமலைக் காட்சிகள்."},
+  {name:"புரி கடற்கரை",en:"Puri Beach",state:"ஒடிசா",type:"கடற்கரை",desc:"கடற்கரை மற்றும் ஜகந்நாதர் யாத்திரைப் பகுதி."},
+  {name:"அந்தமான் ராதாநகர் கடற்கரை",en:"Radhanagar Beach Havelock",state:"அந்தமான் மற்றும் நிக்கோபார் தீவுகள்",type:"கடற்கரை",desc:"தீவுச் சுற்றுலா மற்றும் கடற்கரை இயற்கை."},
+  {name:"சண்டிகர் ராக் கார்டன்",en:"Rock Garden Chandigarh",state:"சண்டிகர்",type:"நகரம்",desc:"மறுசுழற்சி பொருட்களால் உருவாக்கப்பட்ட கலைத் தோட்டம்."},
+  {name:"காங்டாக்",en:"Gangtok",state:"சிக்கிம்",type:"மலை",desc:"மலைக் காட்சிகள் மற்றும் புத்த மடாலயங்கள்."},
+  {name:"தவாங் மடாலயம்",en:"Tawang Monastery",state:"அருணாசலப் பிரதேசம்",type:"ஆன்மிகம்",desc:"இமயமலைப் பகுதியில் உள்ள முக்கிய புத்த மடாலயம்."},
+  {name:"உஜ்ஜைன் மகாகாளேஸ்வர்",en:"Mahakaleshwar Ujjain",state:"மத்தியப் பிரதேசம்",type:"ஆன்மிகம்",desc:"புகழ்பெற்ற சிவத் திருத்தலம்."},
+  {name:"ஹைதராபாத் சார்மினார்",en:"Charminar Hyderabad",state:"தெலங்கானா",type:"வரலாறு",desc:"ஹைதராபாத்தின் அடையாள வரலாற்றுச் சின்னம்."}
+];
+
+function skMapsUrl(query) {
+ return "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(query);
+}
+function skCreateTourCard(item, isTourism) {
+ const card=document.createElement("article");card.className="temple";
+ const emoji=document.createElement("div");emoji.className="emoji";emoji.textContent=isTourism?"🌄":"🪐";card.appendChild(emoji);
+ const h=document.createElement("h3");h.textContent=item.name;card.appendChild(h);
+ const meta=document.createElement("div");meta.className="meta";
+ meta.textContent=isTourism?("📍 "+item.state+" • "+item.type):("🪐 "+item.planet+" • "+item.place);
+ card.appendChild(meta);
+ const p=document.createElement("p");p.textContent=item.desc||"";card.appendChild(p);
+ const a=document.createElement("a");a.href=skMapsUrl(isTourism?(item.en+" "+item.state):(item.query+" India"));a.target="_blank";a.rel="noopener";a.textContent="📍 Google Maps";card.appendChild(a);
+ const g=document.createElement("a");g.href="https://www.google.com/search?q="+encodeURIComponent((isTourism?item.en:item.query)+" official website visiting hours");g.target="_blank";g.rel="noopener";g.textContent="🌐 நேரம் / தகவல்";card.appendChild(g);
+ return card;
+}
+const ngContainer=document.getElementById("navagrahaCards");
+navagraha.forEach(item=>ngContainer.appendChild(skCreateTourCard(item,false)));
+
+const ts=document.getElementById("tourismState");
+regions.forEach(name=>{const o=document.createElement("option");o.value=name;o.textContent=name;ts.appendChild(o)});
+function renderTourism(){
+ const query=document.getElementById("tourismQuery").value.trim().toLocaleLowerCase();
+ const type=document.getElementById("tourismType").value;
+ const state=ts.value;
+ const list=tourism.filter(t=>
+  (!query||[t.name,t.en,t.state,t.type,t.desc].join(" ").toLocaleLowerCase().includes(query))&&
+  (!type||t.type===type)&&(!state||t.state===state)
+ );
+ document.getElementById("tourismCount").textContent=list.length+" சுற்றுலாத் தலங்கள் • "+regions.length+" மாநில / யூனியன் பிரதேசங்கள்";
+ const box=document.getElementById("tourismCards");box.replaceChildren();
+ if(!list.length){
+  const e=document.createElement("div");e.className="empty";e.textContent="இந்த வடிகட்டியில் பட்டியலிடப்பட்ட இடம் இல்லை. Maps-ல் விரிவாகத் தேடவும்.";box.appendChild(e);return;
+ }
+ list.forEach(t=>box.appendChild(skCreateTourCard(t,true)));
+}
+document.getElementById("tourismSearch").addEventListener("click",renderTourism);
+document.getElementById("tourismReset").addEventListener("click",()=>{
+ document.getElementById("tourismQuery").value="";
+ document.getElementById("tourismType").value="";
+ ts.value="";
+ renderTourism();
+});
+document.getElementById("tourismQuery").addEventListener("input",renderTourism);
+document.getElementById("tourismType").addEventListener("change",renderTourism);
+ts.addEventListener("change",renderTourism);
+renderTourism();
+
+
+const stateSel=document.getElementById("state");
+const q=document.getElementById("q");
+const deity=document.getElementById("deity");
+const results=document.getElementById("results");
+const count=document.getElementById("resultCount");
+regions.forEach(s=>{const o=document.createElement("option");o.value=s;o.textContent=s;stateSel.appendChild(o)});
+const stateList=document.getElementById("stateList");
+regions.forEach(s=>{const b=document.createElement("button");b.type="button";b.className="stateitem";b.textContent="🇮🇳 "+s;b.addEventListener("click",()=>{stateSel.value=s;render();document.getElementById("q").scrollIntoView({behavior:"smooth",block:"center"})});stateList.appendChild(b)});
+function render(){
+ const term=q.value.trim().toLocaleLowerCase();
+ const st=stateSel.value;
+ const d=deity.value;
+ const list=temples.filter(t=>{
+  const all=[t.name,t.en,t.state,t.city,t.deity,t.desc].join(" ").toLocaleLowerCase();
+  return (!term||all.includes(term))&&(!st||t.state===st)&&(!d||t.deity.includes(d));
+ });
+ count.textContent=list.length+" கோவில் பதிவுகள் • "+regions.length+" மாநில / யூனியன் பிரதேசத் தேர்வுகள்";
+ results.replaceChildren();
+ if(!list.length){const e=document.createElement("div");e.className="empty";e.textContent="இந்தத் தேர்வுக்கு பட்டியலில் பதிவு இல்லை. Google Maps-ல் தேடிப் பார்க்கவும்.";results.appendChild(e);return}
+ list.forEach(t=>{
+  const card=document.createElement("article");card.className="temple";
+  const emoji=document.createElement("div");emoji.className="emoji";emoji.textContent="🛕";card.appendChild(emoji);
+  const h=document.createElement("h3");h.textContent=t.name;card.appendChild(h);
+  const en=document.createElement("div");en.className="meta";en.textContent=t.en;card.appendChild(en);
+  const p=document.createElement("p");p.textContent=t.desc;card.appendChild(p);
+  const m=document.createElement("div");m.className="meta";m.textContent="📍 "+t.city+" • "+t.state+" | 🙏 "+t.deity;card.appendChild(m);
+  const a=document.createElement("a");a.href="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(t.en+" "+t.city);a.target="_blank";a.rel="noopener";a.textContent="📍 Google Maps";card.appendChild(a);
+  const search=document.createElement("a");search.href="https://www.google.com/search?q="+encodeURIComponent(t.en+" "+t.city+" official temple website");search.target="_blank";search.rel="noopener";search.textContent="🌐 தகவல் / அதிகாரப்பூர்வ தளம்";card.appendChild(search);
+  if(t.official){const official=document.createElement("a");official.href=t.official;official.target="_blank";official.rel="noopener";official.textContent="🏛️ கோவில் இணையதளம்";card.appendChild(official)}
+  results.appendChild(card);
+ });
+}
+document.getElementById("searchBtn").addEventListener("click",render);
+document.getElementById("resetBtn").addEventListener("click",()=>{q.value="";stateSel.value="";deity.value="";render()});
+q.addEventListener("input",render);
+stateSel.addEventListener("change",render);
+deity.addEventListener("change",render);
+render();
+})();
+</script>
+</body>
+</html>
