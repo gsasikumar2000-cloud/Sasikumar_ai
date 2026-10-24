@@ -365,5 +365,70 @@ setInterval(()=>{if(!window.skRatesDisplayCleared)refreshRates();},5*60*1000);
 })();
 </script>
 
+
+<style id="SK_GOLD_SILVER_VISIBILITY_V2">
+/* Clear Gold & Silver rate cards */
+html { -webkit-text-size-adjust: 100%; }
+.rates {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+  align-items: stretch !important;
+}
+.rate {
+  box-sizing: border-box !important;
+  min-width: 0 !important;
+  padding: 18px 12px !important;
+  border-radius: 16px !important;
+  overflow-wrap: anywhere !important;
+}
+.rate h2 {
+  font-size: clamp(15px, 4vw, 19px) !important;
+  line-height: 1.35 !important;
+}
+.rate .price {
+  font-size: clamp(23px, 6vw, 34px) !important;
+  line-height: 1.25 !important;
+  font-weight: 900 !important;
+  overflow-wrap: anywhere !important;
+}
+.rate .unit {
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+}
+.rate.silver {
+  grid-column: 1 / -1 !important;
+}
+#poster {
+  display: block;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+}
+@media (max-width: 420px) {
+  body { padding: 10px !important; }
+  header, .panel {
+    padding: 14px !important;
+    border-radius: 16px !important;
+  }
+  .rates {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+  .rate {
+    padding: 14px 8px !important;
+  }
+  .rate h2 {
+    font-size: 15px !important;
+  }
+  .rate .price {
+    font-size: clamp(21px, 6.3vw, 28px) !important;
+  }
+  .rate.silver {
+    grid-column: 1 / -1 !important;
+  }
+}
+</style>
+
 </body>
 </html>
