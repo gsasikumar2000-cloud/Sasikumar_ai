@@ -57,6 +57,39 @@ header{position:relative;overflow:hidden;background:linear-gradient(125deg,#5b21
 @media(max-width:360px){.container{padding:9px}.card{padding:12px}.skAstroGrid{gap:7px}.skAstroTile{padding:10px 5px}.skAstroLinks{gap:6px}}
 /* END SK_ASTROLOGY_ALL_IN_ONE_COLOR_V1 */
 
+
+/* SK_KIDS_NAME_SEARCH_V1 */
+#skKidsNameSearch {
+  background:linear-gradient(135deg,#fff0f8,#edf7ff,#f0fff4);
+  border:2px solid #e4d7ff;border-radius:20px;padding:16px;
+  margin:18px 0;color:#26304a;
+}
+#skKidsNameSearch h2 {color:#7137b7;text-align:center}
+.skNameSearchGrid {
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;
+}
+.skNameSearchGrid input,.skNameSearchGrid select {
+  box-sizing:border-box;width:100%;min-width:0;padding:12px;
+  border:1px solid #c9b9ef;border-radius:12px;background:white;
+  font-size:16px;
+}
+.skNameSearchBtn {
+  width:100%;padding:12px;margin-top:10px;border:0;border-radius:12px;
+  color:white;background:linear-gradient(90deg,#7541d8,#087df0);
+  font-weight:bold;font-size:16px;
+}
+.skNameResult {
+  margin-top:12px;padding:12px;border-radius:12px;background:white;
+  overflow-wrap:anywhere;line-height:1.8;
+}
+.skNameChip {
+  display:inline-block;margin:4px;padding:6px 10px;border-radius:20px;
+  background:#e9e3ff;color:#51249b;font-weight:600;
+}
+@media(max-width:480px) {
+  .skNameSearchGrid {grid-template-columns:1fr}
+}
+
 </style>
 </head>
 <body>
@@ -181,7 +214,183 @@ header{position:relative;overflow:hidden;background:linear-gradient(125deg,#5b21
 © SASIKUMAR AI – Smart Digital Services
 </footer>
 
+
+<!-- SK_KIDS_NAME_SEARCH_V1 -->
+<section id="skKidsNameSearch">
+  <h2>👶 குழந்தைப் பெயர் தேடல்</h2>
+  <p style="text-align:center">
+    🔤 பெயர் • ⭐ நட்சத்திரம் • ♈ ராசி — ஒரே இடத்தில்
+  </p>
+
+  <div class="skNameSearchGrid">
+    <input id="skNameInput" type="text"
+      placeholder="பெயர் உள்ளிடவும் (உதா: கவி)">
+    <select id="skNameGender">
+      <option value="all">அனைத்துப் பெயர்களும்</option>
+      <option value="boy">ஆண் குழந்தைப் பெயர்கள்</option>
+      <option value="girl">பெண் குழந்தைப் பெயர்கள்</option>
+    </select>
+    <input id="skNameLetter" type="text"
+      placeholder="தொடக்க எழுத்து (உதா: க)">
+    <select id="skNameStar">
+      <option value="">அனைத்து நட்சத்திரங்களும்</option>
+    </select>
+  </div>
+
+  <button type="button" class="skNameSearchBtn"
+    id="skNameSearchButton">🔍 பெயர் தேடு</button>
+
+  <div id="skNameSearchResult" class="skNameResult" aria-live="polite">
+    பெயர் அல்லது தொடக்க எழுத்தை உள்ளிட்டு தேடுங்கள்.
+  </div>
+  <p style="font-size:13px;line-height:1.7">
+    குறிப்பு: பெயரின் தொடக்க ஒலி மூலம் பாரம்பரிய நட்சத்திரத் தொடர்பை
+    மட்டும் அறியலாம். உண்மையான ஜென்ம ராசி, நட்சத்திரத்தை உறுதிப்படுத்த
+    பிறந்த தேதி, நேரம் மற்றும் இடம் தேவை.
+  </p>
+</section>
+
 <script>
+
+// SK_KIDS_NAME_SEARCH_V1
+(function () {
+  const stars = [
+    ["அசுவினி","சு சே சோ ல"],
+    ["பரணி","லி லு லே லோ"],
+    ["கார்த்திகை","அ இ உ ஏ"],
+    ["ரோகிணி","ஓ வா வீ வு"],
+    ["மிருகசீரிடம்","வே வோ கா கி"],
+    ["திருவாதிரை","கு க ங ச"],
+    ["புனர்பூசம்","கே கோ ஹ ஹி"],
+    ["பூசம்","ஹு ஹே ஹோ ட"],
+    ["ஆயில்யம்","டி டு டே டோ"],
+    ["மகம்","மா மி மு மே"],
+    ["பூரம்","மோ டா டி டு"],
+    ["உத்திரம்","டே டோ பா பி"],
+    ["ஹஸ்தம்","பூ ஷ ண த"],
+    ["சித்திரை","பே போ ரா ரி"],
+    ["சுவாதி","ரூ ரே ரோ தா"],
+    ["விசாகம்","தி து தே தோ"],
+    ["அனுஷம்","நா நி நு நே"],
+    ["கேட்டை","நோ யா யி யு"],
+    ["மூலம்","யே யோ பா பி"],
+    ["பூராடம்","பூ தா பா டா"],
+    ["உத்திராடம்","பே போ ஜா ஜி"],
+    ["திருவோணம்","ஜு ஜே ஜோ கா"],
+    ["அவிட்டம்","கா கி கு கே"],
+    ["சதயம்","கோ சா சி சூ"],
+    ["பூரட்டாதி","சே சோ தா தி"],
+    ["உத்திரட்டாதி","து த ஞ நா"],
+    ["ரேவதி","தே தோ ச சி"]
+  ];
+
+  const nameSets = {
+    "அ": ["அகில்","அருண்","அர்ஜுன்","அனிதா","அமுதா"],
+    "ஆ": ["ஆதவன்","ஆகாஷ்","ஆதிரை","ஆனந்தி"],
+    "இ": ["இனியன்","இளமாறன்","இனியா","இசை"],
+    "க": ["கவின்","கார்த்திக்","கதிர்","கயல்","கனிமொழி"],
+    "ச": ["சரவணன்","சஞ்சய்","சூர்யா","சந்தியா","சிவானி"],
+    "த": ["தருண்","தமிழ்","தனுஷ்","திவ்யா","தர்ஷினி"],
+    "ந": ["நவீன்","நந்தன்","நிலா","நந்தினி","நித்யா"],
+    "ப": ["பிரவீன்","பரத்","பவித்ரா","பிரியா","பூஜா"],
+    "ம": ["மதன்","முகில்","மகேஷ்","மாலதி","மீனா"],
+    "ய": ["யாழன்","யுவன்","யாழினி","யாமினி"],
+    "ர": ["ரமேஷ்","ராகுல்","ரஞ்சித்","ரம்யா","ரேவதி"],
+    "வ": ["விக்னேஷ்","வசந்த்","வருண்","வாணி","வித்யா"]
+  };
+
+  const rasiByStar = [
+    "மேஷம்","மேஷம்","மேஷம் / ரிஷபம்","ரிஷபம்",
+    "ரிஷபம் / மிதுனம்","மிதுனம்","மிதுனம் / கடகம்","கடகம்",
+    "கடகம்","சிம்மம்","சிம்மம்","சிம்மம் / கன்னி","கன்னி",
+    "கன்னி / துலாம்","துலாம்","துலாம் / விருச்சிகம்","விருச்சிகம்",
+    "விருச்சிகம்","தனுசு","தனுசு","தனுசு / மகரம்","மகரம்",
+    "மகரம் / கும்பம்","கும்பம்","கும்பம் / மீனம்","மீனம்","மீனம்"
+  ];
+
+  const $ = id => document.getElementById(id);
+  const starSelect = $("skNameStar");
+  const result = $("skNameSearchResult");
+
+  if (!starSelect || starSelect.dataset.ready) return;
+  starSelect.dataset.ready = "1";
+
+  stars.forEach((star, i) => {
+    const option = document.createElement("option");
+    option.value = String(i);
+    option.textContent = star[0];
+    starSelect.appendChild(option);
+  });
+
+  function searchNames() {
+    const name = $("skNameInput").value.trim();
+    const letter = $("skNameLetter").value.trim();
+    const gender = $("skNameGender").value;
+    const starValue = starSelect.value;
+    const query = (name || letter).replace(/\s/g, "");
+    let html = "";
+
+    if (query) {
+      const matches = stars.map((star, i) => ({
+        star: star[0],
+        sounds: star[1].split(" "),
+        rasi: rasiByStar[i]
+      })).filter(item =>
+        item.sounds.some(sound =>
+          query.toLowerCase().startsWith(sound.toLowerCase())
+        )
+      );
+
+      html += "<h3>🔎 தேடல் முடிவு</h3>";
+      if (matches.length) {
+        html += "<p>பொருந்தக்கூடிய பாரம்பரிய நட்சத்திர ஒலிகள்:</p>";
+        matches.forEach(item => {
+          html += '<div class="skNameChip">' + item.star +
+            " — " + item.rasi + "</div>";
+        });
+      } else {
+        html += "<p>இந்தப் பெயருக்கு நேரடியாகப் பொருந்தும் ஒலி கிடைக்கவில்லை. " +
+          "முதல் ஒலியை அல்லது வேறு எழுத்தை முயற்சிக்கவும்.</p>";
+      }
+
+      const first = Array.from(query)[0];
+      const suggestions = Object.entries(nameSets)
+        .filter(([key]) => first && key === first)
+        .flatMap(([, values]) => values)
+        .filter(value => !name || value.includes(name));
+
+      html += "<h3>👶 பெயர் பரிந்துரைகள்</h3>";
+      if (suggestions.length) {
+        html += suggestions.map(value =>
+          '<span class="skNameChip">' + value + "</span>"
+        ).join("");
+      } else {
+        html += "<p>இந்த எழுத்துக்கான பெயர்கள் பட்டியலில் இல்லை. " +
+          "க, ச, த, ந, ப, ம, ய, ர, வ ஆகிய எழுத்துகளை முயற்சிக்கலாம்.</p>";
+      }
+    }
+
+    if (starValue !== "") {
+      const i = Number(starValue);
+      html += "<h3>⭐ " + stars[i][0] + "</h3>";
+      html += "<p>தொடக்க ஒலிகள்: " + stars[i][1] + "</p>";
+      html += "<p>தொடர்புடைய ராசி: " + rasiByStar[i] + "</p>";
+    }
+
+    if (!html) {
+      html = "<p>பெயர், தொடக்க எழுத்து அல்லது நட்சத்திரத்தைத் தேர்ந்தெடுக்கவும்.</p>";
+    }
+
+    result.innerHTML = html;
+  }
+
+  $("skNameSearchButton").addEventListener("click", searchNames);
+  $("skNameInput").addEventListener("keydown", event => {
+    if (event.key === "Enter") searchNames();
+  });
+})();
+
+
 const signs=[
 {name:"மேஷம்",symbol:"♈",text:"முயற்சிகளில் பொறுமையுடன் செயல்படுங்கள். முக்கிய முடிவுகளை நன்கு ஆராய்ந்து எடுங்கள்."},
 {name:"ரிஷபம்",symbol:"♉",text:"பண விஷயங்களில் திட்டமிடுங்கள். குடும்பத்தினருடன் அன்பாகப் பேசுங்கள்."},
