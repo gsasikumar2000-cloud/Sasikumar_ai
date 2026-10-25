@@ -2771,6 +2771,15 @@ Tamil + English • Gold • General Q&A</div>
   }
 }
 
+
+/* SK_NON_NEWS_CARDS_BLACK_FONT_V1 */
+#skMiniLiveCardsV1Grid > .skMiniLiveItem {
+  color: #000 !important;
+}
+#skMiniLiveCardsV1Grid > .skMiniLiveItem :is(h1,h2,h3,h4,p,span,small,strong,label) {
+  color: #000 !important;
+}
+
 </head><body>' + slides + '
 <!-- SK_ALL_HOME_MINI_CARDS_V1 -->
 <style id="SK_ALL_HOME_MINI_CARDS_V1">
@@ -11331,9 +11340,9 @@ box-sizing:border-box!important;">
   font-size:13px;
 }
 #skCompanyAdsLiveGrid {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));
-  gap:12px;
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:8px !important;
 }
 #skCompanyAdsLiveGrid .skCompanyAdCard {
   min-width:0;
