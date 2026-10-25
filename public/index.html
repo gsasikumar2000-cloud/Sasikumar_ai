@@ -2638,8 +2638,8 @@ Tamil + English • Gold • General Q&A</div>
 <section id="skSpiritualAstrologyCard" style="max-width:560px;margin:18px auto;padding:16px 14px;box-sizing:border-box;border-radius:18px;background:linear-gradient(135deg,#fff5d9,#f3e8ff,#e5f5ff);border:1px solid #dbc4f5;box-shadow:0 5px 16px #55308018;text-align:center">
   <img src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI Logo" style="width:58px;height:58px;object-fit:contain;background:#fff;border-radius:50%;padding:4px" onerror="this.style.display='none'">
   <h2 style="margin:9px 0 5px;color:#713ab1;font-size:20px">🙏 ஆன்மிகம் &amp; ஜோதிடம் 🔮</h2>
-  <p style="margin:5px 0 13px;color:#554267;font-size:13px;line-height:1.7">தினசரி ஆன்மிகம் • 12 ராசிகள் • பஞ்சாங்கம் • தேதி &amp; நேரம் • வானிலை</p>
-  <a href="/spiritual-astrology.html" style="display:inline-block;padding:12px 20px;border-radius:12px;background:linear-gradient(120deg,#713ab1,#a044c5);color:#fff;text-decoration:none;font-size:14px;font-weight:800">🌟 OPEN SPIRITUAL &amp; ASTROLOGY →</a>
+  <p style="margin:5px 0 13px;color:#554267;font-size:13px;line-height:1.7">12 ராசிகள் • தினசரி வழிகாட்டி • பஞ்சாங்கம் • தேதி &amp; நேரம் • வானிலை • ஆன்மிகத் தகவல்கள்</p>
+  <a href="/spiritual-astrology.html" style="display:inline-block;padding:12px 20px;border-radius:12px;background:linear-gradient(120deg,#713ab1,#a044c5);color:#fff;text-decoration:none;font-size:14px;font-weight:800">🔮 ஜோதிடம் பார்க்கவும் • ஆன்மிகம் திறக்கவும் ↗</a>
 </section>
 <!-- /SK_SPIRITUAL_ASTROLOGY_CARD_V1 -->
 
@@ -12148,6 +12148,44 @@ img, video, iframe {
 }
 </style>
 <!-- END SK_LIVE_CARDS_CLEAR_VISIBLE_FINAL_V1 -->
+
+
+<script id="SK_LIVE_CARDS_TOP_ASTROLOGY_SINGLE_V1">
+(function () {
+  function arrangeLiveAndAstrologyCards() {
+    const liveCards = document.getElementById('skLiveCardsBottomV1');
+    const mainGrid = document.querySelector('.skMainLiveGrid');
+    const duplicateAstrology = document.getElementById('skAstrologyButtonAboveDesignMaker');
+    const astrologyCard = document.getElementById('skSpiritualAstrologyCard');
+    const designMaker = document.getElementById('skDesignMakerGlobal');
+
+    if (liveCards && mainGrid && mainGrid.parentNode) {
+      mainGrid.parentNode.insertBefore(liveCards, mainGrid);
+    }
+
+    if (duplicateAstrology) {
+      duplicateAstrology.style.setProperty('display', 'none', 'important');
+      duplicateAstrology.setAttribute('aria-hidden', 'true');
+    }
+
+    if (astrologyCard && designMaker && designMaker.parentNode) {
+      designMaker.insertAdjacentElement('afterend', astrologyCard);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', arrangeLiveAndAstrologyCards);
+  } else {
+    arrangeLiveAndAstrologyCards();
+  }
+
+  window.addEventListener('load', function () {
+    setTimeout(arrangeLiveAndAstrologyCards, 300);
+  });
+
+  setTimeout(arrangeLiveAndAstrologyCards, 1000);
+})();
+</script>
 
 </body>
 </html>
