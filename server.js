@@ -3677,7 +3677,7 @@ async function skTelegramSendMessage(chatId, message) {
   ].join('\n');
 
   const fullText = (replyText + '\n' + footer).slice(0, 4000);
-  const logoUrl = 'https://sasikumar-ai-9wdq.onrender.com/assets/sasikumar-ai-logo-160.png';
+  const logoUrl = 'https://sasikumar-ai-9wdq.onrender.com/assets/sasikumar-ai-logo.png';
 
   try {
     const photoResponse = await fetch(
