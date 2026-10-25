@@ -3948,13 +3948,32 @@ app.post('/api/telegram/webhook', async (req, res) => {
 
       const reply = option === 2
         ? await getLiveGoldSilverWhatsAppReply()
-        : await getWhatsAppAIReply(
+        : option === 3
+          ? '🧮 SASIKUMAR AI — GOLD LOAN / EMI CALCULATOR\n\n' +
+            'கடன் தொகை, ஆண்டு வட்டி விகிதம், மாதங்களை இந்த வடிவில் அனுப்புங்கள்:\n' +
+            'EMI 100000 12 12\n\n' +
+            '💰 கடன் தொகை: ₹1,00,000\n' +
+            '📈 ஆண்டு வட்டி: 12%\n' +
+            '📅 காலம்: 12 மாதங்கள்\n\n' +
+            '🌐 Calculator: https://sasikumar-ai-9wdq.onrender.com/loan-calculator.html\n' +
+            '🔙 மெனுவுக்குத் திரும்ப 0 அனுப்புங்கள்.'
+          : await getWhatsAppAIReply(
             'The user selected SASIKUMAR AI service ' + option + ': ' + service +
             '. Help the user with this service. Reply in Tamil when appropriate. If this service requires a specific question or details, ask the user for them. Do not claim an action or live data was completed unless actually available.',
             'normal'
           );
 
       await skTelegramSendMessage(chatId, reply);
+      return;
+    }
+
+    // SK_TELEGRAM_EMI_CALCULATOR_V1
+    if (/^EMI\b/i.test(text)) {
+      const emiReply = getWhatsAppEMIReply(text);
+      await skTelegramSendMessage(
+        chatId,
+        emiReply || '🧮 EMI கணக்கிட இந்த வடிவில் அனுப்புங்கள்: EMI 100000 12 12\nகடன் தொகை, ஆண்டு வட்டி %, மாதங்கள்.'
+      );
       return;
     }
 
