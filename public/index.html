@@ -11975,5 +11975,66 @@ img, video, iframe {
 </style>
 <!-- END SK_LIVE_CARD_FINAL_MOBILE_FIX_V1 -->
 <!-- END SK_LIVE_CARDS_BOTTOM_SECTION_V1 -->
+
+<!-- SK_LIVE_CARDS_CLEAR_VISIBLE_FINAL_V1 -->
+<style id="skLiveCardsClearVisibleFinalV1">
+#skLiveBookCardsRow {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  grid-auto-flow: row !important;
+  align-items: stretch !important;
+  gap: 12px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  box-sizing: border-box !important;
+  padding: 12px !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+#skLiveBookCardsRow > * {
+  display: block !important;
+  position: relative !important;
+  float: none !important;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  height: auto !important;
+  max-height: none !important;
+  min-height: 155px !important;
+  margin: 0 !important;
+  padding: 46px 10px 14px !important;
+  box-sizing: border-box !important;
+  overflow-wrap: anywhere !important;
+  white-space: normal !important;
+  border: 2px solid #bfdbfe !important;
+  border-radius: 16px !important;
+  background: #eff6ff !important;
+  color: #1e293b !important;
+  box-shadow: 0 3px 12px rgba(30, 64, 175, .12) !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+#skLiveBookCardsRow > * * {
+  max-width: 100%;
+  overflow-wrap: anywhere !important;
+}
+@media (max-width: 360px) {
+  #skLiveBookCardsRow {
+    gap: 8px !important;
+    padding: 8px !important;
+  }
+  #skLiveBookCardsRow > * {
+    padding-left: 7px !important;
+    padding-right: 7px !important;
+    font-size: 13px !important;
+  }
+}
+</style>
+<!-- END SK_LIVE_CARDS_CLEAR_VISIBLE_FINAL_V1 -->
+
 </body>
 </html>
