@@ -12168,8 +12168,13 @@ img, video, iframe {
       duplicateAstrology.setAttribute('aria-hidden', 'true');
     }
 
-    if (astrologyCard && designMaker && designMaker.parentNode) {
-      designMaker.insertAdjacentElement('afterend', astrologyCard);
+    if (astrologyCard) {
+      const firstLive = liveCards || mainGrid;
+      if (firstLive && firstLive.parentNode) {
+        firstLive.parentNode.insertBefore(astrologyCard, firstLive);
+      } else if (designMaker && designMaker.parentNode) {
+        designMaker.insertAdjacentElement('beforebegin', astrologyCard);
+      }
     }
   }
 
