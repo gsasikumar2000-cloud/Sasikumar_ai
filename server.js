@@ -3946,11 +3946,13 @@ app.post('/api/telegram/webhook', async (req, res) => {
       const service = SK_TELEGRAM_MENU[option - 1];
       await skTelegramSendMessage(chatId, '✅ நீங்கள் தேர்ந்தெடுத்தது: ' + option + '. ' + service + '\n⏳ பதில் தயாராகிறது...');
 
-      const reply = await getWhatsAppAIReply(
-        'The user selected SASIKUMAR AI service ' + option + ': ' + service +
-        '. Help the user with this service. Reply in Tamil when appropriate. If this service requires a specific question or details, ask the user for them. Do not claim an action or live data was completed unless actually available.',
-        'normal'
-      );
+      const reply = option === 2
+        ? await getLiveGoldSilverWhatsAppReply()
+        : await getWhatsAppAIReply(
+            'The user selected SASIKUMAR AI service ' + option + ': ' + service +
+            '. Help the user with this service. Reply in Tamil when appropriate. If this service requires a specific question or details, ask the user for them. Do not claim an action or live data was completed unless actually available.',
+            'normal'
+          );
 
       await skTelegramSendMessage(chatId, reply);
       return;
