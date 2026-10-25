@@ -1280,7 +1280,7 @@ app.post('/api/chat', async (req, res) => {
               }
             ],
             temperature: 0.7,
-            max_completion_tokens: 2048
+            max_completion_tokens: 700
           }),
           signal: controller.signal
         }
@@ -1608,7 +1608,7 @@ async function getWhatsAppAIReply(question, mode = 'normal') {
             { role: 'user', content: userContent.slice(0, 9000) }
           ],
           temperature: 0.5,
-          max_completion_tokens: 900
+          max_completion_tokens: 350
         }),
         signal: controller.signal
       }
