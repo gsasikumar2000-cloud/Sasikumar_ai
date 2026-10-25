@@ -3610,6 +3610,116 @@ app.delete('/api/video/library/:id', auth.requireAuth, (req, res) => {
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
 const TELEGRAM_WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET || '';
 
+const SK_TELEGRAM_MENU = [
+  'AI Assistant',
+  'Live Gold & Silver Rate',
+  'Gold Loan / EMI Calculator',
+  'Banking Services',
+  'Gold Expert',
+  'Gold Appraisal',
+  'Education',
+  'Jobs & Careers',
+  'Business & Technology News',
+  'Breaking News',
+  'General AI Chat',
+  'Poster & Creative Design',
+  'AI Image Maker',
+  'Video Maker',
+  'Global Web Search',
+  'Sports Updates',
+  'Daily Thirukkural',
+  'Tamil Kavithai',
+  'Ponmozhigal',
+  'Thathuvam',
+  'Motivation',
+  'Leadership History',
+  'Audio & Video Songs Hub',
+  'Live FM Radio',
+  'Audio / Video Song Cutter',
+  'Mobile App Download',
+  'Business Ideas',
+  'AI Tools',
+  'Website Services',
+  'Contact & Customer Feedback',
+  'All Content — Complete Services',
+  'Tamil Comedy & Movie Fun',
+  'Agriculture — விவசாய உதவியாளர்',
+  'Meme Hub — Trending Memes'
+];
+
+function skTelegramMenuText() {
+  return [
+    '🤖 SASIKUMAR AI — 34 SERVICES',
+    '',
+    ...SK_TELEGRAM_MENU.map((name, i) => (i + 1) + '. ' + name),
+    '',
+    '📩 சேவையைத் தேர்வு செய்ய அதன் எண்ணை அனுப்புங்கள்.',
+    'உதாரணம்: 2',
+    '',
+    '/start — தொடங்க',
+    '/menu — மெனுவை மீண்டும் பார்க்க'
+  ].join('\n');
+}
+
+async function skTelegramSendMessage(chatId, message) {
+  const replyText = String(
+    message || 'மன்னிக்கவும், இப்போது பதில் கிடைக்கவில்லை.'
+  );
+
+  const footer = [
+    '',
+    '━━━━━━━━━━━━━━',
+    '🤖 SASIKUMAR AI',
+    '📢 AI • Business • Technology',
+    '🌐 https://sasikumar-ai-9wdq.onrender.com',
+    '📣 உங்கள் விளம்பரத்தை வெளியிட எங்களைத் தொடர்புகொள்ளுங்கள்.',
+    '━━━━━━━━━━━━━━'
+  ].join('\n');
+
+  const fullText = (replyText + '\n' + footer).slice(0, 4000);
+  const logoUrl = 'https://sasikumar-ai-9wdq.onrender.com/assets/sasikumar-ai-logo-160.png';
+
+  try {
+    const photoResponse = await fetch(
+      `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: chatId,
+          photo: logoUrl,
+          caption: fullText.slice(0, 1024)
+        }),
+        signal: AbortSignal.timeout(15000)
+      }
+    );
+
+    if (photoResponse.ok) return;
+
+    const details = await photoResponse.text();
+    console.error('[Telegram] sendPhoto failed; using text reply:', photoResponse.status, details.slice(0, 300));
+  } catch (error) {
+    console.error('[Telegram] sendPhoto error; using text reply:', error.message);
+  }
+
+  const response = await fetch(
+    `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: fullText
+      }),
+      signal: AbortSignal.timeout(15000)
+    }
+  );
+
+  if (!response.ok) {
+    const details = await response.text();
+    console.error('[Telegram] sendMessage failed:', response.status, details.slice(0, 500));
+  }
+}
 app.post('/api/telegram/webhook', async (req, res) => {
   if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_WEBHOOK_SECRET) {
     return res.sendStatus(503);
@@ -3620,34 +3730,63 @@ app.post('/api/telegram/webhook', async (req, res) => {
     return res.sendStatus(403);
   }
 
+  // Acknowledge Telegram before processing the message.
   res.sendStatus(200);
 
   try {
-    const msg = req.body?.message;
+    const update = req.body || {};
+    const msg = update.message;
     const chatId = msg?.chat?.id;
     const text = String(msg?.text || '').trim();
 
-    if (!chatId || !text || text.startsWith('/')) return;
+    if (!chatId || !text) return;
 
-    const reply = await getWhatsAppAIReply(text, 'normal');
-
-    const sendResponse = await fetch(
-      `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: chatId,
-          text: String(reply || 'மன்னிக்கவும், இப்போது பதில் உருவாக்க முடியவில்லை.').slice(0, 4000)
-        }),
-        signal: AbortSignal.timeout(15000)
-      }
-    );
-
-    if (!sendResponse.ok) {
-      const details = await sendResponse.text();
-      console.error('[Telegram] sendMessage failed:', sendResponse.status, details.slice(0, 500));
+    if (/^\/(start|menu)(?:@\w+)?(?:\s|$)/i.test(text)) {
+      await skTelegramSendMessage(
+        chatId,
+        'வணக்கம்! 👋 SASIKUMAR AI-க்கு வரவேற்கிறோம்.\n\n' +
+        'AI உதவியாளரிடம் கேள்வி கேட்கலாம் அல்லது கீழே உள்ள 34 சேவைகளில் ஒன்றைத் தேர்வு செய்யலாம்.\n\n' +
+        skTelegramMenuText()
+      );
+      return;
     }
+
+    if (/^\/(help)(?:@\w+)?(?:\s|$)/i.test(text)) {
+      await skTelegramSendMessage(chatId, 'உதவி: /start அல்லது /menu அனுப்புங்கள். சேவையைத் தேர்வு செய்ய 1 முதல் 34 வரை எண்ணை அனுப்புங்கள்.');
+      return;
+    }
+
+    if (/^\/\w+/.test(text)) return;
+
+    if (text === '0') {
+      await skTelegramSendMessage(chatId, skTelegramMenuText());
+      return;
+    }
+
+    if (/^\d{1,2}$/.test(text)) {
+      const option = Number(text);
+
+      if (option < 1 || option > SK_TELEGRAM_MENU.length) {
+        await skTelegramSendMessage(chatId, '⚠️ 1 முதல் 34 வரை எண்ணை அனுப்புங்கள். முழு மெனுவுக்கு /menu அனுப்பவும்.');
+        return;
+      }
+
+      const service = SK_TELEGRAM_MENU[option - 1];
+      await skTelegramSendMessage(chatId, '✅ நீங்கள் தேர்ந்தெடுத்தது: ' + option + '. ' + service + '\n⏳ பதில் தயாராகிறது...');
+
+      const reply = await getWhatsAppAIReply(
+        'The user selected SASIKUMAR AI service ' + option + ': ' + service +
+        '. Help the user with this service. Reply in Tamil when appropriate. If this service requires a specific question or details, ask the user for them. Do not claim an action or live data was completed unless actually available.',
+        'normal'
+      );
+
+      await skTelegramSendMessage(chatId, reply);
+      return;
+    }
+
+    // Keep normal Telegram AI chat working.
+    const reply = await getWhatsAppAIReply(text, 'normal');
+    await skTelegramSendMessage(chatId, reply);
   } catch (error) {
     console.error('[Telegram] webhook processing failed:', error.message);
   }
