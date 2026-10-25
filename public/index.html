@@ -2784,11 +2784,32 @@ Tamil + English • Gold • General Q&A</div>
 
 <style 
 
-<style id="skLogo80">
-.skMainLiveGrid img, .skMainFeatureCard img, #skLiveCardsBottomV1 img {
+
+
+<style id="skRow3Mobile80">
+/* DESKTOP - 80px straight */
+.skMainLiveGrid img, .skMainFeatureCard img, #skLiveCardsBottomV1 img,
+#skMiniLiveCardsV1Grid img {
   width:80px !important; height:80px !important; min-width:80px !important; min-height:80px !important;
-  object-fit:contain !important; transform:none !important; rotate:0deg !important; 
-  background:transparent !important; border-radius:50% !important; display:block !important; margin:0 auto !important;
+  object-fit:contain !important; transform:none !important; rotate:0deg !important;
+  background:transparent !important; border-radius:50% !important;
+  display:block !important; margin:0 auto !important; animation:none !important;
+}
+/* MOBILE FORCE - 80px */
+@media (max-width:768px) {
+  .skMainLiveGrid img, .skMainFeatureCard img, #skLiveCardsBottomV1 img,
+  #skMiniLiveCardsV1Grid img {
+    width:80px !important; height:80px !important;
+    min-width:80px !important; min-height:80px !important;
+    transform:none !important; rotate:0deg !important;
+  }
+  /* Row 3 specific - nth-child */
+  .skMainLiveGrid > div:nth-child(3) img,
+  .skMainLiveGrid > div:nth-child(4) img,
+  .skMainLiveGrid > div:nth-child(5) img,
+  .skMainLiveGrid > div:nth-child(6) img {
+    width:80px !important; height:80px !important;
+  }
 }
 </style>
 </head><body>' + slides + '
