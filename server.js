@@ -2755,71 +2755,161 @@ app.post('/api/jobs/employer', async (req, res) => {
 
 /* SASIKUMAR AI IMAGE GENERATION API */
 async function skGenerateImage(prompt) {
-  const apiKey = process.env.GEMINI_API_KEY;
+  // SK_IMAGE_PROVIDER_FALLBACK_V1
+  const failures = [];
 
-  if (!apiKey) {
-    const err = new Error('GEMINI_API_KEY is not configured.');
-    err.status = 503;
-    throw err;
-  }
-
-  const response = await fetch(
-    'https://generativelanguage.googleapis.com/v1/models/gemini-3.1-flash-image:generateContent',
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-goog-api-key': apiKey
-      },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{ text: prompt }]
-        }],
-        generationConfig: {
-          responseModalities: ['IMAGE']
+  // 1. Gemini
+  if (process.env.GEMINI_API_KEY) {
+    try {
+      const response = await fetch(
+        'https://generativelanguage.googleapis.com/v1/models/gemini-3.1-flash-image:generateContent',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-goog-api-key': process.env.GEMINI_API_KEY
+          },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { responseModalities: ['IMAGE'] }
+          }),
+          signal: AbortSignal.timeout(120000)
         }
-      }),
-      signal: AbortSignal.timeout(120000)
+      );
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error('Gemini HTTP ' + response.status);
+      }
+
+      const parts = (data.candidates || [])
+        .flatMap(candidate => candidate.content?.parts || []);
+      const imagePart = parts.find(part =>
+        part.inlineData?.data &&
+        String(part.inlineData.mimeType || '').startsWith('image/')
+      );
+
+      if (!imagePart) throw new Error('Gemini returned no image.');
+
+      console.log('[Image API] Success: Gemini');
+      return 'data:' + imagePart.inlineData.mimeType +
+        ';base64,' + imagePart.inlineData.data;
+    } catch (err) {
+      failures.push('Gemini: ' + err.message);
+      console.error('[Image API] Gemini failed; trying fallback:', err.message);
     }
-  );
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    console.error(
-      '[Image API] Provider error:',
-      response.status,
-      data?.error?.message || 'Unknown error'
-    );
-
-    const err = new Error(
-      response.status === 429
-        ? 'Image generation quota reached. Please try later.'
-        : 'Gemini image generation failed. Check model access and API configuration.'
-    );
-
-    err.status = response.status === 429 ? 429 : 502;
-    throw err;
+  } else {
+    failures.push('Gemini key missing');
   }
 
-  const parts = (data.candidates || [])
-    .flatMap(candidate => candidate.content?.parts || []);
+  // 2. Stability AI
+  if (process.env.STABILITY_API_KEY) {
+    try {
+      const form = new FormData();
+      form.append('prompt', prompt);
+      form.append('output_format', 'png');
+      form.append('aspect_ratio', '1:1');
 
-  const imagePart = parts.find(part =>
-    part.inlineData?.data &&
-    String(part.inlineData.mimeType || '').startsWith('image/')
-  );
+      const response = await fetch(
+        'https://api.stability.ai/v2beta/stable-image/generate/core',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer ' + process.env.STABILITY_API_KEY,
+            Accept: 'image/*'
+          },
+          body: form,
+          signal: AbortSignal.timeout(120000)
+        }
+      );
 
-  if (!imagePart) {
-    const err = new Error('No image was returned by Gemini.');
-    err.status = 502;
-    throw err;
+      if (!response.ok) {
+        throw new Error('Stability HTTP ' + response.status + ': ' +
+          (await response.text()).slice(0, 200));
+      }
+
+      const mime = response.headers.get('content-type') || 'image/png';
+      if (!mime.startsWith('image/')) {
+        throw new Error('Unexpected Stability response type');
+      }
+
+      const buffer = Buffer.from(await response.arrayBuffer());
+      if (!buffer.length) throw new Error('Empty Stability image');
+
+      console.log('[Image API] Success: Stability AI');
+      return 'data:' + mime + ';base64,' + buffer.toString('base64');
+    } catch (err) {
+      failures.push('Stability: ' + err.message);
+      console.error('[Image API] Stability failed; trying fallback:', err.message);
+    }
+  } else {
+    failures.push('Stability key missing');
   }
 
-  return 'data:' + imagePart.inlineData.mimeType +
-    ';base64,' + imagePart.inlineData.data;
+  // 3. Cloudflare FLUX
+  const account = process.env.CLOUDFLARE_ACCOUNT_ID;
+  const token = process.env.CLOUDFLARE_API_TOKEN;
+
+  if (account && token) {
+    try {
+      const response = await fetch(
+        'https://api.cloudflare.com/client/v4/accounts/' +
+          encodeURIComponent(account) + '/ai/run',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: '@cf/black-forest-labs/flux-1-schnell',
+            input: { prompt }
+          }),
+          signal: AbortSignal.timeout(120000)
+        }
+      );
+
+      const type = response.headers.get('content-type') || '';
+      if (!response.ok) {
+        throw new Error('Cloudflare HTTP ' + response.status + ': ' +
+          (await response.text()).slice(0, 200));
+      }
+
+      if (type.startsWith('image/')) {
+        const buffer = Buffer.from(await response.arrayBuffer());
+        if (!buffer.length) throw new Error('Empty Cloudflare image');
+        console.log('[Image API] Success: Cloudflare FLUX');
+        return 'data:' + type + ';base64,' + buffer.toString('base64');
+      }
+
+      const data = await response.json();
+      if (data.success === false) {
+        throw new Error(JSON.stringify(data.errors || []).slice(0, 200));
+      }
+
+      const image = data.result?.image;
+      if (typeof image !== 'string' || !image.trim()) {
+        throw new Error('Cloudflare returned no image data');
+      }
+
+      const cleaned = image.replace(/^data:image\/[^;]+;base64,/, '');
+      const buffer = Buffer.from(cleaned, 'base64');
+      if (!buffer.length) throw new Error('Invalid Cloudflare image data');
+
+      console.log('[Image API] Success: Cloudflare FLUX');
+      return 'data:image/png;base64,' + buffer.toString('base64');
+    } catch (err) {
+      failures.push('Cloudflare: ' + err.message);
+      console.error('[Image API] Cloudflare failed:', err.message);
+    }
+  } else {
+    failures.push('Cloudflare credentials missing');
+  }
+
+  const err = new Error('All image providers failed: ' + failures.join(' | ').slice(0, 700));
+  err.status = 502;
+  throw err;
 }
-
 app.post('/api/ai/image', async (req, res) => {
   try {
     const prompt = String(req.body?.prompt || '').trim();
