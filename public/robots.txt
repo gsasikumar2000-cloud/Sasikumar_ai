@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://sasikumar-ai-culp.onrender.com/sitemap.xml
+Sitemap: https://sasikumar-ai-9wdq.onrender.com/sitemap.xml
