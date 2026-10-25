@@ -1,4 +1,6 @@
 import 'dotenv/config';
+
+import { randomUUID } from 'node:crypto';
 import { InferenceClient } from '@huggingface/inference';
 import express from 'express';
 import pg from 'pg';
@@ -3421,5 +3423,95 @@ app.post('/api/fal-image', async (req, res) => {
   }
 });
 // END SASIKUMAR AI FAL IMAGE API V1
+
+
+// SK_VIDEO_LIBRARY_API_V1
+const skVideoLibraryFile = path.join(__dirname, 'data', 'videos', 'library.json');
+
+function skReadVideoLibrary() {
+  try {
+    if (!fs.existsSync(skVideoLibraryFile)) return [];
+    const parsed = JSON.parse(fs.readFileSync(skVideoLibraryFile, 'utf8'));
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    console.error('Video Library read error:', error);
+    return [];
+  }
+}
+
+function skWriteVideoLibrary(videos) {
+  fs.mkdirSync(path.dirname(skVideoLibraryFile), { recursive: true });
+  const temporaryFile = skVideoLibraryFile + '.tmp';
+  fs.writeFileSync(temporaryFile, JSON.stringify(videos, null, 2));
+  fs.renameSync(temporaryFile, skVideoLibraryFile);
+}
+
+app.get('/api/video/library', (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  res.json({ ok: true, videos: skReadVideoLibrary() });
+});
+
+app.post('/api/video/import', auth.requireAuth, (req, res) => {
+  const rawUrl = typeof req.body?.url === 'string' ? req.body.url.trim() : '';
+  let parsedUrl;
+
+  try {
+    parsedUrl = new URL(rawUrl);
+  } catch {
+    return res.status(400).json({
+      ok: false,
+      error: 'சரியான HTTPS direct video URL கொடுக்கவும்.'
+    });
+  }
+
+  const extension = path.extname(parsedUrl.pathname).toLowerCase();
+  if (parsedUrl.protocol !== 'https:' ||
+      parsedUrl.username || parsedUrl.password ||
+      !['.mp4', '.webm', '.ogv', '.ogg', '.m4v'].includes(extension)) {
+    return res.status(400).json({
+      ok: false,
+      error: 'HTTPS direct MP4/WebM/OGV/M4V video link மட்டும் ஆதரிக்கப்படுகிறது. YouTube/Facebook/Instagram share link நேரடியாக இயங்காது.'
+    });
+  }
+
+  const videos = skReadVideoLibrary();
+  if (videos.some(item => item.videoUrl === parsedUrl.href)) {
+    return res.json({ ok: true, duplicate: true, videos: videos.length });
+  }
+
+  videos.unshift({
+    id: randomUUID(),
+    videoUrl: parsedUrl.href,
+    sourceUrl: parsedUrl.href,
+    createdAt: new Date().toISOString(),
+    size: 0
+  });
+
+  try {
+    skWriteVideoLibrary(videos.slice(0, 100));
+    return res.status(201).json({ ok: true });
+  } catch (error) {
+    console.error('Video Library save error:', error);
+    return res.status(500).json({ ok: false, error: 'Video metadata save failed.' });
+  }
+});
+
+app.delete('/api/video/library/:id', auth.requireAuth, (req, res) => {
+  const id = req.params.id;
+  const videos = skReadVideoLibrary();
+  const updated = videos.filter(item => item.id !== id);
+
+  if (updated.length === videos.length) {
+    return res.status(404).json({ ok: false, error: 'Video not found.' });
+  }
+
+  try {
+    skWriteVideoLibrary(updated);
+    return res.json({ ok: true });
+  } catch (error) {
+    console.error('Video Library delete error:', error);
+    return res.status(500).json({ ok: false, error: 'Video delete failed.' });
+  }
+});
 
 app.listen(PORT,()=>console.log(`🤖 34 OPTIONS WHATSAPP MENU http://localhost:${PORT} - OK`));
