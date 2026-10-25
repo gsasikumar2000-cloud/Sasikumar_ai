@@ -12155,18 +12155,13 @@ img, video, iframe {
   function arrangeLiveAndAstrologyCards() {
     const liveCards = document.getElementById('skLiveCardsBottomV1');
     const mainGrid = document.querySelector('.skMainLiveGrid');
-    const duplicateAstrology = document.getElementById('skAstrologyButtonAboveDesignMaker');
-    const astrologyCard = document.getElementById('skSpiritualAstrologyCard');
+    const astrologyCard = document.getElementById('skAstrologyButtonAboveDesignMaker');
     const designMaker = document.getElementById('skDesignMakerGlobal');
 
     if (liveCards && mainGrid && mainGrid.parentNode) {
       mainGrid.parentNode.insertBefore(liveCards, mainGrid);
     }
 
-    if (duplicateAstrology) {
-      duplicateAstrology.style.setProperty('display', 'none', 'important');
-      duplicateAstrology.setAttribute('aria-hidden', 'true');
-    }
 
     if (astrologyCard) {
       const firstLive = liveCards || mainGrid;
@@ -12175,6 +12170,11 @@ img, video, iframe {
       } else if (designMaker && designMaker.parentNode) {
         designMaker.insertAdjacentElement('beforebegin', astrologyCard);
       }
+      astrologyCard.style.setProperty('display', 'block', 'important');
+      astrologyCard.style.setProperty('width', '100%', 'important');
+      astrologyCard.style.setProperty('max-width', '100%', 'important');
+      astrologyCard.style.setProperty('box-sizing', 'border-box', 'important');
+      astrologyCard.removeAttribute('aria-hidden');
     }
   }
 
