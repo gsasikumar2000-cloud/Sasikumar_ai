@@ -12040,9 +12040,8 @@ img, video, iframe {
 <!-- SK_LIVE_CARDS_CLEAR_VISIBLE_FINAL_V1 -->
 <style id="skLiveCardsClearVisibleFinalV1">
 #skLiveBookCardsRow {
-  display: grid !important;
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  grid-auto-flow: row !important;
+  display: flex !important;
+  flex-flow: row nowrap !important;
   align-items: stretch !important;
   gap: 12px !important;
   width: 100% !important;
@@ -12050,7 +12049,10 @@ img, video, iframe {
   min-width: 0 !important;
   height: auto !important;
   max-height: none !important;
-  overflow: visible !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  scroll-snap-type: x mandatory !important;
   box-sizing: border-box !important;
   padding: 12px !important;
   visibility: visible !important;
@@ -12059,12 +12061,11 @@ img, video, iframe {
 #skLiveBookCardsRow > * {
   display: block !important;
   position: relative !important;
-  float: none !important;
-  width: auto !important;
+  flex: 0 0 calc((100% - 48px) / 3) !important;
+  width: calc((100% - 48px) / 3) !important;
   min-width: 0 !important;
-  max-width: 100% !important;
+  max-width: calc((100% - 48px) / 3) !important;
   height: auto !important;
-  max-height: none !important;
   min-height: 155px !important;
   margin: 0 !important;
   padding: 46px 10px 14px !important;
@@ -12073,14 +12074,22 @@ img, video, iframe {
   white-space: normal !important;
   border: 2px solid #bfdbfe !important;
   border-radius: 16px !important;
-  background: #eff6ff !important;
-  color: #1e293b !important;
-  box-shadow: 0 3px 12px rgba(30, 64, 175, .12) !important;
+  background: #1e3a8a !important;
+  color: #ffffff !important;
+  box-shadow: 0 3px 12px rgba(30, 64, 175, .18) !important;
+  scroll-snap-align: start !important;
   visibility: visible !important;
   opacity: 1 !important;
 }
-#skLiveBookCardsRow > * * {
-  max-width: 100%;
+#skLiveBookCardsRow > * *,
+#skLiveBookCardsRow .skLiveBookText,
+#skLiveBookCardsRow h2,
+#skLiveBookCardsRow h3,
+#skLiveBookCardsRow p,
+#skLiveBookCardsRow a,
+#skLiveBookCardsRow span {
+  max-width: 100% !important;
+  color: #ffffff !important;
   overflow-wrap: anywhere !important;
 }
 @media (max-width: 360px) {
@@ -12089,9 +12098,12 @@ img, video, iframe {
     padding: 8px !important;
   }
   #skLiveBookCardsRow > * {
+    flex-basis: calc((100% - 32px) / 3) !important;
+    width: calc((100% - 32px) / 3) !important;
+    max-width: calc((100% - 32px) / 3) !important;
     padding-left: 7px !important;
     padding-right: 7px !important;
-    font-size: 13px !important;
+    font-size: 12px !important;
   }
 }
 </style>
