@@ -3605,4 +3605,53 @@ app.delete('/api/video/library/:id', auth.requireAuth, (req, res) => {
   }
 });
 
+
+// SK_TELEGRAM_BOT_WEBHOOK_V1
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
+const TELEGRAM_WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET || '';
+
+app.post('/api/telegram/webhook', async (req, res) => {
+  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_WEBHOOK_SECRET) {
+    return res.sendStatus(503);
+  }
+
+  const suppliedSecret = req.get('X-Telegram-Bot-Api-Secret-Token') || '';
+  if (suppliedSecret !== TELEGRAM_WEBHOOK_SECRET) {
+    return res.sendStatus(403);
+  }
+
+  res.sendStatus(200);
+
+  try {
+    const msg = req.body?.message;
+    const chatId = msg?.chat?.id;
+    const text = String(msg?.text || '').trim();
+
+    if (!chatId || !text || text.startsWith('/')) return;
+
+    const reply = await getWhatsAppAIReply(text, 'normal');
+
+    const sendResponse = await fetch(
+      `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: String(reply || 'மன்னிக்கவும், இப்போது பதில் உருவாக்க முடியவில்லை.').slice(0, 4000)
+        }),
+        signal: AbortSignal.timeout(15000)
+      }
+    );
+
+    if (!sendResponse.ok) {
+      const details = await sendResponse.text();
+      console.error('[Telegram] sendMessage failed:', sendResponse.status, details.slice(0, 500));
+    }
+  } catch (error) {
+    console.error('[Telegram] webhook processing failed:', error.message);
+  }
+});
+// END SK_TELEGRAM_BOT_WEBHOOK_V1
+
 app.listen(PORT,()=>console.log(`🤖 34 OPTIONS WHATSAPP MENU http://localhost:${PORT} - OK`));
