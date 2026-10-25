@@ -48,7 +48,112 @@ p{line-height:1.6}
 <p><a href="/communication.html">📞 Communication</a></p>
 <p><a href="/customer-feedback.html">💬 Customer Feedback</a></p>
 </section>
-</main>
+
+<!-- SK_MY_REFERRAL_ID_V1 -->
+<section id="skMyReferralCard" style="margin:16px 0;padding:18px;border-radius:16px;background:linear-gradient(135deg,#e8f7ff,#f0fff1);border:1px solid #b8e3d5;color:#173b42;">
+  <h2 style="margin:0 0 8px;font-size:20px;">🎁 My Referral ID</h2>
+  <p style="margin:0 0 12px;font-size:14px;">Share your referral link with friends.</p>
+  <div id="skReferralIdValue" style="padding:12px;background:#fff;border:1px solid #d5e6e2;border-radius:10px;font-size:19px;font-weight:700;overflow-wrap:anywhere;">Checking login…</div>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;">
+    <button type="button" id="skCopyReferralId" style="padding:10px 14px;border:0;border-radius:9px;background:#087f5b;color:white;font-weight:600;">📋 Copy ID</button>
+    <button type="button" id="skShareReferral" style="padding:10px 14px;border:0;border-radius:9px;background:#16834a;color:white;font-weight:600;">📲 Share Referral</button>
+  </div>
+  <p id="skReferralMessage" role="status" style="margin:10px 0 0;font-size:13px;"></p>
+</section>
+
+<!-- SK_SYSTEM_USER_ACTIVITY_HISTORY_V1 -->
+<section class="card" id="skActivityHistory">
+  <h2>📋 System & User Activity History</h2>
+  <p>இந்த browser-ல் பார்வையிட்ட பக்கங்கள் மற்றும் செயல்பாடுகளின் வரலாறு.</p>
+  <div style="display:flex;flex-wrap:wrap;gap:8px">
+    <input id="skActivitySearch" type="search"
+      placeholder="Search history..."
+      aria-label="Search activity history"
+      style="flex:1;min-width:150px;padding:11px;border:1px solid #bbb;border-radius:9px">
+    <button id="skActivityRefresh" type="button">🔄 Refresh</button>
+    <button id="skActivityClear" type="button"
+      style="background:#c62828">🗑️ Clear History</button>
+  </div>
+  <p id="skActivityCount" aria-live="polite">Loading history...</p>
+  <div id="skActivityList"></div>
+  <p style="font-size:12px;color:#64748b">
+    Privacy: இந்த வரலாறு இந்த browser-ல் மட்டுமே சேமிக்கப்படுகிறது.
+    இது server-side logs அல்ல.
+  </p>
+</section>
+<script id="skActivityHistoryScript">
+(function () {
+  'use strict';
+  const KEY = 'sk_settings_activity_history_v1';
+  const list = document.getElementById('skActivityList');
+  const count = document.getElementById('skActivityCount');
+  const search = document.getElementById('skActivitySearch');
+
+  function readHistory() {
+    try {
+      const value = JSON.parse(localStorage.getItem(KEY) || '[]');
+      return Array.isArray(value) ? value : [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  function escapeHTML(value) {
+    return String(value).replace(/[&<>"']/g, function (ch) {
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];
+    });
+  }
+
+  function render() {
+    const query = search.value.trim().toLowerCase();
+    const entries = readHistory().filter(function (item) {
+      return (String(item.page || '') + ' ' +
+        String(item.title || '') + ' ' +
+        String(item.type || '')).toLowerCase().includes(query);
+    });
+
+    count.textContent = entries.length + ' activity record(s)';
+    if (!entries.length) {
+      list.innerHTML = '<p>No activity history yet.</p>';
+      return;
+    }
+
+    list.innerHTML = entries.slice(0, 200).map(function (item) {
+      return '<article style="padding:12px;margin:8px 0;border:1px solid #dbe4f0;border-radius:10px;overflow-wrap:anywhere">' +
+        '<strong>' + escapeHTML(item.title || item.page || 'Page activity') + '</strong>' +
+        '<p style="margin:5px 0">' + escapeHTML(item.type || 'Page visit') + '</p>' +
+        '<small>' + escapeHTML(item.time || '') + '</small></article>';
+    }).join('');
+  }
+
+  search.addEventListener('input', render);
+  document.getElementById('skActivityRefresh').addEventListener('click', render);
+  document.getElementById('skActivityClear').addEventListener('click', function () {
+    if (!window.confirm('இந்த browser-ல் உள்ள activity history-ஐ அழிக்கவா?')) return;
+    localStorage.removeItem(KEY);
+    render();
+  });
+
+  try {
+    const seen = sessionStorage.getItem('sk_settings_activity_recorded_v1');
+    if (!seen) {
+      const history = readHistory();
+      history.unshift({
+        type: 'Settings page visit',
+        page: location.pathname,
+        title: document.title,
+        time: new Date().toLocaleString('en-IN')
+      });
+      localStorage.setItem(KEY, JSON.stringify(history.slice(0, 500)));
+      sessionStorage.setItem('sk_settings_activity_recorded_v1', '1');
+    }
+  } catch (_) {}
+
+  render();
+})();
+</script>
+<!-- END SK_SYSTEM_USER_ACTIVITY_HISTORY_V1 -->
+\n</main>
 <script>
 const btn=document.getElementById("darkToggle");
 function applyDark(on){
@@ -147,6 +252,78 @@ btn.addEventListener("click",()=>applyDark(localStorage.getItem("sasikumar_setti
   }).observe(document.documentElement, {
     subtree: true, childList: true, attributes: true, attributeFilter: ['src']
   });
+})();
+</script>
+
+
+<script>
+/* SK_MY_REFERRAL_ID_SCRIPT_V1 */
+(function () {
+  const valueEl = document.getElementById('skReferralIdValue');
+  const messageEl = document.getElementById('skReferralMessage');
+  const copyBtn = document.getElementById('skCopyReferralId');
+  const shareBtn = document.getElementById('skShareReferral');
+  if (!valueEl || !messageEl || !copyBtn || !shareBtn) return;
+
+  let referralId = '';
+
+  function message(text) {
+    messageEl.textContent = text;
+  }
+
+  async function loadReferral() {
+    try {
+      const response = await fetch('/api/auth/me', {
+        credentials: 'same-origin',
+        cache: 'no-store'
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok || !data.ok) {
+        valueEl.textContent = 'Please log in to view your Referral ID.';
+        copyBtn.disabled = true;
+        shareBtn.disabled = true;
+        return;
+      }
+
+      referralId = String(data.referral_id || '').trim();
+      if (!referralId) {
+        valueEl.textContent = 'Referral ID is not available for this account.';
+        copyBtn.disabled = true;
+        shareBtn.disabled = true;
+        return;
+      }
+
+      valueEl.textContent = referralId;
+      copyBtn.disabled = false;
+      shareBtn.disabled = false;
+    } catch (_) {
+      valueEl.textContent = 'Unable to load Referral ID. Please refresh.';
+      copyBtn.disabled = true;
+      shareBtn.disabled = true;
+    }
+  }
+
+  copyBtn.addEventListener('click', async function () {
+    if (!referralId) return;
+    try {
+      await navigator.clipboard.writeText(referralId);
+      message('Referral ID copied!');
+    } catch (_) {
+      message('Copy unavailable. Please select and copy the ID manually.');
+    }
+  });
+
+  shareBtn.addEventListener('click', function () {
+    if (!referralId) return;
+    const link = location.origin + '/?ref=' + encodeURIComponent(referralId);
+    const text = 'Join me on SASIKUMAR AI! Use my referral ID: ' +
+      referralId + '\n' + link;
+    const whatsapp = 'https://wa.me/?text=' + encodeURIComponent(text);
+    window.open(whatsapp, '_blank', 'noopener,noreferrer');
+  });
+
+  loadReferral();
 })();
 </script>
 
