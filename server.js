@@ -1891,15 +1891,105 @@ if(WA_TOKEN && WA_PHONE_ID){
         });
       } else {
         const caption = ('🤖 SASIKUMAR AI\n' + answerText).substring(0, 1000);
-        const imageUrl = 'https://sasikumar-ai-9wdq.onrender.com/assets/sasikumar-ai-logo.png';
 
-        await sendWA({
-          type: 'image',
-          image: {
-            link: imageUrl,
-            caption: caption
+        // SK_WHATSAPP_AI_IMAGE_REPLY_V1
+        const wantsImage =
+          /\b(generate|create|make|draw|design)\b.{0,70}\b(image|picture|photo|poster|wallpaper)\b/i.test(trimmed) ||
+          /\b(image|picture|photo|poster|wallpaper)\b.{0,70}\b(generate|create|make|draw|design)\b/i.test(trimmed) ||
+          /படம்\s*(உருவாக்கு|செய்|வேண்டும்|தயார்)|போஸ்டர்\s*(உருவாக்கு|செய்|வேண்டும்|தயார்)|படம் உருவாக்கி/i.test(trimmed);
+
+        if (wantsImage) {
+          try {
+            const generated = await skGenerateImage(trimmed);
+            const match = /^data:(image\/[a-zA-Z0-9.+-]+);base64,([A-Za-z0-9+/=\r\n]+)$/.exec(String(generated || ''));
+
+            if (!match) {
+              throw new Error('Image generator did not return a supported base64 image.');
+            }
+
+            const mime = match[1];
+            const imageBytes = Buffer.from(match[2].replace(/\s/g, ''), 'base64');
+
+            if (!imageBytes.length) {
+              throw new Error('Generated image is empty.');
+            }
+
+            const form = new FormData();
+            form.append('messaging_product', 'whatsapp');
+            form.append(
+              'file',
+              new Blob([imageBytes], { type: mime }),
+              mime === 'image/jpeg' ? 'sasikumar-ai.jpg' : 'sasikumar-ai.png'
+            );
+            form.append('type', mime);
+
+            const uploadResponse = await fetch(
+              `https://graph.facebook.com/v20.0/${WA_PHONE_ID}/media`,
+              {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${WA_TOKEN}` },
+                body: form,
+                signal: AbortSignal.timeout(60000)
+              }
+            );
+
+            const uploadData = await uploadResponse.json().catch(() => ({}));
+
+            if (!uploadResponse.ok || !uploadData.id) {
+              console.error(
+                '[WhatsApp media upload]',
+                uploadResponse.status,
+                JSON.stringify(uploadData).slice(0, 500)
+              );
+              throw new Error('WhatsApp media upload failed.');
+            }
+
+            const imageSent = await sendWA({
+              type: 'image',
+              image: {
+                id: uploadData.id,
+                caption: '🎨 உங்கள் AI படம் தயார்!\n🤖 SASIKUMAR AI'
+              }
+            });
+
+            if (!imageSent) {
+              await sendWA({
+                type: 'text',
+                text: {
+                  body: '🤖 SASIKUMAR AI\nபடம் உருவானது; ஆனால் WhatsApp-ல் அனுப்ப முடியவில்லை. சிறிது நேரத்தில் மீண்டும் முயற்சிக்கவும்.'
+                }
+              });
+            }
+          } catch (imageError) {
+            console.error('[WhatsApp AI image]', imageError.message || imageError);
+            await sendWA({
+              type: 'text',
+              text: {
+                body: '🤖 SASIKUMAR AI\n' +
+                  'மன்னிக்கவும், இப்போது AI படம் உருவாக்கவோ அனுப்பவோ முடியவில்லை.\n' +
+                  '📝 ' + answerText
+              }
+            });
           }
-        });
+        } else {
+          const imageUrl = 'https://sasikumar-ai-9wdq.onrender.com/assets/sasikumar-ai-logo.png';
+          const sent = await sendWA({
+            type: 'image',
+            image: {
+              link: imageUrl,
+              caption
+            }
+          });
+
+          // If logo-image delivery fails, still deliver the text reply.
+          if (!sent) {
+            await sendWA({
+              type: 'text',
+              text: { body: caption }
+            });
+          }
+        }
+        // END SK_WHATSAPP_AI_IMAGE_REPLY_V1
       }
     }
     res.sendStatus(200);
