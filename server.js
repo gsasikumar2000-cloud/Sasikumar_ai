@@ -3789,7 +3789,7 @@ async function skTelegramSendMessage(chatId, message) {
     const details = await photoResponse.text();
     console.error('[Telegram] sendPhoto failed; using text reply:', photoResponse.status, details.slice(0, 300));
   } catch (error) {
-    console.error('[Telegram] sendPhoto error; using text reply:', error.message);
+    console.error('[Telegram] sendPhoto error; using text reply:', error.message, 'CAUSE:', error.cause?.code || error.cause?.message || 'unknown');
   }
 
   const response = await fetch(
@@ -3960,7 +3960,7 @@ app.post('/api/telegram/webhook', async (req, res) => {
     const reply = await getWhatsAppAIReply(text, 'normal');
     await skTelegramSendMessage(chatId, reply);
   } catch (error) {
-    console.error('[Telegram] webhook processing failed:', error.message);
+    console.error('[Telegram] webhook processing failed:', error.message, 'CAUSE:', error.cause?.code || error.cause?.message || 'unknown');
   }
 });
 // END SK_TELEGRAM_BOT_WEBHOOK_V1
