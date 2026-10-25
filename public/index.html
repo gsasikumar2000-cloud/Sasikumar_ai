@@ -792,8 +792,8 @@ text-decoration:none !important;
 
 <style>
 @keyframes sasikumar360 {
-  from { transform:rotate(0deg); }
-  to { transform:rotate(360deg); }
+  from {  }
+  to {  }
 }
 </style>
 
@@ -2586,8 +2586,7 @@ Tamil + English • Gold • General Q&A</div>
   width:60px;height:60px;object-fit:contain;display:block;margin:0 auto 10px;
   animation:skMiniOfficeSpin 3s linear infinite;
 }
-@keyframes skMiniOfficeSpin {to{transform:rotate(360deg)}}
-#skMiniOfficeV1 h2 {font-size:clamp(18px,4vw,25px);margin:8px 0}
+@keyframes skMiniOfficeSpin {to{margin:8px 0}
 #skMiniOfficeV1 .skOfficeSub {margin:6px 0 16px;font-size:13px}
 #skMiniOfficeV1 .skOfficeGrid {
   display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;
@@ -2786,6 +2785,27 @@ Tamil + English • Gold • General Q&A</div>
  width:90px !important; height:90px !important; object-fit:contain !important; display:block !important; margin:0 auto !important; border-radius:12px !important;
 }
 #skLiveCardsBottomV1 .skMiniLiveIcon img, #skMiniLiveCardsV1Grid .skMiniLiveIcon img { width:90px !important; height:90px !important; }
+</style>
+
+<style id="skLogoStraightFix">
+#skLiveCardsBottomV1 .skMainLiveGrid img,
+#skLiveCardsBottomV1 .skMainFeatureCard img,
+.skMainLiveGrid img {
+  transform: none !important;
+  
+  width: 85px !important;
+  height: 85px !important;
+  object-fit: contain !important;
+  margin: 0 auto !important;
+  display: block !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 12px !important;
+}
+#skLiveCardsBottomV1 .skMainLiveGrid > div,
+#skLiveCardsBottomV1 .skMainFeatureCard {
+  overflow: visible !important;
+}
 </style>
 </head><body>' + slides + '
 <!-- SK_ALL_HOME_MINI_CARDS_V1 -->
@@ -4986,9 +5006,7 @@ function printAppraisalReport(btn){
     "<meta name='viewport' content='width=device-width,initial-scale=1'>" +
     "<title>SASIKUMAR AI - Appraisal Report</title>" +
     "<style>body{font-family:Arial,sans-serif;margin:20px;color:#111;background:#fff}.report-box{max-width:850px;margin:auto}</style>" +
-    "<style id=\"sk_all_logo_spin_v2\">@keyframes skAllLogoSpinV2{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}</style>" +
-    "</head><body>" + el.outerHTML +
-    "<script id=\"sk_all_logo_spin_v2-script\">(function(){function spinLogo(img){if(!img||!/sasikumar-ai-logo[.]png/i.test(img.getAttribute('src')||''))return;img.style.setProperty('animation','skAllLogoSpinV2 3s linear infinite','important')}function scan(root){if(root.matches&&root.matches('img'))spinLogo(root);if(root.querySelectorAll)root.querySelectorAll('img').forEach(spinLogo)}scan(document);new MutationObserver(function(records){records.forEach(function(record){if(record.type==='attributes')spinLogo(record.target);else record.addedNodes.forEach(function(node){if(node.nodeType===1)scan(node)})})}).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['src']})})();<\/script></body></html>"
+    "<style id=\"sk_all_logo_spin_v2\">@keyframes skAllLogoSpinV2{from{img.style.setProperty('animation','skAllLogoSpinV2 3s linear infinite','important')}function scan(root){if(root.matches&&root.matches('img'))spinLogo(root);if(root.querySelectorAll)root.querySelectorAll('img').forEach(spinLogo)}scan(document);new MutationObserver(function(records){records.forEach(function(record){if(record.type==='attributes')spinLogo(record.target);else record.addedNodes.forEach(function(node){if(node.nodeType===1)scan(node)})})}).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['src']})})();<\/script></body></html>"
   );
 
   w.document.close();
@@ -5252,10 +5270,7 @@ function printAppraisalReport(id){
     "td:first-child{font-weight:bold;width:32%}" +
     "button,input,textarea,select{display:none}" +
     "img{max-width:100%;height:auto}" +
-    "@keyframes skAllLogoSpinV2{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}" +
-    "@media print{body{margin:10mm}}</style>" +
-    "</head><body>" + el.outerHTML +
-    "<script>(function(){function spin(img){if(img&&/sasikumar-ai-logo[.]png/i.test(img.getAttribute('src')||'')){img.style.setProperty('animation','skAllLogoSpinV2 3s linear infinite','important')}}document.querySelectorAll('img').forEach(spin)})();<\/script>" +
+    "@keyframes skAllLogoSpinV2{from{<\/script>" +
     "</body></html>"
   );
   w.document.close();
@@ -8651,14 +8666,7 @@ input, textarea, select, button {
   animation:skBrandLogoRotate 3s linear infinite!important;
 }
 @keyframes skBrandLogoRotate{
-  from{transform:rotate(0deg)}
-  to{transform:rotate(360deg)}
-}
-/* Cards can be repositioned by touch or mouse */
-.skMainLiveGrid > .skMainFeatureCard,
-#skLiveBookCardsRow > *,
-.skMainFeatureCard.skDragEnabled{
-  touch-action:pan-y;
+  from{
 }
 .skDragEnabled.skDragging{
   opacity:.82!important;
@@ -8800,12 +8808,7 @@ input, textarea, select, button {
   animation:skYTCardLogo360 3s linear infinite;
 }
 @keyframes skYTCardLogo360 {
-  from {transform:rotate(0deg)}
-  to {transform:rotate(360deg)}
-}
-@media(prefers-reduced-motion:reduce) {
-  #skYouTubeCreativeCards .sk-yt-center-logo img {
-    animation:skYTCardLogo360 3s linear infinite !important;
+  from {
   }
 }
 </style>
@@ -9356,9 +9359,7 @@ window.addEventListener("afterprint",function(){
   width:60px;height:60px;object-fit:contain;
   animation:skServiceSpinV1 3s linear infinite;
 }
-@keyframes skServiceSpinV1{to{transform:rotate(360deg)}}
-#skServiceOverlayV1 .sk-service-close{
-  position:absolute;right:0;top:8px;border:0;border-radius:12px;
+@keyframes skServiceSpinV1{to{right:0;top:8px;border:0;border-radius:12px;
   padding:10px 13px;background:#dc2626;color:#fff;font-weight:800;
 }
 #skServiceOverlayV1 .sk-service-main{
@@ -10584,9 +10585,7 @@ html body .skMainLiveGrid > .skMainFeatureCard {
 .skEditorialPonmozhiV1 {background:linear-gradient(135deg,#dcfce7,#d1fae5) !important;color:#14532d !important;}
 .skEditorialDesignV1 {background:linear-gradient(135deg,#e0e7ff,#dbeafe) !important;color:#312e81 !important;}
 .skEditorialCreatorV1 {background:linear-gradient(135deg,#ffe4e6,#ffedd5) !important;color:#9a3412 !important;}
-@keyframes skEditorialSpinV1 {from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-@media(max-width:600px) {
- .skEditorialCardV1 {min-height:220px !important;padding:13px !important;width:100% !important;}
+@keyframes skEditorialSpinV1 {from{padding:13px !important;width:100% !important;}
  .skEditorialCardV1 .skEditorialLogoV1 {width:52px !important;height:52px !important;}
 }
 </style>
