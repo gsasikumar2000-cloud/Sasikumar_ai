@@ -3720,6 +3720,48 @@ async function skTelegramSendMessage(chatId, message) {
     console.error('[Telegram] sendMessage failed:', response.status, details.slice(0, 500));
   }
 }
+// SK_TELEGRAM_AI_POSTER_V1
+async function skTelegramSendPoster(chatId, prompt) {
+  const generated = await skGenerateImage(prompt);
+  const match = /^data:(image\/[a-zA-Z0-9.+-]+);base64,([A-Za-z0-9+/=\r\n]+)$/.exec(String(generated || ''));
+
+  if (!match) {
+    throw new Error('Unsupported generated image format.');
+  }
+
+  const mime = match[1];
+  const imageBytes = Buffer.from(match[2].replace(/\s/g, ''), 'base64');
+
+  if (!imageBytes.length) {
+    throw new Error('Generated image is empty.');
+  }
+
+  const form = new FormData();
+  form.append('chat_id', String(chatId));
+  form.append(
+    'photo',
+    new Blob([imageBytes], { type: mime }),
+    mime === 'image/jpeg' ? 'sasikumar-ai-poster.jpg' : 'sasikumar-ai-poster.png'
+  );
+  form.append('caption', '🎨 உங்கள் AI Poster தயார்!\n🤖 SASIKUMAR AI');
+
+  const response = await fetch(
+    `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`,
+    {
+      method: 'POST',
+      body: form,
+      signal: AbortSignal.timeout(30000)
+    }
+  );
+
+  if (!response.ok) {
+    const details = await response.text();
+    console.error('[Telegram AI poster]', response.status, details.slice(0, 500));
+    throw new Error('Telegram photo delivery failed.');
+  }
+}
+// END SK_TELEGRAM_AI_POSTER_V1
+
 app.post('/api/telegram/webhook', async (req, res) => {
   if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_WEBHOOK_SECRET) {
     return res.sendStatus(503);
@@ -3740,6 +3782,46 @@ app.post('/api/telegram/webhook', async (req, res) => {
     const text = String(msg?.text || '').trim();
 
     if (!chatId || !text) return;
+
+    // SK_TELEGRAM_AI_POSTER_COMMAND_V1
+    const posterMatch = text.match(/^(?:poster|ai\s*poster|போஸ்டர்|ஏஐ\s*போஸ்டர்)\s*[:：]\s*([\s\S]+)$/i);
+
+    if (posterMatch) {
+      const posterPrompt = posterMatch[1].trim();
+
+      if (!posterPrompt) {
+        await skTelegramSendMessage(
+          chatId,
+          '🎨 போஸ்டர் உள்ளடக்கத்தை எழுதுங்கள்.\nஉதாரணம்: Poster: Good Morning'
+        );
+        return;
+      }
+
+      if (posterPrompt.length > 1500) {
+        await skTelegramSendMessage(
+          chatId,
+          '⚠️ போஸ்டர் விளக்கம் 1500 எழுத்துகளுக்குள் இருக்க வேண்டும்.'
+        );
+        return;
+      }
+
+      await skTelegramSendMessage(
+        chatId,
+        '🎨 உங்கள் AI Poster உருவாக்கப்படுகிறது. சிறிது நேரம் காத்திருக்கவும்…'
+      );
+
+      try {
+        await skTelegramSendPoster(chatId, posterPrompt);
+      } catch (posterError) {
+        console.error('[Telegram AI poster command]', posterError.message || posterError);
+        await skTelegramSendMessage(
+          chatId,
+          'மன்னிக்கவும், இப்போது படம் உருவாக்க முடியவில்லை. Gemini image generation அமைப்பைச் சரிபார்க்கவும்.'
+        );
+      }
+
+      return;
+    }
 
     if (/^\/(start|menu)(?:@\w+)?(?:\s|$)/i.test(text)) {
       await skTelegramSendMessage(
