@@ -1894,9 +1894,10 @@ if(WA_TOKEN && WA_PHONE_ID){
 
         // SK_WHATSAPP_AI_IMAGE_REPLY_V1
         const wantsImage =
-          /\b(generate|create|make|draw|design)\b.{0,70}\b(image|picture|photo|poster|wallpaper)\b/i.test(trimmed) ||
-          /\b(image|picture|photo|poster|wallpaper)\b.{0,70}\b(generate|create|make|draw|design)\b/i.test(trimmed) ||
-          /படம்\s*(உருவாக்கு|செய்|வேண்டும்|தயார்)|போஸ்டர்\s*(உருவாக்கு|செய்|வேண்டும்|தயார்)|படம் உருவாக்கி/i.test(trimmed);
+          /\b(generate|create|make|draw|design|send|show)\b.{0,100}\b(image|picture|photo|poster|wallpaper|god|deity|krishna|murugan|ganesha|vinayagar|jesus|allah)\b/i.test(trimmed) ||
+          /\b(image|picture|photo|poster|wallpaper)\b.{0,100}\b(generate|create|make|draw|design|send|show)\b/i.test(trimmed) ||
+          /\b(god|deity|krishna|murugan|ganesha|vinayagar|jesus)\s+(image|picture|photo|poster|wallpaper)\b/i.test(trimmed) ||
+          /படம்\s*(உருவாக்கு|செய்|வேண்டும்|தயார்|அனுப்பு)|போஸ்டர்\s*(உருவாக்கு|செய்|வேண்டும்|தயார்|அனுப்பு)|படம் உருவாக்கி|கடவுள் படம்|சாமி படம்|முருகன் படம்|விநாயகர் படம்/i.test(trimmed);
 
         if (wantsImage) {
           try {
