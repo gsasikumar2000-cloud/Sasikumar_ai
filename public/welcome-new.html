@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f3f7ff">
+<meta name="description" content="Welcome to SASIKUMAR AI — AI tools and smart digital services.">
+<title>Welcome 🙏 SASIKUMAR AI</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;min-height:100vh;padding:20px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:Arial,sans-serif;
+  background:linear-gradient(135deg,#e0f2fe,#f5e8ff,#fff7d6);
+  color:#172554;text-align:center
+}
+.card{
+  width:100%;max-width:420px;padding:30px 22px;
+  background:#ffffffed;border:1px solid #dbeafe;
+  border-radius:26px;box-shadow:0 15px 45px #64748b25
+}
+.logo{
+  width:80px;height:80px;margin:0 auto 18px;
+  border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:38px;
+  background:linear-gradient(135deg,#2563eb,#9333ea);
+  animation:spin 8s linear infinite
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+h1{font-size:27px;margin:10px 0;color:#4338ca}
+p{font-size:16px;line-height:1.7;color:#475569}
+.button{
+  display:block;margin-top:24px;padding:14px 18px;
+  border-radius:14px;background:#4f46e5;color:white;
+  text-decoration:none;font-weight:bold;font-size:16px
+}
+.button:focus-visible{outline:3px solid #f59e0b;outline-offset:3px}
+.small{font-size:12px;margin-top:20px}
+
+/* SK_WELCOME_BRAND_DATETIME_PLACE_V1 */
+.brand-logo {
+  display:block;
+  width:80px;
+  height:80px;
+  object-fit:contain;
+  margin:0 auto 14px;
+  border-radius:20px;
+}
+.welcome-info {
+  margin:18px auto 8px;
+  padding:12px;
+  border-radius:14px;
+  background:rgba(255,255,255,.78);
+  color:#24304a;
+  font-size:14px;
+  line-height:1.8;
+  overflow-wrap:anywhere;
+}
+.welcome-info strong { color:#5632a8; }
+
+
+/* SK_WELCOME_COLORFUL_MOBILE_FIT_V1 */
+html {
+  min-height: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  box-sizing: border-box;
+  min-height: 100vh;
+  margin: 0;
+  padding: clamp(12px, 4vw, 28px);
+  background: linear-gradient(135deg, #fff1f7, #e6f7ff 45%, #fff4d6);
+  color: #26325a;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+h1 {
+  max-width: 100%;
+  margin: 12px auto;
+  font-size: clamp(24px, 7vw, 38px);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+  background: linear-gradient(90deg, #7c3aed, #ec4899, #f97316);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.brand-logo {
+  width: clamp(64px, 19vw, 88px);
+  height: clamp(64px, 19vw, 88px);
+  max-width: 100%;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto 10px;
+}
+.welcome-info {
+  width: 100%;
+  max-width: 420px;
+  margin: 16px auto;
+  padding: clamp(10px, 3.5vw, 16px);
+  border: 1px solid rgba(124, 58, 237, .18);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, .88);
+  box-shadow: 0 8px 24px rgba(76, 29, 149, .10);
+  color: #27335d;
+  font-size: clamp(13px, 3.7vw, 16px);
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.button {
+  display: inline-block;
+  max-width: 100%;
+  padding: 12px 18px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #7c3aed, #ec4899, #f97316);
+  color: #fff;
+  font-size: clamp(14px, 4vw, 17px);
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+  box-shadow: 0 6px 18px rgba(124, 58, 237, .22);
+}
+@media (max-width: 360px) {
+  body { padding: 10px; }
+  h1 { font-size: clamp(22px, 7vw, 27px); }
+  .welcome-info { padding: 10px; line-height: 1.6; }
+  .button { padding: 11px 14px; }
+}
+
+
+/* SK_ORIGINAL_LOGO_SPIN360_V1 */
+@keyframes skOriginalLogoSpin360 {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.brand-logo {
+  animation: skOriginalLogoSpin360 6s linear infinite;
+  transform-origin: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  .brand-logo { animation: none; }
+}
+
+</style>
+</head>
+<body>
+<main class="card">
+
+
+<img class="brand-logo" src="/assets/sasikumar-ai-logo-160.png"
+     alt="SASIKUMAR AI Brand Logo" width="80" height="80">
+<h1>Welcome 🙏<br>SASIKUMAR AI</h1>
+<div class="welcome-info" id="welcomeInfo" data-marker="SK_WELCOME_BRAND_DATETIME_PLACE_V1">
+  📅 <strong>Date:</strong> <span id="welcomeDate">Loading...</span><br>
+  🕒 <strong>Time:</strong> <span id="welcomeTime">Loading...</span><br>
+  📍 <strong>Place:</strong> Papanasam, Thanjavur, Tamil Nadu, India
+</div>
+
+  <p>Your AI tools and smart digital services — all in one place.</p>
+  <!-- SK_WELCOME_LOGIN_SIGNUP_BUTTONS_V1 -->
+  <div class="welcome-auth-buttons" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:16px 0;">
+    <a class="button" href="/?skAuth=login" style="flex:1;min-width:120px;background:#2563eb;color:#fff;">🔐 LOGIN</a>
+    <a class="button" href="/?skAuth=signup" style="flex:1;min-width:120px;background:#16a34a;color:#fff;">🆕 SIGN UP</a>
+  </div>
+  <a class="button" href="/">🚀 Open SASIKUMAR AI</a>
+  <p class="small">Welcome! Explore, create and discover.</p>
+</main>
+
+<script>
+/* SK_WELCOME_BRAND_DATETIME_PLACE_V1 */
+(function () {
+  const dateEl = document.getElementById('welcomeDate');
+  const timeEl = document.getElementById('welcomeTime');
+  if (!dateEl || !timeEl) return;
+
+  function updateWelcomeClock() {
+    const now = new Date();
+    const options = { timeZone: 'Asia/Kolkata' };
+    dateEl.textContent = new Intl.DateTimeFormat('en-IN', {
+      ...options, day: '2-digit', month: 'long', year: 'numeric'
+    }).format(now);
+    timeEl.textContent = new Intl.DateTimeFormat('en-IN', {
+      ...options, hour: '2-digit', minute: '2-digit',
+      second: '2-digit', hour12: true
+    }).format(now);
+  }
+
+  updateWelcomeClock();
+  setInterval(updateWelcomeClock, 1000);
+})();
+</script>
+
+
+<!-- SK_WELCOME_WEB_SEARCH_ONLY_V1 -->
+<section id="skWelcomeWebSearch" aria-label="SASIKUMAR AI Web Search">
+  <h2>SASIKUMAR AI Web Search</h2>
+  <form action="https://www.google.com/search" method="get"
+        target="_blank" rel="noopener">
+    <input name="q" type="search"
+      placeholder="Search the web..."
+      aria-label="Search the web" required
+      style="box-sizing:border-box;width:100%;padding:13px;border:1px solid #cbd5e1;border-radius:12px;font-size:16px;">
+    <button class="button" type="submit">🌐 Web Search</button>
+  </form>
+</section>
+<!-- END SK_WELCOME_WEB_SEARCH_ONLY_V1 -->
+
+</body>
+</html>
