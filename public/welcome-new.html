@@ -891,6 +891,135 @@ form[action*="google.com/search"] input[type="submit"] {
 
 
 
+
+<!-- SK_CODE_STUDIO_V1 -->
+<section id="skCodeStudio" style="margin:18px auto;padding:16px;max-width:1000px;border:1px solid #b8d7ff;border-radius:18px;background:#f4f9ff;color:#172554;box-sizing:border-box">
+  <h2 style="margin:0 0 8px">💻 SASIKUMAR AI — Code Studio</h2>
+  <p style="margin:0 0 12px">Java • CSS • Python • cURL • Makefile</p>
+
+  <label for="skCodeLanguage"><b>Language / Tool</b></label>
+  <select id="skCodeLanguage" style="display:block;width:100%;padding:11px;margin:7px 0 12px;border-radius:10px">
+    <option value="java">☕ Java</option>
+    <option value="css">🎨 CSS</option>
+    <option value="python">🐍 Python</option>
+    <option value="curl">🌐 cURL API</option>
+    <option value="makefile">🛠️ Makefile</option>
+  </select>
+
+  <label for="skCodeInput"><b>Code Input / Editor</b></label>
+  <textarea id="skCodeInput" spellcheck="false"
+    placeholder="Write or paste your code here..."
+    style="display:block;width:100%;min-height:220px;box-sizing:border-box;padding:12px;border-radius:12px;border:1px solid #9bbce8;font-family:monospace;font-size:14px;white-space:pre;overflow:auto"></textarea>
+
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin:10px 0">
+    <button type="button" id="skCodeSample">Example</button>
+    <button type="button" id="skCodeCopy">Copy</button>
+    <button type="button" id="skCodePaste">Paste</button>
+    <button type="button" id="skCodeSave">Save .txt</button>
+    <button type="button" id="skCodeClear">Clear</button>
+    <button type="button" id="skCodeAsk">🤖 AI Code Helper</button>
+  </div>
+
+  <label for="skCodeOutput"><b>Output / AI Suggestions</b></label>
+  <pre id="skCodeOutput" aria-live="polite"
+    style="min-height:65px;white-space:pre-wrap;overflow-wrap:anywhere;padding:12px;border-radius:12px;background:#fff;border:1px solid #cbd5e1;color:#172554">Choose a language and write code.</pre>
+
+  <small>Security: this studio edits and saves code. It does not execute Java or Python on the server.</small>
+</section>
+
+<script>
+(function () {
+  const $ = id => document.getElementById(id);
+  const lang = $("skCodeLanguage");
+  const input = $("skCodeInput");
+  const output = $("skCodeOutput");
+
+  const samples = {
+    java: 'public class Main {\\n    public static void main(String[] args) {\\n        System.out.println("Hello, SASIKUMAR AI!");\\n    }\\n}',
+    css: 'body {\\n  font-family: Arial, sans-serif;\\n  background: #f4f9ff;\\n  color: #172554;\\n}',
+    python: 'def main():\\n    print("Hello, SASIKUMAR AI!")\\n\\nif __name__ == "__main__":\\n    main()',
+    curl: 'curl -i -X GET "https://example.com/api/status" -H "Accept: application/json"',
+    makefile: '.PHONY: check\\ncheck:\\n\\t@echo "Build/check task goes here"'
+  };
+
+  const extensions = {
+    java: "java", css: "css", python: "py", curl: "sh", makefile: "Makefile"
+  };
+
+  $("skCodeSample").addEventListener("click", () => {
+    input.value = samples[lang.value].replace(/\\\\n/g, "\n");
+    output.textContent = "Example loaded. Review or edit it before saving.";
+  });
+
+  lang.addEventListener("change", () => {
+    output.textContent = "Selected: " + lang.options[lang.selectedIndex].text;
+  });
+
+  $("skCodeCopy").addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(input.value);
+      output.textContent = "Code copied.";
+    } catch (_) {
+      input.focus();
+      input.select();
+      output.textContent = "Clipboard access unavailable. Select the code and copy it manually.";
+    }
+  });
+
+  $("skCodePaste").addEventListener("click", async () => {
+    try {
+      input.value = await navigator.clipboard.readText();
+      output.textContent = "Clipboard text pasted.";
+    } catch (_) {
+      output.textContent = "Paste permission unavailable. Long-press the editor and choose Paste.";
+    }
+  });
+
+  $("skCodeSave").addEventListener("click", () => {
+    const ext = extensions[lang.value];
+    const blob = new Blob([input.value], {type:"text/plain;charset=utf-8"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = ext === "Makefile" ? "Makefile" : "code." + ext;
+    a.click();
+    URL.revokeObjectURL(url);
+    output.textContent = "Download requested: " + a.download;
+  });
+
+  $("skCodeClear").addEventListener("click", () => {
+    input.value = "";
+    output.textContent = "Editor cleared.";
+  });
+
+  $("skCodeAsk").addEventListener("click", async () => {
+    const code = input.value.trim();
+    if (!code) {
+      output.textContent = "முதலில் code எழுதவும் அல்லது paste செய்யவும்.";
+      return;
+    }
+    output.textContent = "AI Code Helper is working...";
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+          category: "General AI",
+          message: "Review this " + lang.value +
+            " code. Explain errors and suggest a corrected version. Do not claim the code was executed. Return concise, practical guidance:\n\n" + code
+        })
+      });
+      const data = await response.json();
+      output.textContent = data.reply || data.answer || data.error ||
+        ("Request failed: HTTP " + response.status);
+    } catch (err) {
+      output.textContent = "AI request failed: " + err.message;
+    }
+  });
+})();
+</script>
+<!-- END SK_CODE_STUDIO_V1 -->
+
 <!-- SK_MINI_POSTER_CREATOR_V1 -->
 <section id="skMiniPosterStudio" style="max-width:1000px;margin:24px auto;padding:16px;border-radius:20px;background:#f8fafc;border:1px solid #cbd5e1;color:#0f172a;font-family:Arial,sans-serif;box-sizing:border-box">
   <h2 style="text-align:center;margin:4px 0 8px">🎨 SASIKUMAR AI – Mini Poster Creator</h2>
