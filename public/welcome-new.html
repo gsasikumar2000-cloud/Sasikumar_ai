@@ -533,5 +533,221 @@ form[action*="google.com/search"] input[type="submit"] {
 })();
 </script>
 
+
+<!-- SK_WELCOME_EXTRA_TOOLKIT_V1 -->
+<section id="skExtraToolkit" aria-label="SASIKUMAR AI Extra Tool Kit">
+<style>
+#skExtraToolkit{box-sizing:border-box;width:100%;max-width:760px;margin:20px auto;padding:16px;border:2px solid #a5b4fc;border-radius:18px;background:linear-gradient(135deg,#eff6ff,#fdf2f8);color:#172554;font-family:Arial,sans-serif}
+#skExtraToolkit *{box-sizing:border-box}
+#skExtraToolkit h2{font-size:21px;margin:0 0 12px;color:#4338ca}
+#skExtraToolkit textarea,#skExtraToolkit input,#skExtraToolkit select{width:100%;padding:12px;border:1px solid #c7d2fe;border-radius:10px;background:white;color:#111827;font-size:16px;margin:5px 0}
+#skExtraToolkit textarea{min-height:100px;line-height:1.5}
+#skExtraToolkit .sk-tool-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0}
+#skExtraToolkit button{min-height:44px;border:0;border-radius:10px;padding:9px 6px;background:#4f46e5;color:white;font-weight:700;font-size:14px;cursor:pointer;overflow-wrap:anywhere}
+#skExtraToolkit button:disabled{opacity:.55}
+#skExtraToolkit .sk-output{background:#fff;border:1px solid #c7d2fe;border-radius:10px;padding:12px;min-height:65px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6;color:#111827}
+#skExtraToolkit .sk-status{font-size:14px;line-height:1.5}
+@media(max-width:480px){#skExtraToolkit{padding:12px}.sk-tool-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}#skExtraToolkit h2{font-size:19px}}
+</style>
+
+<h2>🧰 SASIKUMAR AI — Extra Tool Kit</h2>
+<label for="skKitInput"><strong>⌨️ Input / Edit</strong></label>
+<textarea id="skKitInput" placeholder="Type or edit your question here..."></textarea>
+
+<div class="sk-tool-grid">
+<button type="button" id="skKitSend">🤖 Send to AI</button>
+<button type="button" id="skKitSearch">🔍 Web Search</button>
+<button type="button" id="skKitCopyIn">📋 Copy Input</button>
+<button type="button" id="skKitPaste">📥 Paste</button>
+<button type="button" id="skKitClear">🧹 Clear</button>
+<button type="button" id="skKitVoice">🎙️ Voice Input</button>
+<button type="button" id="skKitCamera">📸 Camera</button>
+<button type="button" id="skKitUpload">📎 Upload File</button>
+<button type="button" id="skKitRead">🔊 Read Aloud</button>
+</div>
+
+<input id="skKitFile" type="file" accept="image/*,.txt,.csv,.pdf" hidden>
+<div id="skKitPreview" class="sk-status"></div>
+
+<p><strong>📤 Output / Edit Response</strong></p>
+<textarea id="skKitOutput" placeholder="AI response appears here. You can edit it too."></textarea>
+
+<div class="sk-tool-grid">
+<button type="button" id="skKitCopyOut">📋 Copy Output</button>
+<button type="button" id="skKitSave">💾 Save TXT</button>
+<button type="button" id="skKitShare">📤 Share</button>
+<button type="button" id="skKitUndo">↩️ Undo Output</button>
+<button type="button" id="skKitFont">🔤 Text Size</button>
+<button type="button" id="skKitTheme">🎨 Theme</button>
+</div>
+
+<label for="skKitLang"><strong>🌐 Response language</strong></label>
+<select id="skKitLang">
+<option value="auto">Automatic / User language</option>
+<option value="Tamil">தமிழ்</option>
+<option value="English">English</option>
+<option value="Tanglish">Tanglish</option>
+</select>
+<p id="skKitStatus" class="sk-status" role="status" aria-live="polite"></p>
+
+<script>
+(() => {
+ const $ = id => document.getElementById(id);
+ const input = $('skKitInput'), output = $('skKitOutput');
+ const status = $('skKitStatus'), fileInput = $('skKitFile');
+ let previousOutput = '', fontLarge = false, dark = false;
+
+ async function copyText(text) {
+   if (!text) { status.textContent = 'Copy செய்ய உரை இல்லை.'; return; }
+   try {
+     await navigator.clipboard.writeText(text);
+     status.textContent = '✅ Copied';
+   } catch (_) {
+     const box = document.createElement('textarea');
+     box.value = text; document.body.appendChild(box);
+     box.select();
+     const ok = document.execCommand('copy');
+     box.remove();
+     status.textContent = ok ? '✅ Copied' : 'Copy செய்ய முடியவில்லை; உரையைத் தேர்ந்தெடுக்கவும்.';
+   }
+ }
+
+ $('skKitCopyIn').onclick = () => copyText(input.value);
+ $('skKitCopyOut').onclick = () => copyText(output.value);
+
+ $('skKitPaste').onclick = async () => {
+   try {
+     input.value = await navigator.clipboard.readText();
+     status.textContent = '✅ Clipboard உரை சேர்க்கப்பட்டது.';
+   } catch (_) {
+     status.textContent = 'Paste அனுமதி இல்லை. Input பகுதியில் நீண்ட நேரம் அழுத்தி Paste தேர்வு செய்யவும்.';
+   }
+ };
+
+ $('skKitClear').onclick = () => {
+   input.value = ''; output.value = ''; $('skKitPreview').textContent = '';
+   fileInput.value = ''; status.textContent = 'உள்ளீடு மற்றும் வெளியீடு அழிக்கப்பட்டன.';
+   if ('speechSynthesis' in window) speechSynthesis.cancel();
+ };
+
+ $('skKitSearch').onclick = () => {
+   const q = input.value.trim();
+   if (!q) { status.textContent = 'முதலில் Search உரையை உள்ளிடுங்கள்.'; return; }
+   window.open('https://www.google.com/search?q=' + encodeURIComponent(q), '_blank', 'noopener');
+ };
+
+ $('skKitSend').onclick = async () => {
+   const question = input.value.trim();
+   if (!question) { status.textContent = 'முதலில் கேள்வியை உள்ளிடுங்கள்.'; return; }
+
+   const lang = $('skKitLang').value;
+   const message = lang === 'auto' ? question :
+     question + '\n\nPlease respond in ' + lang + '.';
+
+   $('skKitSend').disabled = true;
+   status.textContent = '⏳ AI பதில் தயாராகிறது...';
+   previousOutput = output.value;
+
+   try {
+     const response = await fetch('/api/chat', {
+       method: 'POST',
+       headers: {'Content-Type':'application/json'},
+       body: JSON.stringify({message, category:'General AI'})
+     });
+     const data = await response.json();
+     const answer = data.reply || data.answer || data.error || '';
+     if (!response.ok && !answer) throw new Error('HTTP ' + response.status);
+     output.value = answer || 'பதில் கிடைக்கவில்லை.';
+     status.textContent = response.ok ? '✅ AI பதில் கிடைத்தது.' : '⚠️ ' + answer;
+   } catch (e) {
+     status.textContent = 'AI இணைப்பு தோல்வியடைந்தது. இணையம் அல்லது சேவையகத்தைச் சரிபார்க்கவும்.';
+   } finally {
+     $('skKitSend').disabled = false;
+   }
+ };
+
+ $('skKitRead').onclick = () => {
+   const text = output.value.trim();
+   if (!text) { status.textContent = 'வாசிக்க Output இல்லை.'; return; }
+   if (!('speechSynthesis' in window)) {
+     status.textContent = 'இந்த உலாவியில் Read Aloud ஆதரவு இல்லை.'; return;
+   }
+   speechSynthesis.cancel();
+   const utterance = new SpeechSynthesisUtterance(text);
+   const lang = $('skKitLang').value;
+   utterance.lang = lang === 'Tamil' ? 'ta-IN' : 'en-IN';
+   speechSynthesis.speak(utterance);
+ };
+
+ $('skKitVoice').onclick = () => {
+   const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+   if (!Recognition) {
+     status.textContent = 'Voice input ஆதரவு இல்லை. Android Chrome-ல் முயற்சிக்கவும்.';
+     return;
+   }
+   const recognition = new Recognition();
+   const lang = $('skKitLang').value;
+   recognition.lang = lang === 'Tamil' ? 'ta-IN' : 'en-IN';
+   recognition.onresult = e => {
+     input.value += (input.value ? ' ' : '') + e.results[0][0].transcript;
+     status.textContent = '🎙️ குரல் உரையாக மாற்றப்பட்டது.';
+   };
+   recognition.onerror = () => status.textContent = 'Microphone அனுமதி அல்லது Voice சேவையைச் சரிபார்க்கவும்.';
+   recognition.start();
+ };
+
+ $('skKitCamera').onclick = () => {
+   fileInput.accept = 'image/*'; fileInput.setAttribute('capture','environment'); fileInput.click();
+ };
+ $('skKitUpload').onclick = () => {
+   fileInput.removeAttribute('capture');
+   fileInput.accept = 'image/*,.txt,.csv,.pdf'; fileInput.click();
+ };
+ fileInput.onchange = () => {
+   const f = fileInput.files && fileInput.files[0];
+   if (!f) return;
+   $('skKitPreview').textContent = '📎 தேர்ந்தெடுக்கப்பட்டது: ' + f.name +
+     ' (' + Math.ceil(f.size / 1024) + ' KB). கோப்பு தேர்வு செய்யப்பட்டது; AI-க்கு இணைப்பாக அனுப்பும் வசதி தனியாக இணைக்கப்பட வேண்டும்.';
+ };
+
+ $('skKitSave').onclick = () => {
+   if (!output.value.trim()) { status.textContent = 'Save செய்ய Output இல்லை.'; return; }
+   const blob = new Blob([output.value], {type:'text/plain;charset=utf-8'});
+   const url = URL.createObjectURL(blob);
+   const a = document.createElement('a');
+   a.href = url; a.download = 'sasikumar-ai-response.txt';
+   document.body.appendChild(a); a.click(); a.remove();
+   URL.revokeObjectURL(url); status.textContent = '💾 TXT download தொடங்கியது.';
+ };
+
+ $('skKitShare').onclick = async () => {
+   const text = output.value.trim();
+   if (!text) { status.textContent = 'Share செய்ய Output இல்லை.'; return; }
+   try {
+     if (navigator.share) { await navigator.share({title:'SASIKUMAR AI', text}); }
+     else { await copyText(text); status.textContent = 'Share ஆதரவு இல்லை; உரை copy செய்யப்பட்டது.'; }
+   } catch (_) { status.textContent = 'Share ரத்து செய்யப்பட்டது.'; }
+ };
+
+ $('skKitUndo').onclick = () => {
+   output.value = previousOutput;
+   status.textContent = '↩️ முந்தைய Output மீட்டெடுக்கப்பட்டது.';
+ };
+ $('skKitFont').onclick = () => {
+   fontLarge = !fontLarge;
+   input.style.fontSize = output.style.fontSize = fontLarge ? '20px' : '16px';
+ };
+ $('skKitTheme').onclick = () => {
+   dark = !dark;
+   $('skExtraToolkit').style.background = dark ? '#172033' : 'linear-gradient(135deg,#eff6ff,#fdf2f8)';
+   $('skExtraToolkit').style.color = dark ? '#f8fafc' : '#172554';
+   input.style.background = output.style.background = dark ? '#0f172a' : '#fff';
+   input.style.color = output.style.color = dark ? '#f8fafc' : '#111827';
+ };
+})();
+</script>
+</section>
+<!-- END SK_WELCOME_EXTRA_TOOLKIT_V1 -->
+
 </body>
 </html>
