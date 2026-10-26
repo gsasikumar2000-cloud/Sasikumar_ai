@@ -1621,6 +1621,15 @@ style="width:100%;min-height:120px;box-sizing:border-box;padding:11px;border:1px
 
   <label for="skResearchQuery" style="display:block;font-weight:700;margin-bottom:6px">ஆராய்ச்சிக் கேள்வி / Research question</label>
   <textarea id="skResearchQuery" maxlength="500" rows="3" placeholder="உதா: தமிழ்நாட்டில் சூரிய மின்சாரத்தின் நன்மைகள் என்ன?" style="box-sizing:border-box;width:100%;padding:13px;border:1px solid #93c5fd;border-radius:12px;font:inherit;resize:vertical;background:#fff;color:#172554"></textarea>
+<!-- SK_RESEARCH_CLEAR_COPY_CUT_V1 -->
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0">
+<button type="button" id="skResearchClear">🧹 Clear</button>
+<button type="button" id="skResearchCopy">📋 Copy</button>
+<button type="button" id="skResearchCut">✂️ Cut</button>
+</div>
+<div id="skResearchTextToolsStatus" role="status" aria-live="polite"></div>
+<!-- END SK_RESEARCH_CLEAR_COPY_CUT_V1 -->
+
 
   <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
     <label style="flex:1;min-width:130px;font-weight:700;font-size:13px">அறிக்கை மொழி
@@ -1749,6 +1758,54 @@ style="width:100%;min-height:120px;box-sizing:border-box;padding:11px;border:1px
   });
 })();
 </script>
+
+<script>
+(function(){
+  const box=document.getElementById('skResearchQuery');
+  const status=document.getElementById('skResearchTextToolsStatus');
+  const clear=document.getElementById('skResearchClear');
+  const copy=document.getElementById('skResearchCopy');
+  const cut=document.getElementById('skResearchCut');
+  if(!box||!status||!clear||!copy||!cut)return;
+
+  clear.onclick=function(){
+    box.value='';
+    box.focus();
+    status.textContent='உரை அழிக்கப்பட்டது.';
+  };
+
+  async function copyText(){
+    if(!box.value){
+      status.textContent='நகலெடுக்க உரை இல்லை.';
+      return false;
+    }
+    try{
+      if(navigator.clipboard&&window.isSecureContext){
+        await navigator.clipboard.writeText(box.value);
+      }else{
+        box.focus();
+        box.select();
+        if(!document.execCommand('copy'))throw Error('copy failed');
+      }
+      status.textContent='உரை நகலெடுக்கப்பட்டது.';
+      return true;
+    }catch(e){
+      status.textContent='Copy இயலவில்லை. உரையை கைமுறையாக நகலெடுக்கவும்.';
+      return false;
+    }
+  }
+
+  copy.onclick=copyText;
+  cut.onclick=async function(){
+    if(await copyText()){
+      box.value='';
+      box.focus();
+      status.textContent='உரை நகலெடுக்கப்பட்டு அகற்றப்பட்டது.';
+    }
+  };
+})();
+</script>
+
 <!-- END SK_ULTIMATE_RESEARCH_TOOL_V1 -->
 
 </body>
