@@ -1612,5 +1612,144 @@ style="width:100%;min-height:120px;box-sizing:border-box;padding:11px;border:1px
 </script>
 <!-- END SK_ULTIMATE_EXTRA_POWER_TOOL_V1 -->
 
+
+<!-- SK_ULTIMATE_RESEARCH_TOOL_V1 -->
+<section id="skUltimateResearch" style="margin:24px 12px;padding:20px;border-radius:22px;background:linear-gradient(135deg,#e0f2fe,#f0fdf4,#fef3c7);border:1px solid #bae6fd;color:#172554;font-family:inherit">
+  <div style="font-size:12px;font-weight:800;letter-spacing:1px;color:#0369a1">SASIKUMAR AI • RESEARCH LAB</div>
+  <h2 style="margin:8px 0;font-size:25px">🔎 Ultimate Research Tool</h2>
+  <p style="margin:0 0 14px;line-height:1.6">இணையத்தில் தேடி, ஆதார இணைப்புகளுடன் தமிழ் அல்லது ஆங்கில ஆய்வு அறிக்கையை உருவாக்குங்கள்.</p>
+
+  <label for="skResearchQuery" style="display:block;font-weight:700;margin-bottom:6px">ஆராய்ச்சிக் கேள்வி / Research question</label>
+  <textarea id="skResearchQuery" maxlength="500" rows="3" placeholder="உதா: தமிழ்நாட்டில் சூரிய மின்சாரத்தின் நன்மைகள் என்ன?" style="box-sizing:border-box;width:100%;padding:13px;border:1px solid #93c5fd;border-radius:12px;font:inherit;resize:vertical;background:#fff;color:#172554"></textarea>
+
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+    <label style="flex:1;min-width:130px;font-weight:700;font-size:13px">அறிக்கை மொழி
+      <select id="skResearchLanguage" style="display:block;box-sizing:border-box;width:100%;margin-top:5px;padding:10px;border:1px solid #93c5fd;border-radius:10px;background:#fff;color:#172554;font:inherit">
+        <option value="ta">தமிழ்</option>
+        <option value="en">English</option>
+      </select>
+    </label>
+    <label style="flex:1;min-width:130px;font-weight:700;font-size:13px">ஆய்வு வகை
+      <select id="skResearchMode" style="display:block;box-sizing:border-box;width:100%;margin-top:5px;padding:10px;border:1px solid #93c5fd;border-radius:10px;background:#fff;color:#172554;font:inherit">
+        <option value="summary">சுருக்கமான ஆய்வு</option>
+        <option value="compare">ஒப்பீட்டு ஆய்வு</option>
+        <option value="detailed">விரிவான அறிக்கை</option>
+      </select>
+    </label>
+  </div>
+
+  <button id="skResearchRun" type="button" style="margin-top:14px;width:100%;padding:13px;border:0;border-radius:12px;background:linear-gradient(90deg,#0369a1,#047857);color:#fff;font:inherit;font-weight:800;cursor:pointer">🔍 Search & Research</button>
+  <div id="skResearchStatus" role="status" aria-live="polite" style="margin-top:12px;font-size:14px"></div>
+  <div id="skResearchResults" style="margin-top:12px"></div>
+  <button id="skResearchDownload" type="button" hidden style="margin-top:12px;padding:11px 14px;border:0;border-radius:10px;background:#1d4ed8;color:white;font:inherit;font-weight:700;cursor:pointer">⬇️ Download report (.txt)</button>
+</section>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const box = $('skResearchResults');
+  const status = $('skResearchStatus');
+  const run = $('skResearchRun');
+  const download = $('skResearchDownload');
+  let lastReport = '';
+
+  function el(tag, text, parent){
+    const node = document.createElement(tag);
+    node.textContent = text;
+    parent.appendChild(node);
+    return node;
+  }
+
+  function makeReport(query, provider, results, language, mode){
+    const tamil = language === 'ta';
+    const title = tamil ? 'SASIKUMAR AI — ஆய்வு அறிக்கை' : 'SASIKUMAR AI — Research Report';
+    const lines = [title, '='.repeat(title.length), '', (tamil ? 'கேள்வி: ' : 'Research question: ') + query,
+      (tamil ? 'தேடல் வழங்குநர்: ' : 'Search provider: ') + provider,
+      (tamil ? 'உருவாக்கப்பட்ட நேரம்: ' : 'Generated: ') + new Date().toLocaleString(), '',
+      tamil ? 'குறிப்பு: இந்த அறிக்கை தேடல் முடிவுகளில் கிடைத்த தலைப்புகள் மற்றும் snippets அடிப்படையிலானது. முழுப் பக்கங்கள் அனைத்தும் சரிபார்க்கப்படவில்லை.' :
+      'Note: This report is based on search-result titles and snippets. The full contents of every source have not been independently verified.', ''];
+    if(mode === 'compare') lines.push(tamil ? 'ஒப்பீட்டுக்கான ஆதாரங்கள்:' : 'Sources for comparison:', '');
+    else lines.push(tamil ? 'முக்கிய ஆதாரங்கள்:' : 'Key sources:', '');
+    results.forEach((r,i)=>{
+      lines.push((i+1)+'. '+r.title, r.content || (tamil ? 'விளக்கம் கிடைக்கவில்லை.' : 'No snippet available.'), r.url, '');
+    });
+    lines.push(tamil ? 'முடிவு: கிடைத்த ஆதாரங்களைத் திறந்து ஒப்பிட்டு, முக்கியக் கூற்றுகளை உறுதிப்படுத்தவும்.' :
+      'Conclusion: Open and compare the sources to verify important claims.');
+    return lines.join('\n');
+  }
+
+  function renderResults(query, data, language, mode){
+    box.replaceChildren();
+    const results = Array.isArray(data.results) ? data.results : [];
+    if(!results.length){
+      el('p', language === 'ta' ? 'பயன்படுத்தக்கூடிய தேடல் முடிவுகள் கிடைக்கவில்லை.' : 'No usable search results were returned.', box);
+      return '';
+    }
+    const heading = el('h3', language === 'ta' ? '📚 கிடைத்த ஆதாரங்கள்' : '📚 Sources found', box);
+    heading.style.cssText = 'font-size:18px;margin:0 0 10px';
+    if(data.fallback){
+      el('p', language === 'ta' ? 'தானியங்கி தேடல் முடிவுகள் கிடைக்கவில்லை. கீழே Google Search இணைப்பு வழங்கப்பட்டுள்ளது.' : 'Automated results were unavailable. A Google Search link is provided below.', box);
+    }
+    results.forEach((r,i)=>{
+      const card = document.createElement('article');
+      card.style.cssText = 'padding:12px;margin:10px 0;background:#fff;border:1px solid #bfdbfe;border-radius:12px;overflow-wrap:anywhere';
+      el('strong', (i+1)+'. '+(r.title || 'Search result'), card);
+      if(r.content) el('p', r.content, card);
+      const a = document.createElement('a');
+      a.href = r.url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.textContent = language === 'ta' ? 'ஆதாரத்தைத் திறக்கவும் ↗' : 'Open source ↗';
+      a.style.cssText = 'display:inline-block;margin-top:6px;color:#1d4ed8;font-weight:700';
+      card.appendChild(a);
+      box.appendChild(card);
+    });
+    return makeReport(query, data.provider || 'unknown', results, language, mode);
+  }
+
+  run.addEventListener('click', async ()=>{
+    const query = $('skResearchQuery').value.trim();
+    const language = $('skResearchLanguage').value;
+    const mode = $('skResearchMode').value;
+    if(!query){ status.textContent = language === 'ta' ? 'முதலில் ஆராய்ச்சிக் கேள்வியை உள்ளிடவும்.' : 'Please enter a research question first.'; return; }
+    run.disabled = true;
+    download.hidden = true;
+    box.replaceChildren();
+    status.textContent = language === 'ta' ? '🔎 இணைய ஆதாரங்களைத் தேடுகிறது…' : '🔎 Searching the web…';
+    try{
+      const response = await fetch('/api/global-search?q='+encodeURIComponent(query), {
+        headers:{'Accept':'application/json'},
+        cache:'no-store'
+      });
+      const data = await response.json();
+      if(!response.ok) throw new Error(data.error || 'Search request failed.');
+      lastReport = renderResults(query, data, language, mode);
+      download.hidden = !lastReport;
+      status.textContent = language === 'ta'
+        ? 'தேடல் முடிந்தது. '+((data.results||[]).length)+' முடிவுகள் • Provider: '+(data.provider||'Google fallback')
+        : 'Search complete. '+((data.results||[]).length)+' results • Provider: '+(data.provider||'Google fallback');
+    }catch(error){
+      status.textContent = (language === 'ta' ? 'தேடலில் பிழை: ' : 'Research error: ')+(error.message || 'Unknown error');
+    }finally{
+      run.disabled = false;
+    }
+  });
+
+  download.addEventListener('click', ()=>{
+    if(!lastReport) return;
+    const blob = new Blob([lastReport], {type:'text/plain;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'sasikumar-ai-research-report.txt';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  });
+})();
+</script>
+<!-- END SK_ULTIMATE_RESEARCH_TOOL_V1 -->
+
 </body>
 </html>
