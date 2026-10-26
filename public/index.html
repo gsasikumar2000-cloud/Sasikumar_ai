@@ -3027,6 +3027,9 @@ Tamil + English • Gold • General Q&A</div>
 </style>
 <!-- END SK_FINAL_MOBILE_CARDS_LAYOUT_V1 -->
 
+
+
+
 </body></html>';
     skOfficeDownload('Sasikumar-AI-Presentation.html', html, 'text/html;charset=utf-8');
   };
@@ -10561,20 +10564,20 @@ html body .skMainLiveGrid > .skMainFeatureCard:nth-child(6n) {
 })();
 </script>
 
-<!-- SK_HIDE_LIVE_IMAGES_CARD_FINAL_V2 -->
-<style id="SK_HIDE_LIVE_IMAGES_CARD_FINAL_V2">
+<!-- SK_SHOW_LIVE_IMAGES_CARD_V1 -->
+<style id="SK_SHOW_LIVE_IMAGES_CARD_V1">
 html body #skLiveImagesCard,
 html body .skMainLiveGrid > section#skLiveImagesCard {
-  display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  width: 0 !important;
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  width: auto !important;
   min-width: 0 !important;
-  height: 0 !important;
-  min-height: 0 !important;
+  height: auto !important;
+  min-height: 145px !important;
+  max-height: none !important;
   margin: 0 !important;
-  padding: 0 !important;
-  overflow: hidden !important;
+  box-sizing: border-box !important;
 }
 </style>
 
@@ -12567,5 +12570,119 @@ img, video, iframe {
 </style>
 <!-- END SK_MINI_LIVE_CARDS_100PX_4COL_V1 -->
 
+<!-- SK_ALL_HOMEPAGE_CARDS_BELOW_MINI_OFFICE_V1 -->
+<style id="skAllHomepageCardsBelowOfficeStyleV1">
+#skAllHomepageCardsBelowOfficeV1 {
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  width:100%;
+  max-width:1100px;
+  margin:16px auto 28px;
+  padding:0 10px;
+  box-sizing:border-box;
+}
+#skAllHomepageCardsBelowOfficeV1 > .skAllCardsHeadingV1 {
+  margin:4px 0;
+  padding:13px 12px;
+  border-radius:14px;
+  background:linear-gradient(120deg,#e0f2fe,#f3e8ff,#dcfce7);
+  border:1px solid #93c5fd;
+  color:#172554;
+  text-align:center;
+  font-size:19px;
+  font-weight:800;
+}
+#skAllHomepageCardsBelowOfficeV1 > * { min-width:0; }
+</style>
+<script id="skAllHomepageCardsBelowOfficeScriptV1">
+(function () {
+  if (window.SK_ALL_HOMEPAGE_CARDS_BELOW_MINI_OFFICE_V1) return;
+  window.SK_ALL_HOMEPAGE_CARDS_BELOW_MINI_OFFICE_V1 = true;
+
+  const selectors = [
+    "#customerFeedbackCard",
+    "#skPurpllePartnerMiniCard",
+    "#skZetPartnerMiniCard",
+    "#skBankSathiPartnerMiniCard",
+    "#skPay2AllPartnerMiniCard",
+    "#skNaviTodayOfferCard",
+    "#skGpayTodayOfferCard",
+    "#skPhonePeTodayOfferCard",
+    "#skSuperMoneyTodayOfferCard",
+    "#skPaytmTodayOfferCard",
+    "#skAllLivePromotionAds",
+    "#skCompanyAdsStaticFallback",
+    "#sasikumar-ai-hub-dashboard-card",
+    "#skHomeTranslatorCardV1",
+    "#skGlobalSearchTop",
+    "#skDesignMakerGlobal",
+    "#skReplyCreatorCards",
+    ".skMainLiveGrid",
+    "#skLiveCardsBottomV1",
+    "#skAstrologyButtonAboveDesignMaker",
+    "#skSpiritualAstrologyCard",
+    "#skAllIndiaTemplePoojaHub",
+    "#skAdobeExpressEditorCardV1",
+    "#skAudioVideoHubButton",
+    "#skYouTubeCreativeCards"
+  ];
+
+  function arrange() {
+    const office = document.getElementById("skMiniOfficeV1");
+    if (!office || !office.parentNode) return;
+
+    let area = document.getElementById("skAllHomepageCardsBelowOfficeV1");
+
+    if (!area) {
+      area = document.createElement("section");
+      area.id = "skAllHomepageCardsBelowOfficeV1";
+      area.setAttribute("aria-label", "All SASIKUMAR AI homepage cards");
+
+      const heading = document.createElement("h2");
+      heading.className = "skAllCardsHeadingV1";
+      heading.textContent = "✨ SASIKUMAR AI — ALL HOMEPAGE CARDS";
+      area.appendChild(heading);
+      office.insertAdjacentElement("afterend", area);
+    } else if (office.nextElementSibling !== area) {
+      office.insertAdjacentElement("afterend", area);
+    }
+
+    selectors.forEach(function (selector) {
+      let card;
+      try {
+        card = document.querySelector(selector);
+      } catch (error) {
+        return;
+      }
+
+      if (!card || card === area || card === office || area.contains(card)) return;
+
+      /* Do not move a nested card out of its parent dashboard/grid. */
+      if (
+        selector === "#skAllServicesCard" ||
+        selector === "#skNewsLiveCard" ||
+        selector === "#skVideoAdCard" ||
+        selector === "#skLiveImagesCard"
+      ) return;
+
+      area.appendChild(card);
+    });
+  }
+
+  function runLater() {
+    setTimeout(arrange, 2000);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", runLater, { once: true });
+  } else {
+    runLater();
+  }
+
+  window.addEventListener("load", runLater, { once: true });
+})();
+</script>
+<!-- END SK_ALL_HOMEPAGE_CARDS_BELOW_MINI_OFFICE_V1 -->
 </body>
 </html>
