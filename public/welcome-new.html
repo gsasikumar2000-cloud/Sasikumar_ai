@@ -1632,6 +1632,66 @@ style="width:100%;min-height:120px;box-sizing:border-box;padding:11px;border:1px
 <!-- END SK_MINI_POSTER_CREATOR_V1 -->
 
 
+<!-- SK_PAINT_BRUSH_ART_STUDIO_V1 -->
+<section id="skPaintArtStudio" style="max-width:950px;margin:24px auto;padding:16px;border-radius:20px;background:linear-gradient(135deg,#eff6ff,#fdf4ff);color:#172554;font-family:Arial,sans-serif">
+<header style="text-align:center">
+<img src="/assets/sasikumar-ai-logo-160.png" alt="SASIKUMAR AI" width="76" height="76" style="display:block;margin:auto;object-fit:contain">
+<h2>🎨 SASIKUMAR AI Paint &amp; Art Studio</h2>
+<p>Brush • Line • Circle • Text • Colours • PNG</p>
+</header>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px">
+<label>Tool<select id="skArtTool" style="display:block;width:100%;padding:10px"><option value="brush">🖌️ Brush</option><option value="line">📏 Line</option><option value="circle">⭕ Circle</option><option value="text">🔤 Add Text</option></select></label>
+<label>Colour<input id="skArtColor" type="color" value="#e11d48" style="display:block;width:100%;height:40px"></label>
+<label>Background<input id="skArtBg" type="color" value="#ffffff" style="display:block;width:100%;height:40px"></label>
+<label>Brush Width<input id="skArtWidth" type="range" min="1" max="30" value="5" style="display:block;width:100%"></label>
+<label>Font Size<input id="skArtSize" type="number" min="10" max="100" value="36" style="display:block;width:100%;padding:8px;box-sizing:border-box"></label>
+</div>
+<label style="display:block;margin-top:12px">Text / தமிழ் Text<input id="skArtText" type="text" maxlength="200" placeholder="உங்கள் Text இங்கே..." style="display:block;width:100%;padding:12px;box-sizing:border-box"></label>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin:12px 0">
+<button type="button" id="skArtAddText">＋ Add Text</button>
+<button type="button" id="skArtLogo">🌀 Add Logo</button>
+<button type="button" id="skArtUndo">↩️ Undo</button>
+<button type="button" id="skArtClear">🧹 Clear</button>
+<button type="button" id="skArtSave">⬇️ Download PNG</button>
+</div>
+<p id="skArtStatus" aria-live="polite">Brush தேர்வு செய்து வரையத் தொடங்குங்கள்.</p>
+<div style="background:#e2e8f0;padding:6px;border-radius:12px">
+<canvas id="skArtCanvas" width="900" height="900" style="display:block;width:100%;height:auto;background:white;touch-action:none;border-radius:8px"></canvas>
+</div>
+</section>
+<script>
+(function(){
+const root=document.getElementById("skPaintArtStudio");
+if(!root||root.dataset.ready)return;root.dataset.ready="1";
+const $=id=>document.getElementById(id),c=$("skArtCanvas"),x=c.getContext("2d");
+let items=[],active=null,start=null,down=false;
+const logo=new Image();logo.src="/assets/sasikumar-ai-logo-160.png";
+function pos(e){const r=c.getBoundingClientRect();return{x:(e.clientX-r.left)*c.width/r.width,y:(e.clientY-r.top)*c.height/r.height}}
+function paint(o){
+x.save();x.strokeStyle=o.color||"#111827";x.fillStyle=o.color||"#111827";x.lineWidth=o.width||4;x.lineCap="round";
+if(o.type==="brush"){x.beginPath();o.points.forEach((p,i)=>i?x.lineTo(p.x,p.y):x.moveTo(p.x,p.y));x.stroke()}
+if(o.type==="line"){x.beginPath();x.moveTo(o.x1,o.y1);x.lineTo(o.x2,o.y2);x.stroke()}
+if(o.type==="circle"){x.beginPath();x.arc(o.x1,o.y1,Math.hypot(o.x2-o.x1,o.y2-o.y1),0,Math.PI*2);x.stroke()}
+if(o.type==="text"){x.font=(o.size||36)+"px Arial";x.textBaseline="top";x.fillText(o.text,o.x,o.y,850-o.x)}
+if(o.type==="logo"&&logo.complete&&logo.naturalWidth)x.drawImage(logo,o.x,o.y,o.w,o.h);
+x.restore()
+}
+function draw(){x.fillStyle=$("skArtBg").value;x.fillRect(0,0,c.width,c.height);items.forEach(paint);if(active)paint(active)}
+c.addEventListener("pointerdown",e=>{e.preventDefault();c.setPointerCapture(e.pointerId);down=true;start=pos(e);const t=$("skArtTool").value,col=$("skArtColor").value,w=+$("skArtWidth").value;if(t==="text"){const text=$("skArtText").value;if(!text.trim()){$("skArtStatus").textContent="முதலில் Text எழுதுங்கள்.";down=false;return}items.push({type:"text",text,x:start.x,y:start.y,color:col,size:Math.max(10,+$("skArtSize").value||36)});down=false;draw();return}active=t==="brush"?{type:"brush",points:[start],color:col,width:w}:{type:t,x1:start.x,y1:start.y,x2:start.x,y2:start.y,color:col,width:w};draw()});
+c.addEventListener("pointermove",e=>{if(!down||!active)return;e.preventDefault();const p=pos(e);if(active.type==="brush")active.points.push(p);else{active.x2=p.x;active.y2=p.y}draw()});
+function finish(){if(!down)return;down=false;if(active){items.push(active);active=null;draw()}}
+c.addEventListener("pointerup",finish);c.addEventListener("pointercancel",finish);
+$("skArtAddText").onclick=()=>{$("skArtTool").value="text";$("skArtStatus").textContent="Text சேர்க்க Canvas-ல் விரும்பிய இடத்தைத் தொடவும்."};
+$("skArtLogo").onclick=()=>{items.push({type:"logo",x:380,y:20,w:140,h:140});draw();$("skArtStatus").textContent="Logo சேர்க்கப்பட்டது."};
+$("skArtUndo").onclick=()=>{active=null;items.pop();draw()};
+$("skArtClear").onclick=()=>{items=[];active=null;draw()};
+$("skArtBg").oninput=draw;
+$("skArtSave").onclick=()=>{draw();c.toBlob(b=>{if(!b)return;const u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download="sasikumar-ai-paint-art.png";a.click();setTimeout(()=>URL.revokeObjectURL(u),1500)},"image/png")};
+logo.onload=draw;draw();
+})();
+</script>
+<!-- END SK_PAINT_BRUSH_ART_STUDIO_V1 -->
+
 <!-- SK_ULTIMATE_EXTRA_POWER_TOOL_V1 -->
 <section id="skUltimatePower" style="margin:20px auto;padding:16px;max-width:1000px;border-radius:20px;background:linear-gradient(135deg,#eef6ff,#f8efff);border:1px solid #cbd5ff;color:#172554;font-family:Arial,sans-serif">
 <div class="skSectionBrandLogoWrap">
