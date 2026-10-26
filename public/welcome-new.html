@@ -146,6 +146,105 @@ h1 {
 }
 
 </style>
+
+<!-- SK_WELCOME_MOBILE_FIT_FORCE_V1 -->
+<style id="SK_WELCOME_MOBILE_FIT_FORCE_V1">
+/* Force mobile fit without changing the old welcome page */
+html, body {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box !important;
+}
+
+form[action*="google.com/search"] {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  width: 100% !important;
+  max-width: 560px !important;
+  margin: 20px auto !important;
+  padding: 16px !important;
+  border-radius: 18px !important;
+  background: linear-gradient(135deg, #eef2ff, #fdf2f8) !important;
+  border: 2px solid #818cf8 !important;
+  box-shadow: 0 8px 24px rgba(79, 70, 229, 0.15) !important;
+}
+
+form[action*="google.com/search"] input[name="q"] {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 50px !important;
+  padding: 13px 15px !important;
+  border: 2px solid #6366f1 !important;
+  border-radius: 12px !important;
+  background: #ffffff !important;
+  color: #172554 !important;
+  font-family: Arial, sans-serif !important;
+  font-size: 17px !important;
+  line-height: 1.4 !important;
+}
+
+form[action*="google.com/search"] input[name="q"]::placeholder {
+  color: #64748b !important;
+  opacity: 1 !important;
+}
+
+form[action*="google.com/search"] button,
+form[action*="google.com/search"] input[type="submit"] {
+  display: block !important;
+  width: 100% !important;
+  min-height: 50px !important;
+  padding: 13px 18px !important;
+  border: 0 !important;
+  border-radius: 12px !important;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed) !important;
+  color: #ffffff !important;
+  font-family: Arial, sans-serif !important;
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  line-height: 1.4 !important;
+  cursor: pointer !important;
+}
+
+form[action*="google.com/search"] button:active,
+form[action*="google.com/search"] input[type="submit"]:active {
+  transform: scale(0.98) !important;
+}
+
+@media (max-width: 600px) {
+  body {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  form[action*="google.com/search"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 16px auto !important;
+    padding: 14px !important;
+    gap: 10px !important;
+  }
+
+  form[action*="google.com/search"] input[name="q"] {
+    min-height: 50px !important;
+    font-size: 16px !important;
+  }
+
+  form[action*="google.com/search"] button,
+  form[action*="google.com/search"] input[type="submit"] {
+    min-height: 50px !important;
+    font-size: 16px !important;
+  }
+}
+</style>
+<!-- END SK_WELCOME_MOBILE_FIT_FORCE_V1 -->
+
 </head>
 <body>
 <main class="card">
