@@ -2102,5 +2102,156 @@ logo.onload=draw;draw();
 
 <!-- END SK_ULTIMATE_RESEARCH_TOOL_V1 -->
 
+
+<!-- SK_SERVER_OPEN_SIGNUP_POPUP_V1 -->
+<style>
+#skServerStatusV1 {
+  position:fixed;right:12px;bottom:14px;z-index:99990;
+  display:flex;align-items:center;gap:7px;
+  padding:8px 12px;border-radius:30px;
+  background:#fff;color:#166534;border:1px solid #bbf7d0;
+  box-shadow:0 3px 14px #0002;font:600 12px Arial,sans-serif;
+}
+#skServerDotV1 {
+  width:10px;height:10px;border-radius:50%;
+  background:#f59e0b;display:inline-block;flex-shrink:0;
+}
+#skSignupOverlayV1 {
+  position:fixed;inset:0;z-index:99999;
+  display:none;align-items:center;justify-content:center;
+  padding:18px;background:#10213b99;
+  font-family:Arial,sans-serif;
+}
+#skSignupBoxV1 {
+  position:relative;width:min(360px,100%);box-sizing:border-box;
+  padding:25px 20px 20px;text-align:center;
+  background:linear-gradient(145deg,#fff,#eff6ff);
+  border:2px solid #fbbf24;border-radius:22px;
+  box-shadow:0 15px 45px #0004;color:#172554;
+}
+#skSignupBoxV1 .skOfferIconV1 {font-size:39px;margin-bottom:8px}
+#skSignupBoxV1 h2 {margin:5px 0 10px;font-size:24px;color:#6d28d9}
+#skSignupBoxV1 p {font-size:15px;line-height:1.6;margin:8px 0}
+#skSignupBoxV1 .skBonusV1 {
+  display:block;margin:13px 0;padding:11px 8px;
+  background:#fef3c7;border-radius:12px;color:#92400e;
+  font-weight:700;font-size:14px;
+}
+#skSignupGoV1 {
+  display:block;width:100%;box-sizing:border-box;
+  border:0;border-radius:12px;padding:13px 10px;
+  background:linear-gradient(90deg,#7c3aed,#2563eb);
+  color:white;font-weight:700;font-size:16px;
+  text-decoration:none;cursor:pointer;
+}
+#skSignupLaterV1 {
+  margin-top:11px;padding:9px 18px;border:0;
+  background:transparent;color:#475569;font-weight:700;
+  cursor:pointer;
+}
+@media(max-width:400px) {
+  #skServerStatusV1 {right:8px;bottom:8px}
+  #skSignupBoxV1 h2 {font-size:22px}
+}
+</style>
+
+<div id="skServerStatusV1" role="status" aria-live="polite">
+  <span id="skServerDotV1"></span>
+  <span id="skServerTextV1">Checking Server...</span>
+</div>
+
+<div id="skSignupOverlayV1" role="dialog"
+     aria-modal="true" aria-labelledby="skSignupTitleV1">
+  <div id="skSignupBoxV1">
+    <div class="skOfferIconV1">🚀</div>
+    <h2 id="skSignupTitleV1">Join SASIKUMAR AI!</h2>
+    <p>உங்கள் AI பயணத்தை இன்றே தொடங்குங்கள்.</p>
+    <span class="skBonusV1">
+      🤖 All AI Access<br>
+      🎁 Referral Earning Bonus வாய்ப்பு
+    </span>
+    <p>Sign up செய்து கிடைக்கும் வசதிகளைப் பயன்படுத்துங்கள்!</p>
+    <a id="skSignupGoV1" href="/?skAuth=signup">
+      ✨ SIGN UP NOW
+    </a>
+    <button id="skSignupLaterV1" type="button">LATER</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  if (window.SK_SERVER_OPEN_SIGNUP_POPUP_V1) return;
+  window.SK_SERVER_OPEN_SIGNUP_POPUP_V1 = true;
+
+  const overlay = document.getElementById("skSignupOverlayV1");
+  const later = document.getElementById("skSignupLaterV1");
+  const go = document.getElementById("skSignupGoV1");
+  const dot = document.getElementById("skServerDotV1");
+  const statusText = document.getElementById("skServerTextV1");
+
+  if (!overlay || !later || !go || !dot || !statusText) return;
+
+  function isLoggedIn() {
+    try {
+      return sessionStorage.getItem("sasikumar_logged_in") === "true" ||
+        localStorage.getItem("sk_signup_completed_v1") === "true";
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function showPopup() {
+    if (!isLoggedIn() && document.visibilityState === "visible") {
+      overlay.style.display = "flex";
+    }
+  }
+
+  function closePopup() {
+    overlay.style.display = "none";
+  }
+
+  later.addEventListener("click", closePopup);
+  overlay.addEventListener("click", function (event) {
+    if (event.target === overlay) closePopup();
+  });
+
+  go.addEventListener("click", function (event) {
+    const onMainPage =
+      location.pathname === "/" ||
+      location.pathname.endsWith("/index.html");
+
+    if (onMainPage && typeof window.showSignupForm === "function") {
+      event.preventDefault();
+      closePopup();
+      window.showSignupForm();
+    }
+  });
+
+  async function checkServer() {
+    try {
+      const response = await fetch("/api/status", {
+        cache: "no-store"
+      });
+      if (!response.ok) throw new Error("Server unavailable");
+
+      dot.style.background = "#16a34a";
+      statusText.textContent = "Server Open";
+    } catch (_) {
+      dot.style.background = "#dc2626";
+      statusText.textContent = "Server Connecting";
+    }
+  }
+
+  checkServer();
+  setInterval(checkServer, 60000);
+
+  setTimeout(function () {
+    showPopup();
+    setInterval(showPopup, 60000);
+  }, 60000);
+})();
+</script>
+<!-- END SK_SERVER_OPEN_SIGNUP_POPUP_V1 -->
+
 </body>
 </html>

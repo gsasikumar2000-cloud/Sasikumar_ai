@@ -1230,6 +1230,7 @@ async function sasikumarSignup() {
     }
 
     msg.textContent = "✅ Account created! Please login.";
+    try { localStorage.setItem("sk_signup_completed_v1", "true"); } catch (_) {}
     msg.style.color = "#15803d";
 
     document.getElementById("loginUsername").value = username;
