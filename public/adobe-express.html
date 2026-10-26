@@ -266,7 +266,10 @@
           editor.create({}, appConfig, exportConfig);
         } catch (error) {
           console.error('Adobe Express create error:', error);
-          showStatus('Editor திறக்க முடியவில்லை: ' + (error.message || 'தெரியாத பிழை'));
+          const detail = error && (error.message || error.reason || error.code)
+            ? String(error.message || error.reason || error.code)
+            : String(error || 'தெரியாத பிழை');
+          showStatus('Editor பிழை: ' + detail);
         }
       }
 
