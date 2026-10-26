@@ -974,14 +974,14 @@ function getWhatsAppEMIReply(message) {
 🔙 Type 0 for Main Menu`;
 }
 function detectLang(q){try{if(/[\u0B80-\u0BFF]/.test(q))return 'ta';return 'en';}catch(e){return 'en';}}
-function getGeneralReply(q,lang){const time=new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'});if(q.toLowerCase().includes('gold'))return `💰 GOLD RATE\nVerified current rate-ai /api/gold-la check pannunga.\nhttps://sasikumar-ai-9wdq.onrender.com/api/gold\nType 0 for Menu`;return `🌍 General AI - ${time}\nYou: "${q}"\nType 0 for Menu or 1-34`; }
+function getGeneralReply(q,lang){const time=new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'});if(q.toLowerCase().includes('gold'))return `💰 GOLD RATE\nVerified current rate-ai /api/gold-la check pannunga.\nhttps://sasikumar-ai-9wdq.onrender.com/api/gold\nType 0 for Menu`;return `🌍 General AI - ${time}\nYou: "${q}"\nType 0 for Menu or 1-35`; }
 
-app.get('/api/status',(req,res)=>{res.json({status:'WHATSAPP MENU 34 OPTIONS LIVE OK',version:'7.4 Menu',options:34,time:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})});});
+app.get('/api/status',(req,res)=>{res.json({status:'WHATSAPP MENU 35 OPTIONS LIVE OK',version:'7.4 Menu',options:35,time:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})});});
 app.get('/api/whatsapp/menu',(req,res)=>{
   res.set('Cache-Control','no-store');
   res.json({
-    welcome: '🤖 SASIKUMAR AI — 34 Services',
-    total: 34,
+    welcome: '🤖 SASIKUMAR AI — 35 Services',
+    total: 35,
     menuImage: 'https://sasikumar-ai-9wdq.onrender.com/assets/whatsapp-menu.png'
   });
 });
@@ -1773,6 +1773,10 @@ if (!isWelcome) {
     ];
     reply = jokes[Math.floor(Math.random() * jokes.length)] +
       '\n\n😄 இன்னொரு காமெடிக்கு Next அனுப்புங்கள்!';
+   } else if (/^(35|ஜோதிடம்|ராசிபலன்|ராசி பலன்|horoscope|astrology)$/i.test(trimmed)) {
+    reply = '🔮 SASIKUMAR AI — தமிழ் ஜோதிடம் & ராசி பலன்கள்\n\n' +
+      '12 ராசிகளின் தகவல்கள் மற்றும் ஆன்மீகத் தகவல்களைப் பார்க்கவும்.\n\n' +
+      '🌐 ஜோதிடப் பக்கம்: https://sasikumar-ai-9wdq.onrender.com/spiritual-astrology.html';
   } else if (/\bfriendly\b|நண்பா|நண்பரே/i.test(trimmed)) {
     reply = await getWhatsAppAIReply(trimmed, 'friendly');
   } else {
@@ -3748,12 +3752,13 @@ const SK_TELEGRAM_MENU = [
   'All Content — Complete Services',
   'Tamil Comedy & Movie Fun',
   'Agriculture — விவசாய உதவியாளர்',
-  'Meme Hub — Trending Memes'
+  'Meme Hub — Trending Memes',
+  'Tamil Astrology & Horoscope — தமிழ் ஜோதிடம்'
 ];
 
 function skTelegramMenuText() {
   return [
-    '🤖 SASIKUMAR AI — 34 SERVICES',
+    '🤖 SASIKUMAR AI — 35 SERVICES',
     '',
     ...SK_TELEGRAM_MENU.map((name, i) => (i + 1) + '. ' + name),
     '',
@@ -3938,7 +3943,7 @@ app.post('/api/telegram/webhook', async (req, res) => {
     }
 
     if (/^\/(help)(?:@\w+)?(?:\s|$)/i.test(text)) {
-      await skTelegramSendMessage(chatId, 'உதவி: /start அல்லது /menu அனுப்புங்கள். சேவையைத் தேர்வு செய்ய 1 முதல் 34 வரை எண்ணை அனுப்புங்கள்.');
+      await skTelegramSendMessage(chatId, 'உதவி: /start அல்லது /menu அனுப்புங்கள். சேவையைத் தேர்வு செய்ய 1 முதல் 35 வரை எண்ணை அனுப்புங்கள்.');
       return;
     }
 
@@ -3953,14 +3958,18 @@ app.post('/api/telegram/webhook', async (req, res) => {
       const option = Number(text);
 
       if (option < 1 || option > SK_TELEGRAM_MENU.length) {
-        await skTelegramSendMessage(chatId, '⚠️ 1 முதல் 34 வரை எண்ணை அனுப்புங்கள். முழு மெனுவுக்கு /menu அனுப்பவும்.');
+        await skTelegramSendMessage(chatId, '⚠️ 1 முதல் 35 வரை எண்ணை அனுப்புங்கள். முழு மெனுவுக்கு /menu அனுப்பவும்.');
         return;
       }
 
       const service = SK_TELEGRAM_MENU[option - 1];
       await skTelegramSendMessage(chatId, '✅ நீங்கள் தேர்ந்தெடுத்தது: ' + option + '. ' + service + '\n⏳ பதில் தயாராகிறது...');
 
-      const reply = option === 2
+      const reply = option === 35
+    ? '🔮 SASIKUMAR AI — தமிழ் ஜோதிடம் & ராசி பலன்கள்\\n\\n' +
+      '12 ராசிகளின் தகவல்கள் மற்றும் ஆன்மீகத் தகவல்களைப் பார்க்கவும்.\\n\\n' +
+      '🌐 ஜோதிடப் பக்கம்: https://sasikumar-ai-9wdq.onrender.com/spiritual-astrology.html'
+    : option === 2
         ? await getLiveGoldSilverWhatsAppReply()
         : option === 3
           ? '🧮 SASIKUMAR AI — GOLD LOAN / EMI CALCULATOR\n\n' +
@@ -4000,4 +4009,4 @@ app.post('/api/telegram/webhook', async (req, res) => {
 });
 // END SK_TELEGRAM_BOT_WEBHOOK_V1
 
-app.listen(PORT,()=>console.log(`🤖 34 OPTIONS WHATSAPP MENU http://localhost:${PORT} - OK`));
+app.listen(PORT,()=>console.log(`🤖 35 OPTIONS WHATSAPP MENU http://localhost:${PORT} - OK`));
