@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ta">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#7c3aed">
+<title>😊 Live Media Hub — SASIKUMAR AI</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;color:#172554;background:linear-gradient(140deg,#eff6ff,#f5f3ff,#ecfeff)}
+header{padding:24px 14px;text-align:center;color:white;background:linear-gradient(110deg,#2563eb,#7c3aed,#db2777)}
+header h1{margin:0;font-size:clamp(23px,5vw,34px)}
+header p{margin:9px 0 0}
+main{max-width:1000px;margin:auto;padding:14px}
+nav{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:8px 0 18px}
+nav a,.btn{display:inline-block;border:0;border-radius:12px;padding:11px 14px;background:#fff;color:#4338ca;font-weight:800;text-decoration:none;cursor:pointer;box-shadow:0 3px 12px #1e3a8a18}
+.panel{margin:15px 0;padding:17px;border-radius:18px;background:#fff;box-shadow:0 7px 22px #1e3a8a16}
+.panel h2{margin:0 0 8px;font-size:22px}
+.panel p{color:#475569;line-height:1.5}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+input{width:100%;padding:13px;border:1px solid #cbd5e1;border-radius:11px;font-size:16px;margin:7px 0}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:9px}
+.blue{background:#2563eb;color:#fff}.purple{background:#7c3aed;color:#fff}.red{background:#dc2626;color:#fff}.green{background:#059669;color:#fff}
+video{width:100%;max-height:440px;margin-top:12px;background:#111;border-radius:12px}
+footer{text-align:center;padding:20px;color:#64748b;font-size:13px}
+@media(max-width:430px){.grid{grid-template-columns:1fr}.panel{padding:13px}}
+</style>
+</head>
+<body>
+<header>
+  <div style="font-size:42px">😊 🔴 LIVE</div>
+  <h1>SASIKUMAR AI — Live Media Hub</h1>
+  <p>🖼️ Images • 🎬 Videos • ▶️ YouTube — ஒரே பக்கம்</p>
+</header>
+<main>
+<nav>
+  <a href="#images">🖼️ Live Images</a>
+  <a href="#videos">🎬 Live Videos</a>
+  <a href="#youtube">▶️ YouTube</a>
+  <a href="/">🏠 Home</a>
+</nav>
+
+<section class="panel" id="images">
+<h2>🖼️ Live Images</h2>
+<p>படங்களைத் தேடவும் அல்லது SASIKUMAR AI-ல் இருக்கும் பட உருவாக்கும் வசதியைத் திறக்கவும்.</p>
+<input id="imageQuery" type="search" placeholder="படம் தேடவும் — உதா: sunrise, nature, Tamil poster">
+<div class="actions">
+<button class="btn blue" onclick="searchImages()">🔎 படங்களைத் தேடவும்</button>
+<a class="btn purple" href="/#skDesignMakerGlobal">🎨 AI Image / Poster Maker</a>
+</div>
+</section>
+
+<section class="panel" id="videos">
+<h2>🎬 Live Videos</h2>
+<p>YouTube Live அல்லது உங்களிடம் உள்ள நேரலை/வீடியோ இணைப்பைத் திறக்கவும்.</p>
+<input id="liveUrl" type="url" placeholder="YouTube Live URL அல்லது MP4/WebM URL">
+<div class="actions">
+<button class="btn red" onclick="openLiveUrl()">▶️ Open Live Video</button>
+<button class="btn purple" onclick="findLive()">🔎 Find Live Streams</button>
+</div>
+<video id="mediaPlayer" controls playsinline preload="metadata" hidden></video>
+<p id="videoStatus" role="status">வீடியோ URL கொடுத்த பிறகு Open Live Video அழுத்தவும்.</p>
+</section>
+
+<section class="panel" id="youtube">
+<h2>▶️ YouTube Videos</h2>
+<p>Movie Songs • Audio Songs • Movie Videos • Artist/Singer • Official Channels</p>
+<input id="youtubeQuery" type="search" placeholder="YouTube-ல் தேடவும்">
+<div class="grid">
+<button class="btn red" onclick="searchYouTube('Tamil comedy')">😂 Comedy</button>
+<button class="btn red" onclick="searchYouTube('Tamil movie songs')">🎵 Movie Songs</button>
+<button class="btn red" onclick="searchYouTube('Tamil audio songs')">🎧 Audio Songs</button>
+<button class="btn red" onclick="searchYouTube('Tamil movie videos')">🎬 Movie Videos</button>
+<button class="btn red" onclick="searchYouTube('Tamil singers official')">🎤 Artist / Singer</button>
+<button class="btn red" onclick="searchYouTube('official Tamil channels')">📺 Official Channels</button>
+</div>
+<div class="actions">
+<button class="btn purple" onclick="searchYouTube()">🔎 Search YouTube</button>
+<a class="btn blue" href="/audio-video-hub.html">🎧 Open Audio & Video Hub</a>
+</div>
+</section>
+<footer>SASIKUMAR AI • Live Media Hub</footer>
+</main>
+<script>
+function searchImages(){
+ const q=document.getElementById('imageQuery').value.trim();
+ if(!q){document.getElementById('imageQuery').focus();return}
+ window.open('https://www.google.com/search?tbm=isch&q='+encodeURIComponent(q),'_blank','noopener,noreferrer');
+}
+function searchYouTube(term){
+ const q=(term||document.getElementById('youtubeQuery').value).trim();
+ if(!q){document.getElementById('youtubeQuery').focus();return}
+ window.open('https://www.youtube.com/results?search_query='+encodeURIComponent(q),'_blank','noopener,noreferrer');
+}
+function findLive(){
+ window.open('https://www.youtube.com/results?search_query='+encodeURIComponent('live now official stream'),'_blank','noopener,noreferrer');
+}
+function openLiveUrl(){
+ const raw=document.getElementById('liveUrl').value.trim();
+ const status=document.getElementById('videoStatus');
+ if(!raw){status.textContent='முதலில் செல்லுபடியாகும் URL உள்ளிடவும்.';return}
+ let u;
+ try{u=new URL(raw)}catch(e){status.textContent='சரியான முழு URL கொடுக்கவும்.';return}
+ if(!['https:','http:'].includes(u.protocol)){status.textContent='HTTP/HTTPS URL மட்டும் பயன்படுத்தவும்.';return}
+ if(/youtube\.com|youtu\.be|youtube-nocookie\.com/i.test(u.hostname)){
+   window.open(u.href,'_blank','noopener,noreferrer');
+   status.textContent='YouTube வீடியோ புதிய tab-ல் திறக்கப்பட்டது.';
+   return;
+ }
+ const player=document.getElementById('mediaPlayer');
+ player.src=u.href;player.hidden=false;player.load();
+ player.play().catch(()=>{status.textContent='வீடியோ தயார். Play அழுத்தவும் அல்லது URL-ஐ சரிபார்க்கவும்.'});
+ status.textContent='வீடியோ ஏற்றப்படுகிறது…';
+}
+</script>
+</body>
+</html>
