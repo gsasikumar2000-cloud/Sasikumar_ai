@@ -749,5 +749,145 @@ form[action*="google.com/search"] input[type="submit"] {
 </section>
 <!-- END SK_WELCOME_EXTRA_TOOLKIT_V1 -->
 
+
+<!-- SK_MS_OFFICE_TOOLKIT_V1 -->
+<section id="skMsOfficeToolkit" style="max-width:1000px;margin:24px auto;padding:18px;border-radius:18px;background:#f0f9ff;border:1px solid #bae6fd;color:#172554;font-family:Arial,sans-serif;box-sizing:border-box">
+  <h2 style="margin:0 0 8px;text-align:center">📚 SASIKUMAR AI – MS Office Toolkit</h2>
+  <p style="text-align:center;margin:0 0 16px">Word • Excel • PowerPoint • PDF</p>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px;margin-bottom:16px">
+    <button type="button" data-office="Word" style="padding:13px;border:0;border-radius:12px;background:#2563eb;color:white;font-weight:bold">📝 Word</button>
+    <button type="button" data-office="Excel" style="padding:13px;border:0;border-radius:12px;background:#15803d;color:white;font-weight:bold">📊 Excel</button>
+    <button type="button" data-office="PowerPoint" style="padding:13px;border:0;border-radius:12px;background:#c2410c;color:white;font-weight:bold">📽️ PowerPoint</button>
+    <button type="button" data-office="PDF" style="padding:13px;border:0;border-radius:12px;background:#b91c1c;color:white;font-weight:bold">📄 PDF</button>
+  </div>
+
+  <label for="skOfficeTask" style="display:block;font-weight:bold;margin-bottom:6px">என்ன தயாரிக்க வேண்டும்?</label>
+  <textarea id="skOfficeTask" rows="3" placeholder="உதாரணம்: கடிதம், மாத வரவு செலவு அட்டவணை, 5-slide presentation..." style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #93c5fd;border-radius:10px;font-size:16px;margin-bottom:10px"></textarea>
+
+  <div style="display:flex;flex-wrap:wrap;gap:8px">
+    <button id="skOfficeGenerate" type="button" style="padding:11px 14px;border:0;border-radius:10px;background:#1d4ed8;color:white;font-weight:bold">✨ AI மூலம் உருவாக்கு</button>
+    <button id="skOfficeCopy" type="button" style="padding:11px 14px;border:0;border-radius:10px;background:#334155;color:white">📋 Copy</button>
+    <button id="skOfficeDownload" type="button" style="padding:11px 14px;border:0;border-radius:10px;background:#047857;color:white">⬇️ TXT Download</button>
+    <button id="skOfficeClear" type="button" style="padding:11px 14px;border:0;border-radius:10px;background:#64748b;color:white">🧹 Clear</button>
+  </div>
+
+  <p id="skOfficeStatus" role="status" style="min-height:22px;margin:12px 0;color:#1e40af"></p>
+  <label for="skOfficeOutput" style="display:block;font-weight:bold;margin-bottom:6px">AI Output — திருத்தலாம்</label>
+  <textarea id="skOfficeOutput" rows="10" placeholder="உங்கள் AI உருவாக்கிய உள்ளடக்கம் இங்கே வரும்..." style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #93c5fd;border-radius:10px;font-size:16px;line-height:1.5"></textarea>
+
+  <div style="margin-top:16px;padding-top:12px;border-top:1px solid #bae6fd">
+    <strong>Microsoft Apps</strong>
+    <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:8px">
+      <a href="https://www.microsoft365.com/" target="_blank" rel="noopener noreferrer">Open Microsoft 365</a>
+      <a href="https://www.office.com/launch/word" target="_blank" rel="noopener noreferrer">Word Online</a>
+      <a href="https://www.office.com/launch/excel" target="_blank" rel="noopener noreferrer">Excel Online</a>
+      <a href="https://www.office.com/launch/powerpoint" target="_blank" rel="noopener noreferrer">PowerPoint Online</a>
+    </div>
+  </div>
+  <p style="font-size:13px;line-height:1.5;color:#475569">குறிப்பு: AI output-ஐ TXT கோப்பாகப் பதிவிறக்கலாம். இது தனியாக DOCX/XLSX/PPTX அல்லது PDF கோப்புகளை உருவாக்குவது அல்ல; அதற்கான file-generation வசதியை அடுத்த கட்டத்தில் இணைக்கலாம்.</p>
+</section>
+
+<script>
+(() => {
+  const root = document.getElementById('skMsOfficeToolkit');
+  if (!root || root.dataset.ready === '1') return;
+  root.dataset.ready = '1';
+
+  const task = root.querySelector('#skOfficeTask');
+  const output = root.querySelector('#skOfficeOutput');
+  const status = root.querySelector('#skOfficeStatus');
+  const generate = root.querySelector('#skOfficeGenerate');
+  let selectedOffice = 'Word';
+
+  root.querySelectorAll('[data-office]').forEach(button => {
+    button.addEventListener('click', () => {
+      selectedOffice = button.dataset.office;
+      root.querySelectorAll('[data-office]').forEach(b => {
+        b.style.outline = b === button ? '3px solid #0f172a' : 'none';
+      });
+      task.placeholder = selectedOffice + ' க்கான உள்ளடக்கத்தை விவரிக்கவும்...';
+      task.focus();
+      status.textContent = selectedOffice + ' தேர்வு செய்யப்பட்டது.';
+    });
+  });
+
+  generate.addEventListener('click', async () => {
+    const userTask = task.value.trim();
+    if (!userTask) {
+      status.textContent = 'முதலில் என்ன உருவாக்க வேண்டும் என்று எழுதுங்கள்.';
+      task.focus();
+      return;
+    }
+
+    generate.disabled = true;
+    status.textContent = 'AI உருவாக்குகிறது...';
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          message: 'Create useful content for ' + selectedOffice +
+            '. User request: ' + userTask +
+            '. Format the response clearly with headings or tables where appropriate. ' +
+            'If Excel is selected, provide a clear table and formulas where useful. ' +
+            'If PowerPoint is selected, organize it slide by slide. ' +
+            'If PDF is selected, prepare well-structured document content suitable for conversion to PDF.',
+          category: 'General AI'
+        })
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'HTTP ' + response.status);
+      output.value = data.reply || data.answer || 'AI response was empty.';
+      status.textContent = 'முடிந்தது. Output-ஐ சரிபார்த்து Copy அல்லது TXT Download செய்யலாம்.';
+    } catch (error) {
+      status.textContent = 'பிழை: ' + error.message;
+    } finally {
+      generate.disabled = false;
+    }
+  });
+
+  root.querySelector('#skOfficeCopy').addEventListener('click', async () => {
+    if (!output.value) {
+      status.textContent = 'Copy செய்ய Output இல்லை.';
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(output.value);
+      status.textContent = 'Output copied.';
+    } catch {
+      output.focus();
+      output.select();
+      status.textContent = 'Text select செய்யப்பட்டுள்ளது; Copy பயன்படுத்துங்கள்.';
+    }
+  });
+
+  root.querySelector('#skOfficeDownload').addEventListener('click', () => {
+    if (!output.value.trim()) {
+      status.textContent = 'Download செய்ய Output இல்லை.';
+      return;
+    }
+    const blob = new Blob(['\ufeff', output.value], {type: 'text/plain;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'sasikumar-ai-' + selectedOffice.toLowerCase() + '.txt';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    status.textContent = 'TXT download தொடங்கப்பட்டது.';
+  });
+
+  root.querySelector('#skOfficeClear').addEventListener('click', () => {
+    task.value = '';
+    output.value = '';
+    status.textContent = 'Input மற்றும் Output அழிக்கப்பட்டன.';
+  });
+})();
+</script>
+<!-- END SK_MS_OFFICE_TOOLKIT_V1 -->
+
 </body>
 </html>
