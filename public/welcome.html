@@ -37,15 +37,71 @@ p{font-size:16px;line-height:1.7;color:#475569}
 }
 .button:focus-visible{outline:3px solid #f59e0b;outline-offset:3px}
 .small{font-size:12px;margin-top:20px}
+
+/* SK_WELCOME_BRAND_DATETIME_PLACE_V1 */
+.brand-logo {
+  display:block;
+  width:80px;
+  height:80px;
+  object-fit:contain;
+  margin:0 auto 14px;
+  border-radius:20px;
+}
+.welcome-info {
+  margin:18px auto 8px;
+  padding:12px;
+  border-radius:14px;
+  background:rgba(255,255,255,.78);
+  color:#24304a;
+  font-size:14px;
+  line-height:1.8;
+  overflow-wrap:anywhere;
+}
+.welcome-info strong { color:#5632a8; }
+
 </style>
 </head>
 <body>
 <main class="card">
   <div class="logo" aria-hidden="true">🤖</div>
-  <h1>Welcome 🙏<br>SASIKUMAR AI</h1>
+
+<img class="brand-logo" src="/assets/sasikumar-ai-logo-160.png"
+     alt="SASIKUMAR AI Brand Logo" width="80" height="80">
+<h1>Welcome 🙏<br>SASIKUMAR AI</h1>
+<div class="welcome-info" id="welcomeInfo" data-marker="SK_WELCOME_BRAND_DATETIME_PLACE_V1">
+  📅 <strong>Date:</strong> <span id="welcomeDate">Loading...</span><br>
+  🕒 <strong>Time:</strong> <span id="welcomeTime">Loading...</span><br>
+  📍 <strong>Place:</strong> Papanasam, Thanjavur, Tamil Nadu, India
+</div>
+
   <p>Your AI tools and smart digital services — all in one place.</p>
   <a class="button" href="/">🚀 Open SASIKUMAR AI</a>
   <p class="small">Welcome! Explore, create and discover.</p>
 </main>
+
+<script>
+/* SK_WELCOME_BRAND_DATETIME_PLACE_V1 */
+(function () {
+  const dateEl = document.getElementById('welcomeDate');
+  const timeEl = document.getElementById('welcomeTime');
+  if (!dateEl || !timeEl) return;
+
+  function updateWelcomeClock() {
+    const now = new Date();
+    const options = { timeZone: 'Asia/Kolkata' };
+    dateEl.textContent = new Intl.DateTimeFormat('en-IN', {
+      ...options, day: '2-digit', month: 'long', year: 'numeric'
+    }).format(now);
+    timeEl.textContent = new Intl.DateTimeFormat('en-IN', {
+      ...options, hour: '2-digit', minute: '2-digit',
+      second: '2-digit', hour12: true
+    }).format(now);
+  }
+
+  updateWelcomeClock();
+  setInterval(updateWelcomeClock, 1000);
+})();
+</script>
+
 </body>
 </html>
