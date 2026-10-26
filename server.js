@@ -2569,6 +2569,20 @@ app.get("/api/silver-rate", async (req, res) => {
 app.get('/whatsapp-menu.html', (req, res) => res.redirect(302, '/'));
 // END SK_HIDE_OLD_20_OPTION_MENU_V1
 
+app.get('/api/adobe/config', (req, res) => {
+  const clientId = process.env.ADOBE_EXPRESS_CLIENT_ID?.trim() || '';
+  if (!clientId) {
+    return res.status(503).json({
+      error: 'Adobe Express Client ID is not configured.'
+    });
+  }
+  res.set('Cache-Control', 'no-store');
+  return res.json({
+    clientId,
+    appName: process.env.ADOBE_EXPRESS_APP_NAME?.trim() || 'sasikumar'
+  });
+});
+
 app.use(express.static(publicPath));
 
 // SK_JOB_REGISTRATION_API_V1

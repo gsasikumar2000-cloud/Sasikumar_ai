@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f7ff">
+  <title>Adobe Express Editor | SASIKUMAR AI</title>
+  <meta name="description" content="Create and edit posters, flyers and social media designs with Adobe Express inside SASIKUMAR AI.">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      color: #172554;
+      background: linear-gradient(145deg, #eff6ff, #fff7ed, #f5f3ff);
+      min-height: 100vh;
+    }
+    header {
+      padding: 20px 16px;
+      text-align: center;
+      background: linear-gradient(110deg, #2563eb, #7c3aed);
+      color: white;
+    }
+    header h1 { margin: 0 0 7px; font-size: clamp(23px, 5vw, 34px); }
+    header p { margin: 0; font-size: 14px; }
+    main {
+      width: min(760px, 100%);
+      margin: 24px auto;
+      padding: 0 15px 30px;
+    }
+    .card {
+      background: white;
+      border-radius: 22px;
+      padding: 23px;
+      box-shadow: 0 12px 35px #1e3a8a16;
+      text-align: center;
+    }
+    .icon { font-size: 54px; }
+    h2 { margin: 8px 0; font-size: 24px; }
+    .desc { color: #475569; line-height: 1.7; }
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 12px;
+      margin: 22px 0;
+    }
+    button, .back {
+      display: inline-block;
+      border: 0;
+      border-radius: 13px;
+      padding: 14px 17px;
+      font-size: 16px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    button:disabled { opacity: .6; cursor: wait; }
+    .primary { color: white; background: #5b35d5; }
+    .secondary { color: #1d4ed8; background: #dbeafe; }
+    #status {
+      margin-top: 15px;
+      padding: 13px;
+      border-radius: 12px;
+      background: #f1f5f9;
+      color: #334155;
+      overflow-wrap: anywhere;
+      line-height: 1.6;
+    }
+    .note {
+      margin-top: 18px;
+      padding: 14px;
+      background: #fff7ed;
+      border-radius: 12px;
+      color: #9a3412;
+      font-size: 13px;
+      line-height: 1.7;
+      text-align: left;
+    }
+    footer { text-align: center; padding: 0 12px 25px; }
+    .back { color: #1d4ed8; background: white; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>✨ SASIKUMAR AI</h1>
+    <p>AI Poster Maker + Adobe Express Editor</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <div class="icon">🎨</div>
+      <h2>Adobe Express Editor</h2>
+      <p class="desc">
+        போஸ்டர், சமூக வலைத்தள வடிவமைப்பு, விளம்பரம் மற்றும்
+        ஃப்ளையர்களை உருவாக்க Adobe Express Editor-ஐத் திறக்கவும்.
+        <br>
+        Create and edit designs with Adobe Express.
+      </p>
+
+      <div class="actions">
+        <button class="primary" id="createBtn">
+          🎨 Create New Design
+        </button>
+        <button class="secondary" id="retryBtn">
+          🔄 Connect / Retry
+        </button>
+      </div>
+
+      <div id="status" role="status" aria-live="polite">
+        Adobe Express இணைப்பைத் தயாரிக்கிறது...
+      </div>
+
+      <div class="note">
+        <strong>குறிப்பு:</strong> Adobe கணக்கில் உள்நுழைய வேண்டியிருக்கலாம்.
+        திட்டம் இன்னும் In development நிலையில் இருந்தால், Adobe அனுமதி
+        அல்லது approval தேவைப்படலாம்.
+        <br><br>
+        Your existing SASIKUMAR AI Poster Maker remains available separately.
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <a class="back" href="/">← SASIKUMAR AI முகப்புக்குத் திரும்பு</a>
+  </footer>
+
+  <script>
+    (() => {
+      const status = document.getElementById('status');
+      const createBtn = document.getElementById('createBtn');
+      const retryBtn = document.getElementById('retryBtn');
+
+      let editor = null;
+      let loading = false;
+
+      function showStatus(message) {
+        status.textContent = message;
+      }
+
+      async function connectAdobe() {
+        if (loading) return;
+        if (editor) {
+          showStatus('Adobe Express இணைக்கப்பட்டுள்ளது. Create New Design அழுத்தவும்.');
+          return;
+        }
+
+        loading = true;
+        retryBtn.disabled = true;
+        createBtn.disabled = true;
+        showStatus('Adobe Express SDK-ஐ இணைக்கிறது...');
+
+        try {
+          const response = await fetch('/api/adobe/config', {
+            cache: 'no-store'
+          });
+
+          if (!response.ok) {
+            throw new Error('Server configuration கிடைக்கவில்லை (HTTP ' + response.status + ').');
+          }
+
+          const config = await response.json();
+
+          if (!config.clientId || !config.appName) {
+            throw new Error('Adobe Client ID அல்லது App Name அமைக்கப்படவில்லை.');
+          }
+
+          if (!window.CCEverywhere) {
+            await new Promise((resolve, reject) => {
+              const script = document.createElement('script');
+              script.src = 'https://cc-embed.adobe.com/sdk/v4/CCEverywhere.js';
+              script.onload = resolve;
+              script.onerror = () => reject(
+                new Error('Adobe SDK ஏற்றப்படவில்லை. Internet connection-ஐச் சரிபார்க்கவும்.')
+              );
+              document.head.appendChild(script);
+            });
+          }
+
+          if (!window.CCEverywhere) {
+            throw new Error('Adobe SDK கிடைக்கவில்லை.');
+          }
+
+          const result = await window.CCEverywhere.initialize(
+            {
+              clientId: config.clientId,
+              appName: config.appName,
+              appVersion: { major: 1, minor: 0 },
+              platformCategory: 'web'
+            },
+            {
+              loginMode: 'delayed',
+              locale: 'en_US'
+            }
+          );
+
+          editor = result.editor;
+
+          if (!editor || typeof editor.create !== 'function') {
+            throw new Error('Adobe Full Editor API கிடைக்கவில்லை.');
+          }
+
+          showStatus('✅ Adobe Express இணைக்கப்பட்டது. இப்போது Create New Design அழுத்தவும்.');
+        } catch (error) {
+          console.error('Adobe Express initialization error:', error);
+          showStatus('இணைப்பு பிழை: ' + (error.message || 'தெரியாத பிழை'));
+        } finally {
+          loading = false;
+          retryBtn.disabled = false;
+          createBtn.disabled = false;
+        }
+      }
+
+      async function createDesign() {
+        if (!editor) {
+          await connectAdobe();
+          if (!editor) return;
+        }
+
+        try {
+          showStatus('Adobe Express Editor திறக்கப்படுகிறது...');
+
+          const appConfig = {
+            callbacks: {
+              onCancel: () => {
+                showStatus('Editor மூடப்பட்டது.');
+              },
+              onPublish: () => {
+                showStatus('வடிவமைப்பு Adobe Express-ல் சேமிக்கப்பட்டது அல்லது வெளியிடப்பட்டது.');
+              },
+              onError: (error) => {
+                console.error('Adobe Editor error:', error);
+                showStatus('Editor பிழை ஏற்பட்டது. மீண்டும் முயற்சிக்கவும்.');
+              }
+            }
+          };
+
+          const exportConfig = [
+            {
+              id: 'download',
+              label: 'Download',
+              action: { target: 'download' },
+              style: { uiType: 'button' }
+            }
+          ];
+
+          editor.create({}, appConfig, exportConfig);
+        } catch (error) {
+          console.error('Adobe Express create error:', error);
+          showStatus('Editor திறக்க முடியவில்லை: ' + (error.message || 'தெரியாத பிழை'));
+        }
+      }
+
+      createBtn.addEventListener('click', createDesign);
+      retryBtn.addEventListener('click', connectAdobe);
+
+      connectAdobe();
+    })();
+  </script>
+</body>
+</html>
