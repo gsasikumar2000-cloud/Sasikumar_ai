@@ -59,6 +59,78 @@ p{font-size:16px;line-height:1.7;color:#475569}
 }
 .welcome-info strong { color:#5632a8; }
 
+
+/* SK_WELCOME_COLORFUL_MOBILE_FIT_V1 */
+html {
+  min-height: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  box-sizing: border-box;
+  min-height: 100vh;
+  margin: 0;
+  padding: clamp(12px, 4vw, 28px);
+  background: linear-gradient(135deg, #fff1f7, #e6f7ff 45%, #fff4d6);
+  color: #26325a;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+h1 {
+  max-width: 100%;
+  margin: 12px auto;
+  font-size: clamp(24px, 7vw, 38px);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+  background: linear-gradient(90deg, #7c3aed, #ec4899, #f97316);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.brand-logo {
+  width: clamp(64px, 19vw, 88px);
+  height: clamp(64px, 19vw, 88px);
+  max-width: 100%;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto 10px;
+}
+.welcome-info {
+  width: 100%;
+  max-width: 420px;
+  margin: 16px auto;
+  padding: clamp(10px, 3.5vw, 16px);
+  border: 1px solid rgba(124, 58, 237, .18);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, .88);
+  box-shadow: 0 8px 24px rgba(76, 29, 149, .10);
+  color: #27335d;
+  font-size: clamp(13px, 3.7vw, 16px);
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.button {
+  display: inline-block;
+  max-width: 100%;
+  padding: 12px 18px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #7c3aed, #ec4899, #f97316);
+  color: #fff;
+  font-size: clamp(14px, 4vw, 17px);
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+  box-shadow: 0 6px 18px rgba(124, 58, 237, .22);
+}
+@media (max-width: 360px) {
+  body { padding: 10px; }
+  h1 { font-size: clamp(22px, 7vw, 27px); }
+  .welcome-info { padding: 10px; line-height: 1.6; }
+  .button { padding: 11px 14px; }
+}
+
 </style>
 </head>
 <body>
