@@ -12708,5 +12708,30 @@ img, video, iframe {
 })();
 </script>
 <!-- END SK_ALL_HOMEPAGE_CARDS_BELOW_MINI_OFFICE_V1 -->
+
+<script>
+/* SK_WELCOME_AUTH_QUERY_HANDLER_V1 */
+(function () {
+  const params = new URLSearchParams(window.location.search);
+  const auth = params.get("skAuth");
+  if (auth !== "login" && auth !== "signup") return;
+
+  function openAuth() {
+    const screen = document.getElementById("sasikumarLoginScreen");
+    if (!screen) return;
+    screen.style.display = "flex";
+    if (auth === "signup" && typeof window.showSignupForm === "function") {
+      window.showSignupForm();
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", openAuth, { once: true });
+  } else {
+    openAuth();
+  }
+})();
+</script>
+
 </body>
 </html>
