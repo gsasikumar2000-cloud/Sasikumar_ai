@@ -149,16 +149,43 @@ h1 {
 
 <!-- SK_WELCOME_MOBILE_FIT_FORCE_V1 -->
 <style id="SK_WELCOME_MOBILE_FIT_FORCE_V1">
-/* Force mobile fit without changing the old welcome page */
-html, body {
+/* FORCE MOBILE FIT */
+html {
   width: 100% !important;
   max-width: 100% !important;
-  overflow-x: hidden !important;
-  box-sizing: border-box !important;
+  overflow-x: clip !important;
+  -webkit-text-size-adjust: 100% !important;
+  text-size-adjust: 100% !important;
 }
 
 *, *::before, *::after {
   box-sizing: border-box !important;
+}
+
+body {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow-x: clip !important;
+  overflow-wrap: anywhere !important;
+}
+
+img, video, canvas, iframe, svg {
+  max-width: 100% !important;
+}
+
+img, video {
+  height: auto !important;
+}
+
+pre, code {
+  max-width: 100% !important;
+  white-space: pre-wrap !important;
+  overflow-wrap: anywhere !important;
+}
+
+table {
+  max-width: 100% !important;
 }
 
 form[action*="google.com/search"] {
@@ -167,79 +194,67 @@ form[action*="google.com/search"] {
   gap: 12px !important;
   width: 100% !important;
   max-width: 560px !important;
+  min-width: 0 !important;
   margin: 20px auto !important;
   padding: 16px !important;
   border-radius: 18px !important;
   background: linear-gradient(135deg, #eef2ff, #fdf2f8) !important;
   border: 2px solid #818cf8 !important;
-  box-shadow: 0 8px 24px rgba(79, 70, 229, 0.15) !important;
+  box-shadow: 0 8px 24px rgba(79,70,229,.15) !important;
 }
 
 form[action*="google.com/search"] input[name="q"] {
-  display: block !important;
   width: 100% !important;
+  max-width: 100% !important;
   min-width: 0 !important;
   min-height: 50px !important;
-  padding: 13px 15px !important;
+  padding: 12px 14px !important;
   border: 2px solid #6366f1 !important;
   border-radius: 12px !important;
-  background: #ffffff !important;
+  background: #fff !important;
   color: #172554 !important;
-  font-family: Arial, sans-serif !important;
-  font-size: 17px !important;
-  line-height: 1.4 !important;
-}
-
-form[action*="google.com/search"] input[name="q"]::placeholder {
-  color: #64748b !important;
-  opacity: 1 !important;
+  font: 16px/1.4 Arial, sans-serif !important;
 }
 
 form[action*="google.com/search"] button,
 form[action*="google.com/search"] input[type="submit"] {
-  display: block !important;
   width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
   min-height: 50px !important;
-  padding: 13px 18px !important;
+  padding: 12px 16px !important;
   border: 0 !important;
   border-radius: 12px !important;
   background: linear-gradient(135deg, #4f46e5, #7c3aed) !important;
-  color: #ffffff !important;
-  font-family: Arial, sans-serif !important;
-  font-size: 17px !important;
-  font-weight: 700 !important;
-  line-height: 1.4 !important;
+  color: #fff !important;
+  font: 700 16px/1.4 Arial, sans-serif !important;
   cursor: pointer !important;
 }
 
-form[action*="google.com/search"] button:active,
-form[action*="google.com/search"] input[type="submit"]:active {
-  transform: scale(0.98) !important;
-}
-
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   body {
     padding-left: 12px !important;
     padding-right: 12px !important;
+  }
+
+  body > * {
+    max-width: 100% !important;
+  }
+
+  h1 { font-size: clamp(24px, 7vw, 32px) !important; }
+  h2 { font-size: clamp(20px, 5.5vw, 27px) !important; }
+  h3 { font-size: clamp(18px, 5vw, 23px) !important; }
+
+  p, li, label {
+    overflow-wrap: anywhere !important;
   }
 
   form[action*="google.com/search"] {
     width: 100% !important;
     max-width: 100% !important;
     margin: 16px auto !important;
-    padding: 14px !important;
+    padding: 12px !important;
     gap: 10px !important;
-  }
-
-  form[action*="google.com/search"] input[name="q"] {
-    min-height: 50px !important;
-    font-size: 16px !important;
-  }
-
-  form[action*="google.com/search"] button,
-  form[action*="google.com/search"] input[type="submit"] {
-    min-height: 50px !important;
-    font-size: 16px !important;
   }
 }
 </style>
