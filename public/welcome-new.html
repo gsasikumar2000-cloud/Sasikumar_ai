@@ -1479,5 +1479,138 @@ style="width:100%;min-height:120px;box-sizing:border-box;padding:11px;border:1px
 </script>
 <!-- END SK_MINI_POSTER_CREATOR_V1 -->
 
+
+<!-- SK_ULTIMATE_EXTRA_POWER_TOOL_V1 -->
+<section id="skUltimatePower" style="margin:20px auto;padding:16px;max-width:1000px;border-radius:20px;background:linear-gradient(135deg,#eef6ff,#f8efff);border:1px solid #cbd5ff;color:#172554;font-family:Arial,sans-serif">
+  <h2 style="margin:0 0 8px">⚡ Ultimate Extra Power Tool</h2>
+  <p style="margin:0 0 16px">3D Studio • Background Remover • Image Tools</p>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px">
+    <button type="button" onclick="skPowerShow('3d')" style="padding:12px;border:0;border-radius:12px;background:#4338ca;color:white">🧊 3D Studio</button>
+    <button type="button" onclick="skPowerShow('bg')" style="padding:12px;border:0;border-radius:12px;background:#047857;color:white">✂️ Background Remover</button>
+    <button type="button" onclick="skPowerShow('image')" style="padding:12px;border:0;border-radius:12px;background:#0369a1;color:white">🖼️ Image Tools</button>
+  </div>
+
+  <div id="skPower3d" style="display:none;margin-top:16px;padding:14px;background:white;border-radius:14px">
+    <h3>🧊 3D Text Studio</h3>
+    <label>Text <input id="skPower3dText" value="SASIKUMAR AI" maxlength="80" style="width:100%;padding:10px;box-sizing:border-box"></label>
+    <label>Text colour <input id="skPower3dColor" type="color" value="#4f46e5"></label>
+    <div id="skPower3dPreview" style="margin:20px 0;padding:30px 8px;text-align:center;font-size:clamp(22px,7vw,48px);font-weight:900;overflow-wrap:anywhere;text-shadow:2px 2px 0 #a5b4fc,4px 4px 0 #818cf8,6px 6px 12px #64748b">SASIKUMAR AI</div>
+    <button type="button" onclick="skPower3dUpdate()">Preview 3D Text</button>
+    <button type="button" onclick="skPower3dDownload()">Download PNG</button>
+  </div>
+
+  <div id="skPowerBg" style="display:none;margin-top:16px;padding:14px;background:white;border-radius:14px">
+    <h3>✂️ Background Remover</h3>
+    <p>படத்தைத் தேர்ந்தெடுத்து, அகற்ற வேண்டிய background நிறத்தைத் தேர்வு செய்யவும். இந்த முறை ஒரே மாதிரியான நிறப் பின்னணிகளுக்கு ஏற்றது.</p>
+    <input id="skPowerBgFile" type="file" accept="image/*" style="max-width:100%">
+    <p>Remove colour <input id="skPowerBgColor" type="color" value="#ffffff"></p>
+    <label>Colour tolerance <input id="skPowerBgTolerance" type="range" min="10" max="180" value="65"></label>
+    <button type="button" onclick="skPowerRemoveBg()">Remove Background</button>
+    <button type="button" onclick="skPowerBgDownload()">Download Transparent PNG</button>
+    <canvas id="skPowerBgCanvas" style="display:block;max-width:100%;height:auto;margin-top:12px"></canvas>
+    <p id="skPowerBgStatus" role="status">படத்தைத் தேர்ந்தெடுக்கவும்.</p>
+  </div>
+
+  <div id="skPowerImage" style="display:none;margin-top:16px;padding:14px;background:white;border-radius:14px">
+    <h3>🖼️ Image Converter & Resizer</h3>
+    <input id="skPowerImageFile" type="file" accept="image/*" style="max-width:100%">
+    <p>Width <input id="skPowerWidth" type="number" min="1" max="5000" value="800" style="width:90px">
+    Height <input id="skPowerHeight" type="number" min="1" max="5000" value="800" style="width:90px"></p>
+    <select id="skPowerFormat"><option value="image/png">PNG</option><option value="image/jpeg">JPG</option><option value="image/webp">WebP</option></select>
+    <button type="button" onclick="skPowerConvertImage()">Convert / Resize</button>
+    <a id="skPowerImageDownload" style="display:none;margin:10px" download="sasikumar-image.png">Download Image</a>
+    <canvas id="skPowerImageCanvas" style="display:block;max-width:100%;height:auto;margin-top:12px"></canvas>
+    <p id="skPowerImageStatus" role="status"></p>
+  </div>
+</section>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  window.skPowerShow = function(which) {
+    ['3d','bg','image'].forEach(k => $('skPower'+k.charAt(0).toUpperCase()+k.slice(1)).style.display = k === which ? 'block' : 'none');
+  };
+  window.skPower3dUpdate = function() {
+    const el = $('skPower3dPreview');
+    el.textContent = $('skPower3dText').value || 'SASIKUMAR AI';
+    el.style.color = $('skPower3dColor').value;
+  };
+  $('skPower3dText').addEventListener('input', skPower3dUpdate);
+  $('skPower3dColor').addEventListener('input', skPower3dUpdate);
+
+  function loadImage(file) {
+    return new Promise((resolve,reject) => {
+      if (!file || !file.type.startsWith('image/')) return reject(Error('Valid image file required'));
+      const url = URL.createObjectURL(file), img = new Image();
+      img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(Error('Image could not be opened')); };
+      img.src = url;
+    });
+  }
+  function downloadCanvas(canvas, name, type='image/png') {
+    canvas.toBlob(blob => {
+      if (!blob) return alert('Image export failed.');
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = name; a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+    },type,.92);
+  }
+  window.skPower3dDownload = function() {
+    const text = $('skPower3dText').value || 'SASIKUMAR AI';
+    const c = document.createElement('canvas'); c.width=1200; c.height=500;
+    const x=c.getContext('2d'); x.fillStyle='#eef2ff'; x.fillRect(0,0,c.width,c.height);
+    x.textAlign='center'; x.textBaseline='middle'; x.font='900 76px Arial';
+    x.fillStyle='#818cf8'; x.fillText(text,606,255,1100);
+    x.fillStyle=$('skPower3dColor').value; x.fillText(text,594,240,1100);
+    downloadCanvas(c,'sasikumar-3d-text.png');
+  };
+  window.skPowerRemoveBg = async function() {
+    const status=$('skPowerBgStatus'), c=$('skPowerBgCanvas'), ctx=c.getContext('2d');
+    try {
+      const img=await loadImage($('skPowerBgFile').files[0]);
+      if(img.width*img.height>16000000) throw Error('Image too large; choose a smaller image.');
+      c.width=img.width; c.height=img.height; ctx.drawImage(img,0,0);
+      const data=ctx.getImageData(0,0,c.width,c.height), d=data.data;
+      const hex=$('skPowerBgColor').value;
+      const target=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));
+      const tol=+$('skPowerBgTolerance').value;
+      for(let i=0;i<d.length;i+=4) {
+        const dist=Math.sqrt((d[i]-target[0])**2+(d[i+1]-target[1])**2+(d[i+2]-target[2])**2);
+        if(dist<tol) d[i+3]=0;
+        else if(dist<tol*1.35) d[i+3]=Math.min(d[i+3],Math.round(255*(dist-tol)/(tol*.35)));
+      }
+      ctx.putImageData(data,0,0);
+      status.textContent='நிற அடிப்படையிலான background removal முடிந்தது. முடிவைப் பார்த்து PNG பதிவிறக்கவும்.';
+    } catch(e) { status.textContent=e.message || 'Could not process image.'; }
+  };
+  window.skPowerBgDownload = function() {
+    const c=$('skPowerBgCanvas');
+    if(!c.width) return alert('முதலில் படத்தை process செய்யவும்.');
+    downloadCanvas(c,'sasikumar-background-removed.png');
+  };
+  window.skPowerConvertImage = async function() {
+    const status=$('skPowerImageStatus'), c=$('skPowerImageCanvas'), ctx=c.getContext('2d');
+    try {
+      const img=await loadImage($('skPowerImageFile').files[0]);
+      const w=+$('skPowerWidth').value, h=+$('skPowerHeight').value;
+      if(!w||!h||w>5000||h>5000) throw Error('Width and height must be 1–5000.');
+      c.width=w; c.height=h; ctx.clearRect(0,0,w,h);
+      const type=$('skPowerFormat').value;
+      if(type==='image/jpeg'){ctx.fillStyle='#ffffff';ctx.fillRect(0,0,w,h);}
+      ctx.drawImage(img,0,0,w,h);
+      c.toBlob(blob=>{
+        if(!blob){status.textContent='Conversion failed.';return;}
+        const a=$('skPowerImageDownload'); a.href=URL.createObjectURL(blob);
+        a.download='sasikumar-image.'+({ 'image/png':'png','image/jpeg':'jpg','image/webp':'webp'}[type]);
+        a.style.display='inline-block'; a.textContent='Download '+a.download;
+        status.textContent='Image conversion complete.';
+      },type,.92);
+    } catch(e) {status.textContent=e.message || 'Image conversion failed.';}
+  };
+})();
+</script>
+<!-- END SK_ULTIMATE_EXTRA_POWER_TOOL_V1 -->
+
 </body>
 </html>
