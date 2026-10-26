@@ -131,6 +131,20 @@ h1 {
   .button { padding: 11px 14px; }
 }
 
+
+/* SK_ORIGINAL_LOGO_SPIN360_V1 */
+@keyframes skOriginalLogoSpin360 {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.brand-logo {
+  animation: skOriginalLogoSpin360 6s linear infinite;
+  transform-origin: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  .brand-logo { animation: none; }
+}
+
 </style>
 </head>
 <body>
