@@ -338,6 +338,52 @@ form[action*="google.com/search"] input[type="submit"] {
 </style>
 <!-- END SK_WELCOME_SINGLE_COLUMN_FIX_V2 -->
 
+
+<!-- SK_WELCOME_AI_REPLY_BOX_CSS_V1 -->
+<style>
+#skWelcomeAIBox {
+  box-sizing:border-box;width:100%;max-width:760px;margin:22px auto;
+  padding:18px;background:linear-gradient(135deg,#eff6ff,#fdf2f8);
+  border:2px solid #818cf8;border-radius:20px;
+  box-shadow:0 8px 24px rgba(79,70,229,.12);
+  color:#172554;font-family:Arial,"Noto Sans Tamil",sans-serif;
+}
+#skWelcomeAIBox * {box-sizing:border-box}
+#skWelcomeAIBox h2 {margin:0 0 8px;font-size:22px;line-height:1.35;color:#4338ca}
+#skWelcomeAIBox .sk-ai-help {margin:0 0 14px;font-size:15px;line-height:1.5}
+#skWelcomeAIInput {
+  display:block;width:100%;min-height:100px;padding:13px;
+  border:1px solid #a5b4fc;border-radius:12px;background:#fff;
+  color:#111827;font:16px/1.5 Arial,"Noto Sans Tamil",sans-serif;
+  resize:vertical;
+}
+#skWelcomeAIControls {display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+#skWelcomeAIControls button,#skWelcomeAIControls a {
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:48px;padding:12px 16px;border:0;border-radius:12px;
+  color:#fff;text-decoration:none;font-size:16px;font-weight:700;cursor:pointer;
+}
+#skWelcomeAISend {flex:1;background:linear-gradient(135deg,#4f46e5,#7c3aed)}
+#skWelcomeAIClear {background:#475569}
+#skWelcomeAIStatus {margin:12px 0;font-size:14px;line-height:1.5;color:#4338ca}
+#skWelcomeAIReply {
+  display:none;white-space:pre-wrap;overflow-wrap:anywhere;
+  margin-top:12px;padding:14px;background:#fff;border:1px solid #c7d2fe;
+  border-radius:12px;color:#111827;font-size:16px;line-height:1.65;
+}
+#skWelcomeAIToolsLink {
+  display:inline-block;margin-top:12px;padding:11px 14px;border-radius:10px;
+  background:#047857;color:#fff;text-decoration:none;font-weight:700;
+}
+@media(max-width:600px) {
+  #skWelcomeAIBox {width:100%;margin:16px auto;padding:14px;border-radius:16px}
+  #skWelcomeAIBox h2 {font-size:20px}
+  #skWelcomeAIInput {font-size:16px}
+  #skWelcomeAIControls {flex-direction:column}
+  #skWelcomeAIControls button {width:100%;min-height:50px}
+}
+</style>
+
 </head>
 <body>
 <main class="card">
@@ -400,6 +446,92 @@ form[action*="google.com/search"] input[type="submit"] {
   </form>
 </section>
 <!-- END SK_WELCOME_WEB_SEARCH_ONLY_V1 -->
+
+
+
+<!-- SK_WELCOME_AI_REPLY_BOX_V1 -->
+<section id="skWelcomeAIBox" aria-label="SASIKUMAR AI Assistant">
+  <h2>🤖 SASIKUMAR AI Assistant</h2>
+  <p class="sk-ai-help">தமிழ், English அல்லது Tanglish-ல் கேள்வி கேளுங்கள்.</p>
+  <form id="skWelcomeAIForm">
+    <label for="skWelcomeAIInput"><strong>உங்கள் கேள்வி</strong></label>
+    <textarea id="skWelcomeAIInput" name="message"
+      placeholder="உங்கள் கேள்வியை இங்கே எழுதுங்கள்..." required></textarea>
+    <div id="skWelcomeAIControls">
+      <button id="skWelcomeAISend" type="submit">🚀 Send</button>
+      <button id="skWelcomeAIClear" type="button">Clear</button>
+    </div>
+  </form>
+  <p id="skWelcomeAIStatus" role="status" aria-live="polite"></p>
+  <div id="skWelcomeAIReply" role="region" aria-label="AI பதில்"></div>
+  <a id="skWelcomeAIToolsLink" href="/">🧰 Open All SASIKUMAR AI Tools</a>
+</section>
+<!-- END SK_WELCOME_AI_REPLY_BOX_V1 -->
+<script>
+/* SK_WELCOME_AI_REPLY_BOX_JS_V1 */
+(() => {
+  const form = document.getElementById('skWelcomeAIForm');
+  if (!form || form.dataset.ready === '1') return;
+  form.dataset.ready = '1';
+
+  const input = document.getElementById('skWelcomeAIInput');
+  const send = document.getElementById('skWelcomeAISend');
+  const clear = document.getElementById('skWelcomeAIClear');
+  const status = document.getElementById('skWelcomeAIStatus');
+  const replyBox = document.getElementById('skWelcomeAIReply');
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const message = input.value.trim();
+    if (!message) {
+      status.textContent = 'உங்கள் கேள்வியை எழுதுங்கள்.';
+      input.focus();
+      return;
+    }
+
+    send.disabled = true;
+    send.textContent = '⏳ பதில் வருகிறது...';
+    status.textContent = 'SASIKUMAR AI பதில் தயாரிக்கிறது...';
+    replyBox.style.display = 'none';
+    replyBox.textContent = '';
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({message, category: 'General AI'})
+      });
+
+      const data = await response.json();
+      const answer = data.reply || data.answer || '';
+
+      if (!response.ok && !answer) {
+        throw new Error('HTTP ' + response.status);
+      }
+
+      replyBox.textContent = answer || 'பதில் கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.';
+      replyBox.style.display = 'block';
+      status.textContent = response.ok
+        ? '✅ பதில் கிடைத்தது'
+        : '⚠️ ' + (data.error || 'சேவையிலிருந்து பிழை பதில் வந்தது');
+    } catch (error) {
+      status.textContent = 'இணைப்பில் சிக்கல். இணையத்தைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.';
+      console.error('SASIKUMAR AI reply error:', error);
+    } finally {
+      send.disabled = false;
+      send.textContent = '🚀 Send';
+    }
+  });
+
+  clear.addEventListener('click', () => {
+    input.value = '';
+    status.textContent = '';
+    replyBox.textContent = '';
+    replyBox.style.display = 'none';
+    input.focus();
+  });
+})();
+</script>
 
 </body>
 </html>
