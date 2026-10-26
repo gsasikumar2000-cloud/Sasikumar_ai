@@ -23,6 +23,16 @@ input,select{flex:1;min-width:180px;padding:13px;border:1px solid #cbd5e1;border
 .page-link:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #60a5fa;outline-offset:2px}
 .back{display:inline-block;margin-top:22px;padding:12px 16px;background:#1d4ed8;color:#fff;border-radius:12px;text-decoration:none;font-weight:700}
 #empty{display:none;padding:20px;background:#fff;border-radius:12px}
+
+/* SK_ALL_PAGES_QUICK_BUTTONS_V1 */
+.sk-quick-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:14px 0}
+.sk-quick-link{display:flex;align-items:center;gap:8px;min-width:0;padding:10px;border:1px solid #dbeafe;border-radius:12px;background:#fff;color:#172554;text-decoration:none;box-shadow:0 2px 7px #0000000b}
+.sk-quick-icon{font-size:21px;flex-shrink:0}
+.sk-quick-text{min-width:0;flex:1;font-size:12px;font-weight:700;overflow-wrap:anywhere}
+.sk-quick-action{display:inline-block;margin-top:4px;padding:4px 7px;border-radius:7px;background:#2563eb;color:#fff;font-size:10px;font-weight:700}
+@media(min-width:600px){.sk-quick-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
+/* END SK_ALL_PAGES_QUICK_BUTTONS_V1 */
+
 </style>
 </head>
 <body>
@@ -37,6 +47,25 @@ input,select{flex:1;min-width:180px;padding:13px;border:1px solid #cbd5e1;border
 <option value="">All categories</option>
 </select>
 </div>
+
+<!-- SK_ALL_PAGES_QUICK_BUTTONS_V1 -->
+<section aria-label="Quick website pages">
+<h2>Quick Access</h2>
+<div class="sk-quick-grid">
+<a class="sk-quick-link" href="/all-pages.html"><span class="sk-quick-icon">🌐</span><span class="sk-quick-text">All Website Pages<br><span class="sk-quick-action">Click Here</span></span></a>
+<a class="sk-quick-link" href="/political-birthday-live.html"><span class="sk-quick-icon">🎂</span><span class="sk-quick-text">Birthday Wishes<br><span class="sk-quick-action">Click Here</span></span></a>
+<a class="sk-quick-link" href="/business-ads.html"><span class="sk-quick-icon">📢</span><span class="sk-quick-text">Company Ads<br><span class="sk-quick-action">Click Here</span></span></a>
+<a class="sk-quick-link" href="/live-news.html"><span class="sk-quick-icon">📰</span><span class="sk-quick-text">Daily News<br><span class="sk-quick-action">Click Here</span></span></a>
+<a class="sk-quick-link" href="/education/a-to-z.html"><span class="sk-quick-icon">📚</span><span class="sk-quick-text">Education<br><span class="sk-quick-action">Click Here</span></span></a>
+<a class="sk-quick-link" href="/kavithai.html"><span class="sk-quick-icon">🎉</span><span class="sk-quick-text">Festival Wishes / Kavithai<br><span class="sk-quick-action">Click Here</span></span></a>
+<a class="sk-quick-link" href="/gold-silver.html"><span class="sk-quick-icon">🪙</span><span class="sk-quick-text">Gold &amp; Silver Rate<br><span class="sk-quick-action">Click Here</span></span></a>
+<a class="sk-quick-link" href="/spiritual-astrology.html"><span class="sk-quick-icon">🔮</span><span class="sk-quick-text">Horoscope / Jothidam<br><span class="sk-quick-action">Click Here</span></span></a>
+<a class="sk-quick-link" href="/ai-image.html"><span class="sk-quick-icon">🎨</span><span class="sk-quick-text">Image Maker<br><span class="sk-quick-action">Click Here</span></span></a>
+<a class="sk-quick-link" href="/whatsapp-menu.html"><span class="sk-quick-icon">📱</span><span class="sk-quick-text">WhatsApp Services<br><span class="sk-quick-action">Click Here</span></span></a>
+</div>
+</section>
+<!-- END SK_ALL_PAGES_QUICK_BUTTONS_V1 -->
+
 <div id="count" aria-live="polite"></div>
 <div id="pages" class="grid">
 <a class="page-link" data-title="ad promotion demo" data-category="Other Pages" href="/ad-promotion-demo.html"><span>Ad Promotion Demo</span><small>ad-promotion-demo.html</small></a>
