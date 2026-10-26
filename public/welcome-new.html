@@ -260,6 +260,84 @@ form[action*="google.com/search"] input[type="submit"] {
 </style>
 <!-- END SK_WELCOME_MOBILE_FIT_FORCE_V1 -->
 
+
+<!-- SK_WELCOME_SINGLE_COLUMN_FIX_V2 -->
+<style id="SK_WELCOME_SINGLE_COLUMN_FIX_V2">
+@media screen and (max-width: 768px) {
+  html, body {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+
+  body {
+    display: block !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  main.card {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+  }
+
+  main.card > * {
+    float: none !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+
+  section[data-marker="SK_WELCOME_WEB_SEARCH_ONLY_V1"],
+  section#skWelcomeWebSearch,
+  .welcome-web-search {
+    display: block !important;
+    float: none !important;
+    position: static !important;
+    clear: both !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 20px 0 0 !important;
+  }
+
+  form[action*="google.com/search"] {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 12px 0 !important;
+    padding: 12px !important;
+    gap: 10px !important;
+    background: linear-gradient(135deg,#eef2ff,#fdf2f8) !important;
+    border: 2px solid #818cf8 !important;
+    border-radius: 16px !important;
+  }
+
+  form[action*="google.com/search"] input[name="q"],
+  form[action*="google.com/search"] button {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    min-height: 50px !important;
+    box-sizing: border-box !important;
+    font-size: 16px !important;
+  }
+
+  form[action*="google.com/search"] button {
+    background: linear-gradient(135deg,#4f46e5,#7c3aed) !important;
+    color: white !important;
+    border-radius: 12px !important;
+  }
+}
+</style>
+<!-- END SK_WELCOME_SINGLE_COLUMN_FIX_V2 -->
+
 </head>
 <body>
 <main class="card">
