@@ -494,7 +494,7 @@ form[action*="google.com/search"] input[type="submit"] {
   to { transform: translateX(-50%); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .skFeatureTickerTrack { animation: none; }
+  .skFeatureTickerTrack { animation: skFeatureTickerMove 36s linear infinite !important; }
   .skFeatureTicker { overflow-x: auto; }
 }
 /* END SK_AUTO_FEATURE_TICKER_CSS_V1 */
@@ -509,7 +509,29 @@ form[action*="google.com/search"] input[type="submit"] {
   margin: 0 auto;
 }
 </style>
-\n</head>
+\n
+<!-- SK_WELCOME_MOBILE_SCROLL_FIX_V1 -->
+<style>
+html {
+  min-height: 100%;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+body {
+  min-height: 100vh;
+  height: auto !important;
+  overflow-y: auto !important;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+.skFeatureTicker {
+  touch-action: pan-y;
+}
+</style>
+<!-- END SK_WELCOME_MOBILE_SCROLL_FIX_V1 -->
+
+</head>
 <body>
 <main class="card">
 
