@@ -126,6 +126,7 @@ button{width:100%;margin-top:14px;padding:14px;border:0;border-radius:14px;font-
 <button type="button" class="generate" style="background:#2563eb" onclick="generateImageWithCloudflare()">☁️ Generate with Cloudflare FLUX 3 Image Klein</button>
 <button type="button" class="generate" style="background:#7c3aed" onclick="generateImageAuto()">🤖 Automatic AI Image Generation</button>
 <button type="button" class="back" onclick="downloadPosterPNG()">⬇️ Download Poster PNG</button>
+<button type="button" class="generate" onclick="skEditInAdobeExpress()">✏️ Edit in Adobe Express</button>
 
 <div class="tool-title">🛠️ All Tools</div>
 <div class="tool-grid">
@@ -254,6 +255,34 @@ async function pastePrompt(){
 /* SK_LOCAL_POSTER_PNG_V1 */
 let skLocalPosterUrl = '';
 let skGeneratedImageUrl = '';
+
+async function skEditInAdobeExpress() {
+  const sourceUrl = skGeneratedImageUrl || skLocalPosterUrl;
+  if (!sourceUrl) {
+    alert('முதலில் ஒரு போஸ்டரை உருவாக்கவும்.');
+    return;
+  }
+  try {
+    const response = await fetch(sourceUrl);
+    if (!response.ok) throw new Error('Image HTTP ' + response.status);
+    const blob = await response.blob();
+    if (!blob.type.startsWith('image/')) {
+      throw new Error('Image format கிடைக்கவில்லை.');
+    }
+    const dataUrl = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error('Image read failed'));
+      reader.readAsDataURL(blob);
+    });
+    sessionStorage.setItem('skAdobePosterData', dataUrl);
+    location.href = '/adobe-express.html?editPoster=1';
+  } catch (error) {
+    console.error('Adobe poster transfer failed:', error);
+    alert('படத்தை Adobe Express-க்கு அனுப்ப முடியவில்லை. மீண்டும் முயற்சிக்கவும்.');
+  }
+}
+
 
 function skEscapeXml(value) {
   return String(value).replace(/[&<>"']/g, ch => ({

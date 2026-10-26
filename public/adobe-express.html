@@ -200,6 +200,10 @@
           }
 
           showStatus('✅ Adobe Express இணைக்கப்பட்டது. இப்போது Create New Design அழுத்தவும்.');
+          if (new URLSearchParams(location.search).get('editPoster') === '1' &&
+              sessionStorage.getItem('skAdobePosterData')) {
+            createDesign();
+          }
         } catch (error) {
           console.error('Adobe Express initialization error:', error);
           showStatus('இணைப்பு பிழை: ' + (error.message || 'தெரியாத பிழை'));
@@ -243,6 +247,22 @@
             }
           ];
 
+          const savedPoster = sessionStorage.getItem('skAdobePosterData');
+          if (savedPoster) {
+            if (typeof editor.createWithAsset !== 'function') {
+              throw new Error('இந்த Adobe SDK-ல் createWithAsset வசதி இல்லை.');
+            }
+            const comma = savedPoster.indexOf(',');
+            if (comma < 0) throw new Error('Poster image data தவறான வடிவில் உள்ளது.');
+            sessionStorage.removeItem('skAdobePosterData');
+            editor.createWithAsset(
+              { asset: { data: savedPoster.slice(comma + 1), dataType: 'base64', type: 'image' } },
+              appConfig,
+              exportConfig
+            );
+            showStatus('✅ உங்கள் AI Poster Adobe Express-ல் திறக்கப்படுகிறது.');
+            return;
+          }
           editor.create({}, appConfig, exportConfig);
         } catch (error) {
           console.error('Adobe Express create error:', error);
