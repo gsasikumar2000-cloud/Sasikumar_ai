@@ -892,6 +892,218 @@ form[action*="google.com/search"] input[type="submit"] {
 
 
 
+
+<!-- SK_UNIVERSAL_CONVERTER_STUDIO_V1 -->
+<section id="skUniversalConverter" style="max-width:1000px;margin:18px auto;padding:16px;box-sizing:border-box;border:1px solid #b7d7ff;border-radius:18px;background:#f3f8ff;color:#172554">
+<h2>🔄 SASIKUMAR AI — Universal Converter Studio</h2>
+<p>Text • Voice • Image • SVG • Audio • Video • Documents</p>
+
+<label for="skConvType"><b>Choose converter</b></label>
+<select id="skConvType" style="width:100%;padding:11px;margin:8px 0;border-radius:10px">
+<option value="text">📝 Text Converter</option>
+<option value="voice">🗣️ Text to Voice</option>
+<option value="image">🖼️ PNG / JPG / WebP Converter</option>
+<option value="svg">🎨 SVG Preview / SVG to PNG</option>
+<option value="audio">🎵 Audio Converter</option>
+<option value="video">🎬 Video Converter</option>
+<option value="document">📄 Document Converter</option>
+</select>
+
+<label for="skConvFile"><b>Choose file (if needed)</b></label>
+<input id="skConvFile" type="file" accept="image/*,.svg,.txt,.md,.json,.html,.csv,.pdf,.doc,.docx,.mp3,.wav,.m4a,.ogg,.mp4,.webm,.mov"
+style="display:block;width:100%;margin:8px 0;padding:8px;box-sizing:border-box">
+
+<label for="skConvText"><b>Text input</b></label>
+<textarea id="skConvText" placeholder="Type or paste text here..."
+style="width:100%;min-height:120px;box-sizing:border-box;padding:11px;border:1px solid #b8c9df;border-radius:10px"></textarea>
+
+<div id="skConvOptions" style="margin:12px 0">
+<label for="skConvFormat"><b>Output format</b></label>
+<select id="skConvFormat" style="width:100%;padding:10px;margin:6px 0">
+<option value="txt">TXT</option>
+<option value="md">Markdown</option>
+<option value="json">JSON string</option>
+<option value="html">HTML text</option>
+</select>
+
+<label for="skConvVoice"><b>Voice preference (browser-supported voices)</b></label>
+<select id="skConvVoice" style="width:100%;padding:10px;margin:6px 0">
+<option value="female">Female-like voice, if available</option>
+<option value="male">Male-like voice, if available</option>
+<option value="any">Default voice</option>
+</select>
+
+<label for="skConvImageFormat"><b>Image output</b></label>
+<select id="skConvImageFormat" style="width:100%;padding:10px;margin:6px 0">
+<option value="image/png">PNG</option>
+<option value="image/jpeg">JPG</option>
+<option value="image/webp">WebP</option>
+</select>
+</div>
+
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin:12px 0">
+<button type="button" id="skConvRun">Convert / Preview</button>
+<button type="button" id="skConvSpeak">🔊 Speak text</button>
+<button type="button" id="skConvStop">Stop voice</button>
+<button type="button" id="skConvCopy">Copy output</button>
+<button type="button" id="skConvDownload">Download output</button>
+<button type="button" id="skConvClear">Clear</button>
+</div>
+
+<div id="skConvPreview" style="max-width:100%;overflow:auto;margin:10px 0"></div>
+<label for="skConvOutput"><b>Output / Status</b></label>
+<textarea id="skConvOutput" readonly style="width:100%;min-height:100px;box-sizing:border-box;padding:11px;border-radius:10px;border:1px solid #cbd5e1"></textarea>
+<p style="font-size:13px">Note: voice choices depend on your browser/device. Audio/video transcoding and document conversions need suitable processing support; unsupported conversions will not be falsely reported as completed.</p>
+</section>
+
+<script>
+(function () {
+  const $ = id => document.getElementById(id);
+  const type = $("skConvType"), file = $("skConvFile"), text = $("skConvText");
+  const format = $("skConvFormat"), imageFormat = $("skConvImageFormat");
+  const voice = $("skConvVoice"), output = $("skConvOutput"), preview = $("skConvPreview");
+  let resultBlob = null, resultName = "converted.txt", objectUrl = null;
+
+  function status(s) { output.value = s; }
+  function resetResult() { resultBlob = null; resultName = "converted.txt"; }
+
+  type.addEventListener("change", () => {
+    const t = type.value;
+    format.disabled = t !== "text";
+    imageFormat.disabled = !["image", "svg"].includes(t);
+    voice.disabled = t !== "voice";
+    preview.replaceChildren();
+    resetResult();
+    status("Selected: " + type.options[type.selectedIndex].text);
+  });
+
+  function downloadBlob(blob, name) {
+    const url = URL.createObjectURL(blob), a = document.createElement("a");
+    a.href = url; a.download = name; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  }
+
+  function loadImage(blob) {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(blob), img = new Image();
+      img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("Image could not be opened.")); };
+      img.src = url;
+    });
+  }
+
+  async function convertImage(blob, isSvg) {
+    if (isSvg && blob.size > 5 * 1024 * 1024) throw new Error("SVG is too large (5 MB limit).");
+    const img = await loadImage(blob);
+    const w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+    if (!w || !h || w * h > 40000000) throw new Error("Invalid or excessively large image dimensions.");
+    const canvas = document.createElement("canvas");
+    canvas.width = w; canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    if (imageFormat.value === "image/jpeg") {
+      ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, w, h);
+    }
+    ctx.drawImage(img, 0, 0);
+    const blobOut = await new Promise(resolve => canvas.toBlob(resolve, imageFormat.value, 0.92));
+    if (!blobOut) throw new Error("This output format is not supported by your browser.");
+    resultBlob = blobOut;
+    const ext = {"image/png":"png","image/jpeg":"jpg","image/webp":"webp"}[imageFormat.value];
+    resultName = "converted-image." + ext;
+    preview.replaceChildren(canvas);
+    canvas.style.maxWidth = "100%"; canvas.style.height = "auto";
+    status("Image conversion complete: " + w + " × " + h + ". Press Download output.");
+  }
+
+  $("skConvRun").addEventListener("click", async () => {
+    resetResult(); preview.replaceChildren();
+    try {
+      if (type.value === "text") {
+        const value = text.value;
+        let blob, ext;
+        if (format.value === "json") {
+          blob = new Blob([JSON.stringify({text:value}, null, 2)], {type:"application/json"});
+          ext = "json";
+        } else if (format.value === "html") {
+          blob = new Blob(["<!doctype html><meta charset=\"utf-8\"><pre>" +
+            value.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;") +
+            "</pre>"], {type:"text/html;charset=utf-8"});
+          ext = "html";
+        } else {
+          blob = new Blob([value], {type:"text/plain;charset=utf-8"});
+          ext = format.value === "md" ? "md" : "txt";
+        }
+        resultBlob = blob; resultName = "converted-text." + ext;
+        status("Text conversion complete. Press Download output.");
+        return;
+      }
+
+      if (type.value === "voice") {
+        if (!text.value.trim()) throw new Error("Enter text first.");
+        if (!("speechSynthesis" in window)) throw new Error("Speech synthesis is not supported by this browser.");
+        const utterance = new SpeechSynthesisUtterance(text.value);
+        const voices = speechSynthesis.getVoices();
+        const langMatch = voices.filter(v => /^ta(-|$)/i.test(v.lang));
+        const pool = langMatch.length ? langMatch : voices;
+        const preference = voice.value;
+        const matched = preference === "any" ? null : pool.find(v =>
+          preference === "female" ? /female|woman|zira|samantha|karen|veena|priya/i.test(v.name) :
+          /male|man|david|mark|daniel|ravi|mohan/i.test(v.name)
+        );
+        if (matched) utterance.voice = matched;
+        utterance.onstart = () => status("Speaking with " + (matched ? matched.name : "available default voice") + ".");
+        utterance.onend = () => status("Speech finished. Voice preference is best-effort; exact gender selection is not guaranteed.");
+        utterance.onerror = () => status("Speech could not be played. Try another browser voice.");
+        speechSynthesis.cancel();
+        speechSynthesis.speak(utterance);
+        if (!matched) status("Requested voice not found by name. Using device default voice; gender and Tamil support depend on installed voices.");
+        return;
+      }
+
+      if (type.value === "image" || type.value === "svg") {
+        const f = file.files[0];
+        if (!f) throw new Error("Choose an image file first.");
+        const isSvg = type.value === "svg" || /\.svg$/i.test(f.name) || f.type === "image/svg+xml";
+        if (isSvg && !/\.svg$/i.test(f.name) && f.type !== "image/svg+xml") {
+          throw new Error("Choose a genuine SVG file for SVG conversion.");
+        }
+        await convertImage(f, isSvg);
+        return;
+      }
+
+      if (type.value === "audio") {
+        throw new Error("Audio transcoding needs a supported conversion backend. This browser tool has not converted the file.");
+      }
+      if (type.value === "video") {
+        throw new Error("Video transcoding needs a supported conversion backend such as FFmpeg. This browser tool has not converted the file.");
+      }
+      if (type.value === "document") {
+        throw new Error("PDF/DOCX conversion needs a document-processing library or backend. Use Text Converter for TXT, Markdown, JSON or HTML.");
+      }
+    } catch (e) { status("Not converted: " + e.message); }
+  });
+
+  $("skConvSpeak").addEventListener("click", () => $("skConvRun").click());
+  $("skConvStop").addEventListener("click", () => {
+    if ("speechSynthesis" in window) speechSynthesis.cancel();
+    status("Voice stopped.");
+  });
+  $("skConvCopy").addEventListener("click", async () => {
+    const value = resultBlob ? output.value : output.value;
+    try { await navigator.clipboard.writeText(value); status("Status copied. For text content, select and copy the input text."); }
+    catch (_) { status("Clipboard permission unavailable."); }
+  });
+  $("skConvDownload").addEventListener("click", () => {
+    if (!resultBlob) { status("No converted file is ready to download. Convert first."); return; }
+    downloadBlob(resultBlob, resultName);
+  });
+  $("skConvClear").addEventListener("click", () => {
+    text.value = ""; file.value = ""; preview.replaceChildren();
+    resetResult(); status("Converter cleared.");
+  });
+})();
+</script>
+<!-- END SK_UNIVERSAL_CONVERTER_STUDIO_V1 -->
+
 <!-- SK_CODE_STUDIO_V1 -->
 <section id="skCodeStudio" style="margin:18px auto;padding:16px;max-width:1000px;border:1px solid #b8d7ff;border-radius:18px;background:#f4f9ff;color:#172554;box-sizing:border-box">
   <h2 style="margin:0 0 8px">💻 SASIKUMAR AI — Code Studio</h2>
