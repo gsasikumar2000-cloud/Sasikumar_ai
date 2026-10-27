@@ -2278,6 +2278,19 @@ logo.onload=draw;draw();
 }
 /* END SK_BRAND_LOGO_CIRCLE_40PX_V1 */
 
+
+/* SK_BRAND_LOGO_SPIN_VISIBLE_V1 */
+@keyframes skBrandLogoSpinVisibleV1 {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.brand-logo {
+  transform-origin: center center !important;
+  animation: skBrandLogoSpinVisibleV1 3s linear infinite !important;
+  will-change: transform;
+}
+/* END SK_BRAND_LOGO_SPIN_VISIBLE_V1 */
+
 </style>
 
 <div id="skServerStatusV1" role="status" aria-live="polite">
