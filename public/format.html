@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#eff6ff">
+<title>SASIKUMAR AI - All-in-One Format</title>
+<style>
+:root{font-family:Arial,"Noto Sans Tamil",sans-serif;color:#172554;background:#eff6ff}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(135deg,#eff6ff,#fdf2f8,#ecfdf5);min-height:100vh}
+header{padding:22px 14px;text-align:center;background:linear-gradient(110deg,#2563eb,#7c3aed,#db2777);color:white}
+header h1{font-size:clamp(23px,5vw,34px);margin:0 0 8px}
+header p{margin:0;font-size:14px;line-height:1.7}
+.container{max-width:900px;margin:18px auto;padding:0 12px 28px}
+.card{background:#fff;border:1px solid #dbeafe;border-radius:16px;padding:15px;margin-bottom:14px;box-shadow:0 5px 18px #1e3a8a0d}
+h2{font-size:17px;margin:0 0 12px}
+label{display:block;font-weight:bold;font-size:13px;margin-bottom:7px}
+textarea,select,input{width:100%;font:inherit;border:1px solid #cbd5e1;border-radius:10px;padding:12px;background:#fff;color:#172554}
+textarea{min-height:170px;resize:vertical;line-height:1.7}
+#output{min-height:150px;background:#f8fafc;white-space:pre-wrap;overflow-wrap:anywhere}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+button,.back{border:0;border-radius:10px;padding:11px 12px;font-size:13px;font-weight:bold;cursor:pointer;background:#2563eb;color:#fff;text-decoration:none;display:inline-block;text-align:center}
+button:active{transform:scale(.98)}
+.green{background:#059669}.purple{background:#7c3aed}.pink{background:#db2777}.orange{background:#ea580c}.gray{background:#475569}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.toolbar button{flex:1;min-width:100px}
+.hint{font-size:12px;color:#64748b;line-height:1.7}
+.status{font-size:13px;color:#047857;margin-top:8px;min-height:18px}
+footer{text-align:center;padding:14px;color:#64748b;font-size:12px}
+@media(min-width:600px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}.container{padding-left:18px;padding-right:18px}}
+</style>
+</head>
+<body>
+<header>
+<h1>✨ SASIKUMAR AI</h1>
+<p>📝 All-in-One Format Studio<br>தமிழ் & English • Text • WhatsApp • Social Media</p>
+</header>
+
+<main class="container">
+<section class="card">
+<h2>✍️ 1. Enter Your Text / உங்கள் உரையை உள்ளிடுங்கள்</h2>
+<textarea id="input" placeholder="உங்கள் தமிழ் அல்லது English உரையை இங்கே எழுதவும்..."></textarea>
+<div class="toolbar">
+<button class="gray" onclick="clearAll()">🧹 Clear</button>
+<button class="green" onclick="copyInput()">📋 Copy Input</button>
+<button class="purple" onclick="downloadText()">⬇️ Download</button>
+</div>
+<p class="hint">உங்கள் உரை உங்கள் browser-லேயே format செய்யப்படும். AI rewrite மற்றும் grammar correction-க்கு கீழே AI API வசதி உள்ளது.</p>
+</section>
+
+<section class="card">
+<h2>🔤 2. Text Formatter</h2>
+<div class="grid">
+<button onclick="transform('upper')">UPPERCASE</button>
+<button class="purple" onclick="transform('lower')">lowercase</button>
+<button class="pink" onclick="transform('title')">Title Case</button>
+<button class="orange" onclick="transform('sentence')">Sentence Case</button>
+<button class="green" onclick="transform('trim')">Remove Extra Spaces</button>
+<button class="gray" onclick="transform('lines')">Remove Empty Lines</button>
+<button onclick="transform('number')">Number Lines</button>
+<button class="purple" onclick="transform('paragraph')">Format Paragraphs</button>
+</div>
+</section>
+
+<section class="card">
+<h2>💚 3. WhatsApp Formatter</h2>
+<p class="hint">WhatsApp-ல் பயன்படுத்த உரையைத் தேர்ந்தெடுத்து formatting செய்யுங்கள்.</p>
+<div class="grid">
+<button class="green" onclick="wrapText('*','*')">Bold *Text*</button>
+<button class="purple" onclick="wrapText('_','_')">Italic _Text_</button>
+<button class="pink" onclick="wrapText('~','~')">Strike ~Text~</button>
+<button class="orange" onclick="wrapText('```','```')">Monospace</button>
+</div>
+</section>
+
+<section class="card">
+<h2>📱 4. Social Media & Document Format</h2>
+<div class="grid">
+<button onclick="makeTemplate('facebook')">Facebook Post</button>
+<button class="pink" onclick="makeTemplate('instagram')">Instagram Caption</button>
+<button class="green" onclick="makeTemplate('whatsapp')">WhatsApp Message</button>
+<button class="orange" onclick="makeTemplate('document')">Document</button>
+<button class="purple" onclick="transform('bullets')">Bullet Points</button>
+<button class="gray" onclick="transform('heading')">Add Heading</button>
+</div>
+</section>
+
+<section class="card">
+<h2>🤖 5. AI Text Editor</h2>
+<label for="task">Choose an AI task / AI பணியைத் தேர்ந்தெடுக்கவும்</label>
+<select id="task">
+<option value="rewrite">Rewrite — உரையை மேம்படுத்து</option>
+<option value="grammar">Grammar Fix — இலக்கணம் திருத்து</option>
+<option value="summary">Summarize — சுருக்கம்</option>
+<option value="professional">Professional — தொழில்முறை உரை</option>
+<option value="translate">Translate to English — ஆங்கிலத்தில் மொழிபெயர்</option>
+<option value="tamil">Translate to Tamil — தமிழில் மொழிபெயர்</option>
+</select>
+<div class="toolbar">
+<button class="purple" id="aiButton" onclick="runAI()">✨ Run AI Editor</button>
+</div>
+<p class="hint">AI API கிடைத்தால் இந்த வசதி இயங்கும். API கிடைக்காவிட்டால், உங்கள் உரை அழிக்கப்படாது.</p>
+<div id="status" class="status" role="status"></div>
+</section>
+
+<section class="card">
+<h2>📄 6. Formatted Output / முடிவு</h2>
+<textarea id="output" placeholder="உங்கள் formatted text இங்கே தோன்றும்..." readonly></textarea>
+<div class="toolbar">
+<button class="green" onclick="copyOutput()">📋 Copy Output</button>
+<button class="purple" onclick="useOutput()">↩️ Use as Input</button>
+<button class="orange" onclick="downloadOutput()">⬇️ Download Output</button>
+</div>
+</section>
+<div class="toolbar">
+<a class="back" href="/" style="flex:1">🏠 Home</a>
+<a class="back" href="/welcome-new.html" style="flex:1;background:#7c3aed">🔍 Welcome & Research</a>
+</div>
+</main>
+<footer>© SASIKUMAR AI • All-in-One Format Studio</footer>
+
+<script>
+const $=id=>document.getElementById(id);
+function source(){return $('input').value}
+function setOutput(text){$('output').value=text;$('status').textContent='';}
+function needText(){if(!source().trim()){$('status').textContent='முதலில் உரையை உள்ளிடுங்கள் / Please enter text first.';return false}return true}
+function transform(type){
+ if(!needText())return;
+ let s=source(),out=s;
+ if(type==='upper')out=s.toLocaleUpperCase();
+ if(type==='lower')out=s.toLocaleLowerCase();
+ if(type==='title')out=s.toLocaleLowerCase().replace(/(^|[\s([{“"'])\p{L}/gu,m=>m.toLocaleUpperCase());
+ if(type==='sentence')out=s.toLocaleLowerCase().replace(/(^\s*\p{L}|[.!?]\s+\p{L})/gu,m=>m.toLocaleUpperCase());
+ if(type==='trim')out=s.split('\n').map(x=>x.trim().replace(/\s+/g,' ')).join('\n').trim();
+ if(type==='lines')out=s.split('\n').filter(x=>x.trim()).join('\n');
+ if(type==='number')out=s.split('\n').map((x,i)=>x.trim()?`${i+1}. ${x}`:'').join('\n');
+ if(type==='paragraph')out=s.split(/\n+/).map(x=>x.trim()).filter(Boolean).join('\n\n');
+ if(type==='bullets')out=s.split('\n').filter(x=>x.trim()).map(x=>'• '+x.trim()).join('\n');
+ if(type==='heading')out='【 '+s.split('\n')[0].trim()+' 】\n\n'+s.split('\n').slice(1).join('\n');
+ setOutput(out);
+}
+function wrapText(a,b){if(!needText())return;setOutput(a+source()+b)}
+function makeTemplate(type){
+ if(!needText())return;
+ let s=source().trim(),out=s;
+ if(type==='facebook')out='✨ '+s+'\n\n💬 உங்கள் கருத்துகளைப் பகிருங்கள்!\n\n#SASIKUMARAI';
+ if(type==='instagram')out=s+'\n.\n.\n✨ Follow for more!\n#Tamil #SASIKUMARAI #SocialMedia';
+ if(type==='whatsapp')out='🙏 வணக்கம்!\n\n'+s+'\n\nநன்றி! 😊';
+ if(type==='document')out=s.split('\n')[0]+'\n'+'='.repeat(Math.min(35,Math.max(5,s.split('\n')[0].length)))+'\n\n'+s.split('\n').slice(1).join('\n');
+ setOutput(out);
+}
+async function copyText(text){
+ if(!text){$('status').textContent='Copy செய்ய உரை இல்லை.';return}
+ try{await navigator.clipboard.writeText(text);$('status').textContent='✅ Copied!'}
+ catch(e){const t=document.createElement('textarea');t.value=text;document.body.appendChild(t);t.select();const ok=document.execCommand('copy');t.remove();$('status').textContent=ok?'✅ Copied!':'Copy முடியவில்லை. உரையைத் தேர்ந்தெடுத்து copy செய்யுங்கள்.'}
+}
+function copyInput(){copyText(source())}
+function copyOutput(){copyText($('output').value)}
+function useOutput(){if($('output').value){$('input').value=$('output').value;$('status').textContent='Output input-க்கு மாற்றப்பட்டது.'}}
+function clearAll(){$('input').value='';$('output').value='';$('status').textContent='உரை அழிக்கப்பட்டது.'}
+function saveFile(text,name){
+ const blob=new Blob([text],{type:'text/plain;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function downloadText(){if(!source()){needText();return}saveFile(source(),'sasikumar-ai-text.txt')}
+function downloadOutput(){if(!$('output').value){$('status').textContent='Download செய்ய output இல்லை.';return}saveFile($('output').value,'sasikumar-ai-formatted.txt')}
+async function runAI(){
+ if(!needText())return;
+ const button=$('aiButton'),task=$('task').value;
+ button.disabled=true;button.textContent='⏳ Processing...';
+ $('status').textContent='AI service-ஐ தொடர்பு கொள்கிறோம்...';
+ try{
+  const response=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:({
+   rewrite:'Rewrite and improve this text while preserving its meaning. Return only the improved text:\n\n',
+   grammar:'Correct grammar and spelling. Preserve the original language. Return only the corrected text:\n\n',
+   summary:'Summarize this text concisely in the same language:\n\n',
+   professional:'Rewrite this text in a clear professional tone, preserving its meaning:\n\n',
+   translate:'Translate this text into English. Return only the translation:\n\n',
+   tamil:'Translate this text into Tamil. Return only the translation:\n\n'
+  })[task]+source()})});
+  const data=await response.json();
+  if(!response.ok)throw new Error(data.error||data.message||'HTTP '+response.status);
+  const result=data.reply||data.response||data.text||data.answer||data.content||data.message;
+  if(typeof result==='string'&&result.trim()){setOutput(result.trim());$('status').textContent='✅ AI editing completed.'}
+  else throw new Error('AI response format is not recognized. Check /api/chat response structure.');
+ }catch(e){$('status').textContent='AI request failed: '+e.message+' — கீழே உள்ள Text Formatter வசதிகளைப் பயன்படுத்தலாம்.'}
+ finally{button.disabled=false;button.textContent='✨ Run AI Editor'}
+}
+</script>
+</body>
+</html>
