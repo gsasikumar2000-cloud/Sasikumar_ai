@@ -11173,6 +11173,37 @@ html body .skMainLiveGrid > .skMainFeatureCard {
 
 
 
+
+<!-- SK_MINI_OFFICE_ABOVE_SETTINGS_V1 -->
+<script id="SK_MINI_OFFICE_ABOVE_SETTINGS_SCRIPT_V1">
+(function () {
+  function placeMiniOfficeAboveSettings() {
+    var office = document.getElementById("skMiniOfficeV1");
+    var settings = document.getElementById("skSettingsBottomV1");
+    if (!office || !settings || !settings.parentNode) return;
+
+    settings.parentNode.insertBefore(office, settings);
+
+    office.style.setProperty("display", "block", "important");
+    office.style.setProperty("visibility", "visible", "important");
+    office.style.setProperty("opacity", "1", "important");
+    office.style.setProperty("width", "100%", "important");
+    office.style.setProperty("height", "auto", "important");
+    office.style.setProperty("min-height", "180px", "important");
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", placeMiniOfficeAboveSettings);
+  } else {
+    placeMiniOfficeAboveSettings();
+  }
+
+  window.addEventListener("load", placeMiniOfficeAboveSettings);
+  setTimeout(placeMiniOfficeAboveSettings, 3000);
+  setTimeout(placeMiniOfficeAboveSettings, 6000);
+})();
+</script>
+
 <!-- SK_SETTINGS_BUTTON_BOTTOM_V2 -->
 <div id="skSettingsBottomV1" style="display:flex;justify-content:center;align-items:center;margin:18px auto;padding:10px;width:100%;box-sizing:border-box;">
   <a href="/settings.html" class="skBtn" style="display:inline-flex;justify-content:center;align-items:center;background:#0878f9;color:#ffffff;border:2px solid #60a5fa;border-radius:14px;padding:13px 30px;font-size:18px;font-weight:700;text-decoration:none;box-shadow:0 4px 14px rgba(8,120,249,.35);">⚙️ Settings</a>
