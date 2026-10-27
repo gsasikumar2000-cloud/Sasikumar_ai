@@ -2226,6 +2226,39 @@ logo.onload=draw;draw();
   #skServerStatusV1 {right:8px;bottom:8px}
   #skSignupBoxV1 h2 {font-size:22px}
 }
+
+/* SK_PREMIUM_LOGO_EFFECTS_V2 */
+@keyframes skPremiumLogoFloatV2 {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -5px; }
+}
+@keyframes skPremiumLogoGlowV2 {
+  0%, 100% {
+    filter: drop-shadow(0 0 4px rgba(37,99,235,.35));
+  }
+  50% {
+    filter:
+      drop-shadow(0 0 12px rgba(37,99,235,.85))
+      drop-shadow(0 0 7px rgba(245,190,60,.65));
+  }
+}
+.skSectionBrandLogo,
+.brand-logo {
+  transform-origin: center center !important;
+  animation:
+    skOriginalLogoSpin360 8s linear infinite,
+    skPremiumLogoFloatV2 3s ease-in-out infinite,
+    skPremiumLogoGlowV2 2.4s ease-in-out infinite !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .skSectionBrandLogo,
+  .brand-logo {
+    animation: none !important;
+    translate: none !important;
+  }
+}
+/* END SK_PREMIUM_LOGO_EFFECTS_V2 */
+
 </style>
 
 <div id="skServerStatusV1" role="status" aria-live="polite">
