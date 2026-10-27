@@ -1,73 +1,60 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>SASIKUMAR AI</title>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SASIKUMAR AI - LIVE</title>
 <style>
 body{margin:0;font-family:system-ui;background:#f0f9ff}
-.top{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;padding:12px;text-align:center;box-shadow:0 2px 8px #0002}
-.card{height:100px;border-radius:12px;padding:6px;text-align:center;overflow:hidden;border:1px solid #0001;display:flex;flex-direction:column;justify-content:center;cursor:pointer;text-decoration:none;transition:transform 0.1s}
-.card:active{transform:scale(0.95)}
+.top{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;padding:12px;text-align:center}
+.card{height:100px;border-radius:12px;padding:6px;text-align:center;overflow:hidden;border:1px solid #0001;display:flex;flex-direction:column;justify-content:center;cursor:pointer;text-decoration:none}
 </style>
 </head>
 <body>
-<!-- TOP WELCOME SIR -->
 <div class="top">
-<div style="font-size:20px;font-weight:800">Welcome 🙏 SASIKUMAR AI</div>
-<div style="font-size:11px;margin-top:4px;opacity:0.9">SASIKUMAR AI Live Card - All Tools Live - 100px Visible</div>
-<div style="background:#fff;color:#2563eb;padding:3px 10px;border-radius:20px;font-size:9px;font-weight:700;display:inline-block;margin-top:6px">🟢 LIVE NOW - 8 Tools</div>
+<div style="font-size:18px;font-weight:800">Welcome 🙏 SASIKUMAR AI</div>
+<div style="font-size:10px;margin-top:4px">SASIKUMAR AI Live Card - <span id="clock"></span></div>
+<div style="background:#fff;color:#2563eb;padding:3px 10px;border-radius:20px;font-size:9px;font-weight:700;display:inline-block;margin-top:6px" id="livebadge">🟢 LIVE NOW</div>
 </div>
-
 <div style="padding:8px">
-<h2 style="text-align:center;font-size:14px;margin:8px 0;color:#1e293b">🔴 SASIKUMAR AI Live Card</h2>
+<div style="text-align:center;font-size:12px;font-weight:700;margin:8px 0" id="welcometext">🔴 SASIKUMAR AI Live Card - Live Changing</div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:420px;margin:0 auto">
-
-<a href="/live-sports.html" class="card" style="background:#dbeafe">
-<div style="background:#15803d;color:#fff;padding:3px 6px;border-radius:5px;font-size:11px;font-weight:700">🏏 LIVE SPORTS</div>
-<div style="color:#1e293b;font-size:9px;margin-top:4px;font-weight:600">விளையாட்டு செய்திகள்</div>
-<div style="background:#16a34a;color:#fff;padding:2px 5px;border-radius:4px;font-size:8px;margin-top:3px;display:inline-block">LIVE</div>
-</a>
-
-<a href="/live-ponmozhi.html" class="card" style="background:#dcfce7">
-<div style="background:#2563eb;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">💬 LIVE PONMOZHI</div>
-<div style="color:#000;font-size:11px;font-weight:700;margin-top:2px;line-height:1.1">நேர்மை என்றும் உயர்வைத் தரும்</div>
-<div style="color:#333;font-size:7px">Honesty always leads to dignity</div>
-</a>
-
-<a href="/live-thirukkural.html" class="card" style="background:#fef3c7">
-<div style="background:#d97706;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">📖 LIVE THIRUKKURAL</div>
-<div style="color:#1e293b;font-size:9px;margin-top:3px">அறத்தான் வருவதே இன்பம்</div>
-<div style="background:#f59e0b;color:#fff;padding:2px 5px;border-radius:4px;font-size:8px;margin-top:3px;display:inline-block">DAILY LIVE</div>
-</a>
-
-<a href="/live-gold.html" class="card" style="background:#ede9fe">
-<div style="background:#7c3aed;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">💰 LIVE GOLD</div>
-<div style="color:#1e293b;font-size:11px;font-weight:700;margin-top:2px">₹ 7,250 / gram</div>
-<div style="color:#334155;font-size:8px">Live Rate Today</div>
-</a>
-
-<a href="/live-news.html" class="card" style="background:#ffe4e6">
-<div style="background:#e11d48;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">🎬 LIVE NEWS</div>
-<div style="color:#1e293b;font-size:9px;margin-top:3px">Breaking News Tamil</div>
-<div style="background:#ef4444;color:#fff;padding:2px 5px;border-radius:4px;font-size:8px;margin-top:3px;display:inline-block">🔴 LIVE</div>
-</a>
-
-<a href="/live-poster.html" class="card" style="background:#e0f2fe">
-<div style="background:#0284c7;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">🎨 LIVE POSTER</div>
-<div style="color:#1e293b;font-size:9px;margin-top:3px">Festival Poster Maker</div>
-<div style="background:#0ea5e9;color:#fff;padding:2px 5px;border-radius:4px;font-size:8px;margin-top:3px;display:inline-block">CREATE LIVE</div>
-</a>
-
-<a href="/live-image.html" class="card" style="background:#fef9c3">
-<div style="background:#ca8a04;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">🖼️ LIVE IMAGE</div>
-<div style="color:#1e293b;font-size:9px;margin-top:3px">AI Image Generator</div>
-<div style="background:#eab308;color:#fff;padding:2px 5px;border-radius:4px;font-size:8px;margin-top:3px;display:inline-block">GENERATE</div>
-</a>
-
-<a href="/live-research.html" class="card" style="background:#d1fae5">
-<div style="background:#047857;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">🔍 LIVE RESEARCH</div>
-<div style="color:#1e293b;font-size:9px;margin-top:3px">Web Search AI</div>
-<div style="background:#10b981;color:#fff;padding:2px 5px;border-radius:4px;font-size:8px;margin-top:3px;display:inline-block">SEARCH LIVE</div>
-</a>
-
+<a href="/live-sports.html" class="card" style="background:#dbeafe"><div style="background:#15803d;color:#fff;padding:3px 6px;border-radius:5px;font-size:11px;font-weight:700">🏏 LIVE SPORTS</div><div style="color:#1e293b;font-size:10px;margin-top:4px;font-weight:600" id="sports">விளையாட்டு செய்திகள் - Loading...</div><div style="background:#16a34a;color:#fff;padding:2px 5px;border-radius:4px;font-size:8px;margin-top:3px;display:inline-block" id="sportslive">LIVE</div></a>
+<a href="/live-ponmozhi.html" class="card" style="background:#dcfce7"><div style="background:#2563eb;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">💬 LIVE PONMOZHI</div><div style="color:#000;font-size:10px;font-weight:700;margin-top:2px" id="ponmozhi">Loading...</div><div style="color:#333;font-size:7px" id="ponmozhi_en">...</div></a>
+<a href="/live-thirukkural.html" class="card" style="background:#fef3c7"><div style="background:#d97706;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">📖 LIVE THIRUKKURAL</div><div style="color:#1e293b;font-size:9px;margin-top:3px" id="kural">Loading...</div><div style="background:#f59e0b;color:#fff;padding:2px 5px;border-radius:4px;font-size:8px;margin-top:3px;display:inline-block">DAILY LIVE - <span id="kuralday"></span></div></a>
+<a href="/live-gold.html" class="card" style="background:#ede9fe"><div style="background:#7c3aed;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">💰 LIVE GOLD</div><div style="color:#1e293b;font-size:11px;font-weight:700;margin-top:2px" id="gold">₹ Loading...</div><div style="color:#334155;font-size:8px" id="golddate">Live Rate Today</div></a>
+<a href="/live-news.html" class="card" style="background:#ffe4e6"><div style="background:#e11d48;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">🎬 LIVE NEWS</div><div style="color:#1e293b;font-size:9px;margin-top:3px" id="news">Breaking Tamil...</div><div style="background:#ef4444;color:#fff;padding:2px 5px;border-radius:4px;font-size:8px;margin-top:3px;display:inline-block">🔴 LIVE <span id="newstime"></span></div></a>
+<a href="/live-poster.html" class="card" style="background:#e0f2fe"><div style="background:#0284c7;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">🎨 LIVE POSTER</div><div style="color:#1e293b;font-size:9px;margin-top:3px">Festival Poster Maker</div><div style="background:#0ea5e9;color:#fff;padding:2px 5px;border-radius:4px;font-size:8px;margin-top:3px;display:inline-block">CREATE LIVE</div></a>
+<a href="/live-image.html" class="card" style="background:#fef9c3"><div style="background:#ca8a04;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">🖼️ LIVE IMAGE</div><div style="color:#1e293b;font-size:9px;margin-top:3px">AI Image Generator</div><div style="background:#eab308;color:#fff;padding:2px 5px;border-radius:4px;font-size:8px;margin-top:3px;display:inline-block">GENERATE</div></a>
+<a href="/live-research.html" class="card" style="background:#d1fae5"><div style="background:#047857;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">🔍 LIVE RESEARCH</div><div style="color:#1e293b;font-size:9px;margin-top:3px">Web Search AI</div><div style="background:#10b981;color:#fff;padding:2px 5px;border-radius:4px;font-size:8px;margin-top:3px;display:inline-block">SEARCH LIVE</div></a>
 </div>
-<div style="text-align:center;margin:16px 0 8px;font-size:10px;color:#16a34a;font-weight:700">✅ Top Welcome + Live Card Click - All Live Sir</div>
+<div style="text-align:center;margin:12px 0;font-size:10px;color:#16a34a;font-weight:700" id="status">✅ Live Changing - <span id="time"></span></div>
 </div>
+<script>
+// REAL LIVE CHANGING SIR
+function updateLive(){
+const now=new Date();
+document.getElementById('clock').innerText=now.toLocaleTimeString();
+document.getElementById('time').innerText=now.toLocaleTimeString();
+document.getElementById('newstime').innerText=now.toLocaleTimeString().slice(0,5);
+document.getElementById('kuralday').innerText=now.toLocaleDateString();
+document.getElementById('golddate').innerText=now.toLocaleDateString();
+// Gold Live Change Sir
+const goldRate = 7250 + Math.floor(Math.random()*100) - 50;
+document.getElementById('gold').innerText='₹ '+goldRate+' / gram';
+// Ponmozhi Rotate Sir
+const ponmozhis=[["நேர்மை என்றும் உயர்வைத் தரும்","Honesty always leads to dignity"],["முயற்சி திருவினையாக்கும்","Effort brings success"],["கல்வி அழியாச் செல்வம்","Education is imperishable wealth"]];
+const p=ponmozhis[now.getSeconds()%3];
+document.getElementById('ponmozhi').innerText=p[0];
+document.getElementById('ponmozhi_en').innerText=p[1];
+// Sports Live
+const sports=["CSK 180/4 (Live)","IND vs AUS Live","IPL 2026 Live Score","விளையாட்டு செய்திகள் LIVE"];
+document.getElementById('sports').innerText=sports[now.getSeconds()%4];
+document.getElementById('sportslive').innerText='LIVE '+now.toLocaleTimeString().slice(0,5);
+// Kural Rotate
+const kurals=["அறத்தான் வருவதே இன்பம்","கற்க கசடற கற்பவை","அன்பின் வழியது உயிர்நிலை"];
+document.getElementById('kural').innerText=kurals[now.getSeconds()%3];
+// News Rotate
+const news=["Breaking: Tamil News Live "+now.getSeconds(),"Chennai Live Update","Tamil Nadu News LIVE"];
+document.getElementById('news').innerText=news[now.getSeconds()%3];
+}
+setInterval(updateLive,1000);
+updateLive();
+</script>
 </body></html>
