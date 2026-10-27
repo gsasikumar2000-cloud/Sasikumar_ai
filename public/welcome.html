@@ -8,487 +8,169 @@
 <title>Welcome 🙏 SASIKUMAR AI</title>
 <style>
 *{box-sizing:border-box}
-body{
-  margin:0;min-height:100vh;padding:20px;
-  display:flex;align-items:center;justify-content:center;
-  font-family:Arial,sans-serif;
-  background:linear-gradient(135deg,#e0f2fe,#f5e8ff,#fff7d6);
-  color:#172554;text-align:center
-}
-.card{
-  width:100%;max-width:420px;padding:30px 22px;
-  background:#ffffffed;border:1px solid #dbeafe;
-  border-radius:26px;box-shadow:0 15px 45px #64748b25
-}
-.logo{
-  width:80px;height:80px;margin:0 auto 18px;
-  border-radius:50%;display:flex;align-items:center;
-  justify-content:center;font-size:38px;
-  background:linear-gradient(135deg,#2563eb,#9333ea);
-  animation:spin 8s linear infinite
-}
-@keyframes spin{to{transform:rotate(360deg)}}
-h1{font-size:27px;margin:10px 0;color:#4338ca}
-p{font-size:16px;line-height:1.7;color:#475569}
-.button{
-  display:block;margin-top:24px;padding:14px 18px;
-  border-radius:14px;background:#4f46e5;color:white;
-  text-decoration:none;font-weight:bold;font-size:16px
-}
-.button:focus-visible{outline:3px solid #f59e0b;outline-offset:3px}
-.small{font-size:12px;margin-top:20px}
+html{width:100%;overflow-x:clip}
+body{margin:0;min-height:100vh;padding:clamp(12px,4vw,20px);font-family:system-ui,Arial,sans-serif;background:linear-gradient(135deg,#fff1f7,#e6f7ff 45%,#fff4d6);color:#172554;text-align:center;overflow-x:clip}
+.card{width:100%;max-width:420px;margin:0 auto;padding:26px 20px;background:#ffffffed;border:1px solid #dbeafe;border-radius:26px;box-shadow:0 15px 45px #64748b25}
+.brand-logo{width:80px;height:80px;object-fit:contain;margin:0 auto 12px;border-radius:20px;display:block;animation:skOriginalLogoSpin360 6s linear infinite}
+@keyframes skOriginalLogoSpin360{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+h1{font-size:clamp(24px,7vw,32px);line-height:1.2;margin:10px 0;background:linear-gradient(90deg,#7c3aed,#ec4899,#f97316);-webkit-background-clip:text;background-clip:text;color:transparent}
+.welcome-info{width:100%;max-width:420px;margin:16px auto;padding:12px;border-radius:14px;background:rgba(255,255,255,.88);border:1px solid rgba(124,58,237,.18);font-size:14px;line-height:1.7}
+.welcome-info strong{color:#5632a8}
+.button{display:inline-flex;align-items:center;justify-content:center;padding:12px 18px;border-radius:999px;background:linear-gradient(90deg,#7c3aed,#ec4899,#f97316);color:#fff;font-weight:700;text-decoration:none;box-shadow:0 6px 18px rgba(124,58,237,.22)}
 
-/* SK_WELCOME_BRAND_DATETIME_PLACE_V1 */
-.brand-logo {
-  display:block;
-  width:80px;
-  height:80px;
-  object-fit:contain;
-  margin:0 auto 14px;
-  border-radius:20px;
-}
-.welcome-info {
-  margin:18px auto 8px;
-  padding:12px;
-  border-radius:14px;
-  background:rgba(255,255,255,.78);
-  color:#24304a;
-  font-size:14px;
-  line-height:1.8;
-  overflow-wrap:anywhere;
-}
-.welcome-info strong { color:#5632a8; }
+/* ===== TOOLS GRID - 100px CARD + 4 COL + DIFFERENT COLOR ===== */
+#skAllTools{width:100%;max-width:760px;margin:18px auto;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:12px;text-align:left}
+.tool-card{height:100px;min-height:100px;max-height:100px;padding:12px;border-radius:14px;border:1px solid #e5e7eb;display:flex;flex-direction:column;justify-content:center;text-decoration:none;color:#172554;overflow:hidden;transition:transform .15s}
+.tool-card:hover{transform:translateY(-2px)}
+.tool-card b{font-size:13px;line-height:1.3;display:block}
+.tool-card small{font-size:11px;opacity:.8;margin-top:4px;line-height:1.2}
+.c1{background:linear-gradient(135deg,#dbeafe,#bfdbfe)}
+.c2{background:linear-gradient(135deg,#fef3c7,#fde68a)}
+.c3{background:linear-gradient(135deg,#dcfce7,#bbf7d0)}
+.c4{background:linear-gradient(135deg,#ede9fe,#ddd6fe)}
+.c5{background:linear-gradient(135deg,#ffe4e6,#fecdd3)}
+.c6{background:linear-gradient(135deg,#e0f2fe,#bae6fd)}
+.c7{background:linear-gradient(135deg,#fef9c3,#fde047)}
+.c8{background:linear-gradient(135deg,#d1fae5,#6ee7b7)}
 
+#skUltimateResearch{width:100%;max-width:760px;margin:18px auto;padding:clamp(12px,4vw,20px);border-radius:22px;background:linear-gradient(135deg,#e0f2fe,#f0fdf4,#fef3c7);border:1px solid #bae6fd;color:#172554;text-align:left}
+#skUltimateResearch textarea,#skUltimateResearch select{width:100%;box-sizing:border-box;padding:12px;border:1px solid #93c5fd;border-radius:10px;background:#fff}
+#skUltimateResearch button{box-sizing:border-box;max-width:100%;padding:11px 12px;border-radius:10px;border:1px solid #bfdbfe;background:#fff;font-weight:700;cursor:pointer}
 
-/* SK_WELCOME_COLORFUL_MOBILE_FIT_V1 */
-html {
-  min-height: 100%;
-  -webkit-text-size-adjust: 100%;
-}
-body {
-  box-sizing: border-box;
-  min-height: 100vh;
-  margin: 0;
-  padding: clamp(12px, 4vw, 28px);
-  background: linear-gradient(135deg, #fff1f7, #e6f7ff 45%, #fff4d6);
-  color: #26325a;
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-}
-*, *::before, *::after {
-  box-sizing: border-box;
-}
-h1 {
-  max-width: 100%;
-  margin: 12px auto;
-  font-size: clamp(24px, 7vw, 38px);
-  line-height: 1.2;
-  overflow-wrap: anywhere;
-  background: linear-gradient(90deg, #7c3aed, #ec4899, #f97316);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-.brand-logo {
-  width: clamp(64px, 19vw, 88px);
-  height: clamp(64px, 19vw, 88px);
-  max-width: 100%;
-  object-fit: contain;
-  display: block;
-  margin: 0 auto 10px;
-}
-.welcome-info {
-  width: 100%;
-  max-width: 420px;
-  margin: 16px auto;
-  padding: clamp(10px, 3.5vw, 16px);
-  border: 1px solid rgba(124, 58, 237, .18);
-  border-radius: 18px;
-  background: rgba(255, 255, 255, .88);
-  box-shadow: 0 8px 24px rgba(76, 29, 149, .10);
-  color: #27335d;
-  font-size: clamp(13px, 3.7vw, 16px);
-  line-height: 1.7;
-  overflow-wrap: anywhere;
-}
-.button {
-  display: inline-block;
-  max-width: 100%;
-  padding: 12px 18px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #7c3aed, #ec4899, #f97316);
-  color: #fff;
-  font-size: clamp(14px, 4vw, 17px);
-  font-weight: 700;
-  text-align: center;
-  text-decoration: none;
-  overflow-wrap: anywhere;
-  box-shadow: 0 6px 18px rgba(124, 58, 237, .22);
-}
-@media (max-width: 360px) {
-  body { padding: 10px; }
-  h1 { font-size: clamp(22px, 7vw, 27px); }
-  .welcome-info { padding: 10px; line-height: 1.6; }
-  .button { padding: 11px 14px; }
-}
-
-
-/* SK_ORIGINAL_LOGO_SPIN360_V1 */
-@keyframes skOriginalLogoSpin360 {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-.brand-logo {
-  animation: skOriginalLogoSpin360 6s linear infinite;
-  transform-origin: center;
-}
-@media (prefers-reduced-motion: reduce) {
-  .brand-logo { animation: none; }
-}
-
-
-/* SK_OLD_WELCOME_RESEARCH_MOBILE_LAYOUT_V1 */
-body {
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 18px;
-}
-#skUltimateResearch {
-  width: 100%;
-  max-width: 760px;
-  margin: 0 !important;
-  text-align: left;
-}
-#skUltimateResearch textarea,
-#skUltimateResearch select,
-#skUltimateResearch button {
-  max-width: 100%;
-}
-@media (prefers-reduced-motion: reduce) {
-  .logo { animation: none; }
-}
-/* END SK_OLD_WELCOME_RESEARCH_MOBILE_LAYOUT_V1 */
-
+@media(max-width:768px){#skAllTools{grid-template-columns:repeat(2,1fr);gap:10px;padding:8px}.tool-card{height:100px;min-height:100px}}
+@media(max-width:360px){#skAllTools{grid-template-columns:repeat(2,1fr);gap:8px}.tool-card b{font-size:12px}}
+@media(prefers-reduced-motion:reduce){.brand-logo{animation:none}}
 </style>
 </head>
 <body>
+
 <main class="card">
-
-
-<img class="brand-logo" src="/assets/sasikumar-ai-logo-160.png"
-     alt="SASIKUMAR AI Brand Logo" width="80" height="80">
+<img class="brand-logo" src="/assets/sasikumar-ai-logo-160.png" alt="SASIKUMAR AI Brand Logo" width="80" height="80">
 <h1>Welcome 🙏<br>SASIKUMAR AI</h1>
 <div class="welcome-info" id="welcomeInfo" data-marker="SK_WELCOME_BRAND_DATETIME_PLACE_V1">
-  📅 <strong>Date:</strong> <span id="welcomeDate">Loading...</span><br>
-  🕒 <strong>Time:</strong> <span id="welcomeTime">Loading...</span><br>
-  📍 <strong>Place:</strong> Papanasam, Thanjavur, Tamil Nadu, India
+📅 <strong>Date:</strong> <span id="welcomeDate">Loading...</span><br>
+🕒 <strong>Time:</strong> <span id="welcomeTime">Loading...</span><br>
+📍 <strong>Place:</strong> Papanasam, Thanjavur, Tamil Nadu, India
 </div>
-
-  <p>Your AI tools and smart digital services — all in one place.</p>
-  <!-- SK_WELCOME_LOGIN_SIGNUP_BUTTONS_V1 -->
-  <div class="welcome-auth-buttons" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:16px 0;">
-    <a class="button" href="/?skAuth=login" style="flex:1;min-width:120px;background:#2563eb;color:#fff;">🔐 LOGIN</a>
-    <a class="button" href="/?skAuth=signup" style="flex:1;min-width:120px;background:#16a34a;color:#fff;">🆕 SIGN UP</a>
-  </div>
-  <a class="button" href="/">🚀 Open SASIKUMAR AI</a>
-  <p class="small">Welcome! Explore, create and discover.</p>
+<p>Your AI tools and smart digital services — all in one place.</p>
+<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:16px 0;">
+<a class="button" href="/?skAuth=login" style="background:#2563eb;">🔐 LOGIN</a>
+<a class="button" href="/?skAuth=signup" style="background:#16a34a;">🆕 SIGN UP</a>
+</div>
+<a class="button" href="/">🚀 Open SASIKUMAR AI</a>
+<p style="font-size:12px;margin-top:16px">Welcome! Explore, create and discover.</p>
 </main>
 
-<!-- SK_OLD_WELCOME_RESEARCH_TOOL_V1 -->
-<!-- SK_ULTIMATE_RESEARCH_TOOL_V1 -->
-<section id="skUltimateResearch" style="margin:24px 12px;padding:20px;border-radius:22px;background:linear-gradient(135deg,#e0f2fe,#f0fdf4,#fef3c7);border:1px solid #bae6fd;color:#172554;font-family:inherit">
-<div class="skSectionBrandLogoWrap">
-  <img class="skSectionBrandLogo"
-       src="/assets/sasikumar-ai-logo-160.png"
-       alt="SASIKUMAR AI Brand Logo"
-       width="30" height="30">
-</div>
+<!-- SK_TOOLS_ORDER_ALL_V1 -->
+<section id="skAllTools">
+<a href="/tools/image-generator" class="tool-card c1"><b>🖼️ Image Generator</b><small>Text to Image Sir</small></a>
+<a href="/tools/gold-poster" class="tool-card c2"><b>💰 Gold Poster</b><small>Daily Gold Rate Sir</small></a>
+<a href="/tools/tamil-writer" class="tool-card c3"><b>📝 Tamil Writer</b><small>Content AI Sir</small></a>
+<a href="/tools/bg-remover" class="tool-card c4"><b>🎨 BG Remover</b><small>Remove BG Sir</small></a>
+<a href="/tools/poster-maker" class="tool-card c5"><b>📱 Poster Maker</b><small>Festival Poster Sir</small></a>
+<a href="/tools/research" class="tool-card c6"><b>🔍 Research Tool</b><small>Web Search Sir</small></a>
+<a href="/tools/video" class="tool-card c7"><b>🎬 Video AI</b><small>Video Generate Sir</small></a>
+<a href="/tools/logo" class="tool-card c8"><b>✨ Logo Maker</b><small>Brand Logo Sir</small></a>
+</section>
 
-  <div style="font-size:12px;font-weight:800;letter-spacing:1px;color:#0369a1">SASIKUMAR AI • RESEARCH LAB</div>
-  <h2 style="margin:8px 0;font-size:25px">🔎 Ultimate Research Tool</h2>
-  <p style="margin:0 0 14px;line-height:1.6">இணையத்தில் தேடி, ஆதார இணைப்புகளுடன் தமிழ் அல்லது ஆங்கில ஆய்வு அறிக்கையை உருவாக்குங்கள்.</p>
-
-  <label for="skResearchQuery" style="display:block;font-weight:700;margin-bottom:6px">ஆராய்ச்சிக் கேள்வி / Research question</label>
-  <textarea id="skResearchQuery" maxlength="500" rows="3" placeholder="உதா: தமிழ்நாட்டில் சூரிய மின்சாரத்தின் நன்மைகள் என்ன?" style="box-sizing:border-box;width:100%;padding:13px;border:1px solid #93c5fd;border-radius:12px;font:inherit;resize:vertical;background:#fff;color:#172554"></textarea>
-<!-- SK_RESEARCH_CLEAR_COPY_CUT_V1 -->
+<!-- SK_OLD_WELCOME_RESEARCH_TOOL_V1 - SINGLE ONLY - DUPLICATE REMOVED -->
+<section id="skUltimateResearch">
+<div style="font-size:12px;font-weight:800;letter-spacing:1px;color:#0369a1">SASIKUMAR AI • RESEARCH LAB</div>
+<h2 style="margin:8px 0;font-size:22px">🔎 Ultimate Research Tool</h2>
+<p style="margin:0 0 12px;line-height:1.6">இணையத்தில் தேடி, ஆதார இணைப்புகளுடன் தமிழ் அல்லது ஆங்கில அறிக்கை.</p>
+<label style="display:block;font-weight:700;margin-bottom:6px">Research question</label>
+<textarea id="skResearchQuery" maxlength="500" rows="3" placeholder="Ex: தமிழ்நாட்டில் சூரிய மின்சாரம் நன்மைகள்?"></textarea>
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0">
 <button type="button" id="skResearchClear">🧹 Clear</button>
 <button type="button" id="skResearchCopy">📋 Copy</button>
 <button type="button" id="skResearchCut">✂️ Cut</button>
 </div>
-<div id="skResearchTextToolsStatus" role="status" aria-live="polite"></div>
-<!-- END SK_RESEARCH_CLEAR_COPY_CUT_V1 -->
-
-
-  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
-    <label style="flex:1;min-width:130px;font-weight:700;font-size:13px">அறிக்கை மொழி
-      <select id="skResearchLanguage" style="display:block;box-sizing:border-box;width:100%;margin-top:5px;padding:10px;border:1px solid #93c5fd;border-radius:10px;background:#fff;color:#172554;font:inherit">
-        <option value="ta">தமிழ்</option>
-        <option value="en">English</option>
-      </select>
-    </label>
-    <label style="flex:1;min-width:130px;font-weight:700;font-size:13px">ஆய்வு வகை
-      <select id="skResearchMode" style="display:block;box-sizing:border-box;width:100%;margin-top:5px;padding:10px;border:1px solid #93c5fd;border-radius:10px;background:#fff;color:#172554;font:inherit">
-        <option value="summary">சுருக்கமான ஆய்வு</option>
-        <option value="compare">ஒப்பீட்டு ஆய்வு</option>
-        <option value="detailed">விரிவான அறிக்கை</option>
-      </select>
-    </label>
-  </div>
-
-  <button id="skResearchRun" type="button" style="margin-top:14px;width:100%;padding:13px;border:0;border-radius:12px;background:linear-gradient(90deg,#0369a1,#047857);color:#fff;font:inherit;font-weight:800;cursor:pointer">🔍 Search & Research</button>
-  <div id="skResearchStatus" role="status" aria-live="polite" style="margin-top:12px;font-size:14px"></div>
-  <div id="skResearchResults" style="margin-top:12px"></div>
-  <button id="skResearchDownload" type="button" hidden style="margin-top:12px;padding:11px 14px;border:0;border-radius:10px;background:#1d4ed8;color:white;font:inherit;font-weight:700;cursor:pointer">⬇️ Download report (.txt)</button>
+<div id="skResearchTextToolsStatus" role="status" aria-live="polite" style="font-size:12px"></div>
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+<label style="flex:1;min-width:130px;font-weight:700;font-size:13px">Language
+<select id="skResearchLanguage"><option value="ta">தமிழ்</option><option value="en">English</option></select>
+</label>
+<label style="flex:1;min-width:130px;font-weight:700;font-size:13px">Type
+<select id="skResearchMode"><option value="summary">Summary</option><option value="compare">Compare</option><option value="detailed">Detailed</option></select>
+</label>
+</div>
+<button id="skResearchRun" type="button" style="margin-top:14px;width:100%;padding:13px;border:0;border-radius:12px;background:linear-gradient(90deg,#0369a1,#047857);color:#fff;font-weight:800;cursor:pointer">🔍 Search & Research</button>
+<div id="skResearchStatus" role="status" aria-live="polite" style="margin-top:12px;font-size:14px"></div>
+<div id="skResearchResults" style="margin-top:12px"></div>
+<button id="skResearchDownload" type="button" hidden style="margin-top:12px;padding:11px 14px;border:0;border-radius:10px;background:#1d4ed8;color:white;font-weight:700;cursor:pointer">⬇️ Download report</button>
 </section>
 
 <script>
 (function(){
-  const $ = id => document.getElementById(id);
-  const box = $('skResearchResults');
-  const status = $('skResearchStatus');
-  const run = $('skResearchRun');
-  const download = $('skResearchDownload');
-  let lastReport = '';
-
-  function el(tag, text, parent){
-    const node = document.createElement(tag);
-    node.textContent = text;
-    parent.appendChild(node);
-    return node;
-  }
-
-  function makeReport(query, provider, results, language, mode){
-    const tamil = language === 'ta';
-    const title = tamil ? 'SASIKUMAR AI — ஆய்வு அறிக்கை' : 'SASIKUMAR AI — Research Report';
-    const lines = [title, '='.repeat(title.length), '', (tamil ? 'கேள்வி: ' : 'Research question: ') + query,
-      (tamil ? 'தேடல் வழங்குநர்: ' : 'Search provider: ') + provider,
-      (tamil ? 'உருவாக்கப்பட்ட நேரம்: ' : 'Generated: ') + new Date().toLocaleString(), '',
-      tamil ? 'குறிப்பு: இந்த அறிக்கை தேடல் முடிவுகளில் கிடைத்த தலைப்புகள் மற்றும் snippets அடிப்படையிலானது. முழுப் பக்கங்கள் அனைத்தும் சரிபார்க்கப்படவில்லை.' :
-      'Note: This report is based on search-result titles and snippets. The full contents of every source have not been independently verified.', ''];
-    if(mode === 'compare') lines.push(tamil ? 'ஒப்பீட்டுக்கான ஆதாரங்கள்:' : 'Sources for comparison:', '');
-    else lines.push(tamil ? 'முக்கிய ஆதாரங்கள்:' : 'Key sources:', '');
-    results.forEach((r,i)=>{
-      lines.push((i+1)+'. '+r.title, r.content || (tamil ? 'விளக்கம் கிடைக்கவில்லை.' : 'No snippet available.'), r.url, '');
-    });
-    lines.push(tamil ? 'முடிவு: கிடைத்த ஆதாரங்களைத் திறந்து ஒப்பிட்டு, முக்கியக் கூற்றுகளை உறுதிப்படுத்தவும்.' :
-      'Conclusion: Open and compare the sources to verify important claims.');
-    return lines.join('\n');
-  }
-
-  function renderResults(query, data, language, mode){
-    box.replaceChildren();
-    const results = Array.isArray(data.results) ? data.results : [];
-    if(!results.length){
-      el('p', language === 'ta' ? 'பயன்படுத்தக்கூடிய தேடல் முடிவுகள் கிடைக்கவில்லை.' : 'No usable search results were returned.', box);
-      return '';
-    }
-    const heading = el('h3', language === 'ta' ? '📚 கிடைத்த ஆதாரங்கள்' : '📚 Sources found', box);
-    heading.style.cssText = 'font-size:18px;margin:0 0 10px';
-    if(data.fallback){
-      el('p', language === 'ta' ? 'தானியங்கி தேடல் முடிவுகள் கிடைக்கவில்லை. கீழே Google Search இணைப்பு வழங்கப்பட்டுள்ளது.' : 'Automated results were unavailable. A Google Search link is provided below.', box);
-    }
-    results.forEach((r,i)=>{
-      const card = document.createElement('article');
-      card.style.cssText = 'padding:12px;margin:10px 0;background:#fff;border:1px solid #bfdbfe;border-radius:12px;overflow-wrap:anywhere';
-      el('strong', (i+1)+'. '+(r.title || 'Search result'), card);
-      if(r.content) el('p', r.content, card);
-      const a = document.createElement('a');
-      a.href = r.url;
-      a.target = '_blank';
-      a.rel = 'noopener noreferrer';
-      a.textContent = language === 'ta' ? 'ஆதாரத்தைத் திறக்கவும் ↗' : 'Open source ↗';
-      a.style.cssText = 'display:inline-block;margin-top:6px;color:#1d4ed8;font-weight:700';
-      card.appendChild(a);
-      box.appendChild(card);
-    });
-    return makeReport(query, data.provider || 'unknown', results, language, mode);
-  }
-
-  run.addEventListener('click', async ()=>{
-    const query = $('skResearchQuery').value.trim();
-    const language = $('skResearchLanguage').value;
-    const mode = $('skResearchMode').value;
-    if(!query){ status.textContent = language === 'ta' ? 'முதலில் ஆராய்ச்சிக் கேள்வியை உள்ளிடவும்.' : 'Please enter a research question first.'; return; }
-    run.disabled = true;
-    download.hidden = true;
-    box.replaceChildren();
-    status.textContent = language === 'ta' ? '🔎 இணைய ஆதாரங்களைத் தேடுகிறது…' : '🔎 Searching the web…';
-    try{
-      const response = await fetch('/api/global-search?q='+encodeURIComponent(query), {
-        headers:{'Accept':'application/json'},
-        cache:'no-store'
-      });
-      const data = await response.json();
-      if(!response.ok) throw new Error(data.error || 'Search request failed.');
-      lastReport = renderResults(query, data, language, mode);
-      download.hidden = !lastReport;
-      status.textContent = language === 'ta'
-        ? 'தேடல் முடிந்தது. '+((data.results||[]).length)+' முடிவுகள் • Provider: '+(data.provider||'Google fallback')
-        : 'Search complete. '+((data.results||[]).length)+' results • Provider: '+(data.provider||'Google fallback');
-    }catch(error){
-      status.textContent = (language === 'ta' ? 'தேடலில் பிழை: ' : 'Research error: ')+(error.message || 'Unknown error');
-    }finally{
-      run.disabled = false;
-    }
-  });
-
-  download.addEventListener('click', ()=>{
-    if(!lastReport) return;
-    const blob = new Blob([lastReport], {type:'text/plain;charset=utf-8'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'sasikumar-ai-research-report.txt';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(()=>URL.revokeObjectURL(url),1000);
-  });
+const dateEl=document.getElementById('welcomeDate');
+const timeEl=document.getElementById('welcomeTime');
+if(!dateEl||!timeEl)return;
+function updateClock(){
+const now=new Date();
+const opt={timeZone:'Asia/Kolkata'};
+dateEl.textContent=new Intl.DateTimeFormat('en-IN',{...opt,day:'2-digit',month:'long',year:'numeric'}).format(now);
+timeEl.textContent=new Intl.DateTimeFormat('en-IN',{...opt,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true}).format(now);
+}
+updateClock();setInterval(updateClock,1000);
 })();
-</script>
 
-<script>
 (function(){
-  const box=document.getElementById('skResearchQuery');
-  const status=document.getElementById('skResearchTextToolsStatus');
-  const clear=document.getElementById('skResearchClear');
-  const copy=document.getElementById('skResearchCopy');
-  const cut=document.getElementById('skResearchCut');
-  if(!box||!status||!clear||!copy||!cut)return;
+const $=id=>document.getElementById(id);
+const box=$('skResearchResults');const status=$('skResearchStatus');const run=$('skResearchRun');const download=$('skResearchDownload');
+let lastReport='';
+function el(tag,text,parent){const n=document.createElement(tag);n.textContent=text;parent.appendChild(n);return n}
+function makeReport(q,provider,results,lang,mode){
+const tamil=lang==='ta';const title=tamil?'SASIKUMAR AI — ஆய்வு அறிக்கை':'SASIKUMAR AI — Research Report';
+const lines=[title,'='.repeat(title.length),'',(tamil?'கேள்வி: ':'Question: ')+q,(tamil?'Provider: ':'Provider: ')+provider,(tamil?'Time: ':'Time: ')+new Date().toLocaleString(),''];
+lines.push(tamil?'ஆதாரங்கள்:':'Sources:','');
+results.forEach((r,i)=>{lines.push((i+1)+'. '+r.title,r.content||'',r.url,'')});
+return lines.join('\n');
+}
+function renderResults(q,data,lang,mode){
+box.replaceChildren();const results=Array.isArray(data.results)?data.results:[];
+if(!results.length){el('p',lang==='ta'?'முடிவு இல்லை.':'No results.',box);return '';}
+const h=el('h3',lang==='ta'?'📚 ஆதாரங்கள்':'📚 Sources',box);h.style.cssText='font-size:18px;margin:0 0 10px';
+results.forEach((r,i)=>{
+const card=document.createElement('article');card.style.cssText='padding:12px;margin:10px 0;background:#fff;border:1px solid #bfdbfe;border-radius:12px;overflow-wrap:anywhere';
+el('strong',(i+1)+'. '+(r.title||'Result'),card);if(r.content)el('p',r.content,card);
+const a=document.createElement('a');a.href=r.url;a.target='_blank';a.rel='noopener noreferrer';a.textContent=lang==='ta'?'திறக்கவும் ↗':'Open ↗';a.style.cssText='display:inline-block;margin-top:6px;color:#1d4ed8;font-weight:700';card.appendChild(a);box.appendChild(card);
+});
+return makeReport(q,data.provider||'unknown',results,lang,mode);
+}
+if(!run)return;
+run.addEventListener('click',async()=>{
+const q=$('skResearchQuery').value.trim();const lang=$('skResearchLanguage').value;const mode=$('skResearchMode').value;
+if(!q){status.textContent=lang==='ta'?'கேள்வி உள்ளிடவும்.':'Enter question.';return;}
+run.disabled=true;download.hidden=true;box.replaceChildren();status.textContent=lang==='ta'?'🔎 தேடுகிறது…':'🔎 Searching…';
+try{
+const res=await fetch('/api/global-search?q='+encodeURIComponent(q),{headers:{'Accept':'application/json'},cache:'no-store'});
+const data=await res.json();if(!res.ok)throw new Error(data.error||'Search failed');
+lastReport=renderResults(q,data,lang,mode);download.hidden=!lastReport;
+status.textContent=(lang==='ta'?'முடிந்தது. ':'Done. ')+(data.results||[]).length+' results • '+(data.provider||'');
+}catch(e){status.textContent=(lang==='ta'?'பிழை: ':'Error: ')+(e.message||'Unknown');}finally{run.disabled=false;}
+});
+download.addEventListener('click',()=>{
+if(!lastReport)return;const blob=new Blob([lastReport],{type:'text/plain;charset=utf-8'});const url=URL.createObjectURL(blob);
+const a=document.createElement('a');a.href=url;a.download='sasikumar-ai-research-report.txt';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+});
+})();
 
-  clear.onclick=function(){
-    box.value='';
-    box.focus();
-    status.textContent='உரை அழிக்கப்பட்டது.';
-  };
-
-  async function copyText(){
-    if(!box.value){
-      status.textContent='நகலெடுக்க உரை இல்லை.';
-      return false;
-    }
-    try{
-      if(navigator.clipboard&&window.isSecureContext){
-        await navigator.clipboard.writeText(box.value);
-      }else{
-        box.focus();
-        box.select();
-        if(!document.execCommand('copy'))throw Error('copy failed');
-      }
-      status.textContent='உரை நகலெடுக்கப்பட்டது.';
-      return true;
-    }catch(e){
-      status.textContent='Copy இயலவில்லை. உரையை கைமுறையாக நகலெடுக்கவும்.';
-      return false;
-    }
-  }
-
-  copy.onclick=copyText;
-  cut.onclick=async function(){
-    if(await copyText()){
-      box.value='';
-      box.focus();
-      status.textContent='உரை நகலெடுக்கப்பட்டு அகற்றப்பட்டது.';
-    }
-  };
+(function(){
+const box=document.getElementById('skResearchQuery');const status=document.getElementById('skResearchTextToolsStatus');
+const clear=document.getElementById('skResearchClear');const copy=document.getElementById('skResearchCopy');const cut=document.getElementById('skResearchCut');
+if(!box||!status||!clear||!copy||!cut)return;
+clear.onclick=function(){box.value='';box.focus();status.textContent='Cleared.';};
+async function copyText(){
+if(!box.value){status.textContent='No text.';return false;}
+try{
+if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(box.value);}
+else{box.focus();box.select();if(!document.execCommand('copy'))throw Error('copy failed');}
+status.textContent='Copied.';return true;
+}catch(e){status.textContent='Copy failed.';return false;}
+}
+copy.onclick=copyText;
+cut.onclick=async function(){if(await copyText()){box.value='';box.focus();status.textContent='Cut done.';}};
 })();
 </script>
-<!-- END SK_OLD_WELCOME_RESEARCH_TOOL_V1 -->
-
-<script>
-/* SK_WELCOME_BRAND_DATETIME_PLACE_V1 */
-(function () {
-  const dateEl = document.getElementById('welcomeDate');
-  const timeEl = document.getElementById('welcomeTime');
-  if (!dateEl || !timeEl) return;
-
-  function updateWelcomeClock() {
-    const now = new Date();
-    const options = { timeZone: 'Asia/Kolkata' };
-    dateEl.textContent = new Intl.DateTimeFormat('en-IN', {
-      ...options, day: '2-digit', month: 'long', year: 'numeric'
-    }).format(now);
-    timeEl.textContent = new Intl.DateTimeFormat('en-IN', {
-      ...options, hour: '2-digit', minute: '2-digit',
-      second: '2-digit', hour12: true
-    }).format(now);
-  }
-
-  updateWelcomeClock();
-  setInterval(updateWelcomeClock, 1000);
-})();
-</script>
-
-
-/* SK_OLD_WELCOME_RESEARCH_MOBILE_FIT_V1 */
-html {
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 100%;
-  overflow-x: clip;
-}
-*, *::before, *::after {
-  box-sizing: border-box;
-}
-body {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  margin: 0;
-  overflow-x: clip;
-}
-#skUltimateResearch {
-  width: calc(100% - 24px) !important;
-  max-width: 760px;
-  min-width: 0;
-  margin: 18px auto !important;
-  padding: clamp(12px, 4vw, 20px) !important;
-  overflow-wrap: anywhere;
-}
-#skUltimateResearch input,
-#skUltimateResearch textarea,
-#skUltimateResearch select,
-#skUltimateResearch button {
-  box-sizing: border-box;
-  max-width: 100%;
-  min-width: 0;
-}
-#skUltimateResearch textarea,
-#skUltimateResearch select {
-  width: 100%;
-}
-#skUltimateResearch button {
-  white-space: normal;
-  overflow-wrap: anywhere;
-}
-#skResearchResults,
-#skResearchStatus {
-  max-width: 100%;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-@media (max-width: 480px) {
-  #skUltimateResearch {
-    width: calc(100% - 16px) !important;
-    margin: 12px auto !important;
-    padding: 12px !important;
-    border-radius: 16px !important;
-  }
-  #skUltimateResearch button {
-    padding: 11px 8px;
-    font-size: 14px;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  #skUltimateResearch *,
-  #skUltimateResearch *::before,
-  #skUltimateResearch *::after {
-    animation-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-/* END SK_OLD_WELCOME_RESEARCH_MOBILE_FIT_V1 */
-
 </body>
 </html>
