@@ -7,3 +7,5 @@ nohup.out
 *.before-*
 *.bak
 *backup*
+
+/env
