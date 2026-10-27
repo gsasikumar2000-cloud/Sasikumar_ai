@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#eff6ff">
+<title>AI Animation Studio | SASIKUMAR AI</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#eff6ff;color:#172554;font-family:Arial,sans-serif}
+header{padding:20px 14px;text-align:center;background:linear-gradient(120deg,#2563eb,#7c3aed);color:white}
+header h1{margin:4px 0 8px;font-size:clamp(23px,5vw,34px)}
+header p{margin:5px}
+.wrap{max-width:900px;margin:18px auto;padding:12px}
+.panel{background:white;border:1px solid #dbeafe;border-radius:18px;padding:16px;margin-bottom:16px;box-shadow:0 5px 18px #1e40af12}
+label{display:block;font-weight:bold;margin:12px 0 6px}
+input,select,button{font:inherit}
+input[type=text],input[type=file],select{width:100%;padding:11px;border:1px solid #bfdbfe;border-radius:10px;background:white}
+input[type=color]{width:100%;height:42px;border:1px solid #bfdbfe;border-radius:8px}
+input[type=range]{width:100%}
+.row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+button{border:0;border-radius:10px;padding:12px 15px;font-weight:bold;cursor:pointer}
+.primary{background:#2563eb;color:white}
+.green{background:#047857;color:white}
+.secondary{background:#e0e7ff;color:#312e81}
+.buttons{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}
+#stage{background:#0f172a;border-radius:14px;overflow:hidden;min-height:230px;display:flex;align-items:center;justify-content:center}
+canvas{display:block;width:100%;height:auto;max-height:65vh;object-fit:contain}
+.note{font-size:13px;line-height:1.6;color:#475569}
+#status{min-height:24px;color:#1d4ed8;font-weight:bold}
+a{color:#1d4ed8}
+@media(max-width:520px){.row{grid-template-columns:1fr}.wrap{padding:9px}.panel{padding:12px}}
+</style>
+</head>
+<body>
+<header>
+  <div style="font-size:34px">🎬</div>
+  <h1>SASIKUMAR AI Animation Studio</h1>
+  <p>படங்களை அனிமேஷன் வீடியோவாக மாற்றுங்கள்</p>
+  <p>Image Animation • Tamil Text • Video Export</p>
+</header>
+
+<main class="wrap">
+<section class="panel">
+  <h2>🖼️ 1. படம் தேர்வு செய்யவும்</h2>
+  <label for="photo">உங்கள் படம்</label>
+  <input id="photo" type="file" accept="image/*">
+  <p class="note">உங்கள் சாதனத்தில் உள்ள படத்தைத் தேர்ந்தெடுக்கவும். படம் இந்த browser-லேயே செயலாக்கப்படும்.</p>
+</section>
+
+<section class="panel">
+  <h2>✨ 2. Animation அமைப்புகள்</h2>
+  <label for="effect">Animation விளைவு</label>
+  <select id="effect">
+    <option value="zoom">Zoom In & Out</option>
+    <option value="rotate">Rotate</option>
+    <option value="fade">Fade In & Out</option>
+    <option value="slide">Slide</option>
+    <option value="float">Float / மெதுவாக நகர்தல்</option>
+  </select>
+
+  <label for="caption">தமிழ் / ஆங்கில எழுத்து</label>
+  <input id="caption" type="text" maxlength="180" placeholder="உங்கள் செய்தியை எழுதுங்கள்...">
+
+  <div class="row">
+    <div>
+      <label for="textColor">எழுத்து நிறம்</label>
+      <input id="textColor" type="color" value="#ffffff">
+    </div>
+    <div>
+      <label for="bgColor">பின்னணி நிறம்</label>
+      <input id="bgColor" type="color" value="#172554">
+    </div>
+  </div>
+
+  <label for="speed">Animation வேகம்: <span id="speedLabel">1.0x</span></label>
+  <input id="speed" type="range" min="0.5" max="2" value="1" step="0.1">
+
+  <div class="buttons">
+    <button class="primary" id="play">▶️ Preview / Play</button>
+    <button class="secondary" id="pause">⏸️ Pause</button>
+    <button class="secondary" id="restart">🔄 Restart</button>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>🎞️ 3. Preview</h2>
+  <div id="stage">
+    <canvas id="canvas" width="720" height="405"></canvas>
+  </div>
+  <div class="buttons">
+    <button class="green" id="record">🔴 Create WebM Video</button>
+    <button class="primary" id="download" disabled>⬇️ Download Video</button>
+  </div>
+  <p id="status" role="status">படத்தைத் தேர்ந்தெடுத்து Preview அழுத்தவும்.</p>
+  <p class="note">வீடியோ பதிவு உங்கள் browser ஆதரவைப் பொறுத்தது. இந்த வசதி browser animation-ஐ பதிவு செய்கிறது; இது AI text-to-video generation அல்ல. வீடியோ WebM வடிவில் சேமிக்கப்படும்.</p>
+</section>
+
+<section class="panel">
+  <h3>🤖 AI Video Generation — அடுத்த கட்டம்</h3>
+  <p class="note">இந்த முதல் பதிப்பில் image animation, text overlay மற்றும் browser video recording இயங்கும். உண்மையான AI text-to-video / image-to-video உருவாக்க, பின்னர் API இணைக்க வேண்டும்.</p>
+  <a href="/">← SASIKUMAR AI முகப்புக்குத் திரும்பு</a>
+</section>
+</main>
+
+<script>
+(function(){
+'use strict';
+const $ = id => document.getElementById(id);
+const canvas = $('canvas');
+const ctx = canvas.getContext('2d');
+const photo = $('photo');
+let img = null;
+let running = false;
+let startAt = 0;
+let elapsedBeforePause = 0;
+let raf = 0;
+let recorder = null;
+let chunks = [];
+let videoUrl = '';
+let recording = false;
+
+function setStatus(message){ $('status').textContent = message; }
+
+function draw(time){
+  const speed = Number($('speed').value);
+  $('speedLabel').textContent = speed.toFixed(1)+'x';
+  const t = running ? elapsedBeforePause + (time-startAt)*speed : elapsedBeforePause;
+  const phase = t/1800;
+  const effect = $('effect').value;
+  const bg = $('bgColor').value;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = bg;
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  ctx.save();
+  let alpha=1, scale=1, angle=0, dx=0, dy=0;
+  if(effect==='zoom') scale=1+0.13*(0.5-0.5*Math.cos(phase));
+  if(effect==='rotate') angle=Math.sin(phase)*0.12;
+  if(effect==='fade') alpha=0.25+0.75*(0.5+0.5*Math.sin(phase));
+  if(effect==='slide') dx=Math.sin(phase)*canvas.width*0.12;
+  if(effect==='float') dy=Math.sin(phase)*18;
+
+  ctx.globalAlpha=alpha;
+  ctx.translate(canvas.width/2+dx,canvas.height/2+dy);
+  ctx.rotate(angle);
+  ctx.scale(scale,scale);
+
+  if(img){
+    const ratio=Math.min((canvas.width-36)/img.width,(canvas.height-36)/img.height);
+    const w=img.width*ratio, h=img.height*ratio;
+    ctx.drawImage(img,-w/2,-h/2,w,h);
+  }else{
+    ctx.fillStyle='#bfdbfe';
+    ctx.textAlign='center';
+    ctx.font='bold 28px Arial';
+    ctx.fillText('SASIKUMAR AI',0,-8);
+    ctx.font='20px Arial';
+    ctx.fillText('உங்கள் படத்தைத் தேர்ந்தெடுக்கவும்',0,30);
+  }
+  ctx.restore();
+
+  const caption=$('caption').value.trim();
+  if(caption){
+    ctx.save();
+    ctx.globalAlpha=0.75+0.25*Math.sin(phase);
+    ctx.fillStyle='rgba(15,23,42,.70)';
+    ctx.fillRect(0,canvas.height-78,canvas.width,78);
+    ctx.fillStyle=$('textColor').value;
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    let fontSize= Math.min(34,Math.max(18,canvas.width*0.045));
+    ctx.font='bold '+fontSize+'px Arial, sans-serif';
+    let text=caption;
+    while(ctx.measureText(text).width>canvas.width-30 && fontSize>14){
+      fontSize-=1;
+      ctx.font='bold '+fontSize+'px Arial, sans-serif';
+    }
+    ctx.fillText(text,canvas.width/2,canvas.height-39,canvas.width-30);
+    ctx.restore();
+  }
+  if(running) raf=requestAnimationFrame(draw);
+}
+
+function play(){
+  if(running)return;
+  running=true;
+  startAt=performance.now();
+  cancelAnimationFrame(raf);
+  raf=requestAnimationFrame(draw);
+  setStatus(recording?'வீடியோ பதிவு நடைபெறுகிறது...':'Animation இயங்குகிறது.');
+}
+function pause(){
+  if(!running)return;
+  elapsedBeforePause+= (performance.now()-startAt)*Number($('speed').value);
+  running=false;
+  cancelAnimationFrame(raf);
+  draw(performance.now());
+  setStatus(recording?'பதிவு தொடர்கிறது; preview pause செய்யப்பட்டது.':'Animation நிறுத்தப்பட்டது.');
+}
+function restart(){
+  elapsedBeforePause=0;
+  if(running){startAt=performance.now();}
+  draw(performance.now());
+}
+photo.addEventListener('change',()=>{
+  const file=photo.files&&photo.files[0];
+  if(!file)return;
+  if(!file.type.startsWith('image/')){setStatus('படக் கோப்பை மட்டும் தேர்வு செய்யவும்.');return;}
+  const url=URL.createObjectURL(file);
+  const next=new Image();
+  next.onload=()=>{
+    img=next;
+    URL.revokeObjectURL(url);
+    draw(performance.now());
+    setStatus('படம் தயார். Preview அழுத்தவும்.');
+  };
+  next.onerror=()=>{URL.revokeObjectURL(url);setStatus('படத்தைத் திறக்க முடியவில்லை.');};
+  next.src=url;
+});
+$('play').addEventListener('click',play);
+$('pause').addEventListener('click',pause);
+$('restart').addEventListener('click',restart);
+['effect','caption','textColor','bgColor','speed'].forEach(id=>{
+  $(id).addEventListener('input',()=>{if(id==='speed')$('speedLabel').textContent=Number($('speed').value).toFixed(1)+'x';if(!running)draw(performance.now());});
+});
+
+$('record').addEventListener('click',()=>{
+  if(recording){
+    if(recorder && recorder.state!=='inactive')recorder.stop();
+    return;
+  }
+  if(!canvas.captureStream || !window.MediaRecorder){
+    setStatus('இந்த browser-ல் WebM recording ஆதரவு இல்லை. Chrome-ல் முயற்சிக்கவும்.');
+    return;
+  }
+  try{
+    const stream=canvas.captureStream(30);
+    const mimeTypes=['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'];
+    const mime=mimeTypes.find(type=>MediaRecorder.isTypeSupported(type));
+    recorder=new MediaRecorder(stream,mime?{mimeType:mime}:undefined);
+    chunks=[];
+    recorder.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data);};
+    recorder.onerror=()=>{recording=false;$('record').textContent='🔴 Create WebM Video';setStatus('வீடியோ பதிவு பிழை. மீண்டும் முயற்சிக்கவும்.');};
+    recorder.onstop=()=>{
+      recording=false;
+      stream.getTracks().forEach(track=>track.stop());
+      $('record').textContent='🔴 Create WebM Video';
+      if(!chunks.length){setStatus('வீடியோ தரவு கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.');return;}
+      const blob=new Blob(chunks,{type:recorder.mimeType||'video/webm'});
+      if(videoUrl)URL.revokeObjectURL(videoUrl);
+      videoUrl=URL.createObjectURL(blob);
+      $('download').disabled=false;
+      setStatus('வீடியோ தயார்! Download Video அழுத்தி சேமிக்கவும்.');
+    };
+    recording=true;
+    $('record').textContent='⏹️ Stop & Finish Video';
+    recorder.start();
+    play();
+    setStatus('வீடியோ பதிவு தொடங்கியது. முடிக்க Stop & Finish Video அழுத்தவும்.');
+  }catch(e){
+    recording=false;
+    setStatus('Recording தொடங்கவில்லை: '+(e.message||'Browser ஆதரவு சரிபார்க்கவும்.'));
+  }
+});
+$('download').addEventListener('click',()=>{
+  if(!videoUrl)return;
+  const a=document.createElement('a');
+  a.href=videoUrl;
+  a.download='sasikumar-ai-animation.webm';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+});
+draw(performance.now());
+})();
+</script>
+</body>
+</html>
