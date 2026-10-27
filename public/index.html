@@ -3159,12 +3159,10 @@ Tamil + English • Gold • General Q&A</div>
 (function () {
   function showMiniOffice() {
     var office = document.getElementById("skMiniOfficeV1");
-    var creator = document.getElementById("skReplyCreatorCards");
-
-    if (!office) return;
-
-    if (creator && creator.nextElementSibling !== office) {
-      creator.insertAdjacentElement("afterend", office);
+    var designMaker = document.getElementById("skDesignMakerGlobal");
+    if (!office || !designMaker) return;
+    if (designMaker.nextElementSibling !== office) {
+      designMaker.insertAdjacentElement("afterend", office);
     }
 
     office.style.setProperty("display", "block", "important");
@@ -7478,7 +7476,7 @@ else skRefreshPay2AllWallet();
     }
 
     let anchor = welcome;
-    (translatorCard ? [translatorCard] : []).concat([globalSearch, heading, quick, reply, chat]).concat(miniOffice ? [miniOffice] : []).concat([designMaker, creatorCards, loginSection]).forEach(function (element) {
+    (translatorCard ? [translatorCard] : []).concat([globalSearch, heading, quick, reply, chat]).concat([designMaker]).concat(miniOffice ? [miniOffice] : []).concat([creatorCards, loginSection]).forEach(function (element) {
       anchor.insertAdjacentElement("afterend", element);
       anchor = element;
     });
@@ -11179,10 +11177,9 @@ html body .skMainLiveGrid > .skMainFeatureCard {
 (function () {
   function placeMiniOfficeAboveSettings() {
     var office = document.getElementById("skMiniOfficeV1");
-    var settings = document.getElementById("skSettingsBottomV1");
-    if (!office || !settings || !settings.parentNode) return;
-
-    settings.parentNode.insertBefore(office, settings);
+    var designMaker = document.getElementById("skDesignMakerGlobal");
+    if (!office || !designMaker || !designMaker.parentNode) return;
+    designMaker.insertAdjacentElement("afterend", office);
 
     office.style.setProperty("display", "block", "important");
     office.style.setProperty("visibility", "visible", "important");
@@ -12771,7 +12768,6 @@ img, video, iframe {
     "#sasikumar-ai-hub-dashboard-card",
     "#skHomeTranslatorCardV1",
     "#skGlobalSearchTop",
-    "#skDesignMakerGlobal",
     "#skReplyCreatorCards",
     ".skMainLiveGrid",
     "#skLiveCardsBottomV1",
