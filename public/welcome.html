@@ -420,5 +420,75 @@ body {
 })();
 </script>
 
+
+/* SK_OLD_WELCOME_RESEARCH_MOBILE_FIT_V1 */
+html {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+body {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin: 0;
+  overflow-x: clip;
+}
+#skUltimateResearch {
+  width: calc(100% - 24px) !important;
+  max-width: 760px;
+  min-width: 0;
+  margin: 18px auto !important;
+  padding: clamp(12px, 4vw, 20px) !important;
+  overflow-wrap: anywhere;
+}
+#skUltimateResearch input,
+#skUltimateResearch textarea,
+#skUltimateResearch select,
+#skUltimateResearch button {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+}
+#skUltimateResearch textarea,
+#skUltimateResearch select {
+  width: 100%;
+}
+#skUltimateResearch button {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+#skResearchResults,
+#skResearchStatus {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+@media (max-width: 480px) {
+  #skUltimateResearch {
+    width: calc(100% - 16px) !important;
+    margin: 12px auto !important;
+    padding: 12px !important;
+    border-radius: 16px !important;
+  }
+  #skUltimateResearch button {
+    padding: 11px 8px;
+    font-size: 14px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #skUltimateResearch *,
+  #skUltimateResearch *::before,
+  #skUltimateResearch *::after {
+    animation-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+/* END SK_OLD_WELCOME_RESEARCH_MOBILE_FIT_V1 */
+
 </body>
 </html>
