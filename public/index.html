@@ -10,7 +10,10 @@ body{margin:0;font-family:system-ui;background:#f0f9ff}
 <div class="top">
 <div style="display:flex;align-items:center;justify-content:center;gap:10px">
 <img src="/assets/sasikumar-ai-logo-60.png" alt="SASIKUMAR AI Brand Logo" style="width:60px;height:60px;min-width:60px;object-fit:contain;border-radius:50%;animation:skBrandLogo360 6s linear infinite">
-<div style="font-size:18px;font-weight:800">Welcome 🙏 SASIKUMAR AI</div>
+<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:12px 8px">
+<img src="/assets/sasikumar-ai-logo-60.png" alt="SASIKUMAR AI Logo" style="width:60px;height:60px;min-width:60px;object-fit:contain;border-radius:50%;animation:skBrandLogo360 6s linear infinite">
+<div style="font-size:clamp(21px,5vw,30px);font-weight:900;line-height:1.25;background:linear-gradient(90deg,#2563eb 0%,#7c3aed 50%,#ea580c 100%);-webkit-background-clip:text;background-clip:text;color:transparent">Welcome 🙏 SASIKUMAR AI</div>
+</div>
 </div>
 <style>/* SK_BRAND_LOGO_60PX_360_V1 */
 @keyframes skBrandLogo360{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
@@ -86,7 +89,41 @@ updateLive();
 <a href="/format.html" class="card" style="background:#fef3c7"><div style="background:#92400e;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">📝 ALL-IN-ONE FORMAT</div><div style="color:#1e293b;font-size:9px;margin-top:3px">Tamil & English Text Studio</div><div style="background:#f59e0b;color:#fff;padding:2px 5px;border-radius:4px;font-size:8px;margin-top:3px;display:inline-block">FORMAT NOW</div></a>
 
 
+
+<!-- SK_FIRST_PAGE_QUICK_ACCESS_V1 -->
+<section style="max-width:520px;margin:12px auto;padding:14px;background:#f0fdf4;border:1px solid #86efac;border-radius:16px;text-align:center;color:#14532d">
+  <h2 style="margin:4px 0 8px;font-size:20px;font-weight:900">🌟 SASIKUMAR AI</h2>
+  <p style="margin:0 0 12px;font-size:14px;line-height:1.6">Your AI companion for creativity, useful tools, news and everyday productivity.</p>
+  <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px">
+    <a href="/welcome-new.html" style="padding:12px 6px;border-radius:10px;background:#2563eb;color:#fff;text-decoration:none;font-weight:800">👋 Introduction</a>
+    <a href="/format.html" style="padding:12px 6px;border-radius:10px;background:#16a34a;color:#fff;text-decoration:none;font-weight:800">📝 Format Studio</a>
+    <a href="/all-pages.html" style="padding:12px 6px;border-radius:10px;background:#7c3aed;color:#fff;text-decoration:none;font-weight:800">⚡ Quick Access</a>
+    <a href="https://www.youtube.com/results?search_query=business+motivation" target="_blank" rel="noopener noreferrer" style="padding:12px 6px;border-radius:10px;background:#dc2626;color:#fff;text-decoration:none;font-weight:800">▶️ YouTube Motivation</a>
+  </div>
+  <div id="skFirstPageLiveStatus" style="margin-top:12px;padding:8px;border-radius:10px;background:#fef3c7;color:#92400e;font-weight:800">🟡 Checking server status…</div>
+<script>
+/* SK_FIRST_PAGE_REAL_STATUS_V1 */
+(async function checkSkFirstPageStatus(){
+  const badge = document.getElementById('skFirstPageLiveStatus');
+  if (!badge) return;
+  try {
+    const response = await fetch('/api/status', {cache:'no-store'});
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    const data = await response.json();
+    badge.textContent = '🟢 SERVER CONNECTED · ' + (data.status || 'LIVE');
+    badge.style.background = '#dcfce7';
+    badge.style.color = '#166534';
+  } catch (error) {
+    badge.textContent = '🔴 SERVER STATUS UNAVAILABLE';
+    badge.style.background = '#fee2e2';
+    badge.style.color = '#991b1b';
+  }
+})();
+</script>
+</section>
+
 <div style="padding:10px 12px 22px;text-align:center">
-  <a style="box-sizing:border-box;display:flex;align-items:center;justify-content:center;max-width:520px;min-height:52px;margin:12px auto;padding:12px;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#ea580c);color:#fff;text-decoration:none;font-size:15px;font-weight:800;box-shadow:0 4px 12px #00000018" class="skNavAll" href="/all-pages.html">📚 ALL PAGES — Explore All Tools</a>
+<a href="/format.html" style="box-sizing:border-box;display:flex;align-items:center;justify-content:center;max-width:520px;min-height:52px;margin:12px auto;padding:12px;border-radius:14px;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;text-decoration:none;font-size:15px;font-weight:800;box-shadow:0 4px 12px #00000018">📝 FORMAT STUDIO — Open Now</a>
+<a href="/welcome-new.html" style="box-sizing:border-box;display:flex;align-items:center;justify-content:center;max-width:520px;min-height:46px;margin:10px auto;padding:10px;border-radius:14px;background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;text-decoration:none;font-size:14px;font-weight:800">👋 NEW WELCOME</a>
 </div>
 </body></html>
