@@ -1705,10 +1705,27 @@ async function getTamilBreakingNews() {
 app.post('/api/whatsapp/webhook',async(req,res)=>{
   try{
     const body=req.body;
+
+    console.log('[WA webhook] POST received', JSON.stringify({
+      object: body?.object,
+      entries: Array.isArray(body?.entry) ? body.entry.length : 0,
+      fields: body?.entry?.flatMap(e => e.changes || []).map(c => c.field),
+      messageCount: body?.entry?.flatMap(e => e.changes || [])
+        .reduce((n, c) => n + (c.value?.messages?.length || 0), 0)
+    }));
+
     if(body.object!=='whatsapp_business_account') return res.sendStatus(404);
 
     const msg=body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
-    if(!msg) return res.sendStatus(200);
+    if(!msg) {
+      console.log('[WA webhook] No incoming message in this event');
+      return res.sendStatus(200);
+    }
+
+    console.log('[WA webhook] Incoming message', JSON.stringify({
+      type: msg.type,
+      senderLast4: String(msg.from || '').slice(-4)
+    }));
 
     const from=msg.from;
     const trimmed=(msg.text?.body||'').trim();
