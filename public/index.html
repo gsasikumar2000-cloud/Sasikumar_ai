@@ -147,7 +147,7 @@ updateLive();
     <a href="/all-pages.html" style="padding:12px 6px;border-radius:10px;background:#7c3aed;color:#fff;text-decoration:none;font-weight:800">⚡ Quick Access</a>
     <a href="https://www.youtube.com/results?search_query=business+motivation" target="_blank" rel="noopener noreferrer" style="padding:12px 6px;border-radius:10px;background:#dc2626;color:#fff;text-decoration:none;font-weight:800">▶️ YouTube Motivation</a>
   </div>
-  <div id="skFirstPageLiveStatus" style="margin-top:12px;padding:8px;border-radius:10px;background:#fef3c7;color:#92400e;font-weight:800">🟡 Checking server status…</div>
+  <div id="skFirstPageLiveStatus" style="box-sizing:border-box;width:100%;margin-top:12px;padding:8px;border-radius:10px;background:#dcfce7;color:#166534;border:1px solid #86efac;font-weight:800;font-size:12px;overflow-wrap:anywhere">🟡 Checking server status…</div>
 <script>
 /* SK_FIRST_PAGE_REAL_STATUS_V1 */
 (async function checkSkFirstPageStatus(){
@@ -171,7 +171,7 @@ updateLive();
 
 <div style="padding:10px 12px 22px;text-align:center">
 <a href="/format.html" style="box-sizing:border-box;display:flex;align-items:center;justify-content:center;max-width:520px;min-height:52px;margin:12px auto;padding:12px;border-radius:14px;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;text-decoration:none;font-size:15px;font-weight:800;box-shadow:0 4px 12px #00000018">📝 FORMAT STUDIO — Open Now</a>
-<a href="/welcome-new.html" style="box-sizing:border-box;display:flex;align-items:center;justify-content:center;max-width:520px;min-height:46px;margin:10px auto;padding:10px;border-radius:14px;background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;text-decoration:none;font-size:14px;font-weight:800">👋 NEW WELCOME</a>
+<a href="/welcome-new.html" style="box-sizing:border-box;display:flex;align-items:center;justify-content:center;width:100%;max-width:520px;min-height:46px;margin:10px auto;padding:10px;border-radius:12px;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;text-decoration:none;font-size:14px;font-weight:800">👋 NEW WELCOME</a>
 </div>
 
 <script>
@@ -251,6 +251,9 @@ updateLive();
       hide(liveGrid);
       formatCards.forEach(hide);
       bottomMemberLinks.forEach(hide);
+      bottomMemberLinks
+        .filter(a => a.getAttribute('href') === '/welcome-new.html')
+        .forEach(show);
       extraLinks.forEach(hide);
 
       if (intro) show(intro);
