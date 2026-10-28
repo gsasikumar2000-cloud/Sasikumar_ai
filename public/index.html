@@ -66,7 +66,7 @@ section[style*="background:#f0fdf4"] > div[style*="display:grid"] {
 
 
 <style>
-#skStartingPageNavV1{display:grid;grid-template-columns:1fr 1fr;gap:9px;max-width:520px;margin:12px auto}
+#skStartingPageNavV1{box-sizing:border-box;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;width:100%;max-width:520px;margin:12px auto;padding:0 8px}
 #skStartingPageNavV1 a{box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:7px;min-height:48px;padding:10px;border-radius:13px;color:#fff;text-decoration:none;font-size:13px;font-weight:800;box-shadow:0 3px 9px #00000012}
 #skStartingPageNavV1 .skNavLive{background:linear-gradient(135deg,#16a34a,#15803d)}
 #skStartingPageNavV1 .skNavVideo{background:linear-gradient(135deg,#2563eb,#1d4ed8)}
@@ -75,7 +75,7 @@ section[style*="background:#f0fdf4"] > div[style*="display:grid"] {
 #skStartingPageNavV1 .skNavAll{grid-column:1/-1;background:linear-gradient(135deg,#f59e0b,#ea580c);min-height:50px}
 @media(max-width:340px){#skStartingPageNavV1 a{font-size:11px;padding:8px}}
 </style><nav id="skStartingPageNavV1" aria-label="SASIKUMAR AI quick navigation">
-  <a class="skNavLive" href="/welcome.html">🔴 LIVE ALL</a>
+  <a class="skNavLive" href="/welcome.html">🟢 LIVE ALL</a>
   <a class="skNavVideo" href="/ai-video.html">🎬 VIDEO</a>
   <a class="skNavLogin" href="/?skAuth=login">🔐 LOGIN</a>
   <a class="skNavSignup" href="/?skAuth=signup">🆕 SIGN UP</a>
@@ -83,13 +83,13 @@ section[style*="background:#f0fdf4"] > div[style*="display:grid"] {
 </nav>
 
 <div style="padding:8px">
-<div style="text-align:center;font-size:12px;font-weight:700;margin:8px 0" id="welcometext">🔴 SASIKUMAR AI Live Card - Live Changing</div>
+<div style="text-align:center;font-size:12px;font-weight:700;margin:8px 0" id="welcometext">🟢 SASIKUMAR AI Live Card - Live Changing</div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:420px;margin:0 auto">
 <a href="/live-sports.html" class="card" style="background:#dbeafe"><div style="background:#15803d;color:#fff;padding:3px 6px;border-radius:5px;font-size:11px;font-weight:700">🏏 LIVE SPORTS</div><div style="color:#1e293b;font-size:10px;margin-top:4px;font-weight:600" id="sports">விளையாட்டு செய்திகள் - Loading...</div><div style="background:#16a34a;color:#fff;padding:2px 5px;border-radius:4px;font-size:8px;margin-top:3px;display:inline-block" id="sportslive">LIVE</div></a>
 <a href="/live-ponmozhi.html" class="card" style="background:#dcfce7"><div style="background:#2563eb;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">💬 LIVE PONMOZHI</div><div style="color:#000;font-size:10px;font-weight:700;margin-top:2px" id="ponmozhi">Loading...</div><div style="color:#333;font-size:7px" id="ponmozhi_en">...</div></a>
 <a href="/live-thirukkural.html" class="card" style="background:#fef3c7"><div style="background:#d97706;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">📖 LIVE THIRUKKURAL</div><div style="color:#1e293b;font-size:9px;margin-top:3px" id="kural">Loading...</div><div style="background:#f59e0b;color:#fff;padding:2px 5px;border-radius:4px;font-size:8px;margin-top:3px;display:inline-block">DAILY LIVE - <span id="kuralday"></span></div></a>
 <a href="/live-gold.html" class="card" style="background:#ede9fe"><div style="background:#7c3aed;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">💰 LIVE GOLD</div><div style="color:#1e293b;font-size:11px;font-weight:700;margin-top:2px" id="gold">₹ Loading...</div><div style="color:#334155;font-size:8px" id="golddate">Live Rate Today</div></a>
-<a href="/live-news.html" class="card" style="background:#ffe4e6"><div style="background:#e11d48;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">🎬 LIVE NEWS</div><div style="color:#1e293b;font-size:9px;margin-top:3px" id="news">Breaking Tamil...</div><div style="background:#ef4444;color:#fff;padding:2px 5px;border-radius:4px;font-size:8px;margin-top:3px;display:inline-block">🔴 LIVE <span id="newstime"></span></div></a>
+<a href="/live-news.html" class="card" style="background:#e0f2fe"><div style="background:#0284c7;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">🎬 LIVE NEWS</div><div style="color:#1e293b;font-size:9px;margin-top:3px" id="news">Breaking Tamil...</div><div style="background:#0284c7;color:#fff;padding:2px 5px;border-radius:4px;font-size:8px;margin-top:3px;display:inline-block">🟢 LIVE <span id="newstime"></span></div></a>
 <a href="/live-poster.html" class="card" style="background:#e0f2fe"><div style="background:#0284c7;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">🎨 LIVE POSTER</div><div style="color:#1e293b;font-size:9px;margin-top:3px">Festival Poster Maker</div><div style="background:#0ea5e9;color:#fff;padding:2px 5px;border-radius:4px;font-size:8px;margin-top:3px;display:inline-block">CREATE LIVE</div></a>
 <a href="/live-image.html" class="card" style="background:#fef9c3"><div style="background:#ca8a04;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">🖼️ LIVE IMAGE</div><div style="color:#1e293b;font-size:9px;margin-top:3px">AI Image Generator</div><div style="background:#eab308;color:#fff;padding:2px 5px;border-radius:4px;font-size:8px;margin-top:3px;display:inline-block">GENERATE</div></a>
 <a href="/live-research.html" class="card" style="background:#d1fae5"><div style="background:#047857;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">🔍 LIVE RESEARCH</div><div style="color:#1e293b;font-size:9px;margin-top:3px">Web Search AI</div><div style="background:#10b981;color:#fff;padding:2px 5px;border-radius:4px;font-size:8px;margin-top:3px;display:inline-block">SEARCH LIVE</div></a>
@@ -145,7 +145,7 @@ updateLive();
 <a href="/welcome.html" style="padding:12px 6px;border-radius:10px;background:#0891b2;color:#fff;text-decoration:none;font-weight:800">👋 OLD WELCOME</a>
     <a href="/format.html" style="padding:12px 6px;border-radius:10px;background:#16a34a;color:#fff;text-decoration:none;font-weight:800">📝 Format Studio</a>
     <a href="/all-pages.html" style="padding:12px 6px;border-radius:10px;background:#7c3aed;color:#fff;text-decoration:none;font-weight:800">⚡ Quick Access</a>
-    <a href="https://www.youtube.com/results?search_query=business+motivation" target="_blank" rel="noopener noreferrer" style="padding:12px 6px;border-radius:10px;background:#dc2626;color:#fff;text-decoration:none;font-weight:800">▶️ YouTube Motivation</a>
+    <a href="https://www.youtube.com/results?search_query=business+motivation" target="_blank" rel="noopener noreferrer" style="padding:12px 6px;border-radius:10px;background:#7c3aed;color:#fff;text-decoration:none;font-weight:800">▶️ YouTube Motivation</a>
   </div>
   <div id="skFirstPageLiveStatus" style="box-sizing:border-box;width:100%;margin-top:12px;padding:8px;border-radius:10px;background:#dcfce7;color:#166534;border:1px solid #86efac;font-weight:800;font-size:12px;overflow-wrap:anywhere">🟡 Checking server status…</div>
 <script>
@@ -161,7 +161,7 @@ updateLive();
     badge.style.background = '#dcfce7';
     badge.style.color = '#166534';
   } catch (error) {
-    badge.textContent = '🔴 SERVER STATUS UNAVAILABLE';
+    badge.textContent = '⚠️ SERVER STATUS UNAVAILABLE';
     badge.style.background = '#fee2e2';
     badge.style.color = '#991b1b';
   }
