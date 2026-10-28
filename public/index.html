@@ -95,6 +95,11 @@ updateLive();
   <p style="margin:0 0 12px;font-size:14px;line-height:1.6">Your AI companion for creativity, useful tools, news and everyday productivity.</p>
   <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px">
     <a href="/sasikumar-ai-intro.html" style="padding:12px 6px;border-radius:10px;background:#2563eb;color:#fff;text-decoration:none;font-weight:800">👋 Introduction</a>
+<!-- SK_FIRST_PAGE_EXTRA_BUTTONS_V1 -->
+<a href="/referral-earning.html" style="padding:12px 6px;border-radius:10px;background:#059669;color:#fff;text-decoration:none;font-weight:800">💰 Referral</a>
+<a href="/settings.html" style="padding:12px 6px;border-radius:10px;background:#64748b;color:#fff;text-decoration:none;font-weight:800">⚙️ Settings</a>
+<a href="/admin.html" style="padding:12px 6px;border-radius:10px;background:#b45309;color:#fff;text-decoration:none;font-weight:800">🛡️ Admin</a>
+<a href="/welcome.html" style="padding:12px 6px;border-radius:10px;background:#0891b2;color:#fff;text-decoration:none;font-weight:800">👋 OLD WELCOME</a>
     <a href="/format.html" style="padding:12px 6px;border-radius:10px;background:#16a34a;color:#fff;text-decoration:none;font-weight:800">📝 Format Studio</a>
     <a href="/all-pages.html" style="padding:12px 6px;border-radius:10px;background:#7c3aed;color:#fff;text-decoration:none;font-weight:800">⚡ Quick Access</a>
     <a href="https://www.youtube.com/results?search_query=business+motivation" target="_blank" rel="noopener noreferrer" style="padding:12px 6px;border-radius:10px;background:#dc2626;color:#fff;text-decoration:none;font-weight:800">▶️ YouTube Motivation</a>
@@ -125,4 +130,278 @@ updateLive();
 <a href="/format.html" style="box-sizing:border-box;display:flex;align-items:center;justify-content:center;max-width:520px;min-height:52px;margin:12px auto;padding:12px;border-radius:14px;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;text-decoration:none;font-size:15px;font-weight:800;box-shadow:0 4px 12px #00000018">📝 FORMAT STUDIO — Open Now</a>
 <a href="/welcome-new.html" style="box-sizing:border-box;display:flex;align-items:center;justify-content:center;max-width:520px;min-height:46px;margin:10px auto;padding:10px;border-radius:14px;background:linear-gradient(135deg,#2563eb,#7c3aed);color:#fff;text-decoration:none;font-size:14px;font-weight:800">👋 NEW WELCOME</a>
 </div>
+
+<script>
+/* SK_FIRST_PAGE_AUTH_VISIBILITY_V1 */
+(async function skFirstPageAuthVisibility() {
+  const hide = (element) => {
+    if (element) element.style.display = 'none';
+  };
+
+  const show = (element) => {
+    if (element) element.style.display = '';
+  };
+
+  const nav = document.getElementById('skStartingPageNavV1');
+  const quickSection = document.getElementById('skFirstPageLiveStatus')
+    ?.closest('section');
+
+  const intro = quickSection?.querySelector(
+    'a[href="/sasikumar-ai-intro.html"]'
+  );
+
+  const adminLink = quickSection?.querySelector(
+    'a[href="/admin.html"]'
+  );
+
+  const memberLinks = [
+    '/referral-earning.html',
+    '/settings.html',
+    '/admin.html',
+    '/welcome.html',
+    '/format.html',
+    '/all-pages.html'
+  ];
+
+  const extraLinks = quickSection
+    ? Array.from(quickSection.querySelectorAll('a')).filter((a) =>
+        memberLinks.includes(a.getAttribute('href')) ||
+        a.href.includes('youtube.com/results')
+      )
+    : [];
+
+  const liveGrid = document.getElementById('sports')
+    ?.closest('div[style*="grid-template-columns"]');
+
+  const formatCards = Array.from(document.querySelectorAll('a.card'))
+    .filter((a) => a.getAttribute('href') === '/format.html');
+
+  const bottomMemberLinks = Array.from(document.querySelectorAll('body > div a'))
+    .filter((a) =>
+      a.getAttribute('href') === '/welcome-new.html' ||
+      (a.getAttribute('href') === '/format.html' && !a.closest('section'))
+    );
+
+  try {
+    const response = await fetch('/api/auth/me', {
+      method: 'GET',
+      credentials: 'same-origin',
+      cache: 'no-store'
+    });
+
+    let user = null;
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data && data.ok === true) user = data;
+    }
+
+    if (!user) {
+      // Guest: keep only Introduction, Login and Sign Up navigation.
+      if (nav) {
+        hide(nav.querySelector('.skNavLive'));
+        hide(nav.querySelector('.skNavVideo'));
+        show(nav.querySelector('.skNavLogin'));
+        show(nav.querySelector('.skNavSignup'));
+      }
+
+      hide(liveGrid);
+      formatCards.forEach(hide);
+      bottomMemberLinks.forEach(hide);
+      extraLinks.forEach(hide);
+
+      if (intro) show(intro);
+
+      if (quickSection) {
+        const grid = quickSection.querySelector(
+          'div[style*="grid-template-columns"]'
+        );
+        if (grid) show(grid);
+      }
+
+      return;
+    }
+
+    // Signed-in user: show member services.
+    if (nav) {
+      show(nav.querySelector('.skNavLive'));
+      show(nav.querySelector('.skNavVideo'));
+      hide(nav.querySelector('.skNavLogin'));
+      hide(nav.querySelector('.skNavSignup'));
+    }
+
+    show(liveGrid);
+    formatCards.forEach(show);
+    bottomMemberLinks.forEach(show);
+    extraLinks.forEach(show);
+
+    // Admin link is visible only for an admin-role account.
+    if (adminLink && String(user.role || '').toLowerCase() !== 'admin') {
+      hide(adminLink);
+    } else if (adminLink) {
+      show(adminLink);
+    }
+  } catch (error) {
+    // Fail closed: do not expose member buttons if auth status is unknown.
+    if (nav) {
+      hide(nav.querySelector('.skNavLive'));
+      hide(nav.querySelector('.skNavVideo'));
+    }
+    hide(liveGrid);
+    formatCards.forEach(hide);
+    bottomMemberLinks.forEach(hide);
+    extraLinks.forEach(hide);
+  }
+})();
+</script>
+
+
+<!-- SK_FIRST_PAGE_AUTH_FORM_V1 -->
+<section id="skAuthPanelV1" style="display:none;box-sizing:border-box;max-width:460px;margin:14px auto;padding:18px;background:#fff;border:1px solid #dbeafe;border-radius:18px;box-shadow:0 8px 25px #1e40af16">
+  <h2 id="skAuthTitleV1" style="margin:0 0 8px;text-align:center;color:#1d4ed8;font-size:22px">Login</h2>
+  <p id="skAuthHintV1" style="margin:0 0 14px;text-align:center;color:#475569;font-size:13px">Login to open your SASIKUMAR AI services.</p>
+  <form id="skAuthFormV1">
+    <label for="skAuthUsernameV1" style="display:block;margin:10px 0 5px;font-weight:700;font-size:13px">Username</label>
+    <input id="skAuthUsernameV1" name="username" required minlength="3" maxlength="30" autocomplete="username" style="box-sizing:border-box;width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;font-size:16px">
+    <label for="skAuthPasswordV1" style="display:block;margin:12px 0 5px;font-weight:700;font-size:13px">Password</label>
+    <input id="skAuthPasswordV1" name="password" type="password" required minlength="6" maxlength="128" autocomplete="current-password" style="box-sizing:border-box;width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:10px;font-size:16px">
+    <button id="skAuthSubmitV1" type="submit" style="width:100%;margin-top:16px;padding:13px;border:0;border-radius:11px;background:linear-gradient(135deg,#2563eb,#0891b2);color:white;font-size:15px;font-weight:800">Login</button>
+  </form>
+  <p id="skAuthMessageV1" role="status" aria-live="polite" style="font-size:13px;line-height:1.5;overflow-wrap:anywhere"></p>
+  <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap">
+    <a id="skAuthSwitchV1" href="/?skAuth=signup" style="font-size:13px;color:#047857;font-weight:700">Create account · 30-day free trial</a>
+    <a href="/" style="font-size:13px;color:#475569">Back to home</a>
+  </div>
+</section>
+<div id="skAuthLogoutWrapV1" style="display:none;text-align:center;margin:12px auto">
+  <button id="skAuthLogoutV1" type="button" style="padding:10px 18px;border:0;border-radius:10px;background:#dc2626;color:white;font-weight:800">Log out</button>
+  <span id="skAuthUserV1" style="display:block;margin-top:6px;font-size:12px;color:#475569"></span>
+</div>
+<script>
+/* SK_FIRST_PAGE_AUTH_FORM_V1 */
+(async function () {
+  const panel = document.getElementById('skAuthPanelV1');
+  const form = document.getElementById('skAuthFormV1');
+  const title = document.getElementById('skAuthTitleV1');
+  const hint = document.getElementById('skAuthHintV1');
+  const submit = document.getElementById('skAuthSubmitV1');
+  const message = document.getElementById('skAuthMessageV1');
+  const pass = document.getElementById('skAuthPasswordV1');
+  const username = document.getElementById('skAuthUsernameV1');
+  const switchLink = document.getElementById('skAuthSwitchV1');
+  const logoutWrap = document.getElementById('skAuthLogoutWrapV1');
+  const params = new URLSearchParams(location.search);
+  let mode = params.get('skAuth') === 'signup' ? 'signup' : 'login';
+
+  function setMode(next) {
+    mode = next;
+    const signup = mode === 'signup';
+    title.textContent = signup ? 'Create your account' : 'Login';
+    hint.textContent = signup
+      ? 'Create your account and start your 30-day free trial.'
+      : 'Login to open your SASIKUMAR AI services.';
+    submit.textContent = signup ? 'Create Account' : 'Login';
+    pass.autocomplete = signup ? 'new-password' : 'current-password';
+    switchLink.textContent = signup
+      ? 'Already registered? Login'
+      : 'Create account · 30-day free trial';
+    switchLink.href = signup ? '/?skAuth=login' : '/?skAuth=signup';
+    message.textContent = '';
+  }
+
+  switchLink.addEventListener('click', function (event) {
+    event.preventDefault();
+    setMode(mode === 'signup' ? 'login' : 'signup');
+    history.replaceState(null, '', '/?skAuth=' + mode);
+  });
+
+  if (params.has('skAuth')) {
+    panel.style.display = 'block';
+    setMode(mode);
+    panel.scrollIntoView({behavior: 'smooth', block: 'center'});
+  }
+
+  form.addEventListener('submit', async function (event) {
+    event.preventDefault();
+    submit.disabled = true;
+    submit.style.opacity = '0.7';
+    message.style.color = '#334155';
+    message.textContent = mode === 'signup' ? 'Creating account…' : 'Signing in…';
+
+    try {
+      const response = await fetch(mode === 'signup' ? '/api/signup' : '/api/login', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          username: username.value.trim(),
+          password: pass.value
+        })
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok || data.ok !== true) {
+        throw new Error(data.message || 'Request failed. Please try again.');
+      }
+
+      message.style.color = '#15803d';
+      if (mode === 'signup') {
+        message.textContent = (data.message || 'Account created.') + ' Please login.';
+        pass.value = '';
+        setMode('login');
+        history.replaceState(null, '', '/?skAuth=login');
+        message.textContent = (data.message || 'Account created.') + ' Please login.';
+      } else {
+        message.textContent = 'Login successful. Opening your services…';
+        location.replace('/');
+      }
+    } catch (error) {
+      message.style.color = '#b91c1c';
+      message.textContent = error.message || 'Connection error. Please try again.';
+    } finally {
+      submit.disabled = false;
+      submit.style.opacity = '1';
+    }
+  });
+
+  try {
+    const response = await fetch('/api/auth/me', {
+      credentials: 'same-origin',
+      cache: 'no-store'
+    });
+    if (response.ok) {
+      const user = await response.json();
+      if (user && user.ok === true) {
+        logoutWrap.style.display = 'block';
+        document.getElementById('skAuthUserV1').textContent =
+          'Signed in as ' + String(user.username || 'user');
+        if (params.has('skAuth')) {
+          panel.style.display = 'none';
+          history.replaceState(null, '', location.pathname);
+        }
+      }
+    }
+  } catch (_) {}
+
+  document.getElementById('skAuthLogoutV1').addEventListener('click', async function () {
+    const button = this;
+    button.disabled = true;
+    try {
+      const response = await fetch('/api/logout', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {'Content-Type': 'application/json'},
+        body: '{}'
+      });
+      if (!response.ok) throw new Error('Logout failed. Please try again.');
+      location.replace('/');
+    } catch (error) {
+      button.disabled = false;
+      message.style.color = '#b91c1c';
+      message.textContent = error.message;
+    }
+  });
+})();
+</script>
+
 </body></html>
