@@ -68,8 +68,8 @@ section[style*="background:#f0fdf4"] > div[style*="display:grid"] {
 <style>
 #skStartingPageNavV1{display:grid;grid-template-columns:1fr 1fr;gap:9px;max-width:520px;margin:12px auto}
 #skStartingPageNavV1 a{box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:7px;min-height:48px;padding:10px;border-radius:13px;color:#fff;text-decoration:none;font-size:13px;font-weight:800;box-shadow:0 3px 9px #00000012}
-#skStartingPageNavV1 .skNavLive{background:linear-gradient(135deg,#ef4444,#be123c)}
-#skStartingPageNavV1 .skNavVideo{background:linear-gradient(135deg,#7c3aed,#4f46e5)}
+#skStartingPageNavV1 .skNavLive{background:linear-gradient(135deg,#16a34a,#15803d)}
+#skStartingPageNavV1 .skNavVideo{background:linear-gradient(135deg,#2563eb,#1d4ed8)}
 #skStartingPageNavV1 .skNavLogin{background:linear-gradient(135deg,#2563eb,#0891b2)}
 #skStartingPageNavV1 .skNavSignup{background:linear-gradient(135deg,#16a34a,#15803d)}
 #skStartingPageNavV1 .skNavAll{grid-column:1/-1;background:linear-gradient(135deg,#f59e0b,#ea580c);min-height:50px}
@@ -171,7 +171,7 @@ updateLive();
 
 <div style="padding:10px 12px 22px;text-align:center">
 <a href="/format.html" style="box-sizing:border-box;display:flex;align-items:center;justify-content:center;max-width:520px;min-height:52px;margin:12px auto;padding:12px;border-radius:14px;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;text-decoration:none;font-size:15px;font-weight:800;box-shadow:0 4px 12px #00000018">📝 FORMAT STUDIO — Open Now</a>
-<a href="/welcome-new.html" style="box-sizing:border-box;display:flex;align-items:center;justify-content:center;width:100%;max-width:520px;min-height:46px;margin:10px auto;padding:10px;border-radius:12px;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;text-decoration:none;font-size:14px;font-weight:800">👋 NEW WELCOME</a>
+<a href="/welcome-new.html" style="box-sizing:border-box;display:flex;align-items:center;justify-content:center;width:100%;max-width:520px;min-height:46px;margin:10px auto;padding:10px;border-radius:12px;background:linear-gradient(135deg,#9333ea,#6d28d9);color:#fff;text-decoration:none;font-size:14px;font-weight:800">👋 NEW WELCOME</a>
 </div>
 
 <script>
@@ -320,7 +320,7 @@ updateLive();
   </div>
 </section>
 <div id="skAuthLogoutWrapV1" style="display:none;text-align:center;margin:12px auto">
-  <button id="skAuthLogoutV1" type="button" style="padding:10px 18px;border:0;border-radius:10px;background:#dc2626;color:white;font-weight:800">Log out</button>
+  <button id="skAuthLogoutV1" type="button" style="padding:10px 18px;border:0;border-radius:10px;background:#7c3aed;color:white;font-weight:800">Log out</button>
   <span id="skAuthUserV1" style="display:block;margin-top:6px;font-size:12px;color:#475569"></span>
 </div>
 <script>
@@ -449,5 +449,38 @@ updateLive();
   });
 })();
 </script>
+
+
+<style id="skFloatingContactButtonsV1">
+#skFloatingContactButtonsV1 .sk-contact-circle {
+  width:60px;height:60px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;text-decoration:none;font-size:28px;
+  box-shadow:0 4px 12px rgba(15,23,42,.22);
+  border:2px solid #fff;box-sizing:border-box;
+}
+#skFloatingContactButtonsV1 .sk-contact-circle:focus-visible {
+  outline:3px solid #7c3aed;outline-offset:3px;
+}
+#skFloatingContactButtonsV1 {
+  position:fixed;right:14px;bottom:20px;z-index:9999;
+  display:flex;flex-direction:column;gap:12px;
+}
+#skFloatingContactButtonsV1 .sk-wa {background:#16a34a}
+#skFloatingContactButtonsV1 .sk-tg {background:#0284c7}
+@media(max-width:480px) {
+  #skFloatingContactButtonsV1 {right:12px;bottom:16px;gap:10px}
+}
+</style>
+<div id="skFloatingContactButtonsV1" aria-label="Contact SASIKUMAR AI">
+  <a class="sk-contact-circle sk-wa"
+     href="https://wa.me/919585080842"
+     target="_blank" rel="noopener noreferrer"
+     aria-label="Contact on WhatsApp" title="WhatsApp">☏</a>
+  <a class="sk-contact-circle sk-tg"
+     href="https://t.me/+919894440400"
+     target="_blank" rel="noopener noreferrer"
+     aria-label="Open Telegram contact" title="Telegram">➤</a>
+</div>
 
 </body></html>
