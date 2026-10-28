@@ -12,6 +12,25 @@ body{margin:0;font-family:system-ui;background:#f0f9ff}
 <div style="font-size:10px;margin-top:4px">SASIKUMAR AI Live Card - <span id="clock"></span></div>
 <div style="background:#fff;color:#2563eb;padding:3px 10px;border-radius:20px;font-size:9px;font-weight:700;display:inline-block;margin-top:6px" id="livebadge">🟢 LIVE NOW</div>
 </div>
+
+
+<style>
+#skStartingPageNavV1{display:grid;grid-template-columns:1fr 1fr;gap:9px;max-width:520px;margin:12px auto}
+#skStartingPageNavV1 a{box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:7px;min-height:48px;padding:10px;border-radius:13px;color:#fff;text-decoration:none;font-size:13px;font-weight:800;box-shadow:0 3px 9px #00000012}
+#skStartingPageNavV1 .skNavLive{background:linear-gradient(135deg,#ef4444,#be123c)}
+#skStartingPageNavV1 .skNavVideo{background:linear-gradient(135deg,#7c3aed,#4f46e5)}
+#skStartingPageNavV1 .skNavLogin{background:linear-gradient(135deg,#2563eb,#0891b2)}
+#skStartingPageNavV1 .skNavSignup{background:linear-gradient(135deg,#16a34a,#15803d)}
+#skStartingPageNavV1 .skNavAll{grid-column:1/-1;background:linear-gradient(135deg,#f59e0b,#ea580c);min-height:50px}
+@media(max-width:340px){#skStartingPageNavV1 a{font-size:11px;padding:8px}}
+</style><nav id="skStartingPageNavV1" aria-label="SASIKUMAR AI quick navigation">
+  <a class="skNavLive" href="/welcome.html">🔴 LIVE ALL</a>
+  <a class="skNavVideo" href="/ai-video.html">🎬 VIDEO</a>
+  <a class="skNavLogin" href="/?skAuth=login">🔐 LOGIN</a>
+  <a class="skNavSignup" href="/?skAuth=signup">🆕 SIGN UP</a>
+
+</nav>
+
 <div style="padding:8px">
 <div style="text-align:center;font-size:12px;font-weight:700;margin:8px 0" id="welcometext">🔴 SASIKUMAR AI Live Card - Live Changing</div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:420px;margin:0 auto">
@@ -60,4 +79,8 @@ updateLive();
 
 <a href="/format.html" class="card" style="background:#fef3c7"><div style="background:#92400e;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">📝 ALL-IN-ONE FORMAT</div><div style="color:#1e293b;font-size:9px;margin-top:3px">Tamil & English Text Studio</div><div style="background:#f59e0b;color:#fff;padding:2px 5px;border-radius:4px;font-size:8px;margin-top:3px;display:inline-block">FORMAT NOW</div></a>
 
+
+<div style="padding:10px 12px 22px;text-align:center">
+  <a style="box-sizing:border-box;display:flex;align-items:center;justify-content:center;max-width:520px;min-height:52px;margin:12px auto;padding:12px;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#ea580c);color:#fff;text-decoration:none;font-size:15px;font-weight:800;box-shadow:0 4px 12px #00000018" class="skNavAll" href="/all-pages.html">📚 ALL PAGES — Explore All Tools</a>
+</div>
 </body></html>
