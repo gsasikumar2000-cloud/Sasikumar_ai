@@ -88,7 +88,7 @@ section[style*="background:#f0fdf4"] > div[style*="display:grid"] {
 <a href="/sports.html" class="card" style="background:#dbeafe"><div style="background:#15803d;color:#fff;padding:3px 6px;border-radius:5px;font-size:11px;font-weight:700">🏏 LIVE SPORTS</div><div style="color:#1e293b;font-size:10px;margin-top:4px;font-weight:600" id="sports">விளையாட்டு செய்திகள் - Loading...</div><div style="background:#16a34a;color:#fff;padding:2px 5px;border-radius:4px;font-size:8px;margin-top:3px;display:inline-block" id="sportslive">LIVE</div></a>
 <a href="/kavithai.html" class="card" style="background:#dcfce7"><div style="background:#2563eb;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">💬 LIVE PONMOZHI</div><div style="color:#000;font-size:10px;font-weight:700;margin-top:2px" id="ponmozhi">Loading...</div><div style="color:#333;font-size:7px" id="ponmozhi_en">...</div></a>
 <a href="/thirukkural.html" class="card" style="background:#fef3c7"><div style="background:#d97706;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">📖 LIVE THIRUKKURAL</div><div style="color:#1e293b;font-size:9px;margin-top:3px" id="kural">Loading...</div><div style="background:#f59e0b;color:#fff;padding:2px 5px;border-radius:4px;font-size:8px;margin-top:3px;display:inline-block">DAILY LIVE - <span id="kuralday"></span></div></a>
-<a href="/gold-silver.html" class="card" style="background:#ede9fe"><div style="background:#7c3aed;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">💰 LIVE GOLD</div><div style="color:#1e293b;font-size:11px;font-weight:700;margin-top:2px" id="gold">₹ Loading...</div><div style="color:#334155;font-size:8px" id="golddate">Live Rate Today</div></a>
+<a href="/gold-silver.html" class="card" style="background:#ede9fe"><div style="background:#7c3aed;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">💰 LIVE GOLD & SILVER</div><div style="color:#1e293b;font-size:11px;font-weight:700;margin-top:2px" id="gold">Loading gold rates...</div><div style="color:#334155;font-size:9px;font-weight:700;margin-top:3px" id="silver">Silver loading...</div><div style="color:#334155;font-size:8px" id="silverkg">Silver kg loading...</div><div style="color:#334155;font-size:8px" id="golddate">Live Rate Today</div></a>
 <a href="/live-news.html" class="card" style="background:#e0f2fe"><div style="background:#0284c7;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">🎬 LIVE NEWS</div><div style="color:#1e293b;font-size:9px;margin-top:3px" id="news">Breaking Tamil...</div><div style="background:#0284c7;color:#fff;padding:2px 5px;border-radius:4px;font-size:8px;margin-top:3px;display:inline-block">🟢 LIVE <span id="newstime"></span></div></a>
 <a href="/welcome-new.html" class="card" style="background:#e0f2fe"><div style="background:#0284c7;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">🎨 LIVE POSTER</div><div style="color:#1e293b;font-size:9px;margin-top:3px">Festival Poster Maker</div><div style="background:#0ea5e9;color:#fff;padding:2px 5px;border-radius:4px;font-size:8px;margin-top:3px;display:inline-block">CREATE LIVE</div></a>
 <a href="/ai-image.html" class="card" style="background:#fef9c3"><div style="background:#ca8a04;color:#fff;padding:3px 6px;border-radius:5px;font-size:10px;font-weight:700">🖼️ LIVE IMAGE</div><div style="color:#1e293b;font-size:9px;margin-top:3px">AI Image Generator</div><div style="background:#eab308;color:#fff;padding:2px 5px;border-radius:4px;font-size:8px;margin-top:3px;display:inline-block">GENERATE</div></a>
@@ -105,20 +105,22 @@ document.getElementById('time').innerText=now.toLocaleTimeString();
 document.getElementById('newstime').innerText=now.toLocaleTimeString().slice(0,5);
 document.getElementById('kuralday').innerText=now.toLocaleDateString();
 document.getElementById('golddate').innerText=now.toLocaleDateString();
-// SK_REAL_LIVE_GOLD_HOMEPAGE_V1
+// SK_REAL_LIVE_GOLD_SILVER_HOMEPAGE_V1
 if (!window.skHomepageGoldTimerStarted) {
   window.skHomepageGoldTimerStarted = true;
 
-  async function updateHomepageGold() {
+  async function updateHomepageGoldSilver() {
     const goldEl = document.getElementById('gold');
+    const silverEl = document.getElementById('silver');
+    const silverKgEl = document.getElementById('silverkg');
     const dateEl = document.getElementById('golddate');
+    const query = '?state=Tamil%20Nadu&district=Thanjavur';
 
+    // Gold API: update independently so a Silver error cannot hide Gold.
     try {
-      const response = await fetch(
-        '/api/gold-rate?state=Tamil%20Nadu&district=Thanjavur',
-        { cache: 'no-store' }
-      );
-
+      const response = await fetch('/api/gold-rate' + query, {
+        cache: 'no-store'
+      });
       if (!response.ok) throw new Error('Gold API HTTP ' + response.status);
 
       const data = await response.json();
@@ -134,18 +136,54 @@ if (!window.skHomepageGoldTimerStarted) {
         ' · 22K ₹' + gold22.toLocaleString('en-IN') + ' /g';
 
       const updated = data.updatedAt ? new Date(data.updatedAt) : new Date();
-      dateEl.textContent =
-        'Thanjavur · Updated ' +
-        updated.toLocaleTimeString('en-IN', {hour: '2-digit', minute: '2-digit'});
+      dateEl.textContent = 'Thanjavur · Updated ' +
+        updated.toLocaleTimeString('en-IN', {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
     } catch (error) {
-      goldEl.textContent = 'Live rate temporarily unavailable';
-      dateEl.textContent = 'Tap to retry';
-      console.error('Homepage live gold rate error:', error);
+      console.error('Homepage Gold API error:', error);
+      goldEl.textContent = 'Gold rate unavailable';
+    }
+
+    // Silver API: show 999 silver per gram and per kilogram.
+    try {
+      const response = await fetch('/api/silver-rate' + query, {
+        cache: 'no-store'
+      });
+      if (!response.ok) throw new Error('Silver API HTTP ' + response.status);
+
+      const data = await response.json();
+      const gram = Number(
+        data.price_gram_999 ?? data.silver?.gram ?? 0
+      );
+      const kg = Number(
+        data.price_kg_999 ?? data.silver?.kg ?? (gram * 1000)
+      );
+
+      if (!(gram > 0 && kg > 0)) {
+        throw new Error('Valid silver rates unavailable');
+      }
+
+      silverEl.textContent =
+        'Silver 999: ₹' + gram.toLocaleString('en-IN', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        }) + ' /g';
+
+      silverKgEl.textContent =
+        'Silver 999: ₹' + kg.toLocaleString('en-IN', {
+          maximumFractionDigits: 2
+        }) + ' /kg';
+    } catch (error) {
+      console.error('Homepage Silver API error:', error);
+      silverEl.textContent = 'Silver gram rate unavailable';
+      silverKgEl.textContent = 'Silver kg rate unavailable';
     }
   }
 
-  updateHomepageGold();
-  window.setInterval(updateHomepageGold, 5 * 60 * 1000);
+  updateHomepageGoldSilver();
+  window.setInterval(updateHomepageGoldSilver, 5 * 60 * 1000);
 }
 // Ponmozhi Rotate Sir
 const ponmozhis=[["நேர்மை என்றும் உயர்வைத் தரும்","Honesty always leads to dignity"],["முயற்சி திருவினையாக்கும்","Effort brings success"],["கல்வி அழியாச் செல்வம்","Education is imperishable wealth"]];
