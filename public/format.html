@@ -30,9 +30,117 @@ button:active{transform:scale(.98)}
 footer{text-align:center;padding:14px;color:#64748b;font-size:12px}
 @media(min-width:600px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}.container{padding-left:18px;padding-right:18px}}
 </style>
+
+<!-- SK_FORMAT_STUDIO_STYLE_CONTROLS_V1 -->
+<style>
+.skFormatBrand {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:12px;
+  margin:8px auto 14px;
+}
+.skFormatBrand img {
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  object-fit:contain;
+  animation:skFormatLogoSpin 6s linear infinite;
+}
+.skFormatBrand span {
+  font-size:clamp(21px,4vw,32px);
+  font-weight:950;
+  background:linear-gradient(90deg,#f23882,#7743e8,#078ac7,#0a9b73);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+@keyframes skFormatLogoSpin {
+  from { transform:rotate(0deg); }
+  to { transform:rotate(360deg); }
+}
+.skFormatStylePanel {
+  margin:14px 0;
+  padding:16px;
+  border-radius:20px;
+  background:linear-gradient(135deg,#fff0f7,#edf4ff,#eafff4);
+  border:1px solid #e2d8ff;
+  box-shadow:0 7px 22px #5c42a512;
+}
+.skFormatStyleTitle {
+  margin:0 0 12px;
+  font-size:18px;
+  font-weight:900;
+  color:#6937cf;
+}
+.skFormatStyleGrid {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+}
+.skFormatStyleField {
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  min-width:0;
+  font-size:13px;
+  font-weight:800;
+  color:#44365f;
+}
+.skFormatStyleField select,
+.skFormatStyleField input {
+  width:100%;
+  min-width:0;
+  min-height:42px;
+  padding:8px;
+  border:1px solid #d9cef5;
+  border-radius:11px;
+  background:#fff;
+  color:#292044;
+  font:inherit;
+}
+.skFormatStyleField input[type="color"] {
+  padding:4px;
+  cursor:pointer;
+}
+.skFormatStyleActions {
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:12px;
+}
+.skFormatStyleActions button {
+  padding:10px 13px;
+  border:0;
+  border-radius:12px;
+  background:linear-gradient(110deg,#7545e8,#ed4b99);
+  color:white;
+  font-weight:850;
+  cursor:pointer;
+}
+.skFormatStyleActions button.secondary {
+  background:#fff;
+  color:#6339c4;
+  border:1px solid #d9cef5;
+}
+#input, #output {
+  max-width:100%;
+  box-sizing:border-box;
+}
+@media(max-width:520px) {
+  .skFormatStyleGrid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .skFormatStylePanel { padding:12px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .skFormatBrand img { animation:none; }
+}
+</style>
+
 </head>
 <body>
 <header>
+<div class="skFormatBrand"><img src="/assets/sasikumar-ai-logo-160.png" alt="SASIKUMAR AI Original Logo"><span>✨ SASIKUMAR AI</span></div>
 <h1>✨ SASIKUMAR AI</h1>
 <p>📝 All-in-One Format Studio<br>தமிழ் & English • Text • WhatsApp • Social Media</p>
 </header>
@@ -40,6 +148,50 @@ footer{text-align:center;padding:14px;color:#64748b;font-size:12px}
 <main class="container">
 <section class="card">
 <h2>✍️ 1. Enter Your Text / உங்கள் உரையை உள்ளிடுங்கள்</h2>
+
+<section class="skFormatStylePanel" aria-label="Font style controls">
+  <h3 class="skFormatStyleTitle">🎨 Font Size · Color · Style</h3>
+  <div class="skFormatStyleGrid">
+    <label class="skFormatStyleField">
+      🔠 Font Size
+      <select id="skFormatFontSize">
+        <option value="12px">12 px</option>
+        <option value="14px">14 px</option>
+        <option value="16px" selected>16 px</option>
+        <option value="18px">18 px</option>
+        <option value="20px">20 px</option>
+        <option value="24px">24 px</option>
+        <option value="28px">28 px</option>
+        <option value="32px">32 px</option>
+        <option value="36px">36 px</option>
+      </select>
+    </label>
+    <label class="skFormatStyleField">
+      🎨 Font Color
+      <input id="skFormatFontColor" type="color" value="#252044">
+    </label>
+    <label class="skFormatStyleField">
+      ✍️ Font Style
+      <select id="skFormatFontFamily">
+        <option value="Arial, sans-serif">Arial</option>
+        <option value="Georgia, serif">Georgia</option>
+        <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+        <option value="Verdana, sans-serif">Verdana</option>
+        <option value="'Courier New', monospace">Monospace</option>
+        <option value="system-ui, sans-serif">System Default</option>
+      </select>
+    </label>
+  </div>
+  <div class="skFormatStyleActions">
+    <button type="button" id="skFormatApplyStyle">🎨 Apply Style</button>
+    <button type="button" class="secondary" id="skFormatResetStyle">↩️ Reset Style</button>
+  </div>
+  <p style="margin:10px 0 0;font-size:12px;color:#625778;line-height:1.6">
+    இந்த controls Input மற்றும் Output உரைகளின் தோற்றத்தை மாற்றும்.
+    உரையின் உள்ளடக்கம் அழிக்கப்படாது.
+  </p>
+</section>
+
 <textarea id="input" placeholder="உங்கள் தமிழ் அல்லது English உரையை இங்கே எழுதவும்..."></textarea>
 <div class="toolbar">
 <button class="gray" onclick="clearAll()">🧹 Clear</button>
@@ -188,5 +340,42 @@ async function runAI(){
  finally{button.disabled=false;button.textContent='✨ Run AI Editor'}
 }
 </script>
+
+<script>
+/* SK_FORMAT_STUDIO_STYLE_CONTROLS_V1 */
+(function () {
+  const input = document.getElementById('input');
+  const output = document.getElementById('output');
+  const size = document.getElementById('skFormatFontSize');
+  const color = document.getElementById('skFormatFontColor');
+  const family = document.getElementById('skFormatFontFamily');
+  const apply = document.getElementById('skFormatApplyStyle');
+  const reset = document.getElementById('skFormatResetStyle');
+
+  if (!input || !output || !size || !color || !family || !apply || !reset) return;
+
+  function applyStyle() {
+    [input, output].forEach(function (el) {
+      el.style.fontSize = size.value;
+      el.style.color = color.value;
+      el.style.fontFamily = family.value;
+    });
+  }
+
+  apply.addEventListener('click', applyStyle);
+
+  reset.addEventListener('click', function () {
+    size.value = '16px';
+    color.value = '#252044';
+    family.value = 'system-ui, sans-serif';
+    [input, output].forEach(function (el) {
+      el.style.fontSize = '';
+      el.style.color = '';
+      el.style.fontFamily = '';
+    });
+  });
+})();
+</script>
+
 </body>
 </html>
