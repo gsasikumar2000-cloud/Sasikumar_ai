@@ -9,7 +9,25 @@
 *{box-sizing:border-box}
 body{margin:0;font-family:system-ui,"Noto Sans Tamil",sans-serif;background:linear-gradient(145deg,#eff6ff,#f0fdf4,#fef3c7);color:#172554}
 header{text-align:center;padding:28px 16px 20px;background:linear-gradient(135deg,#1d4ed8,#7c3aed);color:white;border-radius:0 0 28px 28px}
-.logo{font-size:48px}
+
+.brand-logo{
+  width:60px;
+  height:60px;
+  display:block;
+  margin:0 auto;
+  object-fit:contain;
+  border-radius:50%;
+  animation:skOriginalLogoSpin360 6s linear infinite;
+  transform-origin:center;
+}
+@keyframes skOriginalLogoSpin360{
+  from{transform:rotate(0deg)}
+  to{transform:rotate(360deg)}
+}
+@media(prefers-reduced-motion:reduce){
+  .brand-logo{animation:none}
+}
+
 h1{font-size:clamp(25px,6vw,38px);margin:8px 0}
 header p{margin:8px auto;max-width:600px;line-height:1.8}
 main{max-width:850px;margin:20px auto;padding:0 14px}
@@ -29,7 +47,7 @@ footer{text-align:center;padding:22px 12px;color:#475569;font-size:13px}
 </head>
 <body>
 <header>
-<div class="logo">🤖</div>
+<img class="brand-logo" src="/assets/sasikumar-ai-logo-160.png" alt="SASIKUMAR AI Original Brand Logo" width="60" height="60">
 <h1>SASIKUMAR AI</h1>
 <p>உங்கள் அன்றாட வேலைகளுக்கும், தகவல் தேடலுக்கும், படைப்பாற்றலுக்கும் உதவும் AI தளம்.</p>
 </header>
