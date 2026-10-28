@@ -105,9 +105,48 @@ document.getElementById('time').innerText=now.toLocaleTimeString();
 document.getElementById('newstime').innerText=now.toLocaleTimeString().slice(0,5);
 document.getElementById('kuralday').innerText=now.toLocaleDateString();
 document.getElementById('golddate').innerText=now.toLocaleDateString();
-// Gold Live Change Sir
-const goldRate = 7250 + Math.floor(Math.random()*100) - 50;
-document.getElementById('gold').innerText='₹ '+goldRate+' / gram';
+// SK_REAL_LIVE_GOLD_HOMEPAGE_V1
+if (!window.skHomepageGoldTimerStarted) {
+  window.skHomepageGoldTimerStarted = true;
+
+  async function updateHomepageGold() {
+    const goldEl = document.getElementById('gold');
+    const dateEl = document.getElementById('golddate');
+
+    try {
+      const response = await fetch(
+        '/api/gold-rate?state=Tamil%20Nadu&district=Thanjavur',
+        { cache: 'no-store' }
+      );
+
+      if (!response.ok) throw new Error('Gold API HTTP ' + response.status);
+
+      const data = await response.json();
+      const gold24 = Number(data.rates?.['24K'] ?? data.gold24k ?? 0);
+      const gold22 = Number(data.rates?.['22K'] ?? data.gold22k ?? 0);
+
+      if (!(gold24 > 0 && gold22 > 0)) {
+        throw new Error('Valid gold rates unavailable');
+      }
+
+      goldEl.textContent =
+        '24K ₹' + gold24.toLocaleString('en-IN') +
+        ' · 22K ₹' + gold22.toLocaleString('en-IN') + ' /g';
+
+      const updated = data.updatedAt ? new Date(data.updatedAt) : new Date();
+      dateEl.textContent =
+        'Thanjavur · Updated ' +
+        updated.toLocaleTimeString('en-IN', {hour: '2-digit', minute: '2-digit'});
+    } catch (error) {
+      goldEl.textContent = 'Live rate temporarily unavailable';
+      dateEl.textContent = 'Tap to retry';
+      console.error('Homepage live gold rate error:', error);
+    }
+  }
+
+  updateHomepageGold();
+  window.setInterval(updateHomepageGold, 5 * 60 * 1000);
+}
 // Ponmozhi Rotate Sir
 const ponmozhis=[["நேர்மை என்றும் உயர்வைத் தரும்","Honesty always leads to dignity"],["முயற்சி திருவினையாக்கும்","Effort brings success"],["கல்வி அழியாச் செல்வம்","Education is imperishable wealth"]];
 const p=ponmozhis[now.getSeconds()%3];
