@@ -1759,9 +1759,32 @@ app.post('/api/whatsapp/webhook',async(req,res)=>{
 
     if(body.object!=='whatsapp_business_account') return res.sendStatus(404);
 
-    const msg=body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
-    if(!msg) {
-      console.log('[WA webhook] No incoming message in this event');
+    // Find the first real incoming message across every entry/change.
+    const changes = (Array.isArray(body.entry) ? body.entry : [])
+      .flatMap(entry => Array.isArray(entry?.changes) ? entry.changes : []);
+
+    const messageChanges = changes.filter(change =>
+      Array.isArray(change?.value?.messages) &&
+      change.value.messages.length > 0
+    );
+
+    for (const change of changes) {
+      for (const status of (Array.isArray(change?.value?.statuses) ? change.value.statuses : [])) {
+        console.log('[WA webhook] Status update', JSON.stringify({
+          status: status.status,
+          recipientLast4: String(status.recipient_id || '').slice(-4)
+        }));
+      }
+    }
+
+    const msg = messageChanges[0]?.value?.messages?.[0];
+
+    if (!msg) {
+      console.log('[WA webhook] No incoming message in this event', JSON.stringify({
+        changeCount: changes.length,
+        statusCount: changes.reduce((n, change) =>
+          n + (Array.isArray(change?.value?.statuses) ? change.value.statuses.length : 0), 0)
+      }));
       return res.sendStatus(200);
     }
 
