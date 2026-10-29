@@ -1861,7 +1861,16 @@ if(WA_TOKEN && WA_PHONE_ID){
           }
         );
         const data=await r.json().catch(()=>({}));
-        if(!r.ok) console.error('[WhatsApp send]',r.status,JSON.stringify(data).slice(0,400));
+        if(!r.ok) {
+          console.error('[WhatsApp send]',r.status,JSON.stringify(data).slice(0,400));
+        } else {
+          console.info('[WhatsApp send] SUCCESS',JSON.stringify({
+            status:r.status,
+            messageIds:Array.isArray(data.messages)
+              ? data.messages.map(m=>m.id).filter(Boolean)
+              : []
+          }));
+        }
         return r.ok;
       };
 
