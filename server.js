@@ -2876,16 +2876,40 @@ function skEnhanceImagePrompt(prompt) {
   const original = String(prompt || '').trim();
   if (!original) return original;
 
-  const devotionalPattern =
+  const hinduPattern =
     /விநாயகர்|விநாயகா|கணேசா|பிள்ளையார்|முருகன்|கந்தன்|சுப்பிரமணியர்|சிவன்|பரமசிவன்|அம்மன்|மாரியம்மன்|காளி|துர்கை|பார்வதி|பெருமாள்|திருமால்|விஷ்ணு|கிருஷ்ணர்|கண்ணன்|ராமர்|அனுமன்|ஆஞ்சநேயர்|லட்சுமி|சரஸ்வதி|ஐயப்பன்|ganesha|ganesh|ganapati|vinayagar|pillaiyar|murugan|karthikeya|kartikeya|subramanya|shiva|mahadev|parvati|amman|mariamman|durga|kali|vishnu|perumal|narayana|krishna|kanha|rama|hanuman|anjaneya|lakshmi|saraswati|ayyappa|deity|goddess/i;
 
-  const guidance = devotionalPattern.test(original)
-    ? ' Make the specifically requested deity unmistakably recognizable, prominent and centered. Preserve the correct traditional appearance, facial features, ornaments, clothing and symbols for that deity. Show the complete figure where suitable, with detailed features, respectful devotional Indian art, harmonious lighting and an appropriate temple or divine background. Never hide, omit, replace or crop out the requested deity. Do not mix up different deities.'
-    : ' Make the exact requested subject clear, prominent and well-composed. Use detailed visuals, clean anatomy, suitable lighting and a background matching the requested theme. Do not hide, omit or replace the main subject. Avoid unwanted text, logos and watermarks unless requested.';
+  const christianPattern =
+    /ஆரோக்கிய மாதா|வேளாங்கண்ணி மாதா|மாதா|இயேசு|ஏசு|கிறிஸ்து|மேரி மாதா|அன்னை மரியா|அன்னை மேரி|சிலுவை|தேவாலயம்|ஆலயம்|புனிதர்|அருட்தந்தை|velankanni|arokia matha|arogya matha|our lady of good health|lourdes|mother mary|virgin mary|mary mother of jesus|jesus|christ|christian|holy cross|church|saint|bible|nativity|crucifix/i;
 
-  return original + guidance;
+  const islamicPattern =
+    /மசூதி|பள்ளிவாசல்|கஃபா|காபா|மக்கா|மதீனா|இஸ்லாம்|அல்லாஹ்|ரமலான்|ரமதான்|குர்ஆன்|முஸ்லிம்|mosque|masjid|kaaba|ka'bah|mecca|makkah|medina|madinah|islamic|islam|allah|ramadan|quran|muslim|crescent moon/i;
+
+  const otherSpiritualPattern =
+    /புத்தர்|புத்தம்|புத்தமதம்|தியானம்|ஆன்மிகம்|புத்தர் சிலை|buddha|buddhist|buddhism|meditation|spiritual|spirituality|mandala|zen temple/i;
+
+  let guidance;
+
+  if (hinduPattern.test(original)) {
+    guidance =
+      ' Create a respectful devotional image of the exact Hindu deity requested. Make that deity recognizable, prominent and centered. Preserve the correct traditional appearance, face, clothing, ornaments, attributes and symbols. Use detailed devotional Indian art, harmonious lighting and an appropriate temple or divine background. Do not substitute another deity or omit the requested subject.';
+  } else if (christianPattern.test(original)) {
+    guidance =
+      ' Create a respectful Christian devotional image matching the exact person or subject requested. For Our Lady of Good Health or Velankanni Matha, depict Mother Mary in a recognizable traditional Marian devotional style, with a serene expression and appropriate traditional garments and symbols. For Jesus, depict Jesus rather than Mother Mary or another saint. Use dignified sacred art, careful facial details, gentle lighting and a suitable church or devotional setting. Do not substitute a different religious figure.';
+  } else if (islamicPattern.test(original)) {
+    guidance =
+      ' Create respectful Islamic-themed artwork matching the exact requested subject, such as the Kaaba, a mosque, Islamic architecture, geometric patterns or calligraphy when requested. Use culturally appropriate architectural details, elegant geometric ornament and harmonious lighting. Do not add depictions of Allah or unrequested religious figures. Do not invent Quranic text or add random lettering.';
+  } else if (otherSpiritualPattern.test(original)) {
+    guidance =
+      ' Create respectful spiritual artwork matching the exact requested subject. Preserve the recognizable features and traditional visual style of the requested figure or tradition. Use balanced composition, detailed craftsmanship, peaceful lighting and a suitable setting. Do not substitute another spiritual figure.';
+  } else {
+    guidance =
+      ' Make the exact requested subject clear, prominent and well-composed. Use detailed visuals, clean anatomy, suitable lighting and a background matching the requested theme. Do not hide, omit or replace the main subject.';
+  }
+
+  return original + guidance +
+    ' Avoid unwanted text, random lettering, logos and watermarks unless explicitly requested.';
 }
-
 async function skGenerateImage(prompt) {
   // SK_IMAGE_PROVIDER_FALLBACK_V1
   const failures = [];
