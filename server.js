@@ -3992,11 +3992,13 @@ app.post('/api/telegram/webhook', async (req, res) => {
 
     if (!chatId || !text) return;
 
-    // SK_TELEGRAM_AI_POSTER_COMMAND_V1
+    // SK_TELEGRAM_AI_POSTER_COMMAND_V2
     const posterMatch = text.match(/^(?:poster|ai\s*poster|போஸ்டர்|ஏஐ\s*போஸ்டர்)\s*[:：]\s*([\s\S]+)$/i);
+    const imageRequest = /(?:படம்|புகைப்படம்|போஸ்டர்|உருவாக்கு|உருவாக்கவும்|வரைந்து|image|picture|photo|poster|generate|create|draw|illustration)/i.test(text)
+      && /(?:விநாயகர்|விநாயகா|கணேசா|கடவுள்|சாமி|கோவில்|பக்தி|அழகான|படம்|போஸ்டர்|image|picture|photo|poster|ganesha|ganesh|god|temple|devotional|beautiful)/i.test(text);
 
-    if (posterMatch) {
-      const posterPrompt = posterMatch[1].trim();
+    if (posterMatch || imageRequest) {
+      const posterPrompt = posterMatch ? posterMatch[1].trim() : text;
 
       if (!posterPrompt) {
         await skTelegramSendMessage(
