@@ -1406,7 +1406,11 @@ async function getWhatsAppAIReply(question, mode = 'normal') {
       question,
       'WhatsApp AI'
     );
-    if (fallbackReply) return fallbackReply;
+    if (fallbackReply) {
+      console.info('[WhatsApp AI] CLOUDFLARE_FALLBACK_SUCCESS (Groq key missing)');
+      return fallbackReply;
+    }
+    console.error('[WhatsApp AI] AI_REPLY_FAILED (Groq key missing; Cloudflare unavailable)');
 
     return 'மன்னிக்கவும் நண்பா 😊 AI சேவை இப்போது கிடைக்கவில்லை. சிறிது நேரம் கழித்து முயற்சிக்கவும்.';
   }
@@ -1635,7 +1639,11 @@ async function getWhatsAppAIReply(question, mode = 'normal') {
         userContent,
         'WhatsApp AI'
       );
-      if (fallbackReply) return fallbackReply;
+      if (fallbackReply) {
+        console.info('[WhatsApp AI] CLOUDFLARE_FALLBACK_SUCCESS (Groq HTTP error)');
+        return fallbackReply;
+      }
+      console.error('[WhatsApp AI] AI_REPLY_FAILED (Groq HTTP error; Cloudflare unavailable)');
 
       return 'மன்னிக்கவும் நண்பா 😊 இப்போது AI பதில் கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.';
     }
@@ -1647,20 +1655,29 @@ async function getWhatsAppAIReply(question, mode = 'normal') {
         userContent,
         'WhatsApp AI'
       );
-      if (fallbackReply) return fallbackReply;
+      if (fallbackReply) {
+        console.info('[WhatsApp AI] CLOUDFLARE_FALLBACK_SUCCESS (Groq empty answer)');
+        return fallbackReply;
+      }
+      console.error('[WhatsApp AI] AI_REPLY_FAILED (Groq empty answer; Cloudflare unavailable)');
 
       return 'மன்னிக்கவும் நண்பா 😊 பதில் கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.';
     }
 
+    console.info('[WhatsApp AI] GROQ_SUCCESS');
     return answer;
   } catch (error) {
-    console.error('[WhatsApp AI]', error.message || error);
+    console.error('[WhatsApp AI] Groq request error:', error.message || error);
 
     const fallbackReply = await getCloudflareAIReply(
       userContent,
       'WhatsApp AI'
     );
-    if (fallbackReply) return fallbackReply;
+    if (fallbackReply) {
+      console.info('[WhatsApp AI] CLOUDFLARE_FALLBACK_SUCCESS (Groq exception)');
+      return fallbackReply;
+    }
+    console.error('[WhatsApp AI] AI_REPLY_FAILED (Groq exception; Cloudflare unavailable)');
 
     return 'மன்னிக்கவும் நண்பா 😊 AI இணைப்பில் தற்காலிகப் பிழை. மீண்டும் முயற்சிக்கவும்.';
   } finally {
