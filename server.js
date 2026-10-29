@@ -2876,6 +2876,21 @@ async function skGenerateImage(prompt) {
   // SK_IMAGE_PROVIDER_FALLBACK_V1
   const failures = [];
 
+  // SK_DEVOTIONAL_IMAGE_PROMPT_V1
+  const originalPrompt = String(prompt || '').trim();
+  const isGaneshaRequest =
+    /விநாயகர்|விநாயகா|கணேசா|பிள்ளையார்|ganesha|ganesh|lord ganapati/i.test(originalPrompt);
+
+  const imagePrompt = isGaneshaRequest
+    ? originalPrompt +
+      '. IMPORTANT VISUAL REQUIREMENT: Clearly show Lord Ganesha as the main subject, ' +
+      'with a recognizable elephant head, trunk, traditional crown and divine ornaments. ' +
+      'Show the complete deity prominently in the center, with a beautiful devotional ' +
+      'Indian artistic style, detailed features, harmonious lighting and a tasteful ' +
+      'temple or divine background. Do not omit, hide, crop out, or replace the deity. ' +
+      'No text, letters, logos, or watermarks unless explicitly requested.'
+    : originalPrompt;
+
   // 1. Gemini
   if (process.env.GEMINI_API_KEY) {
     try {
@@ -2888,7 +2903,7 @@ async function skGenerateImage(prompt) {
             'x-goog-api-key': process.env.GEMINI_API_KEY
           },
           body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
+            contents: [{ parts: [{ text: imagePrompt }] }],
             generationConfig: { responseModalities: ['IMAGE'] }
           }),
           signal: AbortSignal.timeout(120000)
@@ -2924,7 +2939,7 @@ async function skGenerateImage(prompt) {
   if (process.env.STABILITY_API_KEY) {
     try {
       const form = new FormData();
-      form.append('prompt', prompt);
+      form.append('prompt', imagePrompt);
       form.append('output_format', 'png');
       form.append('aspect_ratio', '1:1');
 
@@ -2981,7 +2996,7 @@ async function skGenerateImage(prompt) {
           },
           body: JSON.stringify({
             model: '@cf/black-forest-labs/flux-1-schnell',
-            input: { prompt }
+            input: { prompt: imagePrompt }
           }),
           signal: AbortSignal.timeout(120000)
         }
