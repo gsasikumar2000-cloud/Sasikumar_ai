@@ -1401,6 +1401,13 @@ async function getWhatsAppAIReply(question, mode = 'normal') {
   const apiKey = process.env.GROQ_API_KEY;
 
   if (!apiKey) {
+    console.warn('[WhatsApp AI] Groq key missing; trying Cloudflare fallback.');
+    const fallbackReply = await getCloudflareAIReply(
+      question,
+      'WhatsApp AI'
+    );
+    if (fallbackReply) return fallbackReply;
+
     return 'மன்னிக்கவும் நண்பா 😊 AI சேவை இப்போது கிடைக்கவில்லை. சிறிது நேரம் கழித்து முயற்சிக்கவும்.';
   }
 
@@ -1624,18 +1631,37 @@ async function getWhatsAppAIReply(question, mode = 'normal') {
         response.status,
         data?.error?.message || 'AI request failed'
       );
+      const fallbackReply = await getCloudflareAIReply(
+        userContent,
+        'WhatsApp AI'
+      );
+      if (fallbackReply) return fallbackReply;
+
       return 'மன்னிக்கவும் நண்பா 😊 இப்போது AI பதில் கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.';
     }
 
     const answer = data?.choices?.[0]?.message?.content?.trim();
 
     if (!answer) {
+      const fallbackReply = await getCloudflareAIReply(
+        userContent,
+        'WhatsApp AI'
+      );
+      if (fallbackReply) return fallbackReply;
+
       return 'மன்னிக்கவும் நண்பா 😊 பதில் கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.';
     }
 
     return answer;
   } catch (error) {
     console.error('[WhatsApp AI]', error.message || error);
+
+    const fallbackReply = await getCloudflareAIReply(
+      userContent,
+      'WhatsApp AI'
+    );
+    if (fallbackReply) return fallbackReply;
+
     return 'மன்னிக்கவும் நண்பா 😊 AI இணைப்பில் தற்காலிகப் பிழை. மீண்டும் முயற்சிக்கவும்.';
   } finally {
     clearTimeout(timer);
