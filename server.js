@@ -1772,7 +1772,15 @@ app.post('/api/whatsapp/webhook',async(req,res)=>{
       for (const status of (Array.isArray(change?.value?.statuses) ? change.value.statuses : [])) {
         console.log('[WA webhook] Status update', JSON.stringify({
           status: status.status,
-          recipientLast4: String(status.recipient_id || '').slice(-4)
+          recipientLast4: String(status.recipient_id || '').slice(-4),
+          errors: Array.isArray(status.errors)
+            ? status.errors.map(err => ({
+                code: err.code,
+                title: err.title,
+                message: err.message,
+                errorData: err.error_data?.details
+              }))
+            : []
         }));
       }
     }
