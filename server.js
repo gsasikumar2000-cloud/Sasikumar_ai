@@ -2872,24 +2872,26 @@ app.post('/api/jobs/employer', async (req, res) => {
 
 
 /* SASIKUMAR AI IMAGE GENERATION API */
+function skEnhanceImagePrompt(prompt) {
+  const original = String(prompt || '').trim();
+  if (!original) return original;
+
+  const devotionalPattern =
+    /விநாயகர்|விநாயகா|கணேசா|பிள்ளையார்|முருகன்|கந்தன்|சுப்பிரமணியர்|சிவன்|பரமசிவன்|அம்மன்|மாரியம்மன்|காளி|துர்கை|பார்வதி|பெருமாள்|திருமால்|விஷ்ணு|கிருஷ்ணர்|கண்ணன்|ராமர்|அனுமன்|ஆஞ்சநேயர்|லட்சுமி|சரஸ்வதி|ஐயப்பன்|ganesha|ganesh|ganapati|vinayagar|pillaiyar|murugan|karthikeya|kartikeya|subramanya|shiva|mahadev|parvati|amman|mariamman|durga|kali|vishnu|perumal|narayana|krishna|kanha|rama|hanuman|anjaneya|lakshmi|saraswati|ayyappa|deity|goddess/i;
+
+  const guidance = devotionalPattern.test(original)
+    ? ' Make the specifically requested deity unmistakably recognizable, prominent and centered. Preserve the correct traditional appearance, facial features, ornaments, clothing and symbols for that deity. Show the complete figure where suitable, with detailed features, respectful devotional Indian art, harmonious lighting and an appropriate temple or divine background. Never hide, omit, replace or crop out the requested deity. Do not mix up different deities.'
+    : ' Make the exact requested subject clear, prominent and well-composed. Use detailed visuals, clean anatomy, suitable lighting and a background matching the requested theme. Do not hide, omit or replace the main subject. Avoid unwanted text, logos and watermarks unless requested.';
+
+  return original + guidance;
+}
+
 async function skGenerateImage(prompt) {
   // SK_IMAGE_PROVIDER_FALLBACK_V1
   const failures = [];
 
-  // SK_DEVOTIONAL_IMAGE_PROMPT_V1
-  const originalPrompt = String(prompt || '').trim();
-  const isGaneshaRequest =
-    /விநாயகர்|விநாயகா|கணேசா|பிள்ளையார்|ganesha|ganesh|lord ganapati/i.test(originalPrompt);
-
-  const imagePrompt = isGaneshaRequest
-    ? originalPrompt +
-      '. IMPORTANT VISUAL REQUIREMENT: Clearly show Lord Ganesha as the main subject, ' +
-      'with a recognizable elephant head, trunk, traditional crown and divine ornaments. ' +
-      'Show the complete deity prominently in the center, with a beautiful devotional ' +
-      'Indian artistic style, detailed features, harmonious lighting and a tasteful ' +
-      'temple or divine background. Do not omit, hide, crop out, or replace the deity. ' +
-      'No text, letters, logos, or watermarks unless explicitly requested.'
-    : originalPrompt;
+  // SK_ALL_ART_IMAGE_PROMPT_V1
+  const imagePrompt = skEnhanceImagePrompt(prompt);
 
   // 1. Gemini
   if (process.env.GEMINI_API_KEY) {
@@ -3106,7 +3108,7 @@ app.post('/api/ai/image/huggingface', async (req, res) => {
     const client = new InferenceClient(token);
     const imageBlob = await client.textToImage({
       model: 'black-forest-labs/FLUX.1-schnell',
-      inputs: prompt
+      inputs: skEnhanceImagePrompt(prompt)
     });
 
     const mime = imageBlob.type || 'image/png';
@@ -3158,7 +3160,7 @@ app.post('/api/ai/image/stability', async (req, res) => {
     }
 
     const form = new FormData();
-    form.append('prompt', prompt);
+    form.append('prompt', skEnhanceImagePrompt(prompt));
     form.append('output_format', 'png');
     form.append('aspect_ratio', '1:1');
 
@@ -3269,7 +3271,7 @@ app.post('/api/ai/image/cloudflare', async (req, res) => {
         body: JSON.stringify({
           model: '@cf/black-forest-labs/flux-1-schnell',
           input: {
-            prompt
+            prompt: skEnhanceImagePrompt(prompt)
           }
         }),
         signal: controller.signal
