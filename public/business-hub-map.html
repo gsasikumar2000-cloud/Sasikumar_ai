@@ -56,15 +56,20 @@ a{color:#fff;text-decoration:none}
 
 <div class="map">
 <iframe id="mapFrame" title="Business Hub Map"
-src="https://www.openstreetmap.org/export/embed.html?bbox=79.05%2C10.70%2C79.15%2C10.85&layer=mapnik">
+src="https://maps.google.com/maps?q=Kumbakonam&z=12&output=embed">
 </iframe>
 </div>
 
 <div class="actions">
-<button onclick="nearby('shop')">🏪 Nearby Shops</button>
-<button onclick="nearby('service')">🔧 Nearby Services</button>
-<button onclick="nearby('offers')">📢 Nearby Offers</button>
-</div>
+  <button class="live" onclick="openGoogleMaps()">🗺️ Google Maps</button>
+  <button class="refresh" onclick="getDirections()">🧭 Directions</button>
+  <button onclick="nearby('shop')">🏪 Nearby Shops</button>
+  <button onclick="nearby('hospital')">🏥 Hospitals</button>
+  <button onclick="nearby('bank')">🏦 Banks</button>
+  <button onclick="nearby('hotel')">🍽️ Hotels</button>
+  <button onclick="nearby('service')">🔧 Services</button>
+  <button onclick="shareLocation()">📤 Share Location</button>
+ </div>
 </div>
 </div>
 
@@ -89,11 +94,7 @@ function getLocation(){
     "<br>Longitude: "+lon.toFixed(6)+
     "<br>Accuracy: approximately "+acc+" metres</span>";
 
-   const d=0.015;
-   const bbox=(lon-d)+","+(lat-d)+","+(lon+d)+","+(lat+d);
-   document.getElementById("mapFrame").src=
-    "https://www.openstreetmap.org/export/embed.html?bbox="+
-    encodeURIComponent(bbox)+"&layer=mapnik&marker="+lat+","+lon;
+   document.getElementById("mapFrame").src="https://maps.google.com/maps?q="+lat+","+lon+"&z=16&output=embed";
   },
   function(err){
    let msg="❌ Location unavailable.";
@@ -106,10 +107,32 @@ function getLocation(){
  );
 }
 
-function nearby(type){
- if(lat===null || lon===null){
-   getLocation();
-   return;
+function openGoogleMaps(){
+  if(lat===null || lon===null){getLocation();return;}
+  window.open("https://www.google.com/maps/search/?api=1&query="+lat+","+lon,"_blank");
+ }
+
+ function getDirections(){
+  if(lat===null || lon===null){getLocation();return;}
+  window.open("https://www.google.com/maps/dir/?api=1&origin="+lat+","+lon,"_blank");
+ }
+
+ function nearby(type){
+  if(lat===null || lon===null){getLocation();return;}
+  const places={
+   shop:"shops",hospital:"hospitals",bank:"banks",
+   hotel:"hotels",service:"services"
+  };
+  const q=places[type] || "places";
+  window.open("https://www.google.com/maps/search/?api=1&query="+
+   encodeURIComponent(q+" near "+lat+","+lon),"_blank");
+ }
+
+ function shareLocation(){
+  if(lat===null || lon===null){getLocation();return;}
+  const url="https://www.google.com/maps?q="+lat+","+lon;
+  const message="My Live Location: "+url;
+  window.open("https://wa.me/?text="+encodeURIComponent(message),"_blank");
  }
  const q=type==="shop"?"shops":type==="service"?"services":"offers";
  const url="https://www.openstreetmap.org/search?query="+
