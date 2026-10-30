@@ -3552,7 +3552,7 @@ app.post('/api/ai/poster', async (req, res) => {
     const runFile = promisify(execFile);
 
     await fs.promises.mkdir(path.dirname(outputFile), { recursive: true });
-    await runFile('python', [
+    await runFile('python3', [
       path.join(__dirname, 'ai-poster-maker.py'),
       tempFile, content, outputFile
     ], { timeout: 60000, maxBuffer: 2 * 1024 * 1024 });
