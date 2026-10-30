@@ -7,6 +7,7 @@ import pg from 'pg';
 import { createAuthMiddleware, registerAuthRoutes } from './auth-routes.js';
 import path from 'path';
 import fs from 'fs';
+import { Jimp } from 'jimp';
 import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -2147,14 +2148,39 @@ if (!isWelcome &&
               throw new Error('Generated image is empty.');
             }
 
+            // SASIKUMAR AI logo watermark
+            const baseImage = await Jimp.read(imageBytes);
+            const logoPath = path.join(publicPath, 'assets/sasikumar-ai-logo-60.png');
+            const logo = await Jimp.read(logoPath);
+
+            const logoWidth = Math.min(
+              150,
+              Math.max(60, Math.round(baseImage.bitmap.width * 0.18))
+            );
+            const logoHeight = Math.round(
+              logo.bitmap.height * logoWidth / logo.bitmap.width
+            );
+
+            logo.resize({ w: logoWidth, h: logoHeight });
+
+            const padding = Math.max(12, Math.round(baseImage.bitmap.width * 0.02));
+            baseImage.composite(
+              logo,
+              Math.max(0, baseImage.bitmap.width - logoWidth - padding),
+              Math.max(0, baseImage.bitmap.height - logoHeight - padding)
+            );
+
+            const watermarkedBytes = await baseImage.getBuffer('image/png');
+            const finalMime = 'image/png';
+
             const form = new FormData();
             form.append('messaging_product', 'whatsapp');
             form.append(
               'file',
-              new Blob([imageBytes], { type: mime }),
-              mime === 'image/jpeg' ? 'sasikumar-ai.jpg' : 'sasikumar-ai.png'
+              new Blob([watermarkedBytes], { type: finalMime }),
+              'sasikumar-ai.png'
             );
-            form.append('type', mime);
+            form.append('type', finalMime);
 
             const uploadResponse = await fetch(
               `https://graph.facebook.com/v20.0/${WA_PHONE_ID}/media`,
