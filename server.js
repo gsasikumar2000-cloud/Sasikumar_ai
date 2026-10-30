@@ -2047,6 +2047,11 @@ if (!isWelcome &&
       } else {
         const caption = ('🤖 SASIKUMAR AI\n' + answerText).substring(0, 1000);
 
+        // SK_WHATSAPP_AI_POSTER_ROUTE_V1
+        const wantsPoster =
+          /\b(poster|posters|போஸ்டர்|போஸ்டர்கள்)\b/i.test(trimmed) ||
+          /போஸ்டர்/i.test(trimmed);
+
         // SK_WHATSAPP_AI_IMAGE_REPLY_V1
         const wantsImage =
           /\b(generate|create|make|draw|design|send|show)\b.{0,100}\b(image|picture|photo|poster|wallpaper|god|deity|krishna|murugan|ganesha|vinayagar|jesus|allah)\b/i.test(trimmed) ||
@@ -2056,7 +2061,53 @@ if (!isWelcome &&
 
         if (wantsImage) {
           try {
-            const generated = await skGenerateImage(trimmed);
+            let generated;
+
+            if (wantsPoster) {
+              console.log('[WhatsApp AI poster] Using dedicated poster maker');
+
+              const posterResponse = await fetch(
+                `http://127.0.0.1:${PORT}/api/ai/poster`,
+                {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    content: trimmed.substring(0, 500),
+                    theme: 'professional'
+                  }),
+                  signal: AbortSignal.timeout(120000)
+                }
+              );
+
+              const posterData = await posterResponse.json().catch(() => ({}));
+
+              if (!posterResponse.ok || !posterData.ok || !posterData.imageUrl) {
+                throw new Error(
+                  'Poster API failed: ' + JSON.stringify(posterData).slice(0, 300)
+                );
+              }
+
+              const posterImageResponse = await fetch(
+                `http://127.0.0.1:${PORT}${posterData.imageUrl}`,
+                { signal: AbortSignal.timeout(60000) }
+              );
+
+              if (!posterImageResponse.ok) {
+                throw new Error('Generated poster image could not be loaded.');
+              }
+
+              const posterMime = posterImageResponse.headers.get('content-type') || 'image/png';
+              const posterBytes = Buffer.from(await posterImageResponse.arrayBuffer());
+
+              if (!posterBytes.length) {
+                throw new Error('Generated poster image is empty.');
+              }
+
+              generated = `data:${posterMime};base64,${posterBytes.toString('base64')}`;
+            } else {
+              generated = await skGenerateImage(trimmed);
+            }
+
             const match = /^data:(image\/[a-zA-Z0-9.+-]+);base64,([A-Za-z0-9+/=\r\n]+)$/.exec(String(generated || ''));
 
             if (!match) {
