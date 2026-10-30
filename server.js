@@ -2053,7 +2053,13 @@ if (!isWelcome &&
           /போஸ்டர்/i.test(trimmed);
 
         // SK_WHATSAPP_AI_IMAGE_REPLY_V1
+        // SK_WHATSAPP_REAL_IMAGE_CATEGORIES_V1
+        const wantsCatalogImage =
+          /\b(animal|animals|wildlife|elephant|lion|tiger|dog|cat|bird|birds|peacock|parrot|nature|forest|tree|trees|flower|flowers|plant|plants|mountain|mountains|waterfall|river|sea|ocean|beach|sunset|sunrise|lake|landscape|butterfly|insect|fish|horse|cow|deer|vehicle|car|bike|temple|building|ganesha|ganesh|vinayagar|vinayaka|murugan|amman|krishna|shiva|vishnu|jesus|buddha)\b/i.test(trimmed) ||
+          /விலங்கு|மிருகம்|யானை|சிங்கம்|புலி|நாய்|பூனை|பறவை|மயில்|கிளி|இயற்கை|காடு|மரம்|பூ|மலர்|செடி|மலை|அருவி|ஆறு|கடல்|கடற்கரை|சூரியன்|ஏரி|மீன்|குதிரை|மாடு|மான்|வாகனம்|கார்|கோயில்|விநாயகர்|பிள்ளையார்|முருகன்|அம்மன்|கிருஷ்ணர்|சிவன்|பெருமாள்|இயேசு|புத்தர்/i.test(trimmed);
+
         const wantsImage =
+          wantsCatalogImage ||
           /\b(generate|create|make|draw|design|send|show)\b.{0,100}\b(image|picture|photo|poster|wallpaper|god|deity|krishna|murugan|ganesha|vinayagar|jesus|allah)\b/i.test(trimmed) ||
           /\b(image|picture|photo|poster|wallpaper)\b.{0,100}\b(generate|create|make|draw|design|send|show)\b/i.test(trimmed) ||
           /\b(god|deity|krishna|murugan|ganesha|vinayagar|jesus)\s+(image|picture|photo|poster|wallpaper)\b/i.test(trimmed) ||
@@ -2062,6 +2068,7 @@ if (!isWelcome &&
         if (wantsImage) {
           try {
             let generated;
+            let imageAttribution = '';
 
             if (wantsPoster) {
               console.log('[WhatsApp AI poster] Using dedicated poster maker');
@@ -2104,10 +2111,29 @@ if (!isWelcome &&
               }
 
               generated = `data:${posterMime};base64,${posterBytes.toString('base64')}`;
+            } else if (wantsCatalogImage) {
+              console.log('[WhatsApp image] Searching Wikimedia Commons:', trimmed);
+              const found = await skSearchRealImage(trimmed);
+
+              if (!found) {
+                await sendWA({
+                  type: 'text',
+                  text: {
+                    body: '🤖 SASIKUMAR AI\nமன்னிக்கவும், கேட்ட தலைப்புக்குப் பொருத்தமான உண்மையான படம் கிடைக்கவில்லை. வேறு பெயரில் முயற்சிக்கவும்.'
+                  }
+                });
+                generated = '';
+              } else {
+                generated = found.dataUri;
+                imageAttribution = found.attribution || '';
+              }
             } else {
               generated = await skGenerateImage(trimmed);
             }
 
+            if (!generated) {
+              // No matching real image; do not send an unrelated picture.
+            } else {
             const match = /^data:(image\/[a-zA-Z0-9.+-]+);base64,([A-Za-z0-9+/=\r\n]+)$/.exec(String(generated || ''));
 
             if (!match) {
@@ -2155,7 +2181,9 @@ if (!isWelcome &&
               type: 'image',
               image: {
                 id: uploadData.id,
-                caption: '🎨 உங்கள் AI படம் தயார்!\n🤖 SASIKUMAR AI'
+                caption: (imageAttribution
+                  ? imageAttribution + '\n'
+                  : '🎨 உங்கள் AI படம் தயார்!\n') + '🤖 SASIKUMAR AI'
               }
             });
 
@@ -2166,6 +2194,7 @@ if (!isWelcome &&
                   body: '🤖 SASIKUMAR AI\nபடம் உருவானது; ஆனால் WhatsApp-ல் அனுப்ப முடியவில்லை. சிறிது நேரத்தில் மீண்டும் முயற்சிக்கவும்.'
                 }
               });
+            }
             }
           } catch (imageError) {
             console.error('[WhatsApp AI image]', imageError.message || imageError);
@@ -3012,6 +3041,100 @@ function skEnhanceImagePrompt(prompt) {
   return original + guidance +
     ' Avoid unwanted text, random lettering, logos and watermarks unless explicitly requested.';
 }
+
+async function skSearchRealImage(query) {
+  const text = String(query || '').trim();
+  if (!text) return null;
+
+  const deityRules = [
+    { re: /விநாயகர்|பிள்ளையார்|வினாயகர்|vinayagar|vinayaka|ganesha|ganesh/i, terms: ['ganesha', 'vinayaka'] },
+    { re: /முருகன்|கந்தன்|சுப்பிரமணியர்|murugan|subramanya|karthikeya/i, terms: ['murugan', 'kartikeya', 'subramanya'] },
+    { re: /அம்மன்|மாரியம்மன்|காளியம்மன்|துர்கை|amman|mariamman|kali|durga/i, terms: ['amman', 'mariamman', 'durga', 'kali'] },
+    { re: /கிருஷ்ணர்|கண்ணன்|krishna/i, terms: ['krishna'] },
+    { re: /சிவன்|ஈசன்|sivan|shiva/i, terms: ['shiva'] },
+    { re: /பெருமாள்|விஷ்ணு|வெங்கடேச|perumal|vishnu|venkateswara/i, terms: ['vishnu', 'venkateswara'] },
+    { re: /இயேசு|ஏசு|jesus|christ/i, terms: ['jesus', 'christ'] },
+    { re: /புத்தர்|buddha/i, terms: ['buddha'] }
+  ];
+
+  const rule = deityRules.find(item => item.re.test(text));
+  const queryText = rule ? rule.terms[0] : text
+    .replace(/\b(real|original|photo|photograph|image|picture|send|show|please)\b/gi, '')
+    .trim();
+
+  if (!queryText) return null;
+
+  const params = new URLSearchParams({
+    action: 'query',
+    format: 'json',
+    generator: 'search',
+    gsrsearch: 'filetype:bitmap ' + queryText,
+    gsrnamespace: '6',
+    gsrlimit: '10',
+    prop: 'imageinfo',
+    iiprop: 'url|extmetadata',
+    iiurlwidth: '900'
+  });
+
+  const response = await fetch(
+    'https://commons.wikimedia.org/w/api.php?' + params.toString(),
+    {
+      headers: { 'User-Agent': 'SASIKUMAR-AI/1.0 (Wikimedia Commons image search)' },
+      signal: AbortSignal.timeout(20000)
+    }
+  );
+
+  if (!response.ok) throw new Error('Wikimedia HTTP ' + response.status);
+
+  const data = await response.json();
+  const pages = Object.values(data.query?.pages || {});
+
+  for (const page of pages) {
+    const info = page.imageinfo?.[0];
+    if (!info) continue;
+
+    const metadata = info.extmetadata || {};
+    const description = [
+      page.title || '',
+      metadata.ObjectName?.value || '',
+      metadata.ImageDescription?.value || ''
+    ].join(' ').replace(/<[^>]*>/g, ' ').toLowerCase();
+
+    if (rule && !rule.terms.some(term => description.includes(term))) {
+      continue;
+    }
+
+    const imageUrl = info.thumburl || info.url;
+    if (!imageUrl) continue;
+
+    const imageResponse = await fetch(imageUrl, {
+      headers: { 'User-Agent': 'SASIKUMAR-AI/1.0' },
+      signal: AbortSignal.timeout(30000)
+    });
+
+    if (!imageResponse.ok) continue;
+
+    const mime = (imageResponse.headers.get('content-type') || '').split(';')[0];
+    if (!mime.startsWith('image/')) continue;
+
+    const bytes = Buffer.from(await imageResponse.arrayBuffer());
+    if (!bytes.length || bytes.length > 8 * 1024 * 1024) continue;
+
+    const artist = String(metadata.Artist?.value || 'Unknown').replace(/<[^>]*>/g, '').trim();
+    const license = String(metadata.LicenseShortName?.value || 'License not specified').replace(/<[^>]*>/g, '').trim();
+    const source = info.descriptionurl || info.url || '';
+
+    console.log('[Wikimedia] Real image found:', page.title);
+
+    return {
+      dataUri: 'data:' + mime + ';base64,' + bytes.toString('base64'),
+      attribution: '📷 ' + page.title + '\n👤 ' + artist + '\n📄 ' + license + '\n🔗 ' + source
+    };
+  }
+
+  return null;
+}
+
 async function skGenerateImage(prompt) {
   // SK_IMAGE_PROVIDER_FALLBACK_V1
   const failures = [];
