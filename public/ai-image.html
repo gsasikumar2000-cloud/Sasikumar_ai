@@ -953,13 +953,13 @@ async function generateImageAuto() {
     setVoiceStatus("Announcement stopped.");
   };
 
-  window.skGenerateVoicePoster = function () {
+  window.skGenerateVoicePoster = async function () {
     const heading = $("skVoiceHeading").value.trim();
     const subheading = $("skVoiceSubheading").value.trim();
     const current = $("prompt").value.trim();
     const content = [heading, subheading, current]
       .filter((value, index, arr) => value && arr.indexOf(value) === index)
-      .join("\\n\\n");
+      .join("\n\n");
 
     if (!content) {
       setVoiceStatus("Please speak or type poster content first.");
@@ -967,13 +967,44 @@ async function generateImageAuto() {
     }
 
     $("prompt").value = content;
+    setVoiceStatus("⏳ AI Poster உருவாகிறது. Please wait...");
+
     try {
-      if (typeof makeLocalPoster !== "function") throw new Error("Poster generator is unavailable.");
-      makeLocalPoster(content);
-      setVoiceStatus("✅ Poster preview created. Use Download Poster PNG to save it.");
-      $("result").scrollIntoView({ behavior: "smooth", block: "center" });
+      const response = await fetch("/api/ai/poster", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content,
+          theme: "professional"
+        })
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok || !data.ok || !data.imageUrl) {
+        throw new Error(data.error || "AI Poster generation failed.");
+      }
+
+      skGeneratedImageUrl = new URL(
+        data.imageUrl, window.location.origin
+      ).href;
+      skLocalPosterUrl = "";
+
+      const result = $("result");
+      result.innerHTML = "";
+
+      const img = document.createElement("img");
+      img.src = skGeneratedImageUrl;
+      img.alt = "SASIKUMAR AI generated poster";
+      result.appendChild(img);
+
+      $("status").textContent = "✅ AI Poster generated successfully!";
+      setVoiceStatus("✅ AI Poster தயார்! Download Poster PNG பயன்படுத்துங்கள்.");
+      result.scrollIntoView({ behavior: "smooth", block: "center" });
+
     } catch (error) {
-      setVoiceStatus("Poster error: " + error.message);
+      setVoiceStatus("❌ " + error.message);
+      $("status").textContent = "AI Poster failed: " + error.message;
     }
   };
 

@@ -1745,6 +1745,42 @@ async function getTamilBreakingNews() {
   }
 }
 
+
+// SK_MAPS_SHARE_V1
+const SK_LAST_BOT_REPLIES = new Map();
+
+function skRememberLastReply(key, message) {
+  if (!key) return;
+  SK_LAST_BOT_REPLIES.delete(key);
+  SK_LAST_BOT_REPLIES.set(key, String(message || '').slice(0, 2500));
+  while (SK_LAST_BOT_REPLIES.size > 1000) {
+    SK_LAST_BOT_REPLIES.delete(SK_LAST_BOT_REPLIES.keys().next().value);
+  }
+}
+
+function skMapsReply(place) {
+  const query = String(place || '').trim();
+  if (!query) {
+    return '📍 GOOGLE MAPS\n\nஇடத்தின் பெயரை அனுப்புங்கள்.\nஉதாரணம்: Maps Kumbakonam அல்லது Maps Chennai';
+  }
+  const url = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query);
+  return '📍 GOOGLE MAPS\n\n🔎 தேடும் இடம்: ' + query + '\n\n🗺️ வரைபடத்தைத் திறக்கவும்:\n' + url;
+}
+
+function skShareReply(key) {
+  const message = SK_LAST_BOT_REPLIES.get(key) ||
+    'SASIKUMAR AI — உங்கள் AI உதவியாளர்.\nhttps://sasikumar-ai-9wdq.onrender.com';
+
+  const site = 'https://sasikumar-ai-9wdq.onrender.com';
+  return '📤 SASIKUMAR AI — SHARE\n\n' +
+    '📱 WhatsApp வழியாகப் பகிர:\n' +
+    'https://wa.me/?text=' + encodeURIComponent(message) +
+    '\n\n✈️ Telegram வழியாகப் பகிர:\n' +
+    'https://t.me/share/url?url=' + encodeURIComponent(site) +
+    '&text=' + encodeURIComponent(message);
+}
+// END SK_MAPS_SHARE_V1
+
 app.post('/api/whatsapp/webhook',async(req,res)=>{
   try{
     const body=req.body;
@@ -1810,7 +1846,12 @@ const isWelcome = !trimmed || trimmed === '0' ||
 
 let reply = WELCOME_MENU;
 
-if (!isWelcome) {
+const mapsMatch = trimmed.match(/^(?:maps?|வரைபடம்|மேப்)\s*[:\-]?\s*(.*)$/i);
+if (mapsMatch) {
+  reply = skMapsReply(mapsMatch[1]);
+} else if (/^(?:share|பகிர்|பகிரவும்)$/i.test(trimmed)) {
+  reply = skShareReply('wa:' + from);
+} else if (!isWelcome) {
   const num = trimmed.match(/^\s*(3[0-4]|[12][0-9]|[0-9])\s*$/);
 
   if (num) {
@@ -1907,8 +1948,18 @@ if(WA_TOKEN && WA_PHONE_ID){
 
       // One branded image message for every WhatsApp reply.
       const answerText = String(reply || WELCOME_MENU);
+if (!isWelcome &&
+    !answerText.startsWith('📍 GOOGLE MAPS') &&
+    !answerText.startsWith('📤 SASIKUMAR AI — SHARE')) {
+  skRememberLastReply('wa:' + from, answerText);
+}
 
-      if (isWelcome) {
+
+      if (!isWelcome &&
+    (answerText.startsWith('📍 GOOGLE MAPS') ||
+     answerText.startsWith('📤 SASIKUMAR AI — SHARE'))) {
+  await sendWA({ type: 'text', text: { body: answerText } });
+} else if (isWelcome) {
         const now = new Date();
         const date = now.toLocaleDateString('en-IN', {
           timeZone: 'Asia/Kolkata',
@@ -3388,6 +3439,145 @@ app.post('/api/any-content', async (req, res) => {
   }
 });
 
+
+/* SK_AI_POSTER_COMPOSER_V1 */
+app.post('/api/ai/poster', async (req, res) => {
+  const id = randomUUID();
+  const tempDir = path.join(__dirname, 'tmp');
+  await fs.promises.mkdir(tempDir, { recursive: true });
+  const tempFile = path.join(tempDir, 'sk-poster-bg-' + id + '.png');
+  const outputFile = path.join(
+    __dirname, 'public', 'posters', 'sk-poster-' + id + '.png'
+  );
+
+  try {
+    const content = String(req.body?.content || '').trim();
+    const theme = String(req.body?.theme || 'professional')
+      .replace(/[^a-z0-9 _-]/gi, '').slice(0, 50);
+
+    if (!content) {
+      return res.status(400).json({ ok: false, error: 'Please enter poster text.' });
+    }
+    if (content.length > 500) {
+      return res.status(413).json({ ok: false, error: 'Poster text is too long.' });
+    }
+
+    const account = process.env.CLOUDFLARE_ACCOUNT_ID;
+    const token = process.env.CLOUDFLARE_API_TOKEN;
+    if (!account || !token) {
+      return res.status(503).json({ ok: false, error: 'Cloudflare credentials missing.' });
+    }
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 120000);
+
+    try {
+      const response = await fetch(
+        'https://api.cloudflare.com/client/v4/accounts/' +
+          encodeURIComponent(account) + '/ai/run',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: '@cf/black-forest-labs/flux-1-schnell',
+            input: {
+              prompt: (() => {
+                const styles = [
+                  'cinematic photography, dramatic golden-hour lighting, premium editorial composition',
+                  'vibrant artistic painting, colorful brush textures, elegant professional layout',
+                  'beautiful nature scenery, sunrise, atmospheric depth, rich natural colors',
+                  'luxury festival artwork, glowing lights, decorative floral details, premium finish',
+                  'modern 3D artistic scene, realistic materials, soft cinematic lighting',
+                  'inspiring educational scene, books, sunrise, hopeful atmosphere',
+                  'elegant traditional Indian art, detailed patterns, rich colors, balanced composition',
+                  'minimal premium studio design, smooth gradients, beautiful lighting and depth'
+                ];
+                const style = styles[Math.floor(Math.random() * styles.length)];
+                return 'Create a fresh, high-quality 4:5 portrait poster BACKGROUND. ' +
+                  'Theme: ' + theme + '. Visual style: ' + style + '. ' +
+                  'Make the composition visually distinct, polished and attractive. ' +
+                  'No text, letters, numbers, logos, watermarks, tiny boxes, grids, UI elements or collage panels. ' +
+                  'Keep the lower-middle area visually calm for separately added Tamil text. ' +
+                  'Do not draw a border or a text box. Full-bleed background artwork.';
+              })()
+            }
+          }),
+          signal: controller.signal
+        }
+      );
+
+      const type = response.headers.get('content-type') || '';
+      if (!response.ok) {
+        const detail = type.includes('json')
+          ? JSON.stringify(await response.json()).slice(0, 500)
+          : (await response.text()).slice(0, 500);
+        console.error('[AI Poster Cloudflare]', response.status, detail);
+        return res.status(response.status === 429 ? 429 : 502).json({
+          ok: false, error: 'AI background generation failed.'
+        });
+      }
+
+      let bytes;
+      if (type.startsWith('image/')) {
+        bytes = Buffer.from(await response.arrayBuffer());
+      } else {
+        const data = await response.json();
+        const encoded = data?.result?.image;
+        if (data.success === false || typeof encoded !== 'string' || !encoded) {
+          console.error('[AI Poster result]', JSON.stringify(data).slice(0, 700));
+          return res.status(502).json({
+            ok: false, error: 'Cloudflare returned no usable image.'
+          });
+        }
+        const base64 = encoded.replace(/^data:image\/[a-zA-Z0-9.+-]+;base64,/, '');
+        if (!/^[A-Za-z0-9+/]+={0,2}$/.test(base64)) {
+          return res.status(502).json({ ok: false, error: 'Invalid image encoding.' });
+        }
+        bytes = Buffer.from(base64, 'base64');
+      }
+
+      if (!bytes || !bytes.length || bytes.length > 15 * 1024 * 1024) {
+        return res.status(502).json({ ok: false, error: 'Invalid image size.' });
+      }
+      await fs.promises.writeFile(tempFile, bytes);
+    } finally {
+      clearTimeout(timer);
+    }
+
+    const { execFile } = await import('node:child_process');
+    const { promisify } = await import('node:util');
+    const runFile = promisify(execFile);
+
+    await fs.promises.mkdir(path.dirname(outputFile), { recursive: true });
+    await runFile('python', [
+      path.join(__dirname, 'ai-poster-maker.py'),
+      tempFile, content, outputFile
+    ], { timeout: 60000, maxBuffer: 2 * 1024 * 1024 });
+
+    return res.json({
+      ok: true,
+      imageUrl: '/posters/' + path.basename(outputFile),
+      width: 1080,
+      height: 1350
+    });
+  } catch (err) {
+    console.error('[SK AI Poster Composer]', err.stack || err.message);
+    return res.status(502).json({
+      ok: false,
+      error: err.name === 'AbortError'
+        ? 'AI background generation timed out.'
+        : 'Poster creation failed.',
+      diagnostic: String(err.message || err).slice(0, 300)
+    });
+  } finally {
+    await fs.promises.unlink(tempFile).catch(() => {});
+  }
+});
+/* END SK_AI_POSTER_COMPOSER_V1 */
+
 /* END SASIKUMAR AI IMAGE GENERATION API */
 
 
@@ -3928,6 +4118,31 @@ async function skTelegramSendMessage(chatId, message) {
 
   const fullText = (replyText + '\n' + footer).slice(0, 4000);
   const logoUrl = 'https://sasikumar-ai-9wdq.onrender.com/assets/sasikumar-ai-logo.png';
+  if (!replyText.startsWith('📍 GOOGLE MAPS') &&
+      !replyText.startsWith('📤 SASIKUMAR AI — SHARE') &&
+      !replyText.startsWith('🎨 உங்கள் AI Poster உருவாக்கப்படுகிறது')) {
+    skRememberLastReply('tg:' + chatId, replyText);
+  }
+
+
+
+  if (replyText.startsWith('📍 GOOGLE MAPS') ||
+      replyText.startsWith('📤 SASIKUMAR AI — SHARE')) {
+    const shareResponse = await fetch(
+      `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: chatId, text: fullText }),
+        signal: AbortSignal.timeout(15000)
+      }
+    );
+    if (!shareResponse.ok) {
+      const details = await shareResponse.text();
+      console.error('[Telegram] Maps/Share sendMessage failed:', shareResponse.status, details.slice(0, 300));
+    }
+    return;
+  }
 
   try {
     const photoResponse = await fetch(
@@ -4031,7 +4246,18 @@ app.post('/api/telegram/webhook', async (req, res) => {
     const chatId = msg?.chat?.id;
     const text = String(msg?.text || '').trim();
 
-    if (!chatId || !text) return;
+
+if (!chatId || !text) return;
+
+const mapsMatch = text.match(/^(?:maps?|வரைபடம்|மேப்)\s*[:\-]?\s*(.*)$/i);
+if (mapsMatch) {
+  await skTelegramSendMessage(chatId, skMapsReply(mapsMatch[1]));
+  return;
+}
+if (/^(?:share|பகிர்|பகிரவும்)$/i.test(text)) {
+  await skTelegramSendMessage(chatId, skShareReply('tg:' + chatId));
+  return;
+}
 
     // SK_TELEGRAM_AI_POSTER_COMMAND_V2
     const posterMatch = text.match(/^(?:poster|ai\s*poster|போஸ்டர்|ஏஐ\s*போஸ்டர்)\s*[:：]\s*([\s\S]+)$/i);
