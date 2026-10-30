@@ -3570,7 +3570,7 @@ app.post('/api/ai/poster', async (req, res) => {
       error: err.name === 'AbortError'
         ? 'AI background generation timed out.'
         : 'Poster creation failed.',
-      diagnostic: String(err.message || err).slice(0, 300)
+      diagnostic: String(err.stderr || err.stdout || err.message || err).slice(0, 1000)
     });
   } finally {
     await fs.promises.unlink(tempFile).catch(() => {});
