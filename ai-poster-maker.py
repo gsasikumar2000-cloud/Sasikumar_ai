@@ -76,11 +76,6 @@ def main():
 
     draw = ImageDraw.Draw(bg)
 
-    # Logo badge.
-    logo = Image.open(LOGO_PATH).convert("RGBA")
-    logo.thumbnail((120, 120), Image.Resampling.LANCZOS)
-    draw.ellipse((35, 28, 175, 168), fill=(255, 255, 255, 255))
-    bg.alpha_composite(logo, (45 + (120-logo.width)//2, 38 + (120-logo.height)//2))
     draw = ImageDraw.Draw(bg)
 
     # Brand header.
@@ -188,11 +183,19 @@ def main():
         )
         y += 57
 
-    # Small footer.
-    footer = "SASIKUMAR AI • CREATE • INSPIRE"
+    # Bottom brand logo and small footer.
+    footer_logo = Image.open(LOGO_PATH).convert("RGBA")
+    footer_logo.thumbnail((15, 15), Image.Resampling.LANCZOS)
+    logo_x = (W - footer_logo.width) // 2
+    bg.alpha_composite(footer_logo, (logo_x, 1200))
+
+    draw = ImageDraw.Draw(bg)
+    footer = "SASIKUMAR AI • CREATIVE INSPIRE"
     draw.text(
-        (W//2, 1240), footer,
-        font=font(ENGLISH, 25), fill=(255, 231, 180), anchor="mm"
+        (W//2, 1280), footer,
+        font=font(ENGLISH, 18),
+        fill=(255, 231, 180),
+        anchor="mm"
     )
 
     output = Path(sys.argv[3]) if len(sys.argv) > 3 else (

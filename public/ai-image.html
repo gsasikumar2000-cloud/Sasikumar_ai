@@ -954,6 +954,14 @@ async function generateImageAuto() {
   };
 
   window.skGenerateVoicePoster = async function () {
+    if (window.skPosterGenerating) {
+      setVoiceStatus("⏳ Poster ஏற்கனவே உருவாகிறது. Please wait...");
+      return;
+    }
+    window.skPosterGenerating = true;
+    const posterButton = document.querySelector('button[onclick="skGenerateVoicePoster()"]');
+    if (posterButton) posterButton.disabled = true;
+
     const heading = $("skVoiceHeading").value.trim();
     const subheading = $("skVoiceSubheading").value.trim();
     const current = $("prompt").value.trim();
@@ -976,7 +984,8 @@ async function generateImageAuto() {
         body: JSON.stringify({
           content,
           theme: "professional"
-        })
+        }),
+        signal: AbortSignal.timeout(120000)
       });
 
       const data = await response.json().catch(() => ({}));
@@ -1005,6 +1014,9 @@ async function generateImageAuto() {
     } catch (error) {
       setVoiceStatus("❌ " + error.message);
       $("status").textContent = "AI Poster failed: " + error.message;
+    } finally {
+      window.skPosterGenerating = false;
+      if (posterButton) posterButton.disabled = false;
     }
   };
 

@@ -4387,26 +4387,49 @@ async function skTelegramSendMessage(chatId, message) {
 }
 // SK_TELEGRAM_AI_POSTER_V1
 async function skTelegramSendPoster(chatId, prompt) {
-  const generated = await skGenerateImage(prompt);
-  const match = /^data:(image\/[a-zA-Z0-9.+-]+);base64,([A-Za-z0-9+/=\r\n]+)$/.exec(String(generated || ''));
+  const content = String(prompt || '').trim();
 
-  if (!match) {
-    throw new Error('Unsupported generated image format.');
+  if (!content || content.length > 500) {
+    throw new Error('Poster text must be between 1 and 500 characters.');
   }
 
-  const mime = match[1];
-  const imageBytes = Buffer.from(match[2].replace(/\s/g, ''), 'base64');
+  const posterResponse = await fetch(
+    `http://127.0.0.1:${PORT}/api/ai/poster`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content, theme: 'professional' }),
+      signal: AbortSignal.timeout(120000)
+    }
+  );
+
+  const posterData = await posterResponse.json().catch(() => ({}));
+
+  if (!posterResponse.ok || !posterData.ok || !posterData.imageUrl) {
+    throw new Error(posterData.error || 'Speed Poster generation failed.');
+  }
+
+  const imageResponse = await fetch(
+    `http://127.0.0.1:${PORT}${posterData.imageUrl}`,
+    { signal: AbortSignal.timeout(60000) }
+  );
+
+  if (!imageResponse.ok) {
+    throw new Error('Generated poster image could not be loaded.');
+  }
+
+  const imageBytes = Buffer.from(await imageResponse.arrayBuffer());
 
   if (!imageBytes.length) {
-    throw new Error('Generated image is empty.');
+    throw new Error('Generated poster image is empty.');
   }
 
   const form = new FormData();
   form.append('chat_id', String(chatId));
   form.append(
     'photo',
-    new Blob([imageBytes], { type: mime }),
-    mime === 'image/jpeg' ? 'sasikumar-ai-poster.jpg' : 'sasikumar-ai-poster.png'
+    new Blob([imageBytes], { type: 'image/png' }),
+    'sasikumar-ai-poster.png'
   );
   form.append('caption', '🎨 உங்கள் AI Poster தயார்!\n🤖 SASIKUMAR AI');
 
@@ -4475,10 +4498,10 @@ if (/^(?:share|பகிர்|பகிரவும்)$/i.test(text)) {
         return;
       }
 
-      if (posterPrompt.length > 1500) {
+      if (posterPrompt.length > 500) {
         await skTelegramSendMessage(
           chatId,
-          '⚠️ போஸ்டர் விளக்கம் 1500 எழுத்துகளுக்குள் இருக்க வேண்டும்.'
+          '⚠️ போஸ்டர் விளக்கம் 500 எழுத்துகளுக்குள் இருக்க வேண்டும்.'
         );
         return;
       }
