@@ -4,12 +4,13 @@ import sys
 
 W, H = 1080, 1350
 
-POSTER_DIR = Path("public/posters")
-LOGO_PATH = Path("public/assets/sasikumar-ai-logo.png")
+BASE_DIR = Path(__file__).resolve().parent
+POSTER_DIR = BASE_DIR / "public" / "posters"
+LOGO_PATH = BASE_DIR / "public" / "assets" / "sasikumar-ai-logo.png"
 
-TAMIL = "/system/fonts/SECTamil-Regular.otf"
-TAMIL_BOLD = "/system/fonts/SECTamil-Bold.otf"
-ENGLISH = "/system/fonts/Roboto-Regular.ttf"
+TAMIL = str(BASE_DIR / "public" / "assets" / "sasikumar-tamil.ttf")
+TAMIL_BOLD = TAMIL
+ENGLISH = str(BASE_DIR / "public" / "assets" / "sasikumar-roboto.ttf")
 
 def font(path, size):
     return ImageFont.truetype(
@@ -36,7 +37,7 @@ def main():
         if line.strip()
     ]
     title = poster_lines[0] if poster_lines else "இனிய நாள் வாழ்த்துகள்!"
-    message = "\\n".join(poster_lines[1:])
+    message = "\n".join(poster_lines[1:])
 
     if not background_path.is_file():
         raise FileNotFoundError(f"Background image not found: {background_path}")
@@ -94,35 +95,96 @@ def main():
         font=font(ENGLISH, 21), fill=(255, 225, 155)
     )
 
-    # Tamil title and message.
-    title_font = fit_text(draw, title, TAMIL_BOLD, 48, 900)
-    draw.text(
-        (W//2, 835), title,
-        font=title_font, fill=(255, 225, 135),
-        anchor="mm", language="ta",
-        stroke_width=2, stroke_fill=(30, 25, 15)
+    # Mixed Tamil + English text rendering.
+    def is_tamil(ch):
+        return "\u0B80" <= ch <= "\u0BFF"
+
+    def mixed_runs(text):
+        runs = []
+        current = ""
+        current_tamil = None
+
+        for ch in text:
+            tamil = is_tamil(ch)
+            if current_tamil is not None and tamil != current_tamil:
+                runs.append((current, current_tamil))
+                current = ""
+            current += ch
+            current_tamil = tamil
+
+        if current:
+            runs.append((current, current_tamil))
+
+        return runs
+
+    def mixed_width(text, size):
+        total = 0
+        for part, tamil in mixed_runs(text):
+            path = TAMIL_BOLD if tamil else ENGLISH
+            f = font(path, size)
+            total += draw.textlength(
+                part, font=f, language="ta" if tamil else "en"
+            )
+        return total
+
+    def draw_mixed_centered(text, y, size, fill, max_width):
+        x = (W - mixed_width(text, size)) / 2
+
+        for part, tamil in mixed_runs(text):
+            path = TAMIL_BOLD if tamil else ENGLISH
+            f = font(path, size)
+            lang = "ta" if tamil else "en"
+
+            draw.text(
+                (round(x), y), part,
+                font=f, fill=fill,
+                anchor="lm", language=lang,
+                stroke_width=1,
+                stroke_fill=(0, 0, 0, 180)
+            )
+            x += draw.textlength(part, font=f, language=lang)
+
+    # Fit title using both fonts.
+    title_size = 48
+    while title_size > 18 and mixed_width(title, title_size) > 900:
+        title_size -= 1
+
+    draw_mixed_centered(
+        title, 835, title_size,
+        (255, 225, 135), 900
     )
 
-    message_font = fit_text(draw, message, TAMIL_BOLD, 42, 860)
+    # Wrap message by measured mixed-font width.
+    message_size = 42
+    while message_size > 18:
+        if all(
+            mixed_width(word, message_size) <= 850
+            for word in message.split()
+        ):
+            break
+        message_size -= 1
+
     lines = []
     current = ""
+
     for word in message.split():
         candidate = f"{current} {word}".strip()
-        if draw.textbbox((0, 0), candidate, font=message_font, language="ta")[2] <= 850:
+
+        if mixed_width(candidate, message_size) <= 850:
             current = candidate
         else:
             if current:
                 lines.append(current)
             current = word
+
     if current:
         lines.append(current)
 
     y = 920
     for line in lines[:5]:
-        draw.text(
-            (W//2, y), line, font=message_font,
-            fill=(255, 255, 255), anchor="mm", language="ta",
-            stroke_width=1, stroke_fill=(0, 0, 0, 180)
+        draw_mixed_centered(
+            line, y, message_size,
+            (255, 255, 255), 850
         )
         y += 57
 
