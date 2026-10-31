@@ -7,7 +7,7 @@ W, H = 1080, 1350
 ROOT = Path(__file__).resolve().parent
 TA_FONT = ROOT / "public/assets/fonts/NotoSansTamil-VF.ttf"
 EN_FONT = ROOT / "public/assets/fonts/DejaVuSans.ttf"
-LOGO_PATH = ROOT / "public/assets/sasikumar-ai-logo.png"
+LOGO_PATH = ROOT / "public/assets/sasikumar-ai-logo.lossless.webp"
 
 def has_tamil(text):
     return bool(re.search(r"[\u0B80-\u0BFF]", text))
@@ -67,9 +67,9 @@ def main():
         raise FileNotFoundError(source)
 
     parts = [line.strip() for line in content.splitlines() if line.strip()]
-    title = clean_title(parts[0]) if parts else "SASIKUMAR AI"
+    title = clean_title(parts[0]) if parts else "வணக்கம்"
     if not title:
-        title = parts[0] if parts else "SASIKUMAR AI"
+        title = parts[0] if parts else "வணக்கம்"
     body = "\n".join(parts[1:]).strip()
 
     img = Image.open(source).convert("RGB")
@@ -85,73 +85,64 @@ def main():
         ImageFilter.UnsharpMask(radius=1.5, percent=125, threshold=3)
     ).convert("RGBA")
 
-    panel = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    pd = ImageDraw.Draw(panel)
-    pd.rounded_rectangle(
-        (42, 650, 1038, 1295), radius=38,
-        fill=(8, 24, 38, 218),
-        outline=(255, 255, 255, 100), width=2
-    )
-    img = Image.alpha_composite(img, panel)
+    # TOP HD IMAGE + CLEAN BOTTOM TEXT AND BRANDING PANEL
     draw = ImageDraw.Draw(img)
 
-    if LOGO_PATH.is_file():
-        logo = Image.open(LOGO_PATH).convert("RGBA")
-        logo.thumbnail((92, 92), Image.Resampling.LANCZOS)
-        img.alpha_composite(logo, (66, 675))
-        draw = ImageDraw.Draw(img)
+    panel_top = 850
+    draw.rectangle((0, panel_top, W, H), fill=(255, 255, 255, 255))
+    draw.rectangle((0, panel_top, W, panel_top + 5), fill=(30, 110, 210, 255))
 
-    brand_font = get_font("SASIKUMAR AI", 27)
-    draw.text(
-        (178, 696), "SASIKUMAR AI", font=brand_font,
-        fill=(255, 255, 255, 255), stroke_width=1,
-        stroke_fill=(0, 0, 0, 150)
-    )
-    draw.rounded_rectangle(
-        (68, 790, 1012, 798), radius=4,
-        fill=(91, 220, 180, 255)
-    )
+    # Poster title
+    title_size = 48
+    title_lines = wrap_mixed(draw, title, title_size, 930)[:2]
+    y = 890
+    for words in title_lines:
+        draw_mixed(draw, (70, y), words, title_size, (20, 35, 55, 255))
+        y += 62
 
-    y = 825
-    for words in wrap_mixed(draw, title, 54, 920)[:2]:
-        draw_mixed(
-            draw, (72, y), words, 54, (255, 239, 160, 255),
-            1, (0, 0, 0, 180)
-        )
-        y += 76
-    y += 12
-
+    # Poster body, fitted into the available clean area
+    y += 8
     if body:
+        body_size = 29
+        body_lines = []
         for paragraph in body.splitlines():
             paragraph = paragraph.strip()
-            if not paragraph:
-                continue
-            for words in wrap_mixed(draw, paragraph, 31, 910):
-                if y > 1170:
-                    break
-                draw_mixed(draw, (78, y), words, 31, (255, 255, 255, 255))
-                y += 47
-            if y > 1170:
-                break
+            if paragraph:
+                body_lines.extend(wrap_mixed(draw, paragraph, body_size, 930))
 
-    draw.rounded_rectangle(
-        (68, 1220, 1012, 1224), radius=2,
-        fill=(91, 220, 180, 255)
+        max_body_lines = 5
+        for words in body_lines[:max_body_lines]:
+            draw_mixed(draw, (74, y), words, body_size, (35, 45, 60, 255))
+            y += 43
+
+    # Original SASIKUMAR AI logo and brand footer
+    logo = Image.open(LOGO_PATH).convert("RGBA")
+    logo.thumbnail((82, 82), Image.Resampling.LANCZOS)
+    logo_x, logo_y = 70, 1245
+    img.alpha_composite(logo, (logo_x, logo_y))
+
+    footer_draw = ImageDraw.Draw(img)
+    draw_mixed(
+        footer_draw, (170, 1250), ["SASIKUMAR", "AI"],
+        27, (20, 45, 85, 255)
     )
-    draw.text(
-        (72, 1240), "SASIKUMAR AI  •  AI POSTER",
-        font=get_font("SASIKUMAR AI", 25),
-        fill=(210, 245, 235, 255)
+    website = "https://sasikumar-ai-9wdq.onrender.com"
+    footer_draw.text(
+        (170, 1292), website,
+        font=get_font(website, 17),
+        fill=(35, 85, 145, 255)
     )
+
 
     output = Path(sys.argv[3]) if len(sys.argv) > 3 else (
         ROOT / "public/posters/sasikumar-ai-poster.png"
     )
     output.parent.mkdir(parents=True, exist_ok=True)
     img.convert("RGB").save(output, "PNG", optimize=True)
-    print("HD POSTER CREATED:", output)
-    print("TITLE:", title)
+    print("CLEAN POSTER CREATED:", output)
+    print("BRANDING: NONE")
     print("SIZE:", W, "x", H)
+
 
 if __name__ == "__main__":
     main()

@@ -2157,7 +2157,8 @@ const wantsImage =
               throw new Error('Generated image is empty.');
             }
 
-            // SASIKUMAR AI STUDIO - separate footer below original image
+
+// SASIKUMAR AI STUDIO - separate footer below original image
       const baseImage = await Jimp.read(imageBytes);
 
       const logoPath = path.join(
@@ -2216,7 +2217,7 @@ const wantsImage =
 
       const brandedBytes = await finalImage.getBuffer(JimpMime.png);
 
-            const finalMime = 'image/png';
+                        const finalMime = 'image/png';
 
             const form = new FormData();
             form.append('messaging_product', 'whatsapp');
@@ -3868,13 +3869,17 @@ app.post('/api/ai/poster', async (req, res) => {
     } else {
       // SK_POSTER_PROVIDER_ROUTER_V1
       const posterPrompt = [
-        'Create a premium 4:5 portrait poster background.',
-        'Theme: ' + theme + '.',
-        'Visual direction: cinematic, vibrant, professional Indian design.',
-        'Use attractive lighting, rich colors and clear visual depth.',
-        'Keep the lower-middle area calm for separately added Tamil content.',
-        'Do not include text, letters, numbers, logos or watermarks.',
-        'Create full-bleed artwork without borders or collage panels.'
+        'Generate a fresh, premium quality, highly detailed 4:5 portrait artwork, designed for a 1080x1350 canvas.',
+        'VISUAL THEME: ' + theme + '.',
+        'Create a vivid, realistic and visually rich scene that clearly represents the requested theme.',
+        'Use beautiful natural textures, crisp fine details, realistic depth, balanced composition and professional cinematic lighting.',
+        'Use a brilliant RAINBOW BRIGHT colour palette: vivid sky blue, turquoise, emerald green, sunny yellow, orange, pink, violet and rich purple, with elegant golden highlights.',
+        'Use bright daylight, high exposure, luminous colours, clear details and cheerful natural scenery. Avoid black backgrounds, near-black shadows, dark navy colour dominance and muddy or dull colours.',
+        'The artwork must fill the entire canvas edge to edge. Make the actual subject and scenery large, clear and sharply visible.',
+        'Keep a naturally uncluttered area in the lower-middle region for separately added Tamil text, but do not make it an empty blur or blank gradient.',
+        'BACKGROUND ART ONLY: absolutely no text, letters, Tamil script, English script, numbers, symbols, typography or calligraphy.',
+        'Absolutely no logos, brand names, signatures, watermarks, banners, title areas, text boxes, borders, frames, panels or poster templates.',
+        'Do not imitate an existing poster. Create a genuinely new image with detailed artwork, not a plain gradient, blank background, abstract blur or empty color wash.'
       ].join(' ');
 
       let generated;
