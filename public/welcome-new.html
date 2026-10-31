@@ -2558,6 +2558,124 @@ logo.onload=draw;draw();
 </section>
 <!-- END SK_WELCOME_LIVE_VIDEO_SETTINGS_CARDS_V1 -->
 
+
+<!-- SK_WELCOME_POSTERSNAP_STUDIO_V1 -->
+<section id="skWelcomePosterSnap" style="box-sizing:border-box;width:100%;max-width:720px;margin:18px auto;padding:20px 16px;border-radius:20px;background:linear-gradient(135deg,#fff1f2,#ede9fe,#dbeafe);border:1px solid #ddd6fe;text-align:center;box-shadow:0 6px 20px rgba(79,70,229,.12)">
+  <div style="font-size:42px;line-height:1.3">🎨✨</div>
+  <h2 style="margin:8px 0;color:#4338ca;font-size:24px">PosterSnap Studio</h2>
+  <p style="margin:8px 0 16px;color:#374151;line-height:1.6">Create beautiful posters, edit designs and export your artwork.</p>
+  <a href="/postersnap/" style="display:inline-block;box-sizing:border-box;max-width:100%;padding:13px 24px;border-radius:12px;background:linear-gradient(90deg,#7c3aed,#2563eb);color:#fff;text-decoration:none;font-weight:700">🚀 Open PosterSnap Studio</a>
+</section>
+<!-- END SK_WELCOME_POSTERSNAP_STUDIO_V1 -->
+
 </main>
+
+<!-- SK_ALL_AI_OUTPUT_MAP_SHARE_V1 -->
+<style>
+.sk-map-share{margin:10px 0 18px;padding:12px;border:1px solid #bfdbfe;
+border-radius:14px;background:#eff6ff;color:#172554;box-sizing:border-box;
+width:100%;font-family:Arial,sans-serif}
+.sk-map-share input{width:100%;box-sizing:border-box;padding:11px;
+border:1px solid #93c5fd;border-radius:9px;font-size:16px;margin-bottom:9px}
+.sk-map-share-buttons{display:flex;flex-wrap:wrap;gap:7px}
+.sk-map-share button{border:0;border-radius:9px;padding:10px 12px;
+font-size:13px;font-weight:700;cursor:pointer;background:#2563eb;color:white}
+.sk-map-share button.sk-green{background:#15803d}
+.sk-map-share button.sk-purple{background:#6d28d9}
+.sk-map-share button.sk-gray{background:#475569}
+.sk-map-share small{display:block;margin-top:8px;color:#475569;line-height:1.5}
+@media(max-width:420px){.sk-map-share button{flex:1 1 42%;min-height:42px}}
+</style>
+<script>
+(function(){
+  const ids = ['skWelcomeAIReply','skKitOutput','skOfficeOutput','skCodeOutput'];
+
+  function attach(el){
+    if(!el || el.dataset.skMapShareReady) return;
+    el.dataset.skMapShareReady = '1';
+
+    const box = document.createElement('div');
+    box.className = 'sk-map-share';
+    box.innerHTML = `
+      <input type="text" class="sk-map-place"
+        placeholder="📍 இடம் தேடுங்கள்: Bus / Railway / Temple / College...">
+      <div class="sk-map-share-buttons">
+        <button type="button" data-action="maps">📍 Maps</button>
+        <button type="button" data-action="directions">🧭 Directions</button>
+        <button type="button" class="sk-green" data-action="whatsapp">🟢 WhatsApp</button>
+        <button type="button" class="sk-purple" data-action="telegram">✈️ Telegram</button>
+        <button type="button" class="sk-gray" data-action="copy">📋 Copy</button>
+        <button type="button" class="sk-gray" data-action="share">📤 Share</button>
+      </div>
+      <small>இடத்தை உள்ளிட்டு Maps தேடுங்கள். உங்கள் GPS இடம் தானாகப் பகிரப்படாது.</small>`;
+
+    el.insertAdjacentElement('afterend', box);
+
+    function getText(){
+      return (el.value !== undefined ? el.value : el.innerText || el.textContent || '').trim();
+    }
+
+    box.addEventListener('click', async function(event){
+      const button = event.target.closest('button[data-action]');
+      if(!button) return;
+
+      const action = button.dataset.action;
+      const place = box.querySelector('.sk-map-place').value.trim();
+      const answer = getText();
+      const mapUrl = place
+        ? 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(place)
+        : '';
+      const directionsUrl = place
+        ? 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(place)
+        : '';
+
+      if(action === 'maps' || action === 'directions'){
+        if(!place){ alert('முதலில் இடத்தின் பெயரை உள்ளிடுங்கள்.'); return; }
+        window.open(action === 'maps' ? mapUrl : directionsUrl, '_blank', 'noopener');
+        return;
+      }
+
+      const message = answer + (place ? '\n\n📍 இடம்: ' + place + '\n🗺️ Maps: ' + mapUrl : '');
+
+      if(action === 'copy'){
+        try{
+          await navigator.clipboard.writeText(message);
+          alert('AI பதில் Copy செய்யப்பட்டது.');
+        }catch(e){ alert('Copy செய்ய முடியவில்லை.'); }
+      }else if(action === 'whatsapp'){
+        window.open('https://wa.me/?text=' + encodeURIComponent(message), '_blank', 'noopener');
+      }else if(action === 'telegram'){
+        window.open('https://t.me/share/url?url=' +
+          encodeURIComponent(place ? mapUrl : location.href) +
+          '&text=' + encodeURIComponent(answer), '_blank', 'noopener');
+      }else if(action === 'share'){
+        if(navigator.share){
+          try{ await navigator.share({title:'SASIKUMAR AI', text:message}); }
+          catch(e){}
+        }else{
+          window.open('https://wa.me/?text=' + encodeURIComponent(message), '_blank', 'noopener');
+        }
+      }
+    });
+  }
+
+  function scan(){
+    ids.forEach(id => attach(document.getElementById(id)));
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', scan);
+  }else{
+    scan();
+  }
+
+  new MutationObserver(scan).observe(document.body, {
+    childList:true,
+    subtree:true
+  });
+})();
+</script>
+<!-- END SK_ALL_AI_OUTPUT_MAP_SHARE_V1 -->
+
 </body>
 </html>

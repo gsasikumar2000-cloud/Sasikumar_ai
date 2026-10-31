@@ -144,7 +144,7 @@ button{width:100%;margin-top:14px;padding:14px;border:0;border-radius:14px;font-
 <button class="generate" onclick="generateImage()">✨ Generate Image</button>
 <button type="button" class="generate" style="background:#0f766e" onclick="generateImageWithHF()">🤗 Generate with Hugging Face</button>
 <button type="button" class="generate" style="background:#2563eb" onclick="generateImageWithCloudflare()">☁️ Generate with Cloudflare FLUX 3 Image Klein</button>
-<button type="button" class="generate" style="background:#7c3aed" onclick="generateImageAuto()">🤖 Automatic AI Image Generation</button>
+<button type="button" class="generate" style="background:#7c3aed" onclick="generateImageAuto()">⚡ FAST AUTO IMAGE GENERATOR</button>
 <button type="button" class="back" onclick="downloadPosterPNG()">⬇️ Download Poster PNG</button>
 <button type="button" class="generate" onclick="skEditInAdobeExpress()">✏️ Edit in Adobe Express</button>
 
@@ -198,18 +198,36 @@ function openUpload(){
 }
 function selectPrompt(){const e=document.getElementById("prompt");e.focus();e.select();}
 
+window.skPosterPhotoData = "";
+
 function showSelectedImage(input){
  const file=input.files&&input.files[0];
  if(!file)return;
+
+ if(!["image/jpeg","image/png"].includes(file.type)){
+   alert("Please select a JPG or PNG photo.");
+   input.value="";
+   return;
+ }
+ if(file.size > 10 * 1024 * 1024){
+   alert("Photo must be 10 MB or smaller.");
+   input.value="";
+   return;
+ }
+
  const reader=new FileReader();
  reader.onload=function(e){
+   window.skPosterPhotoData=e.target.result;
    const r=document.getElementById("result");
    r.innerHTML="";
    const img=document.createElement("img");
    img.src=e.target.result;
-   img.alt="Selected image preview";
+   img.alt="Selected poster background photo";
    r.appendChild(img);
-   document.getElementById("status").textContent="✅ Image preview ready.";
+   document.getElementById("status").textContent="✅ Photo ready for AI Poster.";
+ };
+ reader.onerror=function(){
+   alert("Could not read this photo. Please try another image.");
  };
  reader.readAsDataURL(file);
 }
@@ -218,25 +236,33 @@ async function pasteImage(){
  try{
    const items=await navigator.clipboard.read();
    for(const item of items){
-     const type=item.types.find(t=>t.startsWith("image/"));
-     if(type){
-       const blob=await item.getType(type);
+     const type=item.types.find(t=>["image/png","image/jpeg"].includes(t));
+     if(!type)continue;
+     const blob=await item.getType(type);
+     if(blob.size > 10 * 1024 * 1024){
+       alert("Photo must be 10 MB or smaller.");
+       return;
+     }
+     const reader=new FileReader();
+     reader.onload=function(e){
+       window.skPosterPhotoData=e.target.result;
        const r=document.getElementById("result");
        r.innerHTML="";
        const img=document.createElement("img");
-       img.src=URL.createObjectURL(blob);
-       img.alt="Pasted image preview";
+       img.src=e.target.result;
+       img.alt="Pasted poster background photo";
        r.appendChild(img);
-       document.getElementById("status").textContent="✅ Image pasted.";
-       return;
-     }
+       document.getElementById("status").textContent="✅ Photo ready for AI Poster.";
+     };
+     reader.onerror=function(){alert("Could not read pasted photo.");};
+     reader.readAsDataURL(blob);
+     return;
    }
-   alert("No image found in clipboard.");
+   alert("No PNG or JPG image found in clipboard.");
  }catch(e){
    alert("📋 Image paste permission unavailable. Please use Upload.");
  }
 }
-
 async function sharePrompt(){
   const text=document.getElementById("prompt").value.trim();
   if(!text){alert("Enter image description first.");return;}
@@ -693,72 +719,70 @@ async function generateImageWithCloudflare() {
 
 
 async function generateImageAuto() {
+  if (window.skFastImageBusy) return;
+
   const prompt = document.getElementById('prompt').value.trim();
   const status = document.getElementById('status');
   const result = document.getElementById('result');
-
-  result.innerHTML = '';
 
   if (!prompt) {
     status.textContent = '⚠️ Please enter an image description.';
     return;
   }
 
-  const providers = [
-    { name: 'Gemini AI', url: '/api/ai/image' },
-    { name: 'Hugging Face', url: '/api/ai/image/huggingface' },
-    { name: 'Stability AI', url: '/api/ai/image/stability' },
-    { name: 'Cloudflare FLUX 3', url: '/api/ai/image/cloudflare' }
-  ];
-
-  const failures = [];
-
-  for (const provider of providers) {
-    status.textContent = '⏳ Trying ' + provider.name + '...';
-
-    try {
-      const response = await fetch(provider.url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok || !data.ok || !data.imageUrl) {
-        throw new Error(data.error || 'HTTP ' + response.status);
-      }
-
-      const img = new Image();
-      img.alt = prompt;
-      img.style.maxWidth = '100%';
-      img.style.height = 'auto';
-
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = () => reject(new Error('Image preview failed'));
-        img.src = data.imageUrl;
-      });
-
-      skGeneratedImageUrl = data.imageUrl;
-      skLocalPosterUrl = '';
-      result.appendChild(img);
-      status.textContent = '✅ Image generated successfully with ' + provider.name + '!';
-      return;
-
-    } catch (error) {
-      failures.push(provider.name + ': ' + error.message);
-      status.textContent = '⚠️ ' + provider.name + ' failed. Trying the next provider...';
-    }
-  }
-
-  console.warn('[Automatic Image Generation] All AI providers failed:', failures);
+  window.skFastImageBusy = true;
+  result.innerHTML = '';
+  status.textContent = '⚡ FAST AUTO: Generating image...';
 
   try {
-    makeLocalPoster(prompt);
-    status.textContent = '🎨 AI providers unavailable. Local Poster fallback displayed.';
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 180000);
+
+    let response;
+    try {
+      response = await fetch('/api/ai/image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt }),
+        signal: controller.signal
+      });
+    } finally {
+      clearTimeout(timeout);
+    }
+
+    const data = await response.json();
+
+    if (!response.ok || !data.ok || !data.imageUrl) {
+      throw new Error(data.error || 'HTTP ' + response.status);
+    }
+
+    const img = new Image();
+    img.alt = prompt;
+    img.style.maxWidth = '100%';
+    img.style.height = 'auto';
+
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = () => reject(new Error('Image preview failed'));
+      img.src = data.imageUrl;
+    });
+
+    skGeneratedImageUrl = data.imageUrl;
+    skLocalPosterUrl = '';
+    result.appendChild(img);
+    status.textContent = '✅ FAST AUTO: Image generated successfully!';
+
   } catch (error) {
-    status.textContent = '❌ AI providers failed and Local Poster could not be created: ' + error.message;
+    console.error('[FAST AUTO IMAGE]', error);
+
+    try {
+      makeLocalPoster(prompt);
+      status.textContent = '⚠️ AI generation unavailable. Local poster fallback displayed.';
+    } catch (fallbackError) {
+      status.textContent = '❌ Image generation failed: ' + error.message;
+    }
+  } finally {
+    window.skFastImageBusy = false;
   }
 }
 
@@ -983,7 +1007,10 @@ async function generateImageAuto() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           content,
-          theme: "professional"
+          theme: "professional",
+          ...(window.skPosterPhotoData
+            ? { photoData: window.skPosterPhotoData }
+            : {})
         }),
         signal: AbortSignal.timeout(120000)
       });

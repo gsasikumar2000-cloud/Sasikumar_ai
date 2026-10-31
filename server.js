@@ -1839,13 +1839,14 @@ app.post('/api/whatsapp/webhook',async(req,res)=>{
     }));
 
     const from=msg.from;
-    const trimmed=(msg.text?.body||'').trim();
+    const trimmed=String(msg.text?.body || msg.image?.caption || '').trim();
     const lower=trimmed.toLowerCase();
 
 const isWelcome = !trimmed || trimmed === '0' ||
   ['menu', 'manu', 'start', 'மெனு'].includes(lower);
 
 let reply = WELCOME_MENU;
+let autoPosterForContent = false;
 
 const mapsMatch = trimmed.match(/^(?:maps?|வரைபடம்|மேப்)\s*[:\-]?\s*(.*)$/i);
 if (mapsMatch) {
@@ -1911,8 +1912,10 @@ if (mapsMatch) {
       '12 ராசிகளின் தகவல்கள் மற்றும் ஆன்மீகத் தகவல்களைப் பார்க்கவும்.\n\n' +
       '🌐 ஜோதிடப் பக்கம்: https://sasikumar-ai-9wdq.onrender.com/spiritual-astrology.html';
   } else if (/\bfriendly\b|நண்பா|நண்பரே/i.test(trimmed)) {
+    autoPosterForContent = true;
     reply = await getWhatsAppAIReply(trimmed, 'friendly');
   } else {
+    autoPosterForContent = true;
     reply = await getWhatsAppAIReply(trimmed, 'normal');
   }
 }
@@ -2050,6 +2053,7 @@ if (!isWelcome &&
 
         // SK_WHATSAPP_AI_POSTER_ROUTE_V1
         const wantsPoster =
+          autoPosterForContent ||
           /\b(poster|posters|போஸ்டர்|போஸ்டர்கள்)\b/i.test(trimmed) ||
           /போஸ்டர்/i.test(trimmed);
 
@@ -2060,6 +2064,7 @@ if (!isWelcome &&
           /விலங்கு|மிருகம்|யானை|சிங்கம்|புலி|நாய்|பூனை|பறவை|மயில்|கிளி|இயற்கை|காடு|மரம்|பூ|மலர்|செடி|மலை|அருவி|ஆறு|கடல்|கடற்கரை|சூரியன்|ஏரி|மீன்|குதிரை|மாடு|மான்|வாகனம்|கார்|கோயில்|விநாயகர்|பிள்ளையார்|முருகன்|அம்மன்|கிருஷ்ணர்|சிவன்|பெருமாள்|இயேசு|புத்தர்/i.test(trimmed);
 
         const wantsImage =
+          wantsPoster ||
           wantsCatalogImage ||
           /\b(generate|create|make|draw|design|send|show)\b.{0,100}\b(image|picture|photo|poster|wallpaper|god|deity|krishna|murugan|ganesha|vinayagar|jesus|allah)\b/i.test(trimmed) ||
           /\b(image|picture|photo|poster|wallpaper)\b.{0,100}\b(generate|create|make|draw|design|send|show)\b/i.test(trimmed) ||
@@ -3162,13 +3167,111 @@ async function skSearchRealImage(query) {
 }
 
 async function skGenerateImage(prompt) {
-  // SK_IMAGE_PROVIDER_FALLBACK_V1
+  // SK_FAST_IMAGE_PROVIDER_ROUTER_V2
   const failures = [];
-
-  // SK_ALL_ART_IMAGE_PROMPT_V1
   const imagePrompt = skEnhanceImagePrompt(prompt);
+  const timeout = 90000;
 
-  // 1. Gemini
+  // 1. Cloudflare FLUX Schnell
+  const account = process.env.CLOUDFLARE_ACCOUNT_ID;
+  const cfToken = process.env.CLOUDFLARE_API_TOKEN;
+
+  if (account && cfToken) {
+    try {
+      const response = await fetch(
+        'https://api.cloudflare.com/client/v4/accounts/' +
+          encodeURIComponent(account) + '/ai/run',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer ' + cfToken,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: '@cf/black-forest-labs/flux-1-schnell',
+            input: { prompt: imagePrompt }
+          }),
+          signal: AbortSignal.timeout(timeout)
+        }
+      );
+
+      const type = response.headers.get('content-type') || '';
+
+      if (!response.ok) {
+        throw new Error('HTTP ' + response.status);
+      }
+
+      if (type.startsWith('image/')) {
+        const buffer = Buffer.from(await response.arrayBuffer());
+        if (!buffer.length) throw new Error('Empty image');
+
+        console.log('[FAST IMAGE] Success: Cloudflare FLUX');
+        return 'data:' + type + ';base64,' + buffer.toString('base64');
+      }
+
+      const data = await response.json();
+      const image = data.result?.image;
+
+      if (data.success === false || typeof image !== 'string' || !image.trim()) {
+        throw new Error('No image returned');
+      }
+
+      const cleaned = image.replace(/^data:image\/[^;]+;base64,/, '');
+      const buffer = Buffer.from(cleaned, 'base64');
+
+      if (!buffer.length) throw new Error('Invalid image data');
+
+      const actualMime = buffer[0] === 0xff &&
+        buffer[1] === 0xd8 && buffer[2] === 0xff
+          ? 'image/jpeg'
+          : buffer.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))
+            ? 'image/png'
+            : 'image/jpeg';
+
+      console.log('[FAST IMAGE] Success: Cloudflare FLUX (' + actualMime + ')');
+      return 'data:' + actualMime + ';base64,' + buffer.toString('base64');
+
+    } catch (err) {
+      failures.push('Cloudflare: ' + err.message);
+      console.error('[FAST IMAGE] Cloudflare failed:', err.message);
+    }
+  } else {
+    failures.push('Cloudflare credentials missing');
+  }
+
+  // 2. Hugging Face FLUX Schnell
+  if (process.env.HF_TOKEN) {
+    try {
+      const client = new InferenceClient(process.env.HF_TOKEN);
+
+      const imageBlob = await client.textToImage({
+        model: 'black-forest-labs/FLUX.1-schnell',
+        inputs: imagePrompt
+      }, {
+        signal: AbortSignal.timeout(timeout)
+      });
+
+      if (!imageBlob) throw new Error('Empty image response');
+
+      const mime = imageBlob.type || 'image/png';
+      const base64 = Buffer.from(
+        await imageBlob.arrayBuffer()
+      ).toString('base64');
+
+      if (!base64) throw new Error('Empty image data');
+
+      console.log('[FAST IMAGE] Success: Hugging Face');
+      return 'data:' + mime + ';base64,' + base64;
+
+    } catch (err) {
+      failures.push('Hugging Face: ' + err.message);
+      console.error('[FAST IMAGE] Hugging Face failed:', err.message);
+    }
+  } else {
+    failures.push('Hugging Face token missing');
+  }
+
+  // 3. Gemini Image
   if (process.env.GEMINI_API_KEY) {
     try {
       const response = await fetch(
@@ -3183,140 +3286,137 @@ async function skGenerateImage(prompt) {
             contents: [{ parts: [{ text: imagePrompt }] }],
             generationConfig: { responseModalities: ['IMAGE'] }
           }),
-          signal: AbortSignal.timeout(120000)
+          signal: AbortSignal.timeout(timeout)
         }
       );
 
       const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('Gemini HTTP ' + response.status);
+        throw new Error('HTTP ' + response.status);
       }
 
       const parts = (data.candidates || [])
         .flatMap(candidate => candidate.content?.parts || []);
+
       const imagePart = parts.find(part =>
         part.inlineData?.data &&
         String(part.inlineData.mimeType || '').startsWith('image/')
       );
 
-      if (!imagePart) throw new Error('Gemini returned no image.');
+      if (!imagePart) throw new Error('No image returned');
 
-      console.log('[Image API] Success: Gemini');
+      console.log('[FAST IMAGE] Success: Gemini');
+
       return 'data:' + imagePart.inlineData.mimeType +
         ';base64,' + imagePart.inlineData.data;
+
     } catch (err) {
       failures.push('Gemini: ' + err.message);
-      console.error('[Image API] Gemini failed; trying fallback:', err.message);
+      console.error('[FAST IMAGE] Gemini failed:', err.message);
     }
   } else {
     failures.push('Gemini key missing');
   }
 
-  // 2. Stability AI
-  if (process.env.STABILITY_API_KEY) {
-    try {
-      const form = new FormData();
-      form.append('prompt', imagePrompt);
-      form.append('output_format', 'png');
-      form.append('aspect_ratio', '1:1');
+  // Paid providers require explicit opt-in.
+  const paidEnabled =
+    process.env.ENABLE_PAID_IMAGE_FALLBACK === 'true';
 
-      const response = await fetch(
-        'https://api.stability.ai/v2beta/stable-image/generate/core',
-        {
-          method: 'POST',
-          headers: {
-            Authorization: 'Bearer ' + process.env.STABILITY_API_KEY,
-            Accept: 'image/*'
-          },
-          body: form,
-          signal: AbortSignal.timeout(120000)
+  if (paidEnabled) {
+
+    // 4. Fal.ai FLUX Schnell
+    if (process.env.FAL_KEY) {
+      try {
+        const response = await fetch(
+          'https://fal.run/fal-ai/flux/schnell',
+          {
+            method: 'POST',
+            headers: {
+              Authorization: 'Key ' + process.env.FAL_KEY,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              prompt: imagePrompt,
+              image_size: 'square_hd',
+              num_images: 1
+            }),
+            signal: AbortSignal.timeout(timeout)
+          }
+        );
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          throw new Error('HTTP ' + response.status);
         }
-      );
 
-      if (!response.ok) {
-        throw new Error('Stability HTTP ' + response.status + ': ' +
-          (await response.text()).slice(0, 200));
+        const imageUrl = data.images?.[0]?.url;
+
+        if (!imageUrl) throw new Error('No image URL returned');
+
+        console.log('[FAST IMAGE] Success: Fal.ai');
+        return imageUrl;
+
+      } catch (err) {
+        failures.push('Fal.ai: ' + err.message);
+        console.error('[FAST IMAGE] Fal.ai failed:', err.message);
       }
-
-      const mime = response.headers.get('content-type') || 'image/png';
-      if (!mime.startsWith('image/')) {
-        throw new Error('Unexpected Stability response type');
-      }
-
-      const buffer = Buffer.from(await response.arrayBuffer());
-      if (!buffer.length) throw new Error('Empty Stability image');
-
-      console.log('[Image API] Success: Stability AI');
-      return 'data:' + mime + ';base64,' + buffer.toString('base64');
-    } catch (err) {
-      failures.push('Stability: ' + err.message);
-      console.error('[Image API] Stability failed; trying fallback:', err.message);
     }
-  } else {
-    failures.push('Stability key missing');
-  }
 
-  // 3. Cloudflare FLUX
-  const account = process.env.CLOUDFLARE_ACCOUNT_ID;
-  const token = process.env.CLOUDFLARE_API_TOKEN;
+    // 5. Stability AI
+    if (process.env.STABILITY_API_KEY) {
+      try {
+        const form = new FormData();
+        form.append('prompt', imagePrompt);
+        form.append('output_format', 'png');
+        form.append('aspect_ratio', '1:1');
 
-  if (account && token) {
-    try {
-      const response = await fetch(
-        'https://api.cloudflare.com/client/v4/accounts/' +
-          encodeURIComponent(account) + '/ai/run',
-        {
-          method: 'POST',
-          headers: {
-            Authorization: 'Bearer ' + token,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            model: '@cf/black-forest-labs/flux-1-schnell',
-            input: { prompt: imagePrompt }
-          }),
-          signal: AbortSignal.timeout(120000)
+        const response = await fetch(
+          'https://api.stability.ai/v2beta/stable-image/generate/core',
+          {
+            method: 'POST',
+            headers: {
+              Authorization: 'Bearer ' + process.env.STABILITY_API_KEY,
+              Accept: 'image/*'
+            },
+            body: form,
+            signal: AbortSignal.timeout(timeout)
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error('HTTP ' + response.status);
         }
-      );
 
-      const type = response.headers.get('content-type') || '';
-      if (!response.ok) {
-        throw new Error('Cloudflare HTTP ' + response.status + ': ' +
-          (await response.text()).slice(0, 200));
-      }
+        const mime = response.headers.get('content-type') || 'image/png';
 
-      if (type.startsWith('image/')) {
+        if (!mime.startsWith('image/')) {
+          throw new Error('Unexpected response type');
+        }
+
         const buffer = Buffer.from(await response.arrayBuffer());
-        if (!buffer.length) throw new Error('Empty Cloudflare image');
-        console.log('[Image API] Success: Cloudflare FLUX');
-        return 'data:' + type + ';base64,' + buffer.toString('base64');
+
+        if (!buffer.length) throw new Error('Empty image');
+
+        console.log('[FAST IMAGE] Success: Stability AI');
+        return 'data:' + mime + ';base64,' + buffer.toString('base64');
+
+      } catch (err) {
+        failures.push('Stability: ' + err.message);
+        console.error('[FAST IMAGE] Stability failed:', err.message);
       }
-
-      const data = await response.json();
-      if (data.success === false) {
-        throw new Error(JSON.stringify(data.errors || []).slice(0, 200));
-      }
-
-      const image = data.result?.image;
-      if (typeof image !== 'string' || !image.trim()) {
-        throw new Error('Cloudflare returned no image data');
-      }
-
-      const cleaned = image.replace(/^data:image\/[^;]+;base64,/, '');
-      const buffer = Buffer.from(cleaned, 'base64');
-      if (!buffer.length) throw new Error('Invalid Cloudflare image data');
-
-      console.log('[Image API] Success: Cloudflare FLUX');
-      return 'data:image/png;base64,' + buffer.toString('base64');
-    } catch (err) {
-      failures.push('Cloudflare: ' + err.message);
-      console.error('[Image API] Cloudflare failed:', err.message);
     }
+
   } else {
-    failures.push('Cloudflare credentials missing');
+    console.log('[FAST IMAGE] Paid fallbacks disabled.');
   }
 
-  const err = new Error('All image providers failed: ' + failures.join(' | ').slice(0, 700));
+  const err = new Error(
+    'All enabled image providers failed: ' +
+    failures.join(' | ').slice(0, 700)
+  );
+
   err.status = 502;
   throw err;
 }
@@ -3662,13 +3762,38 @@ app.post('/api/ai/poster', async (req, res) => {
       return res.status(413).json({ ok: false, error: 'Poster text is too long.' });
     }
 
-    const account = process.env.CLOUDFLARE_ACCOUNT_ID;
-    const token = process.env.CLOUDFLARE_API_TOKEN;
-    if (!account || !token) {
-      return res.status(503).json({ ok: false, error: 'Cloudflare credentials missing.' });
-    }
+    let photoBytes = null;
+    const photoData = req.body?.photoData;
 
-    const controller = new AbortController();
+    if (photoData) {
+      if (typeof photoData !== 'string' || photoData.length > 14 * 1024 * 1024) {
+        return res.status(413).json({ ok: false, error: 'Photo is too large. Maximum 10 MB.' });
+      }
+
+      const match = photoData.match(/^data:image\/(png|jpeg);base64,([A-Za-z0-9+/]+={0,2})$/i);
+      if (!match) {
+        return res.status(400).json({ ok: false, error: 'Only PNG and JPEG photos are supported.' });
+      }
+
+      photoBytes = Buffer.from(match[2], 'base64');
+      const isPng = photoBytes.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10]));
+      const isJpeg = photoBytes[0] === 0xff && photoBytes[1] === 0xd8 && photoBytes[2] === 0xff;
+
+      if (!photoBytes.length || photoBytes.length > 10 * 1024 * 1024 ||
+          (match[1].toLowerCase() === 'png' && !isPng) ||
+          (match[1].toLowerCase() === 'jpeg' && !isJpeg)) {
+        return res.status(400).json({ ok: false, error: 'Invalid photo file or photo exceeds 10 MB.' });
+      }
+
+      await fs.promises.writeFile(tempFile, photoBytes);
+    } else {
+      const account = process.env.CLOUDFLARE_ACCOUNT_ID;
+      const token = process.env.CLOUDFLARE_API_TOKEN;
+      if (!account || !token) {
+        return res.status(503).json({ ok: false, error: 'Cloudflare credentials missing.' });
+      }
+
+      const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 120000);
 
     try {
@@ -3743,8 +3868,9 @@ app.post('/api/ai/poster', async (req, res) => {
         return res.status(502).json({ ok: false, error: 'Invalid image size.' });
       }
       await fs.promises.writeFile(tempFile, bytes);
-    } finally {
-      clearTimeout(timer);
+      } finally {
+        clearTimeout(timer);
+      }
     }
 
     const { execFile } = await import('node:child_process');
