@@ -3395,13 +3395,15 @@ async function skGenerateImage(prompt) {
   }
 
   // Paid providers require explicit opt-in.
-  const paidEnabled =
-    process.env.ENABLE_PAID_IMAGE_FALLBACK === 'true';
+  const falEnabled =
+    process.env.ENABLE_FAL_IMAGE_FALLBACK === 'true';
+  const stabilityEnabled =
+    process.env.ENABLE_STABILITY_IMAGE_FALLBACK === 'true';
 
-  if (paidEnabled) {
+  if (falEnabled || stabilityEnabled) {
 
     // 4. Fal.ai FLUX Schnell
-    if (process.env.FAL_KEY) {
+    if (falEnabled && process.env.FAL_KEY) {
       try {
         const response = await fetch(
           'https://fal.run/fal-ai/flux/schnell',
@@ -3423,7 +3425,8 @@ async function skGenerateImage(prompt) {
         const data = await response.json().catch(() => ({}));
 
         if (!response.ok) {
-          throw new Error('HTTP ' + response.status);
+          const reason = data.detail || data.message || data.error || data.type || 'No error detail';
+          throw new Error('HTTP ' + response.status + ': ' + String(reason).slice(0, 300));
         }
 
         const imageUrl = data.images?.[0]?.url;
@@ -3440,7 +3443,7 @@ async function skGenerateImage(prompt) {
     }
 
     // 5. Stability AI
-    if (process.env.STABILITY_API_KEY) {
+    if (stabilityEnabled && process.env.STABILITY_API_KEY) {
       try {
         const form = new FormData();
         form.append('prompt', imagePrompt);
@@ -3817,6 +3820,7 @@ app.post('/api/any-content', async (req, res) => {
 
 /* SK_AI_POSTER_COMPOSER_V1 */
 app.post('/api/ai/poster', async (req, res) => {
+  let backgroundAttribution = null;
   const id = randomUUID();
   const tempDir = path.join(__dirname, 'tmp');
   await fs.promises.mkdir(tempDir, { recursive: true });
@@ -3862,90 +3866,206 @@ app.post('/api/ai/poster', async (req, res) => {
 
       await fs.promises.writeFile(tempFile, photoBytes);
     } else {
-      const account = process.env.CLOUDFLARE_ACCOUNT_ID;
-      const token = process.env.CLOUDFLARE_API_TOKEN;
-      if (!account || !token) {
-        return res.status(503).json({ ok: false, error: 'Cloudflare credentials missing.' });
-      }
+      // SK_POSTER_PROVIDER_ROUTER_V1
+      const posterPrompt = [
+        'Create a premium 4:5 portrait poster background.',
+        'Theme: ' + theme + '.',
+        'Visual direction: cinematic, vibrant, professional Indian design.',
+        'Use attractive lighting, rich colors and clear visual depth.',
+        'Keep the lower-middle area calm for separately added Tamil content.',
+        'Do not include text, letters, numbers, logos or watermarks.',
+        'Create full-bleed artwork without borders or collage panels.'
+      ].join(' ');
 
-      const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 120000);
+      let generated;
 
-    try {
-      const response = await fetch(
-        'https://api.cloudflare.com/client/v4/accounts/' +
-          encodeURIComponent(account) + '/ai/run',
-        {
-          method: 'POST',
-          headers: {
-            Authorization: 'Bearer ' + token,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            model: '@cf/black-forest-labs/flux-1-schnell',
-            input: {
-              prompt: (() => {
-                const styles = [
-                  'cinematic photography, dramatic golden-hour lighting, premium editorial composition',
-                  'vibrant artistic painting, colorful brush textures, elegant professional layout',
-                  'beautiful nature scenery, sunrise, atmospheric depth, rich natural colors',
-                  'luxury festival artwork, glowing lights, decorative floral details, premium finish',
-                  'modern 3D artistic scene, realistic materials, soft cinematic lighting',
-                  'inspiring educational scene, books, sunrise, hopeful atmosphere',
-                  'elegant traditional Indian art, detailed patterns, rich colors, balanced composition',
-                  'minimal premium studio design, smooth gradients, beautiful lighting and depth'
-                ];
-                const style = styles[Math.floor(Math.random() * styles.length)];
-                return 'Create a fresh, high-quality 4:5 portrait poster BACKGROUND. ' +
-                  'Theme: ' + theme + '. Visual style: ' + style + '. ' +
-                  'Make the composition visually distinct, polished and attractive. ' +
-                  'No text, letters, numbers, logos, watermarks, tiny boxes, grids, UI elements or collage panels. ' +
-                  'Keep the lower-middle area visually calm for separately added Tamil text. ' +
-                  'Do not draw a border or a text box. Full-bleed background artwork.';
-              })()
+      try {
+        generated = await skGenerateImage(posterPrompt);
+      } catch (aiError) {
+        console.warn('[POSTER AI FAILED]', aiError.message);
+
+        const searchQuery = (theme + ' ' + content)
+          .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .slice(0, 120);
+
+        let stockUrl = null;
+
+        // Unsplash fallback
+        const unsplashKey = process.env.UNSPLASH_ACCESS_KEY;
+
+        if (unsplashKey) {
+          try {
+            const url =
+              'https://api.unsplash.com/search/photos?query=' +
+              encodeURIComponent(searchQuery) +
+              '&orientation=portrait&per_page=10';
+
+            const response = await fetch(url, {
+              headers: {
+                Authorization: 'Client-ID ' + unsplashKey,
+                'Accept-Version': 'v1'
+              },
+              signal: AbortSignal.timeout(20000)
+            });
+
+            if (!response.ok) {
+              throw new Error('Unsplash HTTP ' + response.status);
             }
-          }),
-          signal: controller.signal
-        }
-      );
 
-      const type = response.headers.get('content-type') || '';
-      if (!response.ok) {
-        const detail = type.includes('json')
-          ? JSON.stringify(await response.json()).slice(0, 500)
-          : (await response.text()).slice(0, 500);
-        console.error('[AI Poster Cloudflare]', response.status, detail);
-        return res.status(response.status === 429 ? 429 : 502).json({
-          ok: false, error: 'AI background generation failed.'
+            const data = await response.json();
+            stockUrl = data.results?.[0]?.urls?.regular || null;
+
+            if (stockUrl) console.info('[POSTER BACKGROUND] Unsplash');
+          } catch (err) {
+            console.warn('[UNSPLASH FALLBACK]', err.message);
+          }
+        }
+
+        // Pixabay fallback
+        const pixabayKey = process.env.PIXABAY_API_KEY;
+
+        if (!stockUrl && pixabayKey) {
+          try {
+            const url =
+              'https://pixabay.com/api/?key=' +
+              encodeURIComponent(pixabayKey) +
+              '&q=' + encodeURIComponent(searchQuery) +
+              '&image_type=photo&orientation=vertical&safesearch=true&per_page=10';
+
+            const response = await fetch(url, {
+              signal: AbortSignal.timeout(20000)
+            });
+
+            if (!response.ok) {
+              throw new Error('Pixabay HTTP ' + response.status);
+            }
+
+            const data = await response.json();
+            stockUrl = data.hits?.[0]?.largeImageURL || null;
+
+            if (stockUrl) console.info('[POSTER BACKGROUND] Pixabay');
+          } catch (err) {
+            console.warn('[PIXABAY FALLBACK]', err.message);
+          }
+        }
+
+        // Wikimedia Commons fallback
+        if (!stockUrl) {
+          try {
+            const apiUrl =
+              'https://commons.wikimedia.org/w/api.php?action=query' +
+              '&generator=search&gsrnamespace=6&gsrlimit=10' +
+              '&gsrsearch=' + encodeURIComponent(searchQuery) +
+              '&prop=imageinfo&iiprop=url|extmetadata' +
+              '&iiurlwidth=1600&format=json';
+
+            const response = await fetch(apiUrl, {
+              headers: {
+                'User-Agent': 'SasikumarAI/1.0 PosterMaker'
+              },
+              signal: AbortSignal.timeout(20000)
+            });
+
+            if (!response.ok) {
+              throw new Error('Wikimedia HTTP ' + response.status);
+            }
+
+            const data = await response.json();
+            const pages = Object.values(data.query?.pages || {});
+
+            const page = pages.find(item =>
+              item.imageinfo?.[0]?.thumburl ||
+              item.imageinfo?.[0]?.url
+            );
+
+            const info = page?.imageinfo?.[0];
+
+            if (info) {
+              stockUrl = info.thumburl || info.url;
+
+              const meta = info.extmetadata || {};
+              const clean = value =>
+                String(value || '').replace(/<[^>]*>/g, '').trim();
+
+              backgroundAttribution = {
+                provider: 'Wikimedia Commons',
+                title: page.title || '',
+                artist: clean(meta.Artist?.value),
+                license: clean(meta.LicenseShortName?.value),
+                sourceUrl:
+                  'https://commons.wikimedia.org/wiki/' +
+                  encodeURIComponent((page.title || '').replace(/ /g, '_'))
+              };
+
+              console.info('[POSTER BACKGROUND] Wikimedia Commons');
+            }
+          } catch (err) {
+            console.warn('[WIKIMEDIA FALLBACK]', err.message);
+          }
+        }
+
+        if (!stockUrl) {
+          throw new Error(
+            'AI, Unsplash, Pixabay and Wikimedia failed: ' + aiError.message
+          );
+        }
+
+        const imageResponse = await fetch(stockUrl, {
+          signal: AbortSignal.timeout(45000)
         });
-      }
 
+        if (!imageResponse.ok) {
+          throw new Error('Stock image HTTP ' + imageResponse.status);
+        }
+
+        const mime = imageResponse.headers.get('content-type') || '';
+
+        if (!/^image\/(jpeg|png|webp)$/i.test(mime)) {
+          throw new Error('Stock provider returned an unsupported image.');
+        }
+
+        const stockBytes = Buffer.from(await imageResponse.arrayBuffer());
+
+        if (!stockBytes.length || stockBytes.length > 15 * 1024 * 1024) {
+          throw new Error('Stock image is empty or too large.');
+        }
+
+        generated =
+          'data:' + mime.split(';')[0] + ';base64,' +
+          stockBytes.toString('base64');
+      }
       let bytes;
-      if (type.startsWith('image/')) {
-        bytes = Buffer.from(await response.arrayBuffer());
+
+      const dataMatch = /^data:(image\/[a-zA-Z0-9.+-]+);base64,([A-Za-z0-9+/]+={0,2})$/.exec(generated);
+
+      if (dataMatch) {
+        bytes = Buffer.from(dataMatch[2], 'base64');
+      } else if (typeof generated === 'string' && /^https:\/\//i.test(generated)) {
+        const imageResponse = await fetch(generated, {
+          signal: AbortSignal.timeout(45000)
+        });
+
+        if (!imageResponse.ok) {
+          throw new Error('Generated image download failed: HTTP ' + imageResponse.status);
+        }
+
+        const mime = imageResponse.headers.get('content-type') || '';
+        if (!mime.startsWith('image/')) {
+          throw new Error('Provider returned a non-image URL.');
+        }
+
+        bytes = Buffer.from(await imageResponse.arrayBuffer());
       } else {
-        const data = await response.json();
-        const encoded = data?.result?.image;
-        if (data.success === false || typeof encoded !== 'string' || !encoded) {
-          console.error('[AI Poster result]', JSON.stringify(data).slice(0, 700));
-          return res.status(502).json({
-            ok: false, error: 'Cloudflare returned no usable image.'
-          });
-        }
-        const base64 = encoded.replace(/^data:image\/[a-zA-Z0-9.+-]+;base64,/, '');
-        if (!/^[A-Za-z0-9+/]+={0,2}$/.test(base64)) {
-          return res.status(502).json({ ok: false, error: 'Invalid image encoding.' });
-        }
-        bytes = Buffer.from(base64, 'base64');
+        throw new Error('No valid image returned by the AI providers.');
       }
 
-      if (!bytes || !bytes.length || bytes.length > 15 * 1024 * 1024) {
-        return res.status(502).json({ ok: false, error: 'Invalid image size.' });
+      if (!bytes.length || bytes.length > 15 * 1024 * 1024) {
+        throw new Error('Generated image is empty or exceeds 15 MB.');
       }
+
       await fs.promises.writeFile(tempFile, bytes);
-      } finally {
-        clearTimeout(timer);
-      }
     }
 
     const { execFile } = await import('node:child_process');
@@ -3962,7 +4082,8 @@ app.post('/api/ai/poster', async (req, res) => {
       ok: true,
       imageUrl: '/posters/' + path.basename(outputFile),
       width: 1080,
-      height: 1350
+      height: 1350,
+      backgroundAttribution
     });
   } catch (err) {
     console.error('[SK AI Poster Composer]', err.stack || err.message);
