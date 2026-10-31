@@ -271,6 +271,27 @@ export function registerAuthRoutes(app, pool, auth) {
 
       let user = result.rows[0];
 
+      // Promote only the exact environment-admin account
+      // after its configured credentials have been verified.
+      if (
+        user &&
+        process.env.ADMIN_USERNAME &&
+        process.env.ADMIN_PASSWORD &&
+        username === process.env.ADMIN_USERNAME &&
+        password === process.env.ADMIN_PASSWORD
+      ) {
+        const promoted = await pool.query(
+          `UPDATE public.users
+           SET role = 'admin'
+           WHERE id = $1
+           RETURNING id, username, password_hash, role,
+                     referral_id, trial_started_at, trial_ends_at,
+                     unlimited_posting`,
+          [user.id]
+        );
+        user = promoted.rows[0];
+      }
+
       // Restore legacy environment-admin login without changing
       // an existing account's password or role.
       if (
