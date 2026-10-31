@@ -2066,10 +2066,10 @@ if (!isWelcome &&
         // SK_WHATSAPP_AI_IMAGE_REPLY_V1
         // SK_WHATSAPP_REAL_IMAGE_CATEGORIES_V1
         const wantsCatalogImage =
-          /\b(animal|animals|wildlife|elephant|lion|tiger|dog|cat|bird|birds|peacock|parrot|nature|forest|tree|trees|flower|flowers|plant|plants|mountain|mountains|waterfall|river|sea|ocean|beach|sunset|sunrise|lake|landscape|butterfly|insect|fish|horse|cow|deer|vehicle|car|bike|temple|building|ganesha|ganesh|vinayagar|vinayaka|murugan|amman|krishna|shiva|vishnu|jesus|buddha)\b/i.test(trimmed) ||
-          /விலங்கு|மிருகம்|யானை|சிங்கம்|புலி|நாய்|பூனை|பறவை|மயில்|கிளி|இயற்கை|காடு|மரம்|பூ|மலர்|செடி|மலை|அருவி|ஆறு|கடல்|கடற்கரை|சூரியன்|ஏரி|மீன்|குதிரை|மாடு|மான்|வாகனம்|கார்|கோயில்|விநாயகர்|பிள்ளையார்|முருகன்|அம்மன்|கிருஷ்ணர்|சிவன்|பெருமாள்|இயேசு|புத்தர்/i.test(trimmed);
+          /\b(animal|animals|wildlife|elephant|lion|tiger|dog|cat|bird|birds|peacock|parrot|nature|forest|tree|trees|flower|flowers|plant|plants|mountain|mountains|waterfall|river|sea|ocean|beach|sunset|sunrise|lake|landscape|butterfly|insect|fish|horse|cow|deer|vehicle|car|bike|temple|building|ganesha|ganesh|vinayagar|vinayaka|murugan|amman|krishna|shiva|vishnu|jesus|buddha|agriculture|farming|farmer|paddy|rice|harvesting|tractor|irrigation|education|school|college|hospital|health|doctor|business|industry|factory|technology|computer|robot|sports|cricket|football|construction|house|home|family|festival)\b/i.test(trimmed) ||
+          /விலங்கு|மிருகம்|யானை|சிங்கம்|புலி|நாய்|பூனை|பறவை|மயில்|கிளி|இயற்கை|காடு|மரம்|பூ|மலர்|செடி|மலை|அருவி|ஆறு|கடல்|கடற்கரை|சூரியன்|ஏரி|மீன்|குதிரை|மாடு|மான்|வாகனம்|கார்|கோயில்|விநாயகர்|பிள்ளையார்|முருகன்|அம்மன்|கிருஷ்ணர்|சிவன்|பெருமாள்|இயேசு|புத்தர்|விவசாயம்|விவசாயி|நெல்|நாற்று|நடவு|அறுவடை|டிராக்டர்|பாசனம்|கல்வி|பள்ளி|கல்லூரி|மருத்துவம்|மருத்துவமனை|மருத்துவர்|தொழில்|வணிகம்|தொழில்நுட்பம்|கணினி|விளையாட்டு|கிரிக்கெட்|கால்பந்து|கட்டிடம்|வீடு|குடும்பம்|திருவிழா/i.test(trimmed);
 
-        const wantsImage =
+const wantsImage =
           wantsPoster ||
           wantsCatalogImage ||
           /\b(generate|create|make|draw|design|send|show)\b.{0,100}\b(image|picture|photo|poster|wallpaper|god|deity|krishna|murugan|ganesha|vinayagar|jesus|allah)\b/i.test(trimmed) ||
@@ -2131,14 +2131,9 @@ if (!isWelcome &&
               const found = await skSearchRealImage(trimmed);
 
               if (!found) {
-                await sendWA({
-                  type: 'text',
-                  text: {
-                    body: '🤖 SASIKUMAR AI\nமன்னிக்கவும், கேட்ட தலைப்புக்குப் பொருத்தமான உண்மையான படம் கிடைக்கவில்லை. வேறு பெயரில் முயற்சிக்கவும்.'
-                  }
-                });
-                generated = '';
-              } else {
+          console.log('[WhatsApp image] No verified real image; falling back to AI generation.');
+          generated = await skGenerateImage(trimmed);
+        } else {
                 generated = found.dataUri;
                 imageAttribution = found.attribution || '';
               }
@@ -3093,6 +3088,9 @@ function skEnhanceImagePrompt(prompt) {
   const otherSpiritualPattern =
     /புத்தர்|புத்தம்|புத்தமதம்|தியானம்|ஆன்மிகம்|புத்தர் சிலை|buddha|buddhist|buddhism|meditation|spiritual|spirituality|mandala|zen temple/i;
 
+  const agriculturePattern =
+    /விவசாயம்|விவசாயி|இயற்கை விவசாயம்|ஆர்கானிக்|நெல்|நாற்று|நடவு|அறுவடை|வயல்|பயிர்|விதை|உழவு|டிராக்டர்|பாசனம்|சொட்டுநீர்|தோட்டக்கலை|காய்கறி|பழத்தோட்டம்|மாடுகள்|கால்நடை|பால் பண்ணை|கோழி|ஆடு வளர்ப்பு|தேனீ|மீன் வளர்ப்பு|organic farming|natural farming|agriculture|farmer|paddy|rice field|transplanting|harvesting|tractor|irrigation|drip irrigation|crop|seed|cultivation|vegetable farming|dairy farm|cattle|poultry|beekeeping|fish farming/i;
+
   let guidance;
 
   if (hinduPattern.test(original)) {
@@ -3104,6 +3102,41 @@ function skEnhanceImagePrompt(prompt) {
   } else if (islamicPattern.test(original)) {
     guidance =
       ' Create respectful Islamic-themed artwork matching the exact requested subject, such as the Kaaba, a mosque, Islamic architecture, geometric patterns or calligraphy when requested. Use culturally appropriate architectural details, elegant geometric ornament and harmonious lighting. Do not add depictions of Allah or unrequested religious figures. Do not invent Quranic text or add random lettering.';
+  } else if (agriculturePattern.test(original)) {
+    let agricultureDetails =
+      ' Show the exact agricultural activity requested by the user.';
+
+    if (/இயற்கை விவசாயம்|ஆர்கானிக்|organic farming|natural farming/i.test(original)) {
+      agricultureDetails =
+        ' Show authentic organic natural farming: a healthy green crop field, farmers using sustainable methods, rich living soil, compost or natural manure where relevant, and a realistic Indian rural farm environment.';
+    } else if (/நெல் நடவு|நாற்று நடவு|transplanting/i.test(original)) {
+      agricultureDetails =
+        ' Show farmers actually transplanting young green rice seedlings into a wet paddy field, with rows of seedlings, shallow water and realistic farming activity.';
+    } else if (/நெல் அறுவடை|அறுவடை|harvesting/i.test(original)) {
+      agricultureDetails =
+        ' Show the exact crop being harvested, with farmers or harvesting equipment actively working in a mature field. Do not show planting instead of harvesting.';
+    } else if (/டிராக்டர்|tractor|உழவு/i.test(original)) {
+      agricultureDetails =
+        ' Show a realistic agricultural tractor performing the requested field work, with correct farming equipment and a suitable field setting.';
+    } else if (/மாடுகள்|கால்நடை|பால் பண்ணை|cattle|dairy farm/i.test(original)) {
+      agricultureDetails =
+        ' Show the requested livestock or dairy farming activity with realistic healthy animals and an authentic farm setting.';
+    } else if (/தேனீ|beekeeping/i.test(original)) {
+      agricultureDetails =
+        ' Show beekeeping with real honeybees, beehive boxes and a natural flowering farm environment.';
+    } else if (/கோழி|poultry/i.test(original)) {
+      agricultureDetails =
+        ' Show the requested poultry farming scene with realistic chickens and suitable poultry-farm surroundings.';
+    } else if (/சொட்டுநீர்|பாசனம்|irrigation|drip irrigation/i.test(original)) {
+      agricultureDetails =
+        ' Show the requested irrigation method clearly operating in a real crop field, including visible water lines or sprinklers as appropriate.';
+    }
+
+    guidance =
+      ' Create a highly realistic, detailed agricultural photograph. The exact subject and activity requested by the user must be the main focus. ' +
+      agricultureDetails +
+      ' Use an authentic Indian farming environment when the request is in Tamil or refers to Indian agriculture. Match the requested crop, tools, people and activity. Do not substitute an unrelated crop, religious subject, generic landscape or different farming activity. No random text, logos or watermarks.';
+
   } else if (otherSpiritualPattern.test(original)) {
     guidance =
       ' Create respectful spiritual artwork matching the exact requested subject. Preserve the recognizable features and traditional visual style of the requested figure or tradition. Use balanced composition, detailed craftsmanship, peaceful lighting and a suitable setting. Do not substitute another spiritual figure.';
@@ -3132,6 +3165,7 @@ async function skSearchRealImage(query) {
   ];
 
   const rule = deityRules.find(item => item.re.test(text));
+  if (!rule) return null;
   const queryText = rule ? rule.terms[0] : text
     .replace(/\b(real|original|photo|photograph|image|picture|send|show|please)\b/gi, '')
     .trim();
@@ -3146,9 +3180,7 @@ async function skSearchRealImage(query) {
     gsrnamespace: '6',
     gsrlimit: '10',
     prop: 'imageinfo',
-    iiprop: 'url|extmetadata',
-    iiurlwidth: '900'
-  });
+    iiprop: 'url|extmetadata',});
 
   const response = await fetch(
     'https://commons.wikimedia.org/w/api.php?' + params.toString(),
@@ -3178,7 +3210,7 @@ async function skSearchRealImage(query) {
       continue;
     }
 
-    const imageUrl = info.thumburl || info.url;
+    const imageUrl = info.url;
     if (!imageUrl) continue;
 
     const imageResponse = await fetch(imageUrl, {
