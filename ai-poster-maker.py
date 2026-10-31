@@ -37,7 +37,7 @@ def main():
         if line.strip()
     ]
     title = poster_lines[0] if poster_lines else "இனிய நாள் வாழ்த்துகள்!"
-    message = "\n".join(poster_lines[1:])
+    message = "\n".join(poster_lines[1:]).strip() or title
 
     if not background_path.is_file():
         raise FileNotFoundError(f"Background image not found: {background_path}")

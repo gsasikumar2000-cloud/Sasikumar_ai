@@ -2085,7 +2085,10 @@ if (!isWelcome &&
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
-                    content: trimmed.substring(0, 500),
+                    content: [
+                      trimmed.substring(0, 100),
+                      String(answerText || '').trim()
+                    ].filter(Boolean).join('\n').substring(0, 500),
                     theme: 'professional'
                   }),
                   signal: AbortSignal.timeout(120000)
