@@ -135,7 +135,19 @@ export function createAuthMiddleware(pool) {
     });
   }
 
-  return { requireAuth, requireActiveTrial };
+  async function requireAdmin(req, res, next) {
+    return requireAuth(req, res, () => {
+      if (req.authUser?.role !== 'admin') {
+        return res.status(403).json({
+          ok: false,
+          message: 'Admin access only.'
+        });
+      }
+      return next();
+    });
+  }
+
+  return { requireAuth, requireActiveTrial, requireAdmin };
 }
 
 export function registerAuthRoutes(app, pool, auth) {

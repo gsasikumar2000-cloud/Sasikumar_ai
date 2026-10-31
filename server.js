@@ -4404,6 +4404,16 @@ app.delete('/api/company-ads/admin/:id', requireCompanyAdsAdmin, async (req, res
 /* SKAI_AUTH_API_V1 */
 const auth = createAuthMiddleware(jobDbPool);
 registerAuthRoutes(app, jobDbPool, auth);
+app.get('/api/admin/maintenance', auth.requireAdmin, (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  return res.json({
+    ok: true,
+    username: req.authUser.username,
+    role: req.authUser.role,
+    checkedAt: new Date().toISOString()
+  });
+});
+
 /* END SKAI_AUTH_API_V1 */
 
 app.get('*',(req,res)=>{const fp=path.join(publicPath,'index.html');if(fs.existsSync(fp))res.sendFile(fp);else res.status(404).send('Not Found');});

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Maintenance - SASIKUMAR AI</title>
+<style>
+body{margin:0;padding:16px;background:#eff6ff;color:#172554;font-family:Arial,sans-serif}
+main{max-width:650px;margin:25px auto}
+header,.card{background:white;padding:18px;margin-bottom:14px;border-radius:15px;border:1px solid #bfdbfe;box-shadow:0 3px 12px #1e40af12}
+h1{font-size:22px;margin:0 0 6px;color:#1d4ed8}
+h2{font-size:18px}
+button,a.btn{display:inline-block;padding:12px 16px;border:0;border-radius:10px;background:#2563eb;color:white;text-decoration:none;font-weight:bold;margin:5px;cursor:pointer}
+#message{padding:12px;border-radius:10px;background:#dbeafe;overflow-wrap:anywhere}
+#details{line-height:1.8}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>🔐 SASIKUMAR AI</h1>
+<div>Admin Maintenance Dashboard</div>
+</header>
+<section class="card">
+<h2>Admin Access</h2>
+<div id="message">Checking admin login...</div>
+<div id="details"></div>
+</section>
+<section class="card">
+<h2>🖥️ Server Status</h2>
+<div id="server">Waiting for admin verification...</div>
+</section>
+<section class="card">
+<a class="btn" href="/">Home</a>
+<button id="logout" type="button" hidden>Logout</button>
+</section>
+</main>
+<script>
+(async function(){
+ const message=document.getElementById('message');
+ const details=document.getElementById('details');
+ const server=document.getElementById('server');
+ const logout=document.getElementById('logout');
+
+ try{
+   const r=await fetch('/api/admin/maintenance',{
+     credentials:'same-origin',
+     cache:'no-store'
+   });
+   const data=await r.json().catch(()=>({}));
+
+   if(!r.ok){
+     message.textContent=r.status===401
+       ? 'Login required. Please login from the Home Page.'
+       : r.status===403
+       ? 'Access denied. Admin account only.'
+       : (data.message||'Admin verification failed.');
+     server.textContent='Not available.';
+     return;
+   }
+
+   message.textContent='✅ Admin access verified';
+   details.textContent='Admin: '+data.username+' | Role: '+data.role;
+   logout.hidden=false;
+
+   const sr=await fetch('/api/status',{cache:'no-store'});
+   const status=await sr.json();
+   server.textContent=sr.ok
+     ? '🟢 '+status.status+' | Version: '+status.version+
+       ' | Options: '+status.options+' | Checked: '+status.time
+     : 'Server status unavailable.';
+ }catch(e){
+   message.textContent='Unable to verify admin access. Please try again.';
+   server.textContent='Connection error.';
+ }
+
+ logout.addEventListener('click',async()=>{
+   try{
+     await fetch('/api/logout',{method:'POST',credentials:'same-origin'});
+   }finally{
+     location.href='/';
+   }
+ });
+})();
+</script>
+</body>
+</html>
