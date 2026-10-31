@@ -7,7 +7,13 @@ import pg from 'pg';
 import { createAuthMiddleware, registerAuthRoutes } from './auth-routes.js';
 import path from 'path';
 import fs from 'fs';
-import { Jimp } from 'jimp';
+import {
+  Jimp,
+  loadFont,
+  HorizontalAlign,
+  VerticalAlign,
+  JimpMime
+} from 'jimp';
 import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -2156,36 +2162,72 @@ if (!isWelcome &&
               throw new Error('Generated image is empty.');
             }
 
-            // SASIKUMAR AI logo watermark
-            const baseImage = await Jimp.read(imageBytes);
-            const logoPath = path.join(publicPath, 'assets/sasikumar-ai-logo-60.png');
-            const logo = await Jimp.read(logoPath);
+            // SASIKUMAR AI STUDIO - separate footer below original image
+      const baseImage = await Jimp.read(imageBytes);
 
-            const logoWidth = Math.min(
-              150,
-              Math.max(60, Math.round(baseImage.bitmap.width * 0.18))
-            );
-            const logoHeight = Math.round(
-              logo.bitmap.height * logoWidth / logo.bitmap.width
-            );
+      const logoPath = path.join(
+        publicPath,
+        'assets/sasikumar-ai-logo-60.png'
+      );
 
-            logo.resize({ w: logoWidth, h: logoHeight });
+      const logo = await Jimp.read(logoPath);
 
-            const padding = Math.max(12, Math.round(baseImage.bitmap.width * 0.02));
-            baseImage.composite(
-              logo,
-              Math.max(0, baseImage.bitmap.width - logoWidth - padding),
-              Math.max(0, baseImage.bitmap.height - logoHeight - padding)
-            );
+      const footerHeight = 170;
+      const originalWidth = baseImage.bitmap.width;
+      const originalHeight = baseImage.bitmap.height;
 
-            const watermarkedBytes = await baseImage.getBuffer('image/png');
+      const finalImage = new Jimp({
+        width: originalWidth,
+        height: originalHeight + footerHeight,
+        color: 0xffffffff
+      });
+
+      // Preserve original image without watermark or resizing.
+      finalImage.composite(baseImage, 0, 0);
+
+      const logoWidth = Math.min(
+        110,
+        Math.max(64, Math.round(originalWidth * 0.09))
+      );
+
+      const logoHeight = Math.round(
+        logo.bitmap.height * logoWidth / logo.bitmap.width
+      );
+
+      logo.resize({ w: logoWidth, h: logoHeight });
+
+      const logoX = Math.round((originalWidth - logoWidth) / 2);
+      const logoY = originalHeight + 8;
+
+      finalImage.composite(logo, logoX, logoY);
+
+      const studioFont = await loadFont(
+        path.join(
+          __dirname,
+          'node_modules/@jimp/plugin-print/dist/fonts/open-sans/open-sans-32-black/open-sans-32-black.fnt'
+        )
+      );
+
+      finalImage.print({
+        font: studioFont,
+        x: 0,
+        y: originalHeight + 112,
+        text: 'SASIKUMAR AI STUDIO',
+        alignmentX: HorizontalAlign.CENTER,
+        alignmentY: VerticalAlign.MIDDLE,
+        maxWidth: originalWidth,
+        maxHeight: 48
+      });
+
+      const brandedBytes = await finalImage.getBuffer(JimpMime.png);
+
             const finalMime = 'image/png';
 
             const form = new FormData();
             form.append('messaging_product', 'whatsapp');
             form.append(
               'file',
-              new Blob([watermarkedBytes], { type: finalMime }),
+              new Blob([brandedBytes], { type: finalMime }),
               'sasikumar-ai.png'
             );
             form.append('type', finalMime);
@@ -2215,9 +2257,7 @@ if (!isWelcome &&
               type: 'image',
               image: {
                 id: uploadData.id,
-                caption: (imageAttribution
-                  ? imageAttribution + '\n'
-                  : '🎨 உங்கள் AI படம் தயார்!\n') + '🤖 SASIKUMAR AI'
+                caption: '🤖 SASIKUMAR AI STUDIO'
               }
             });
 
