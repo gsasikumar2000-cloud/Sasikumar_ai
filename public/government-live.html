@@ -9,6 +9,8 @@
 body{margin:0;background:#f0f9ff;color:#172554;font-family:Arial,sans-serif}
 header{padding:20px 14px;text-align:center;background:linear-gradient(120deg,#dbeafe,#ede9fe,#dcfce7)}
 h1{font-size:22px;margin:4px}
+.brand{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+.brand img{width:64px;height:64px;border-radius:50%;object-fit:contain;background:white;padding:3px;box-shadow:0 2px 8px #94a3b8}
 header p{font-size:13px;margin:8px}
 .wrap{max-width:850px;margin:auto;padding:12px}
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}
@@ -28,7 +30,10 @@ footer{text-align:center;padding:18px;font-size:11px;color:#64748b}
 </head>
 <body>
 <header>
+<div class="brand">
+<img src="/assets/sasikumar-ai-logo-60.png" alt="SASIKUMAR AI Logo">
 <h1>🇮🇳 SASIKUMAR AI</h1>
+</div>
 <h2>🏛️ GOVERNMENT NOTIFICATIONS LIVE</h2>
 <p>மத்திய அரசு • தமிழ்நாடு அரசு • வேலைவாய்ப்பு • நலத்திட்டங்கள்</p>
 <div class="status" id="updated">அதிகாரப்பூர்வ தகவல்கள் சரிபார்க்கப்படுகின்றன...</div>
