@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI - Government LIVE</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f0f9ff;color:#172554;font-family:Arial,sans-serif}
+header{padding:20px 14px;text-align:center;background:linear-gradient(120deg,#dbeafe,#ede9fe,#dcfce7)}
+h1{font-size:22px;margin:4px}
+header p{font-size:13px;margin:8px}
+.wrap{max-width:850px;margin:auto;padding:12px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+button,.action{border:0;border-radius:10px;padding:12px 8px;background:#2563eb;color:white;font-weight:700;text-align:center;text-decoration:none;font-size:13px}
+button:active,.action:active{opacity:.8}
+.box{background:white;border:1px solid #dbeafe;border-radius:13px;padding:13px;margin:12px 0;box-shadow:0 2px 8px #dbeafe}
+.box h2{font-size:16px;margin:0 0 8px}
+.status{font-size:12px;color:#15803d;font-weight:bold}
+.item{border-top:1px solid #e2e8f0;padding:10px 0;font-size:13px;line-height:1.6}
+.item strong{display:block;color:#1e3a8a}
+.small{font-size:11px;color:#475569}
+.links{display:flex;gap:8px;flex-wrap:wrap;margin-top:7px}
+.links a{background:#dbeafe;color:#1d4ed8;padding:7px 9px;border-radius:7px;text-decoration:none;font-size:11px;font-weight:bold}
+.notice{background:#fef3c7;color:#854d0e;padding:10px;border-radius:9px;font-size:12px;line-height:1.5}
+footer{text-align:center;padding:18px;font-size:11px;color:#64748b}
+</style>
+</head>
+<body>
+<header>
+<h1>🇮🇳 SASIKUMAR AI</h1>
+<h2>🏛️ GOVERNMENT NOTIFICATIONS LIVE</h2>
+<p>மத்திய அரசு • தமிழ்நாடு அரசு • வேலைவாய்ப்பு • நலத்திட்டங்கள்</p>
+<div class="status" id="updated">அதிகாரப்பூர்வ தகவல்கள் சரிபார்க்கப்படுகின்றன...</div>
+</header>
+<main class="wrap">
+<div class="actions">
+<button onclick="loadAll()">🔄 REFRESH LIVE</button>
+<a class="action" href="/jobs/index.html">💼 JOBS & CAREERS</a>
+</div>
+<div class="notice">
+⚠️ அறிவிப்புகள் அதிகாரப்பூர்வ இணையதளங்களில் சரிபார்க்கப்பட வேண்டும். உறுதிப்படுத்தப்படாத தகவல்களை விண்ணப்ப அறிவிப்பாகக் கருத வேண்டாம்.
+</div>
+<section class="box">
+<h2>🇮🇳 CENTRAL GOVERNMENT / மத்திய அரசு</h2>
+<div class="status" id="centralStatus">Loading...</div>
+<div id="centralItems"></div>
+<div class="links"><a href="https://www.pib.gov.in/" target="_blank" rel="noopener">PIB OFFICIAL</a></div>
+</section>
+<section class="box">
+<h2>🏛️ TAMIL NADU GOVERNMENT / தமிழ்நாடு அரசு</h2>
+<div class="status" id="tamilnaduStatus">Loading...</div>
+<div id="tamilnaduItems"></div>
+<div class="links">
+<a href="https://www.tn.gov.in/" target="_blank" rel="noopener">TN GOVERNMENT</a>
+<a href="https://www.tn.gov.in/go_view/dept" target="_blank" rel="noopener">GOVERNMENT ORDERS</a>
+<a href="https://dipr.tn.gov.in/" target="_blank" rel="noopener">DIPR</a>
+</div>
+</section>
+<section class="box">
+<h2>📝 TNPSC NOTIFICATIONS / தேர்வு அறிவிப்புகள்</h2>
+<div class="status" id="tnpscStatus">Loading...</div>
+<div id="tnpscItems"></div>
+<div class="links"><a href="https://apply.tnpscexams.in/notification?app_id=UElZMDAwMDAwMQ" target="_blank" rel="noopener">TNPSC APPLY / OFFICIAL</a></div>
+</section>
+<section class="box">
+<h2>🎯 GOVERNMENT SCHEMES / அரசு நலத்திட்டங்கள்</h2>
+<div class="status" id="schemesStatus">Loading...</div>
+<div id="schemesItems"></div>
+<div class="links"><a href="https://www.myscheme.gov.in/" target="_blank" rel="noopener">MYSCHEME OFFICIAL</a></div>
+</section>
+<footer>SASIKUMAR AI • Government Information Portal<br>தகவல்களை அதிகாரப்பூர்வ தளத்தில் சரிபார்க்கவும்.</footer>
+</main>
+<script>
+const official={
+ central:'https://www.pib.gov.in/',
+ tamilnadu:'https://www.tn.gov.in/',
+ tnpsc:'https://apply.tnpscexams.in/notification?app_id=UElZMDAwMDAwMQ',
+ schemes:'https://www.myscheme.gov.in/'
+};
+function safeLink(url){
+ try{const u=new URL(url);return ['https:'].includes(u.protocol)?u.href:'#'}catch{return '#'}
+}
+function addText(parent,tag,value){
+ const el=document.createElement(tag);el.textContent=value||'';parent.appendChild(el);return el;
+}
+function showItems(category,result){
+ const status=document.getElementById(category+'Status');
+ const target=document.getElementById(category+'Items');
+ target.replaceChildren();
+ const items=Array.isArray(result.items)?result.items:[];
+ status.textContent='நிலை: '+(result.status==='live'?'LIVE - அதிகாரப்பூர்வ தளத்திலிருந்து பெறப்பட்டது':result.status);
+ if(!items.length){
+  addText(target,'div',result.note||'தற்போது சரிபார்க்கப்பட்ட அறிவிப்புகள் கிடைக்கவில்லை.');
+  return;
+ }
+ items.slice(0,15).forEach(item=>{
+  const box=document.createElement('div');box.className='item';
+  addText(box,'strong',item.title||('Notification '+(item.notificationNo||'')));
+  if(item.notificationNo)addText(box,'div','அறிவிப்பு எண்: '+item.notificationNo);
+  if(item.notificationDate)addText(box,'div','அறிவிப்பு தேதி: '+item.notificationDate);
+  if(item.applicationStart)addText(box,'div','விண்ணப்பம் தொடக்கம்: '+item.applicationStart);
+  if(item.applicationLastDate)addText(box,'div','கடைசி நாள்: '+item.applicationLastDate);
+  if(item.examDate)addText(box,'div','தேர்வு நாள்: '+item.examDate);
+  const links=document.createElement('div');links.className='links';
+  const docs=Array.isArray(item.documents)?item.documents:[];
+  docs.forEach((url,i)=>{
+   const a=document.createElement('a');a.href=safeLink(url);a.target='_blank';a.rel='noopener';a.textContent=i===0?'தமிழ் PDF':'English PDF';links.appendChild(a);
+  });
+  const officialUrl=safeLink(item.link||item.officialUrl||official[category]);
+  if(officialUrl!=='#'){
+   const a=document.createElement('a');a.href=officialUrl;a.target='_blank';a.rel='noopener';a.textContent='OFFICIAL DETAILS';links.appendChild(a);
+  }
+  box.appendChild(links);target.appendChild(box);
+ });
+}
+async function loadCategory(category){
+ const status=document.getElementById(category+'Status');
+ status.textContent='அதிகாரப்பூர்வ தளத்தைச் சரிபார்க்கிறது...';
+ try{
+  const response=await fetch('/api/government?category='+encodeURIComponent(category),{cache:'no-store'});
+  if(!response.ok)throw new Error('HTTP '+response.status);
+  const data=await response.json();
+  const result=data.results?.[0];
+  if(!result)throw new Error('No result');
+  showItems(category,result);
+ }catch(error){
+  status.textContent='தற்போது தகவலைப் பெற முடியவில்லை: '+error.message;
+  document.getElementById(category+'Items').textContent='அதிகாரப்பூர்வ இணையதளத்தைப் பார்க்கவும்.';
+ }
+}
+async function loadAll(){
+ document.getElementById('updated').textContent='சரிபார்க்கும் நேரம்: '+new Date().toLocaleString('en-IN');
+ await Promise.all(['central','tamilnadu','tnpsc','schemes'].map(loadCategory));
+ document.getElementById('updated').textContent='கடைசியாகச் சரிபார்த்த நேரம்: '+new Date().toLocaleString('en-IN');
+}
+loadAll();
+setInterval(loadAll,5*60*1000);
+</script>
+</body>
+</html>

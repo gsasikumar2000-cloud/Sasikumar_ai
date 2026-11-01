@@ -6,6 +6,7 @@ import express from 'express';
 import pg from 'pg';
 import { createAuthMiddleware, registerAuthRoutes } from './auth-routes.js';
 import { registerVideoEngine } from './ai-video-engine.js';
+import { registerGovernmentLive, getGovernmentReply } from './government-live.js';
 import path from 'path';
 import fs from 'fs';
 import {
@@ -1950,6 +1951,8 @@ if (pinMatch || /^\d{6}$/.test(trimmed)) {
   reply = skMapsReply(mapsMatch[1]);
 } else if (/^(?:share|பகிர்|பகிரவும்)$/i.test(trimmed)) {
   reply = skShareReply('wa:' + from);
+ } else if (/^(?:central govt|central government|மத்திய அரசு|tn govt|tamil nadu govt|tamilnadu govt|state govt|தமிழ்நாடு அரசு|govt schemes|government schemes|schemes|அரசு திட்டங்கள்|நலத்திட்டங்கள்|latest notifications|latest notification|govt notifications|government notifications|அரசு அறிவிப்புகள்|அறிவிப்புகள்|tnpsc)$/i.test(trimmed)) {
+  reply = await getGovernmentReply(trimmed) || WELCOME_MENU;
 } else if (!isWelcome) {
   const num = trimmed.match(/^\s*(3[0-4]|[12][0-9]|[0-9])\s*$/);
 
@@ -4542,6 +4545,7 @@ app.delete('/api/company-ads/admin/:id', requireCompanyAdsAdmin, async (req, res
 const auth = createAuthMiddleware(jobDbPool);
 registerAuthRoutes(app, jobDbPool, auth);
 registerVideoEngine(app, { pool: jobDbPool, auth });
+registerGovernmentLive(app);
 app.get('/api/admin/maintenance', auth.requireAdmin, (req, res) => {
   res.set('Cache-Control', 'no-store');
   return res.json({
@@ -4956,6 +4960,13 @@ if (/^(?:share|பகிர்|பகிரவும்)$/i.test(text)) {
   await skTelegramSendMessage(chatId, skShareReply('tg:' + chatId));
   return;
 }
+
+    // SK_TELEGRAM_GOVERNMENT_LIVE_COMMANDS_V1
+    if (/^(?:central govt|central government|மத்திய அரசு|tn govt|tamil nadu govt|tamilnadu govt|state govt|தமிழ்நாடு அரசு|govt schemes|government schemes|schemes|அரசு திட்டங்கள்|நலத்திட்டங்கள்|latest notifications|latest notification|govt notifications|government notifications|அரசு அறிவிப்புகள்|அறிவிப்புகள்|tnpsc)$/i.test(text)) {
+      const governmentReply = await getGovernmentReply(text);
+      await skTelegramSendMessage(chatId, governmentReply || 'அரசு தகவல் தற்போது கிடைக்கவில்லை.');
+      return;
+    }
 
     // SK_TELEGRAM_AI_POSTER_COMMAND_V2
     const posterMatch = text.match(/^(?:poster|ai\s*poster|போஸ்டர்|ஏஐ\s*போஸ்டர்)\s*[:：]\s*([\s\S]+)$/i);
