@@ -4940,6 +4940,161 @@ if (/^(?:share|பகிர்|பகிரவும்)$/i.test(text)) {
 });
 // END SK_TELEGRAM_BOT_WEBHOOK_V1
 
+
+
+
+// SASIKUMAR AI — YOUTUBE DATA API V3
+async function skYouTubeRequest(endpoint, params = {}) {
+  const key = process.env.YOUTUBE_API_KEY;
+  if (!key) {
+    const err = new Error("YOUTUBE_API_KEY is missing");
+    err.status = 503;
+    throw err;
+  }
+
+  const url = new URL(`https://www.googleapis.com/youtube/v3/${endpoint}`);
+  for (const [k, v] of Object.entries({ ...params, key })) {
+    url.searchParams.set(k, String(v));
+  }
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 15000);
+  try {
+    const response = await fetch(url, { signal: controller.signal });
+    const data = await response.json();
+    if (!response.ok) {
+      const err = new Error(data.error?.message || "YouTube API request failed");
+      err.status = response.status;
+      throw err;
+    }
+    return data;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function skYouTubeError(res, err) {
+  console.error("[YouTube API]", err.message);
+  res.status(err.status || 502).json({
+    ok: false,
+    error: err.name === "AbortError"
+      ? "YouTube request timed out"
+      : err.status === 503
+        ? "YouTube API key is not configured"
+        : "YouTube service temporarily unavailable"
+  });
+}
+
+// 1. YouTube Video Search
+app.get("/api/youtube/search", async (req, res) => {
+  try {
+    const q = String(req.query.q || "").trim().slice(0, 150);
+    if (!q) return res.status(400).json({ ok: false, error: "Search query required. Use ?q=Tamil news" });
+
+    const data = await skYouTubeRequest("search", {
+      part: "snippet", type: "video", q,
+      maxResults: Math.min(25, Math.max(1, Number(req.query.maxResults) || 10)),
+      order: "relevance"
+    });
+
+    res.set("Cache-Control", "no-store");
+    res.json({
+      ok: true,
+      total: data.pageInfo?.totalResults || 0,
+      videos: (data.items || []).map(x => ({
+        id: x.id.videoId,
+        title: x.snippet.title,
+        description: x.snippet.description,
+        channel: x.snippet.channelTitle,
+        publishedAt: x.snippet.publishedAt,
+        thumbnail: x.snippet.thumbnails?.high?.url || x.snippet.thumbnails?.default?.url,
+        url: `https://www.youtube.com/watch?v=${x.id.videoId}`
+      }))
+    });
+  } catch (err) { skYouTubeError(res, err); }
+});
+
+// 2. Trending Videos — India
+app.get("/api/youtube/trending", async (req, res) => {
+  try {
+    const data = await skYouTubeRequest("videos", {
+      part: "snippet,statistics,contentDetails",
+      chart: "mostPopular",
+      regionCode: "IN",
+      maxResults: Math.min(25, Math.max(1, Number(req.query.maxResults) || 10))
+    });
+
+    res.set("Cache-Control", "no-store");
+    res.json({
+      ok: true,
+      videos: (data.items || []).map(x => ({
+        id: x.id,
+        title: x.snippet.title,
+        channel: x.snippet.channelTitle,
+        views: x.statistics?.viewCount || "0",
+        thumbnail: x.snippet.thumbnails?.high?.url || x.snippet.thumbnails?.default?.url,
+        url: `https://www.youtube.com/watch?v=${x.id}`
+      }))
+    });
+  } catch (err) { skYouTubeError(res, err); }
+});
+
+// 3. Tamil News Videos
+app.get("/api/youtube/news", async (req, res) => {
+  req.query.q = "Tamil news latest";
+  req.url = "/api/youtube/search?q=" + encodeURIComponent(req.query.q);
+  return res.redirect(307, req.url);
+});
+
+// 4. Tamil Songs Search
+app.get("/api/youtube/songs", async (req, res) => {
+  req.query.q = String(req.query.q || "Tamil songs").trim().slice(0, 150) || "Tamil songs";
+  req.url = "/api/youtube/search?q=" + encodeURIComponent(req.query.q);
+  return res.redirect(307, req.url);
+});
+
+// 5. Video Details
+app.get("/api/youtube/details", async (req, res) => {
+  try {
+    const id = String(req.query.id || "").trim();
+    if (!/^[A-Za-z0-9_-]{11}$/.test(id)) {
+      return res.status(400).json({ ok: false, error: "Valid YouTube video ID required" });
+    }
+
+    const data = await skYouTubeRequest("videos", {
+      part: "snippet,statistics,contentDetails", id
+    });
+    const x = data.items?.[0];
+    if (!x) return res.status(404).json({ ok: false, error: "Video not found" });
+
+    res.json({
+      ok: true,
+      id: x.id,
+      title: x.snippet.title,
+      description: x.snippet.description,
+      channel: x.snippet.channelTitle,
+      publishedAt: x.snippet.publishedAt,
+      views: x.statistics?.viewCount || "0",
+      likes: x.statistics?.likeCount || "0",
+      duration: x.contentDetails?.duration,
+      url: `https://www.youtube.com/watch?v=${x.id}`
+    });
+  } catch (err) { skYouTubeError(res, err); }
+});
+
+// 6. Share Video Link
+app.get("/api/youtube/share", (req, res) => {
+  const id = String(req.query.id || "").trim();
+  if (!/^[A-Za-z0-9_-]{11}$/.test(id)) {
+    return res.status(400).json({ ok: false, error: "Valid YouTube video ID required" });
+  }
+  res.json({
+    ok: true,
+    videoId: id,
+    shareUrl: `https://www.youtube.com/watch?v=${id}`
+  });
+});
+
 app.get('*',(req,res)=>{const fp=path.join(publicPath,'index.html');if(fs.existsSync(fp))res.sendFile(fp);else res.status(404).send('Not Found');});
 
 app.listen(PORT,()=>console.log(`🤖 35 OPTIONS WHATSAPP MENU http://localhost:${PORT} - OK`));
