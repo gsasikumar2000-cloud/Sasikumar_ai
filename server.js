@@ -5,6 +5,7 @@ import { InferenceClient } from '@huggingface/inference';
 import express from 'express';
 import pg from 'pg';
 import { createAuthMiddleware, registerAuthRoutes } from './auth-routes.js';
+import { registerVideoEngine } from './ai-video-engine.js';
 import path from 'path';
 import fs from 'fs';
 import {
@@ -4409,6 +4410,7 @@ app.delete('/api/company-ads/admin/:id', requireCompanyAdsAdmin, async (req, res
 /* SKAI_AUTH_API_V1 */
 const auth = createAuthMiddleware(jobDbPool);
 registerAuthRoutes(app, jobDbPool, auth);
+registerVideoEngine(app, { pool: jobDbPool, auth });
 app.get('/api/admin/maintenance', auth.requireAdmin, (req, res) => {
   res.set('Cache-Control', 'no-store');
   return res.json({
@@ -4421,7 +4423,7 @@ app.get('/api/admin/maintenance', auth.requireAdmin, (req, res) => {
 
 /* END SKAI_AUTH_API_V1 */
 
-app.get('*',(req,res)=>{const fp=path.join(publicPath,'index.html');if(fs.existsSync(fp))res.sendFile(fp);else res.status(404).send('Not Found');});
+
 
 // SASIKUMAR AI FAL IMAGE API V1
 app.post('/api/fal-image', async (req, res) => {
@@ -4937,5 +4939,7 @@ if (/^(?:share|பகிர்|பகிரவும்)$/i.test(text)) {
   }
 });
 // END SK_TELEGRAM_BOT_WEBHOOK_V1
+
+app.get('*',(req,res)=>{const fp=path.join(publicPath,'index.html');if(fs.existsSync(fp))res.sendFile(fp);else res.status(404).send('Not Found');});
 
 app.listen(PORT,()=>console.log(`🤖 35 OPTIONS WHATSAPP MENU http://localhost:${PORT} - OK`));

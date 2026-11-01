@@ -93,6 +93,52 @@ canvas,video{display:block;width:100%;max-height:520px;background:#0b1020;border
 <div id="status" role="status">Select one or more photos to begin.</div>
 </section>
 
+
+<section class="card" id="skAiVideoPanel">
+<h2>🤖 AI Text-to-Video (MP4)</h2>
+<p class="small">Create a 5-second AI video from your text prompt. Login is required. The provider may charge for generation.</p>
+
+<label for="skAiVideoPrompt">Describe your video</label>
+<textarea id="skAiVideoPrompt" maxlength="1500" minlength="5"
+placeholder="Example: Beautiful Tamil village sunrise, green fields, birds flying, cinematic camera movement"></textarea>
+
+<div class="row">
+<div>
+<label for="skAiVideoRatio">Video format</label>
+<select id="skAiVideoRatio">
+<option value="16:9">Landscape 16:9</option>
+<option value="9:16">Portrait 9:16</option>
+<option value="1:1">Square 1:1</option>
+<option value="4:3">Classic 4:3</option>
+</select>
+</div>
+<div>
+<label>Duration</label>
+<input type="text" value="5 seconds" readonly>
+</div>
+</div>
+
+<p class="small">Estimated provider cost: approximately US$0.075 for 5 seconds at the currently configured rate. Actual pricing may vary.</p>
+
+<label style="display:flex;gap:9px;align-items:flex-start;font-weight:normal">
+<input id="skAiVideoPaidConfirm" type="checkbox" style="margin-top:3px">
+<span>I understand this AI generation may incur a charge, and I authorize this individual request.</span>
+</label>
+
+<button type="button" class="primary" id="skAiVideoCreate" disabled>
+🎬 Generate AI Video
+</button>
+
+<p id="skAiVideoStatus" role="status" aria-live="polite" class="small">
+🔒 Server-side AI Video generation is currently disabled. No paid generation will start until the administrator enables it.
+</p>
+
+<div id="skAiVideoResult" hidden>
+<video id="skAiVideoPlayer" controls playsinline style="width:100%;max-height:480px"></video>
+<a id="skAiVideoDownload" class="download" target="_blank" rel="noopener">▶️ Open generated video</a>
+</div>
+</section>
+
 <section class="card">
 <h2>▶️ Preview</h2>
 <canvas id="canvas" width="1280" height="720"></canvas>
@@ -331,5 +377,115 @@ ctx.fillStyle='#fff';ctx.textAlign='center';ctx.font='28px Arial';
 ctx.fillText('Your video preview will appear here',w/2,h/2);
 })();
 </script>
+
+<script>
+(function () {
+  const $ = id => document.getElementById(id);
+  const confirmBox = $('skAiVideoPaidConfirm');
+  const button = $('skAiVideoCreate');
+  const status = $('skAiVideoStatus');
+  const resultBox = $('skAiVideoResult');
+  const player = $('skAiVideoPlayer');
+  const download = $('skAiVideoDownload');
+
+  if (!confirmBox || !button || !status) return;
+
+  confirmBox.addEventListener('change', () => {
+    button.disabled = !confirmBox.checked;
+  });
+
+  async function checkJob(jobId) {
+    for (let attempt = 0; attempt < 60; attempt++) {
+      await new Promise(resolve => setTimeout(resolve, 5000));
+
+      const response = await fetch(
+        '/api/ai/video/' + encodeURIComponent(jobId),
+        { credentials: 'same-origin', cache: 'no-store' }
+      );
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Could not check video status.');
+      }
+
+      status.textContent = 'Video status: ' + data.status;
+
+      if (data.status === 'completed' && data.videoUrl) {
+        player.src = data.videoUrl;
+        download.href = data.videoUrl;
+        resultBox.hidden = false;
+        status.textContent = '✅ Your AI video is ready.';
+        return;
+      }
+
+      if (data.status === 'failed') {
+        throw new Error(data.error || 'Video generation failed.');
+      }
+    }
+
+    status.textContent =
+      'Video is still processing. You can check again later using job ID: ' + jobId;
+  }
+
+  button.addEventListener('click', async () => {
+    const prompt = $('skAiVideoPrompt').value.trim();
+
+    if (!confirmBox.checked) {
+      status.textContent = 'Please confirm the possible generation charge first.';
+      return;
+    }
+
+    if (prompt.length < 5 || prompt.length > 1500) {
+      status.textContent = 'Enter a prompt between 5 and 1500 characters.';
+      return;
+    }
+
+    button.disabled = true;
+    status.textContent = 'Checking login and server availability...';
+    resultBox.hidden = true;
+
+    try {
+      const login = await fetch('/api/auth/me', {
+        credentials: 'same-origin',
+        cache: 'no-store'
+      });
+
+      if (!login.ok) {
+        throw new Error('Please login to SASIKUMAR AI first.');
+      }
+
+      const response = await fetch('/api/ai/video', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt,
+          duration: 5,
+          aspectRatio: $('skAiVideoRatio').value,
+          confirmPaid: true
+        })
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.message || 'AI Video server is not available.');
+      }
+
+      status.textContent =
+        'Video job submitted. Estimated cost: $' +
+        Number(data.estimatedCostUSD || 0).toFixed(3);
+
+      if (data.jobId) await checkJob(data.jobId);
+
+    } catch (error) {
+      status.textContent = '⚠️ ' + error.message;
+    } finally {
+      button.disabled = !confirmBox.checked;
+    }
+  });
+})();
+</script>
+
 </body>
 </html>

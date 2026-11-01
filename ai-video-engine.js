@@ -1,0 +1,296 @@
+const FAL_ENDPOINT =
+  'https://queue.fal.run/minimax/h3-max-turbo/text-to-video';
+
+const FAL_PRICE_PER_SECOND = 0.015;
+
+function safeQueueUrl(value) {
+  try {
+    const url = new URL(value);
+    return url.protocol === 'https:' &&
+      url.hostname === 'queue.fal.run' &&
+      !url.username &&
+      !url.password
+      ? url.toString()
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+export function registerVideoEngine(app, { pool, auth }) {
+  if (!pool || !auth?.requireAuth) {
+    throw new Error('Video Engine requires database and authentication.');
+  }
+
+  // Create a paid AI video job.
+  app.post('/api/ai/video', auth.requireAuth, async (req, res) => {
+    let jobId;
+
+    try {
+      if (process.env.AI_VIDEO_ENABLED !== 'true') {
+        return res.status(503).json({
+          ok: false,
+          code: 'VIDEO_DISABLED',
+          message: 'AI Video generation is currently disabled.'
+        });
+      }
+
+      if (req.body?.confirmPaid !== true) {
+        return res.status(400).json({
+          ok: false,
+          code: 'PAID_CONFIRMATION_REQUIRED',
+          message: 'Explicit paid-generation confirmation is required.'
+        });
+      }
+
+      const apiKey = process.env.FAL_KEY;
+
+      if (!apiKey) {
+        return res.status(503).json({
+          ok: false,
+          message: 'Video provider is not configured.'
+        });
+      }
+
+      const prompt = String(req.body?.prompt || '').trim();
+
+      if (prompt.length < 5 || prompt.length > 1500) {
+        return res.status(400).json({
+          ok: false,
+          message: 'Prompt must contain 5 to 1500 characters.'
+        });
+      }
+
+      const duration = Number(req.body?.duration || 5);
+
+      if (![5].includes(duration)) {
+        return res.status(400).json({
+          ok: false,
+          message: 'Initial version supports 5-second videos only.'
+        });
+      }
+
+      const aspectRatio = String(req.body?.aspectRatio || '16:9');
+
+      if (!['21:9', '16:9', '4:3', '1:1', '3:4', '9:16'].includes(aspectRatio)) {
+        return res.status(400).json({
+          ok: false,
+          message: 'Invalid aspect ratio.'
+        });
+      }
+
+      jobId = cryptoRandomUUID();
+
+      await pool.query(
+        `INSERT INTO public.video_jobs
+          (job_id, user_id, platform, input_type, prompt, provider,
+           status, duration_seconds)
+         VALUES ($1, $2, 'website', 'text', $3, 'fal',
+                 'queued', $4)`,
+        [jobId, req.authUser.id, prompt, duration]
+      );
+
+      const providerResponse = await fetch(FAL_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          Authorization: `Key ${apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          prompt,
+          duration,
+          resolution: '480P',
+          aspect_ratio: aspectRatio,
+          enable_safety_checker: true,
+          prompt_expansion_mode: 'balanced'
+        }),
+        signal: AbortSignal.timeout(30000)
+      });
+
+      const providerData = await providerResponse.json().catch(() => ({}));
+
+      if (!providerResponse.ok || !providerData.request_id) {
+        throw new Error(
+          `Video provider submission failed (${providerResponse.status}).`
+        );
+      }
+
+      const statusUrl = safeQueueUrl(providerData.status_url);
+      const responseUrl = safeQueueUrl(providerData.response_url);
+
+      if (!statusUrl || !responseUrl) {
+        throw new Error('Video provider returned an invalid queue URL.');
+      }
+
+      await pool.query(
+        `UPDATE public.video_jobs
+         SET provider_request_id = $1,
+             status = 'processing',
+             metadata = metadata || $2::jsonb,
+             updated_at = NOW()
+         WHERE job_id = $3 AND user_id = $4`,
+        [
+          providerData.request_id,
+          JSON.stringify({ status_url: statusUrl, response_url: responseUrl }),
+          jobId,
+          req.authUser.id
+        ]
+      );
+
+      return res.status(202).json({
+        ok: true,
+        jobId,
+        status: 'processing',
+        duration,
+        resolution: '480P',
+        estimatedCostUSD: Number(
+          (duration * FAL_PRICE_PER_SECOND).toFixed(3)
+        ),
+        message: 'Video generation has been submitted.'
+      });
+
+    } catch (error) {
+      console.error('[AI Video submit]', error.message);
+
+      if (jobId) {
+        await pool.query(
+          `UPDATE public.video_jobs
+           SET status = 'failed', error_message = $1,
+               updated_at = NOW()
+           WHERE job_id = $2 AND user_id = $3`,
+          [
+            String(error.message).slice(0, 500),
+            jobId,
+            req.authUser.id
+          ]
+        ).catch(() => {});
+      }
+
+      return res.status(502).json({
+        ok: false,
+        message: 'Could not submit the video job.',
+        jobId: jobId || undefined
+      });
+    }
+  });
+
+  // Check a job belonging to the logged-in user.
+  app.get('/api/ai/video/:jobId', auth.requireAuth, async (req, res) => {
+    try {
+      const found = await pool.query(
+        `SELECT job_id, status, provider_request_id, video_url,
+                error_message, duration_seconds, metadata,
+                created_at, completed_at
+         FROM public.video_jobs
+         WHERE job_id = $1 AND user_id = $2
+         LIMIT 1`,
+        [req.params.jobId, req.authUser.id]
+      );
+
+      if (!found.rows.length) {
+        return res.status(404).json({
+          ok: false,
+          message: 'Video job not found.'
+        });
+      }
+
+      const job = found.rows[0];
+
+      if (job.status === 'processing') {
+        const statusUrl = safeQueueUrl(job.metadata?.status_url);
+        const responseUrl = safeQueueUrl(job.metadata?.response_url);
+
+        if (statusUrl && responseUrl) {
+          const statusResponse = await fetch(statusUrl, {
+            headers: { Authorization: `Key ${process.env.FAL_KEY || ''}` },
+            signal: AbortSignal.timeout(20000)
+          });
+
+          const providerStatus = await statusResponse.json().catch(() => ({}));
+
+          if (!statusResponse.ok) {
+            throw new Error('Could not check video provider status.');
+          }
+
+          if (providerStatus.status === 'COMPLETED') {
+            const resultResponse = await fetch(responseUrl, {
+              headers: { Authorization: `Key ${process.env.FAL_KEY || ''}` },
+              signal: AbortSignal.timeout(20000)
+            });
+
+            const result = await resultResponse.json().catch(() => ({}));
+
+            if (!resultResponse.ok) {
+              throw new Error('Could not retrieve completed video result.');
+            }
+
+            const videoUrl = result.video?.url;
+
+            let validVideoUrl = false;
+
+            try {
+              const parsed = new URL(videoUrl);
+              validVideoUrl =
+                parsed.protocol === 'https:' &&
+                (parsed.hostname === 'fal.media' ||
+                 parsed.hostname.endsWith('.fal.media'));
+            } catch {}
+
+            if (!validVideoUrl) {
+              throw new Error('Provider returned an invalid video URL.');
+            }
+
+            await pool.query(
+              `UPDATE public.video_jobs
+               SET status = 'completed', video_url = $1,
+                   completed_at = NOW(), updated_at = NOW()
+               WHERE job_id = $2 AND user_id = $3`,
+              [videoUrl, job.job_id, req.authUser.id]
+            );
+
+            job.status = 'completed';
+            job.video_url = videoUrl;
+          } else if (providerStatus.status === 'FAILED') {
+            const message = String(
+              providerStatus.error || 'Video generation failed.'
+            ).slice(0, 500);
+
+            await pool.query(
+              `UPDATE public.video_jobs
+               SET status = 'failed', error_message = $1,
+                   updated_at = NOW()
+               WHERE job_id = $2 AND user_id = $3`,
+              [message, job.job_id, req.authUser.id]
+            );
+
+            job.status = 'failed';
+            job.error_message = message;
+          }
+        }
+      }
+
+      return res.json({
+        ok: true,
+        jobId: job.job_id,
+        status: job.status,
+        videoUrl: job.video_url || null,
+        error: job.error_message || null,
+        duration: job.duration_seconds,
+        createdAt: job.created_at,
+        completedAt: job.completed_at
+      });
+
+    } catch (error) {
+      console.error('[AI Video status]', error.message);
+
+      return res.status(502).json({
+        ok: false,
+        message: 'Could not check video status.'
+      });
+    }
+  });
+}
+
+function cryptoRandomUUID() {
+  return globalThis.crypto.randomUUID();
+}
