@@ -984,6 +984,28 @@ function getWhatsAppEMIReply(message) {
 function detectLang(q){try{if(/[\u0B80-\u0BFF]/.test(q))return 'ta';return 'en';}catch(e){return 'en';}}
 function getGeneralReply(q,lang){const time=new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'});if(q.toLowerCase().includes('gold'))return `💰 GOLD RATE\nVerified current rate-ai /api/gold-la check pannunga.\nhttps://sasikumar-ai-9wdq.onrender.com/api/gold\nType 0 for Menu`;return `🌍 General AI - ${time}\nYou: "${q}"\nType 0 for Menu or 1-35`; }
 
+app.get('/api/pincode', async (req, res) => {
+  try {
+    const q = String(req.query.q || req.query.pincode || req.query.area || '').trim();
+    const result = await skLookupPincode(q);
+    res.set('Cache-Control', 'no-store');
+    if (!result.offices.length) {
+      return res.status(404).json({ ok: false, query: q, message: 'Post Office not found' });
+    }
+    const first = result.offices[0];
+    const mapQuery = q + ', ' + (first.District || '') + ', ' + (first.State || 'India') + ', India';
+    res.json({
+      ok: true,
+      query: q,
+      count: result.offices.length,
+      postOffices: result.offices,
+      mapsUrl: 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(mapQuery)
+    });
+  } catch (error) {
+    res.status(400).json({ ok: false, error: 'Enter a valid 6-digit PIN code or area name.' });
+  }
+});
+
 app.get('/api/status',(req,res)=>{res.json({status:'WHATSAPP MENU 35 OPTIONS LIVE OK',version:'7.4 Menu',options:35,time:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})});});
 app.get('/api/whatsapp/menu',(req,res)=>{
   res.set('Cache-Control','no-store');
@@ -1775,6 +1797,69 @@ function skMapsReply(place) {
   return '📍 GOOGLE MAPS\n\n🔎 தேடும் இடம்: ' + query + '\n\n🗺️ வரைபடத்தைத் திறக்கவும்:\n' + url;
 }
 
+// SK_PINCODE_LOCATION_V1
+async function skLookupPincode(query) {
+  const q = String(query || '').trim();
+  if (!q || q.length > 60) throw new Error('Invalid search');
+
+  const isPin = /^\d{6}$/.test(q);
+  if (!isPin && q.length < 2) throw new Error('Enter a valid PIN code or area name');
+
+  const endpoint = isPin
+    ? 'https://api.postalpincode.in/pincode/' + encodeURIComponent(q)
+    : 'https://api.postalpincode.in/postoffice/' + encodeURIComponent(q);
+
+  const response = await fetch(endpoint, {
+    signal: AbortSignal.timeout(12000)
+  });
+  if (!response.ok) throw new Error('Post Office service unavailable');
+
+  const data = await response.json();
+  const result = Array.isArray(data) ? data[0] : null;
+  const offices = result?.Status === 'Success' && Array.isArray(result.PostOffice)
+    ? result.PostOffice
+    : [];
+
+  return { query: q, offices, message: result?.Message || '' };
+}
+
+async function skPincodeReply(query) {
+  try {
+    const result = await skLookupPincode(query);
+    if (!result.offices.length) {
+      return '📍 PIN CODE / LOCATION SEARCH\n\nஇந்தத் தேடலுக்கு Post Office விவரம் கிடைக்கவில்லை. வேறு PIN Code அல்லது ஊர் பெயரை முயற்சிக்கவும்.';
+    }
+
+    const offices = result.offices.slice(0, 8);
+    const first = offices[0];
+    const lines = offices.map((o, i) =>
+      (i + 1) + '. 🏣 ' + (o.Name || 'Post Office') +
+      '\n   PIN: ' + (o.Pincode || '-') +
+      '\n   வகை: ' + (o.BranchType || '-') +
+      '\n   மாவட்டம்: ' + (o.District || '-') +
+      '\n   அஞ்சல் நிலை: ' + (o.DeliveryStatus || '-')
+    );
+
+    const mapQuery = result.query + ', ' + (first.District || '') +
+      ', ' + (first.State || 'India') + ', India';
+    const mapUrl = 'https://www.google.com/maps/search/?api=1&query=' +
+      encodeURIComponent(mapQuery);
+
+    return '📍 SASIKUMAR AI — PIN CODE LOCATION\n\n' +
+      '🔎 தேடல்: ' + result.query + '\n' +
+      '🏙️ மாவட்டம்: ' + (first.District || '-') + '\n' +
+      '🗺️ மாநிலம்: ' + (first.State || '-') + '\n' +
+      '📮 கிடைத்த Post Office: ' + result.offices.length + '\n\n' +
+      lines.join('\n\n') +
+      '\n\n🗺️ Google Maps:\n' + mapUrl +
+      '\n\n🌐 Website: https://sasikumar-ai-9wdq.onrender.com/pincode.html';
+  } catch (error) {
+    console.error('[PINCODE] Lookup failed:', error.message || error);
+    return '⚠️ PIN Code தகவலைப் பெற முடியவில்லை. சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.';
+  }
+}
+
+
 function skShareReply(key) {
   const message = SK_LAST_BOT_REPLIES.get(key) ||
     'SASIKUMAR AI — உங்கள் AI உதவியாளர்.\nhttps://sasikumar-ai-9wdq.onrender.com';
@@ -1858,7 +1943,10 @@ let youtubeSearchRequested = false;
 let autoPosterForContent = false;
 
 const mapsMatch = trimmed.match(/^(?:maps?|வரைபடம்|மேப்)\s*[:\-]?\s*(.*)$/i);
-if (mapsMatch) {
+const pinMatch = trimmed.match(/^(?:pin(?:\s*code)?|pincode|பின்கோடு|அஞ்சல்\s*குறியீடு|area|ஊர்)\s*[:\-]?\s*(.+)$/i);
+if (pinMatch || /^\d{6}$/.test(trimmed)) {
+  reply = await skPincodeReply(pinMatch ? pinMatch[1] : trimmed);
+} else if (mapsMatch) {
   reply = skMapsReply(mapsMatch[1]);
 } else if (/^(?:share|பகிர்|பகிரவும்)$/i.test(trimmed)) {
   reply = skShareReply('wa:' + from);
@@ -4854,6 +4942,11 @@ app.post('/api/telegram/webhook', async (req, res) => {
 
 if (!chatId || !text) return;
 
+const pinMatch = text.match(/^(?:pin(?:\s*code)?|pincode|பின்கோடு|அஞ்சல்\s*குறியீடு|area|ஊர்)\s*[:\-]?\s*(.+)$/i);
+if (pinMatch || /^\d{6}$/.test(text)) {
+  await skTelegramSendMessage(chatId, await skPincodeReply(pinMatch ? pinMatch[1] : text));
+  return;
+}
 const mapsMatch = text.match(/^(?:maps?|வரைபடம்|மேப்)\s*[:\-]?\s*(.*)$/i);
 if (mapsMatch) {
   await skTelegramSendMessage(chatId, skMapsReply(mapsMatch[1]));

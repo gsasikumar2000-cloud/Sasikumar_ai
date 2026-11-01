@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI - PIN Code Location Finder</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:18px;background:linear-gradient(135deg,#e0f2fe,#ede9fe,#dcfce7);font-family:Arial,sans-serif;color:#172554}
+main{max-width:650px;margin:25px auto;background:white;padding:24px;border-radius:22px;box-shadow:0 8px 30px #64748b33}
+.logo{width:65px;height:65px;object-fit:contain;display:block;margin:auto}
+h1{text-align:center;color:#2563eb;font-size:25px}
+.sub{text-align:center;line-height:1.7;color:#475569}
+input{width:100%;padding:15px;border:2px solid #bfdbfe;border-radius:12px;font-size:18px;margin:12px 0}
+button{width:100%;padding:14px;border:0;border-radius:12px;background:#2563eb;color:white;font-size:17px;font-weight:bold;cursor:pointer}
+#status{margin:15px 0;text-align:center}
+.result{background:#eff6ff;padding:15px;border-radius:14px;margin-top:12px}
+.office{background:#f8fafc;border:1px solid #dbeafe;border-radius:12px;padding:13px;margin:10px 0;line-height:1.8}
+.map{display:block;text-align:center;background:#16a34a;color:white;padding:13px;border-radius:10px;text-decoration:none;margin-top:15px}
+footer{text-align:center;font-size:13px;color:#64748b;margin-top:20px}
+</style>
+</head>
+<body>
+<main>
+<img class="logo" src="/assets/sasikumar-ai-logo-60.png" alt="SASIKUMAR AI">
+<h1>📍 PIN Code & Location Finder</h1>
+<p class="sub">இந்தியாவின் PIN Code, Post Office, District, State விவரங்களைத் தேடுங்கள்.<br>Search by 6-digit PIN Code or Area Name.</p>
+<form id="searchForm">
+<input id="query" placeholder="உதா: 614205 அல்லது Papanasam" required maxlength="60">
+<button type="submit">🔍 தேடுங்கள் / Search Location</button>
+</form>
+<div id="status" aria-live="polite"></div>
+<div id="results"></div>
+<footer>🤖 SASIKUMAR AI · Location & Maps Service</footer>
+</main>
+<script>
+const form=document.getElementById('searchForm');
+const input=document.getElementById('query');
+const statusBox=document.getElementById('status');
+const results=document.getElementById('results');
+form.addEventListener('submit',async e=>{
+ e.preventDefault();
+ const q=input.value.trim();
+ if(!q)return;
+ statusBox.textContent='⏳ தகவல்கள் தேடப்படுகின்றன...';
+ results.replaceChildren();
+ try{
+  const response=await fetch('/api/pincode?q='+encodeURIComponent(q));
+  const data=await response.json();
+  if(!response.ok||!data.ok)throw new Error(data.error||data.message||'தகவல் கிடைக்கவில்லை');
+  statusBox.textContent='✅ '+data.count+' Post Office விவரங்கள் கிடைத்தன.';
+  const box=document.createElement('section');
+  box.className='result';
+  const heading=document.createElement('h3');
+  heading.textContent='📍 '+data.query+' — '+data.count+' முடிவுகள்';
+  box.appendChild(heading);
+  data.postOffices.forEach((o,i)=>{
+   const card=document.createElement('div');
+   card.className='office';
+   const name=document.createElement('strong');
+   name.textContent=(i+1)+'. 🏣 '+(o.Name||'Post Office');
+   card.appendChild(name);
+   const details=document.createElement('div');
+   details.textContent='PIN Code: '+(o.Pincode||'-')+' | வகை: '+(o.BranchType||'-')+' | மாவட்டம்: '+(o.District||'-')+' | மாநிலம்: '+(o.State||'-')+' | Delivery: '+(o.DeliveryStatus||'-');
+   card.appendChild(details);
+   box.appendChild(card);
+  });
+  const map=document.createElement('a');
+  map.className='map';
+  map.href=data.mapsUrl;
+  map.target='_blank';
+  map.rel='noopener';
+  map.textContent='🗺️ Google Maps-ல் பார்க்கவும்';
+  box.appendChild(map);
+  results.appendChild(box);
+ }catch(err){
+  statusBox.textContent='⚠️ '+err.message;
+ }
+});
+</script>
+</body>
+</html>
