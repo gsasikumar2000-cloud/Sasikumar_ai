@@ -1069,6 +1069,227 @@ async function generateImageAuto() {
 })();
 </script>
 \n
+
+<!-- SK_ALL_IN_ONE_PHOTO_EDITOR_V1 -->
+<section id="skPhotoEditor" style="margin:22px 0;padding:18px;border:2px solid #93c5fd;border-radius:20px;background:linear-gradient(135deg,#eff6ff,#f0fdfa);color:#172554;">
+<h2 style="text-align:center;margin:4px 0 8px;">🖼️ ALL-IN-ONE PHOTO EDITING STUDIO</h2>
+<p style="text-align:center;margin:0 0 14px;">Upload your photo and edit it professionally.</p>
+
+<input id="skEditUpload" type="file" accept="image/*" style="width:100%;padding:12px;background:white;border:1px solid #93c5fd;border-radius:10px;box-sizing:border-box;">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;">
+<button type="button" onclick="skEditorRotate(-90)">↶ Rotate Left</button>
+<button type="button" onclick="skEditorRotate(90)">↻ Rotate Right</button>
+<button type="button" onclick="skEditorFlip('h')">↔ Flip Horizontal</button>
+<button type="button" onclick="skEditorFlip('v')">↕ Flip Vertical</button>
+</div>
+
+<label style="display:block;margin-top:14px;font-weight:bold;">✂️ Crop Format</label>
+<select id="skEditCrop" style="width:100%;padding:12px;border-radius:10px;">
+<option value="original">Original</option>
+<option value="square">Square 1:1</option>
+<option value="portrait">Portrait 4:5</option>
+<option value="landscape">Landscape 16:9</option>
+</select>
+
+<label style="display:block;margin-top:14px;font-weight:bold;">☀️ Brightness</label>
+<input id="skEditBrightness" type="range" min="0" max="200" value="100" style="width:100%;">
+<label style="display:block;margin-top:10px;font-weight:bold;">◐ Contrast</label>
+<input id="skEditContrast" type="range" min="0" max="200" value="100" style="width:100%;">
+<label style="display:block;margin-top:10px;font-weight:bold;">🎨 Saturation</label>
+<input id="skEditSaturation" type="range" min="0" max="200" value="100" style="width:100%;">
+<label style="display:block;margin-top:10px;font-weight:bold;">🌫️ Blur</label>
+<input id="skEditBlur" type="range" min="0" max="10" value="0" style="width:100%;">
+
+<label style="display:block;margin-top:14px;font-weight:bold;">🎭 Photo Filters</label>
+<select id="skEditFilter" style="width:100%;padding:12px;border-radius:10px;">
+<option value="none">Original</option>
+<option value="grayscale(100%)">Black & White</option>
+<option value="sepia(100%)">Sepia</option>
+<option value="vintage">Vintage</option>
+</select>
+
+<label style="display:block;margin-top:14px;font-weight:bold;">📐 Output Width (pixels)</label>
+<input id="skEditWidth" type="number" min="1" max="8000" placeholder="Original width" style="width:100%;box-sizing:border-box;padding:12px;border:1px solid #93c5fd;border-radius:9px;">
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;">
+<button type="button" onclick="skEditorUndo()">↶ Undo</button>
+<button type="button" onclick="skEditorRedo()">↷ Redo</button>
+<button type="button" onclick="skEditorReset()">🔄 Reset</button>
+<button type="button" onclick="skEditorDownload()">⬇️ Download</button>
+</div>
+
+<label style="display:block;margin-top:14px;font-weight:bold;">📁 Download Format</label>
+<select id="skEditFormat" style="width:100%;padding:12px;border-radius:10px;">
+<option value="image/png">PNG</option>
+<option value="image/jpeg">JPG</option>
+<option value="image/webp">WEBP</option>
+</select>
+
+<div id="skEditStatus" role="status" style="padding:10px;margin-top:12px;background:#dbeafe;border-radius:10px;">Upload a photo to start editing.</div>
+<div style="margin-top:12px;padding:8px;background:white;border:1px solid #bfdbfe;border-radius:12px;overflow:auto;text-align:center;">
+<canvas id="skEditCanvas" style="display:block;max-width:100%;height:auto;margin:auto;"></canvas>
+</div>
+</section>
+
+<script>
+(function(){
+'use strict';
+const $ = id => document.getElementById(id);
+const canvas = $('skEditCanvas');
+const ctx = canvas.getContext('2d');
+let source = null;
+let angle = 0, flipH = false, flipV = false;
+let history = [], historyIndex = -1;
+let rendering = false;
+
+function state(){
+ return {
+  angle, flipH, flipV,
+  crop:$('skEditCrop').value,
+  brightness:$('skEditBrightness').value,
+  contrast:$('skEditContrast').value,
+  saturation:$('skEditSaturation').value,
+  blur:$('skEditBlur').value,
+  filter:$('skEditFilter').value,
+  width:$('skEditWidth').value
+ };
+}
+function applyState(s){
+ angle=s.angle; flipH=s.flipH; flipV=s.flipV;
+ $('skEditCrop').value=s.crop;
+ $('skEditBrightness').value=s.brightness;
+ $('skEditContrast').value=s.contrast;
+ $('skEditSaturation').value=s.saturation;
+ $('skEditBlur').value=s.blur;
+ $('skEditFilter').value=s.filter;
+ $('skEditWidth').value=s.width;
+ render();
+}
+function saveHistory(){
+ if(!source || rendering) return;
+ history=history.slice(0,historyIndex+1);
+ history.push(state());
+ if(history.length>30) history.shift();
+ historyIndex=history.length-1;
+}
+function render(){
+ if(!source) return;
+ rendering=true;
+ try{
+  const rotated=Math.abs(angle%180)===90;
+  const sw=rotated?source.height:source.width;
+  const sh=rotated?source.width:source.height;
+  let ratio=sw/sh;
+  const crop=$('skEditCrop').value;
+  if(crop==='square') ratio=1;
+  if(crop==='portrait') ratio=4/5;
+  if(crop==='landscape') ratio=16/9;
+  let cw=sw,ch=sh;
+  if(crop!=='original'){
+   if(sw/sh>ratio) cw=sh*ratio;
+   else ch=sw/ratio;
+  }
+  let outW=Math.round(cw);
+  const requested=parseInt($('skEditWidth').value,10);
+  if(requested>0 && requested<=8000) outW=requested;
+  const outH=Math.max(1,Math.round(outW/ratio));
+  if(outW>8000 || outH>8000) throw new Error('Output dimensions are too large.');
+  canvas.width=outW;
+  canvas.height=outH;
+  ctx.clearRect(0,0,outW,outH);
+  ctx.save();
+  ctx.filter='brightness('+$('skEditBrightness').value+'%) contrast('+$('skEditContrast').value+'%) saturate('+$('skEditSaturation').value+'%) blur('+$('skEditBlur').value+'px)';
+  const filter=$('skEditFilter').value;
+  if(filter==='vintage') ctx.filter+=' sepia(45%) contrast(90%)';
+  else if(filter!=='none') ctx.filter+=' '+filter;
+  ctx.translate(outW/2,outH/2);
+  ctx.rotate(angle*Math.PI/180);
+  ctx.scale(flipH?-1:1,flipV?-1:1);
+  const scale=Math.max(outW/cw,outH/ch);
+  const drawW=source.width*scale;
+  const drawH=source.height*scale;
+  ctx.drawImage(source,-drawW/2,-drawH/2,drawW,drawH);
+  ctx.restore();
+  $('skEditStatus').textContent='✅ Photo editing preview updated.';
+ }catch(e){
+  $('skEditStatus').textContent='❌ '+e.message;
+ }
+ rendering=false;
+}
+function change(fn){
+ if(!source){alert('முதலில் ஒரு Photo Upload செய்யுங்கள்.');return;}
+ fn(); saveHistory(); render();
+}
+$('skEditUpload').addEventListener('change',e=>{
+ const file=e.target.files && e.target.files[0];
+ if(!file)return;
+ if(!file.type.startsWith('image/')){alert('Please select an image.');return;}
+ if(file.size>20*1024*1024){alert('Image must be 20 MB or smaller.');return;}
+ const url=URL.createObjectURL(file);
+ const img=new Image();
+ img.onload=()=>{
+  source=img;angle=0;flipH=false;flipV=false;
+  $('skEditWidth').value=img.naturalWidth;
+  $('skEditCrop').value='original';
+  $('skEditBrightness').value=100;
+  $('skEditContrast').value=100;
+  $('skEditSaturation').value=100;
+  $('skEditBlur').value=0;
+  $('skEditFilter').value='none';
+  history=[];historyIndex=-1;
+  render();saveHistory();
+  $('skEditStatus').textContent='✅ Photo loaded: '+img.naturalWidth+' × '+img.naturalHeight;
+  URL.revokeObjectURL(url);
+ };
+ img.onerror=()=>{URL.revokeObjectURL(url);alert('Could not load this image.');};
+ img.src=url;
+});
+['skEditCrop','skEditBrightness','skEditContrast','skEditSaturation','skEditBlur','skEditFilter','skEditWidth'].forEach(id=>{
+ $(id).addEventListener('input',()=>{render();});
+ $(id).addEventListener('change',()=>saveHistory());
+});
+window.skEditorRotate=deg=>change(()=>{angle=(angle+deg+360)%360;});
+window.skEditorFlip=axis=>change(()=>{if(axis==='h')flipH=!flipH;else flipV=!flipV;});
+window.skEditorUndo=()=>{
+ if(historyIndex<=0)return;
+ historyIndex--;applyState(history[historyIndex]);
+};
+window.skEditorRedo=()=>{
+ if(historyIndex>=history.length-1)return;
+ historyIndex++;applyState(history[historyIndex]);
+};
+window.skEditorReset=()=>{
+ if(!source)return;
+ angle=0;flipH=false;flipV=false;
+ $('skEditCrop').value='original';
+ $('skEditBrightness').value=100;
+ $('skEditContrast').value=100;
+ $('skEditSaturation').value=100;
+ $('skEditBlur').value=0;
+ $('skEditFilter').value='none';
+ $('skEditWidth').value=source.width;
+ saveHistory();render();
+};
+window.skEditorDownload=()=>{
+ if(!source){alert('முதலில் ஒரு Photo Upload செய்யுங்கள்.');return;}
+ try{
+  const type=$('skEditFormat').value;
+  canvas.toBlob(blob=>{
+   if(!blob){$('skEditStatus').textContent='❌ Export failed.';return;}
+   const url=URL.createObjectURL(blob);
+   const a=document.createElement('a');
+   a.href=url;a.download='sasikumar-ai-edited-photo.'+(type==='image/jpeg'?'jpg':type==='image/webp'?'webp':'png');
+   document.body.appendChild(a);a.click();a.remove();
+   setTimeout(()=>URL.revokeObjectURL(url),3000);
+   $('skEditStatus').textContent='✅ Edited photo downloaded.';
+  },type,0.92);
+ }catch(e){$('skEditStatus').textContent='❌ '+e.message;}
+};
+})();
+</script>
+<!-- END SK_ALL_IN_ONE_PHOTO_EDITOR_V1 -->
+
+
 <!-- SK_POSTER_SNAP_BOTTOM_V1 -->
 <a class="sk-poster-snap-bottom" href="/offline-ai/">
 🎨 Poster Snap Editor 🚀
