@@ -1853,6 +1853,8 @@ const isWelcome = !trimmed || trimmed === '0' ||
   ['menu', 'manu', 'start', 'மெனு'].includes(lower);
 
 let reply = WELCOME_MENU;
+let youtubeVideos = [];
+let youtubeSearchRequested = false;
 let autoPosterForContent = false;
 
 const mapsMatch = trimmed.match(/^(?:maps?|வரைபடம்|மேப்)\s*[:\-]?\s*(.*)$/i);
@@ -1891,6 +1893,36 @@ if (mapsMatch) {
 🔙 Type 0 for Main Menu`;
   } else if (/loan\s*calculat|emi\s*calculat|கடன்\s*கணக்கீடு/i.test(trimmed)) {
     reply = getMenuReply('3');
+  } else if (/(?:youtube|videos?|live|livestream|stream|songs?|music|movie|trailer|cricket|football|news|பாடல்|வீடியோ|நேரலை|லைவ்|செய்தி|திரைப்படம்|கிரிக்கெட்)/i.test(trimmed)) {
+    // SK_WHATSAPP_YOUTUBE_SEARCH_LIVE_V1
+    youtubeSearchRequested = true;
+    const isLiveVideo = /\b(live|livestream|streaming)\b|நேரலை|லைவ்/i.test(trimmed);
+    const query = trimmed.replace(/^(?:please\s+)?(?:search\s+)?(?:youtube\s+)?(?:videos?|live|livestream|stream|songs?|music|movie|trailer)\s*(?:search)?\s*[:\-]?\s*/i, '').trim()
+      || (isLiveVideo ? 'Tamil live' : 'Tamil videos');
+
+    const ytData = await skYouTubeRequest('search', {
+      part: 'snippet',
+      type: 'video',
+      q: query.slice(0, 150),
+      maxResults: 3,
+      order: 'relevance',
+      ...(isLiveVideo ? { eventType: 'live' } : {})
+    });
+
+    youtubeVideos = (ytData.items || [])
+      .filter(x => x.id?.videoId)
+      .slice(0, 3)
+      .map(x => ({
+        title: x.snippet?.title || 'YouTube Video',
+        channel: x.snippet?.channelTitle || 'YouTube',
+        thumbnail: x.snippet?.thumbnails?.high?.url || x.snippet?.thumbnails?.default?.url || '',
+        url: 'https://www.youtube.com/watch?v=' + x.id.videoId
+      }));
+
+    reply = youtubeVideos.length
+      ? '🎬 SASIKUMAR AI — YouTube ' + (isLiveVideo ? 'LIVE' : 'VIDEO') + ' SEARCH\n\n' +
+        youtubeVideos.map((v, i) => (i + 1) + '. ' + v.title + '\n📺 ' + v.channel + '\n' + v.url).join('\n\n')
+      : '🔎 இந்தத் தேடலுக்கு தற்போது YouTube வீடியோக்கள் கிடைக்கவில்லை. வேறு வார்த்தைகளில் முயற்சிக்கவும்.';
   } else if (/tamil\s*(breaking\s*)?news|breaking\s*news|தமிழ்.*செய்தி|முக்கியச் செய்திகள்/i.test(trimmed)) {
     reply = await getTamilBreakingNews();
   } else if (/\b(kavithai|poem|poetry)\b|கவிதை|கவிதைகள்/i.test(trimmed)) {
@@ -1959,15 +1991,26 @@ if(WA_TOKEN && WA_PHONE_ID){
 
       // One branded image message for every WhatsApp reply.
       const answerText = String(reply || WELCOME_MENU);
-if (!isWelcome &&
+if (youtubeVideos.length) {
+        for (const video of youtubeVideos) {
+          const videoText = '🎬 ' + video.title + '\n📺 ' + video.channel + '\n' + video.url;
+          const sent = video.thumbnail
+            ? await sendWA({ type: 'image', image: { link: video.thumbnail, caption: videoText.substring(0, 1000) } })
+            : false;
+          if (!sent) await sendWA({ type: 'text', text: { body: videoText } });
+        }
+      } else if (!isWelcome &&
     !answerText.startsWith('📍 GOOGLE MAPS') &&
     !answerText.startsWith('📤 SASIKUMAR AI — SHARE')) {
   skRememberLastReply('wa:' + from, answerText);
 }
 
 
-      if (!isWelcome &&
-    (answerText.startsWith('📍 GOOGLE MAPS') ||
+      if (youtubeSearchRequested) {
+        if (!youtubeVideos.length) {
+          await sendWA({ type: 'text', text: { body: answerText } });
+        }
+      } else if (!isWelcome && (answerText.startsWith('📍 GOOGLE MAPS') ||
      answerText.startsWith('📤 SASIKUMAR AI — SHARE'))) {
   await sendWA({ type: 'text', text: { body: answerText } });
 } else if (isWelcome) {
