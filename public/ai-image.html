@@ -1118,6 +1118,34 @@ async function generateImageAuto() {
 <button type="button" onclick="skEditorDownload()">⬇️ Download</button>
 </div>
 
+
+<!-- SK_DRAWING_TOOLS_V1 -->
+<div style="margin-top:16px;padding:12px;background:#fff;border:1px solid #93c5fd;border-radius:14px;color:#172554;">
+<h3>🖌️ Drawing & Design Tools</h3>
+<label>Drawing Tool</label>
+<select id="skDrawTool" style="width:100%;padding:11px;margin:6px 0;">
+<option value="brush">🖌️ Brush</option>
+<option value="pencil">✏️ Pencil</option>
+<option value="eraser">🧽 Eraser</option>
+<option value="line">／ Line</option>
+<option value="rect">▭ Rectangle</option>
+<option value="circle">◯ Circle</option>
+<option value="arrow">➜ Arrow</option>
+</select>
+<label>🎨 Select Color</label>
+<input id="skDrawColor" type="color" value="#ff0000" style="width:100%;height:45px;">
+<label style="display:block;margin-top:10px;">📏 Brush Size</label>
+<input id="skDrawSize" type="range" min="1" max="60" value="5" style="width:100%;">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;">
+<button type="button" onclick="skDrawUndo()">↶ Drawing Undo</button>
+<button type="button" onclick="skDrawRedo()">↷ Drawing Redo</button>
+<button type="button" onclick="skDrawText()">🔤 Add Text</button>
+<button type="button" onclick="skDrawClear()">🗑️ Clear Drawing</button>
+</div>
+<p style="font-size:13px;">Photo மீது விரலால் அல்லது மவுஸ் மூலம் வரையலாம்.</p>
+</div>
+<!-- END SK_DRAWING_TOOLS_V1 -->
+
 <label style="display:block;margin-top:14px;font-weight:bold;">📁 Download Format</label>
 <select id="skEditFormat" style="width:100%;padding:12px;border-radius:10px;">
 <option value="image/png">PNG</option>
@@ -1126,8 +1154,9 @@ async function generateImageAuto() {
 </select>
 
 <div id="skEditStatus" role="status" style="padding:10px;margin-top:12px;background:#dbeafe;border-radius:10px;">Upload a photo to start editing.</div>
-<div style="margin-top:12px;padding:8px;background:white;border:1px solid #bfdbfe;border-radius:12px;overflow:auto;text-align:center;">
+<div style="position:relative;margin-top:12px;padding:8px;background:white;border:1px solid #bfdbfe;border-radius:12px;overflow:auto;text-align:center;">
 <canvas id="skEditCanvas" style="display:block;max-width:100%;height:auto;margin:auto;"></canvas>
+<canvas id="skDrawCanvas" style="position:absolute;top:8px;left:50%;transform:translateX(-50%);max-width:calc(100% - 16px);height:auto;touch-action:none;pointer-events:auto;"></canvas>
 </div>
 </section>
 
@@ -1196,6 +1225,10 @@ function render(){
   if(outW>8000 || outH>8000) throw new Error('Output dimensions are too large.');
   canvas.width=outW;
   canvas.height=outH;
+  if(drawCanvas.width!==outW || drawCanvas.height!==outH){
+   drawCanvas.width=outW;drawCanvas.height=outH;
+   drawHistory=[];drawIndex=-1;
+  }
   ctx.clearRect(0,0,outW,outH);
   ctx.save();
   ctx.filter='brightness('+$('skEditBrightness').value+'%) contrast('+$('skEditContrast').value+'%) saturate('+$('skEditSaturation').value+'%) blur('+$('skEditBlur').value+'px)';
@@ -1216,6 +1249,110 @@ function render(){
  }
  rendering=false;
 }
+
+const drawCanvas=$('skDrawCanvas');
+const drawCtx=drawCanvas.getContext('2d');
+let drawHistory=[],drawIndex=-1,activeDraw=null;
+
+function paintDrawing(item){
+ if(item.tool==='text'){
+  drawCtx.save();
+  drawCtx.fillStyle=item.color;
+  drawCtx.font='bold '+item.size+'px sans-serif';
+  drawCtx.textAlign='center';drawCtx.textBaseline='middle';
+  drawCtx.fillText(item.text, item.x, item.y, drawCanvas.width*.9);
+  drawCtx.restore();return;
+ }
+ const p=item.points;
+ if(!p.length)return;
+ drawCtx.save();
+ drawCtx.lineCap='round';drawCtx.lineJoin='round';
+ drawCtx.strokeStyle=item.color;drawCtx.lineWidth=item.size;
+ if(item.tool==='eraser')drawCtx.globalCompositeOperation='destination-out';
+ const a=p[0],b=p[p.length-1];
+ drawCtx.beginPath();
+ if(item.tool==='rect')drawCtx.rect(a.x,a.y,b.x-a.x,b.y-a.y);
+ else if(item.tool==='circle'){
+  drawCtx.ellipse((a.x+b.x)/2,(a.y+b.y)/2,Math.max(1,Math.abs(b.x-a.x)/2),Math.max(1,Math.abs(b.y-a.y)/2),0,0,Math.PI*2);
+ }else{
+  drawCtx.moveTo(a.x,a.y);
+  if(item.tool==='line'||item.tool==='arrow')drawCtx.lineTo(b.x,b.y);
+  else p.slice(1).forEach(q=>drawCtx.lineTo(q.x,q.y));
+ }
+ drawCtx.stroke();
+ if(item.tool==='arrow'){
+  const ang=Math.atan2(b.y-a.y,b.x-a.x),len=Math.max(12,item.size*3);
+  drawCtx.beginPath();drawCtx.moveTo(b.x,b.y);
+  drawCtx.lineTo(b.x-len*Math.cos(ang-.5),b.y-len*Math.sin(ang-.5));
+  drawCtx.moveTo(b.x,b.y);
+  drawCtx.lineTo(b.x-len*Math.cos(ang+.5),b.y-len*Math.sin(ang+.5));
+  drawCtx.stroke();
+ }
+ drawCtx.restore();
+}
+function redrawDrawing(){
+ drawCtx.clearRect(0,0,drawCanvas.width,drawCanvas.height);
+ drawHistory.slice(0,drawIndex+1).forEach(paintDrawing);
+}
+function drawPoint(e){
+ const r=drawCanvas.getBoundingClientRect();
+ return {x:(e.clientX-r.left)*drawCanvas.width/r.width,
+         y:(e.clientY-r.top)*drawCanvas.height/r.height};
+}
+drawCanvas.addEventListener('pointerdown',e=>{
+ if(!source)return;
+ e.preventDefault();drawCanvas.setPointerCapture(e.pointerId);
+ const tool=$('skDrawTool').value;
+ let size=Number($('skDrawSize').value);
+ if(tool==='pencil')size=Math.max(1,size*.45);
+ if(tool==='eraser')size=Math.max(5,size*2);
+ activeDraw={tool,color:$('skDrawColor').value,size,points:[drawPoint(e)]};
+ if(['brush','pencil','eraser'].includes(tool)){
+  drawHistory=drawHistory.slice(0,drawIndex+1);
+  drawHistory.push(activeDraw);drawIndex=drawHistory.length-1;
+ }
+});
+drawCanvas.addEventListener('pointermove',e=>{
+ if(!activeDraw)return;
+ e.preventDefault();activeDraw.points.push(drawPoint(e));
+ redrawDrawing();
+ if(!['brush','pencil','eraser'].includes(activeDraw.tool))paintDrawing(activeDraw);
+});
+function finishDraw(e){
+ if(!activeDraw)return;
+ if(!['brush','pencil','eraser'].includes(activeDraw.tool)){
+  activeDraw.points.push(drawPoint(e));
+  drawHistory=drawHistory.slice(0,drawIndex+1);
+  drawHistory.push(activeDraw);drawIndex=drawHistory.length-1;
+ }
+ activeDraw=null;redrawDrawing();
+}
+drawCanvas.addEventListener('pointerup',finishDraw);
+drawCanvas.addEventListener('pointercancel',()=>{activeDraw=null;redrawDrawing();});
+
+window.skDrawUndo=()=>{
+ if(drawIndex>=0){drawIndex--;redrawDrawing();}
+};
+window.skDrawRedo=()=>{
+ if(drawIndex<drawHistory.length-1){drawIndex++;redrawDrawing();}
+};
+window.skDrawClear=()=>{
+ if(!confirm('Clear all drawings?'))return;
+ drawHistory=[];drawIndex=-1;redrawDrawing();
+};
+window.skDrawText=()=>{
+ if(!source){alert('முதலில் Photo Upload செய்யுங்கள்.');return;}
+ const value=prompt('Enter Tamil or English text:');
+ if(!value)return;
+ const item={tool:'text',text:value,color:$('skDrawColor').value,
+ size:Math.max(16,Number($('skDrawSize').value)*5),
+ x:drawCanvas.width/2,y:drawCanvas.height/2};
+ drawHistory=drawHistory.slice(0,drawIndex+1);
+ drawHistory.push(item);drawIndex=drawHistory.length-1;
+ redrawDrawing();
+};
+
+
 function change(fn){
  if(!source){alert('முதலில் ஒரு Photo Upload செய்யுங்கள்.');return;}
  fn(); saveHistory(); render();
@@ -1274,7 +1411,12 @@ window.skEditorDownload=()=>{
  if(!source){alert('முதலில் ஒரு Photo Upload செய்யுங்கள்.');return;}
  try{
   const type=$('skEditFormat').value;
-  canvas.toBlob(blob=>{
+ const exportCanvas=document.createElement('canvas');
+ exportCanvas.width=canvas.width;exportCanvas.height=canvas.height;
+ const exportCtx=exportCanvas.getContext('2d');
+ exportCtx.drawImage(canvas,0,0);
+ exportCtx.drawImage(drawCanvas,0,0);
+  exportCanvas.toBlob(blob=>{
    if(!blob){$('skEditStatus').textContent='❌ Export failed.';return;}
    const url=URL.createObjectURL(blob);
    const a=document.createElement('a');
