@@ -3501,7 +3501,7 @@ async function skSearchRealImage(query) {
     generator: 'search',
     gsrsearch: 'filetype:bitmap ' + queryText,
     gsrnamespace: '6',
-    gsrlimit: '10',
+    gsrlimit: '20',
     prop: 'imageinfo',
     iiprop: 'url|extmetadata',});
 
@@ -3519,9 +3519,25 @@ async function skSearchRealImage(query) {
   const data = await response.json();
   const pages = Object.values(data.query?.pages || {});
 
+  // SK_WIKIMEDIA_HD_IMAGE_PRIORITY_V1
+  pages.sort((a, b) => {
+    const ai = a.imageinfo?.[0] || {};
+    const bi = b.imageinfo?.[0] || {};
+    return (Number(bi.width || 0) * Number(bi.height || 0)) -
+           (Number(ai.width || 0) * Number(ai.height || 0));
+  });
+
   for (const page of pages) {
     const info = page.imageinfo?.[0];
     if (!info) continue;
+
+    const imageWidth = Number(info.width || 0);
+    const imageHeight = Number(info.height || 0);
+
+    if (imageWidth && imageHeight &&
+        imageWidth * imageHeight < 480000) {
+      continue;
+    }
 
     const metadata = info.extmetadata || {};
     const description = [
