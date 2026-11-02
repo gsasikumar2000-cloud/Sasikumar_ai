@@ -2499,7 +2499,13 @@ if (youtubeVideos.length) {
             }
 
             if (!generated) {
-              // No matching real image; do not send an unrelated picture.
+              console.log('[WhatsApp image] No image found; sending text fallback.');
+              await sendWA({
+                type: 'text',
+                text: {
+                  body: '🤖 SASIKUMAR AI\n📷 இந்தத் தேடலுக்கு பொருத்தமான படம் கிடைக்கவில்லை.\nவேறு பெயர் அல்லது தேடல் சொல்லுடன் மீண்டும் முயற்சிக்கவும்.'
+                }
+              });
             } else {
             const imagesToSend = wantsCatalogImage && galleryImages?.length
               ? galleryImages.slice(0, 10)
