@@ -2314,12 +2314,12 @@ if (youtubeVideos.length) {
         // SK_WHATSAPP_AI_IMAGE_REPLY_V1
         // SK_WHATSAPP_REAL_IMAGE_CATEGORIES_V1
         const wantsCatalogImage =
-          /\b(animal|animals|wildlife|elephant|lion|tiger|dog|cat|bird|birds|peacock|parrot|nature|forest|tree|trees|flower|flowers|plant|plants|mountain|mountains|waterfall|river|sea|ocean|beach|sunset|sunrise|lake|landscape|butterfly|insect|fish|horse|cow|deer|vehicle|car|bike|temple|building|ganesha|ganesh|vinayagar|vinayaka|murugan|amman|krishna|shiva|vishnu|jesus|buddha|mother mary|virgin mary|velankanni|leader|leaders|president|prime minister|chief minister|politician|politicians|political|scientist|scientists|science|poet|poets|pulavar|scholar|actor|actress|celebrity|celebrities|star|stars|freedom fighter|historical figure|agriculture|farming|farmer|paddy|rice|harvesting|tractor|irrigation|education|school|college|hospital|health|doctor|business|industry|factory|technology|computer|robot|sports|cricket|football|construction|house|home|family|festival)\b/i.test(trimmed) ||
-          /விலங்கு|மிருகம்|யானை|சிங்கம்|புலி|நாய்|பூனை|பறவை|மயில்|கிளி|இயற்கை|காடு|மரம்|பூ|மலர்|செடி|மலை|அருவி|ஆறு|கடல்|கடற்கரை|சூரியன்|ஏரி|மீன்|குதிரை|மாடு|மான்|வாகனம்|கார்|கோயில்|விநாயகர்|பிள்ளையார்|முருகன்|அம்மன்|கிருஷ்ணர்|சிவன்|பெருமாள்|இயேசு|ஏசு|மாதா|அன்னை மரியா|வேளாங்கண்ணி|தலைவர்|தலைவர்கள்|முதல்வர்|பிரதமர்|ஜனாதிபதி|அரசியல்|அரசியல்வாதி|விஞ்ஞானி|அறிவியலாளர்|புலவர்|கவிஞர்|தமிழறிஞர்|நடிகர்|நடிகை|நட்சத்திரம்|பிரபலங்கள்|சுதந்திர போராட்ட வீரர்|வரலாற்று தலைவர்|விவசாயம்|விவசாயி|நெல்|நாற்று|நடவு|அறுவடை|டிராக்டர்|பாசனம்|கல்வி|பள்ளி|கல்லூரி|மருத்துவம்|மருத்துவமனை|மருத்துவர்|தொழில்|வணிகம்|தொழில்நுட்பம்|கணினி|விளையாட்டு|கிரிக்கெட்|கால்பந்து|கட்டிடம்|வீடு|குடும்பம்|திருவிழா/i.test(trimmed);
+          /\b(image|images|picture|pictures|photo|photos|drawing|drawings|sketch|sketches|illustration|illustrations|artwork|painting|paintings|cartoon|logo|logos|icon|icons|sticker|stickers|clipart|diagram|diagrams|chart|charts|infographic|infographics|map|maps|wallpaper|wallpapers|background|portrait|blueprint)\b/i.test(trimmed) ||
+          /படம்|புகைப்படம்|ஓவியம்|வரைபடம்|சித்திரம்|படங்கள்|புகைப்படங்கள்|லோகோ|சின்னம்/.test(trimmed);
 
-const wantsImage =
+        const wantsImage =
           wantsPoster ||
-          (wantsCatalogImage && /(?:image|picture|photo|படம்)/i.test(trimmed)) ||
+          (wantsCatalogImage && /(?:image|images|picture|pictures|photo|photos|drawing|drawings|sketch|sketches|illustration|illustrations|artwork|painting|paintings|cartoon|logo|logos|icon|icons|sticker|stickers|clipart|diagram|diagrams|chart|charts|infographic|infographics|map|maps|wallpaper|wallpapers|background|portrait|blueprint|படம்|புகைப்படம்|ஓவியம்|வரைபடம்|சின்னம்)/i.test(trimmed)) ||
           /\b(generate|create|make|draw|design|send|show)\b.{0,100}\b(image|picture|photo|poster|wallpaper|god|deity|krishna|murugan|ganesha|vinayagar|jesus|allah)\b/i.test(trimmed) ||
           /\b(image|picture|photo|poster|wallpaper)\b.{0,100}\b(generate|create|make|draw|design|send|show)\b/i.test(trimmed) ||
           /\b(god|deity|krishna|murugan|ganesha|vinayagar|jesus)\s+(image|picture|photo|poster|wallpaper)\b/i.test(trimmed) ||
@@ -2379,17 +2379,8 @@ const wantsImage =
               const found = await skSearchRealImage(trimmed);
 
               if (!found) {
-                const personImageRequest =
-                  /\b(leader|leaders|politician|politicians|president|prime minister|chief minister|scientist|scientists|poet|poets|pulavar|scholar|actor|actress|celebrity|celebrities|star|stars|freedom fighter|historical figure)\b/i.test(trimmed) ||
-                  /தலைவர்|அரசியல்|அரசியல்வாதி|முதல்வர்|பிரதமர்|ஜனாதிபதி|விஞ்ஞானி|அறிவியலாளர்|புலவர்|கவிஞர்|தமிழறிஞர்|நடிகர்|நடிகை|நட்சத்திரம்|பிரபலங்கள்|சுதந்திர போராட்ட வீரர்|வரலாற்று தலைவர்/.test(trimmed);
-
-                if (personImageRequest) {
-                  console.log('[WhatsApp image] No matching person image. Blocking unrelated AI fallback.');
-                  generated = null;
-                } else {
-                  console.log('[WhatsApp image] No verified real image; falling back to AI generation.');
-                  generated = await skGenerateImage(trimmed);
-                }
+                console.log('[WhatsApp image] No matching real image found. AI fallback disabled.');
+                generated = null;
               } else {
                 generated = found.dataUri;
                 imageAttribution = found.attribution || '';
@@ -3514,6 +3505,7 @@ async function skSearchRealImage(query) {
     prop: 'imageinfo',
     iiprop: 'url|extmetadata',});
 
+  try {
   const response = await fetch(
     'https://commons.wikimedia.org/w/api.php?' + params.toString(),
     {
@@ -3601,6 +3593,96 @@ async function skSearchRealImage(query) {
       dataUri: 'data:' + mime + ';base64,' + bytes.toString('base64'),
       attribution: '📷 ' + page.title + '\n👤 ' + artist + '\n📄 ' + license + '\n🔗 ' + source
     };
+  }
+
+
+  } catch (err) {
+    console.warn('[WhatsApp Wikimedia search] Wikimedia search failed; trying other providers:', err.message);
+  }
+
+  // SK_WHATSAPP_PIXABAY_UNSPLASH_FALLBACK_V1
+  const downloadSearchImage = async (url, attribution) => {
+    if (!url) return null;
+    try {
+      const res = await fetch(url, {
+        headers: { 'User-Agent': 'SASIKUMAR-AI/1.0' },
+        signal: AbortSignal.timeout(30000)
+      });
+      if (!res.ok) return null;
+      const mime = (res.headers.get('content-type') || '').split(';')[0];
+      if (!mime.startsWith('image/')) return null;
+      const bytes = Buffer.from(await res.arrayBuffer());
+      if (!bytes.length || bytes.length > 8 * 1024 * 1024) return null;
+      return {
+        dataUri: 'data:' + mime + ';base64,' + bytes.toString('base64'),
+        attribution
+      };
+    } catch (err) {
+      console.warn('[WhatsApp image download]', err.message);
+      return null;
+    }
+  };
+
+  // Pixabay search
+  const pixabayKey = process.env.PIXABAY_API_KEY;
+  if (pixabayKey) {
+    try {
+      const url = 'https://pixabay.com/api/?key=' +
+        encodeURIComponent(pixabayKey) +
+        '&q=' + encodeURIComponent(queryText) +
+        '&image_type=all&safesearch=true&per_page=10';
+      const res = await fetch(url, { signal: AbortSignal.timeout(20000) });
+      if (!res.ok) throw new Error('Pixabay HTTP ' + res.status);
+      const data = await res.json();
+
+      for (const hit of (data.hits || [])) {
+        const found = await downloadSearchImage(
+          hit.largeImageURL || hit.webformatURL,
+          '📷 Pixabay: ' + (hit.tags || queryText) +
+          '\n👤 ' + (hit.user || 'Pixabay contributor') +
+          '\n🔗 ' + (hit.pageURL || 'https://pixabay.com/')
+        );
+        if (found) {
+          console.log('[WhatsApp image] Pixabay result found');
+          return found;
+        }
+      }
+    } catch (err) {
+      console.warn('[WhatsApp Pixabay search]', err.message);
+    }
+  }
+
+  // Unsplash search
+  const unsplashKey = process.env.UNSPLASH_ACCESS_KEY;
+  if (unsplashKey) {
+    try {
+      const url = 'https://api.unsplash.com/search/photos?query=' +
+        encodeURIComponent(queryText) + '&per_page=10';
+      const res = await fetch(url, {
+        headers: {
+          Authorization: 'Client-ID ' + unsplashKey,
+          'Accept-Version': 'v1'
+        },
+        signal: AbortSignal.timeout(20000)
+      });
+      if (!res.ok) throw new Error('Unsplash HTTP ' + res.status);
+      const data = await res.json();
+
+      for (const item of (data.results || [])) {
+        const found = await downloadSearchImage(
+          item.urls?.regular,
+          '📷 Unsplash: ' + (item.alt_description || queryText) +
+          '\n👤 ' + (item.user?.name || 'Unsplash contributor') +
+          '\n🔗 ' + (item.links?.html || 'https://unsplash.com/')
+        );
+        if (found) {
+          console.log('[WhatsApp image] Unsplash result found');
+          return found;
+        }
+      }
+    } catch (err) {
+      console.warn('[WhatsApp Unsplash search]', err.message);
+    }
   }
 
   return null;
