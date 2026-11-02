@@ -3826,6 +3826,37 @@ async function skGenerateImage(prompt) {
     console.log('[FAST IMAGE] Paid fallbacks disabled.');
   }
 
+  // SK_POLLINATIONS_IMAGE_FALLBACK_V1
+  if (process.env.POLLINATIONS_ENABLED !== 'false') {
+    try {
+      console.log('[FAST IMAGE] Trying Pollinations fallback');
+
+      const pollinationsUrl =
+        'https://image.pollinations.ai/prompt/' +
+        encodeURIComponent(imagePrompt) +
+        '?width=1024&height=1024&nologo=true';
+
+      const response = await fetch(pollinationsUrl, {
+        signal: AbortSignal.timeout(timeout)
+      });
+
+      const mime = response.headers.get('content-type') || '';
+
+      if (!response.ok || !mime.startsWith('image/')) {
+        throw new Error('HTTP ' + response.status + ' / ' + mime);
+      }
+
+      const buffer = Buffer.from(await response.arrayBuffer());
+      if (!buffer.length) throw new Error('Empty image');
+
+      console.log('[FAST IMAGE] Success: Pollinations (' + mime + ')');
+      return 'data:' + mime + ';base64,' + buffer.toString('base64');
+    } catch (err) {
+      failures.push('Pollinations: ' + err.message);
+      console.error('[FAST IMAGE] Pollinations failed:', err.message);
+    }
+  }
+
   const err = new Error(
     'All enabled image providers failed: ' +
     failures.join(' | ').slice(0, 700)
