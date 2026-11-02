@@ -1866,6 +1866,8 @@ async function getTamilBreakingNews() {
 
 // SK_MAPS_SHARE_V1
 const SK_LAST_BOT_REPLIES = new Map();
+const SK_WA_PROCESSED_MESSAGES = new Map();
+
 
 function skRememberLastReply(key, message) {
   if (!key) return;
@@ -2011,6 +2013,30 @@ app.post('/api/whatsapp/webhook',async(req,res)=>{
           n + (Array.isArray(change?.value?.statuses) ? change.value.statuses.length : 0), 0)
       }));
       return res.sendStatus(200);
+    }
+
+    // SK_WHATSAPP_DUPLICATE_MESSAGE_GUARD_V1
+    const incomingMessageId = String(msg.id || '').trim();
+    if (incomingMessageId) {
+      const now = Date.now();
+      for (const [key, expiresAt] of SK_WA_PROCESSED_MESSAGES) {
+        if (expiresAt <= now) SK_WA_PROCESSED_MESSAGES.delete(key);
+      }
+
+      const dedupeKey = String(msg.from || '') + ':' + incomingMessageId;
+
+      if (SK_WA_PROCESSED_MESSAGES.has(dedupeKey)) {
+        console.log('[WA webhook] Duplicate message ignored');
+        return res.sendStatus(200);
+      }
+
+      SK_WA_PROCESSED_MESSAGES.set(dedupeKey, now + 24 * 60 * 60 * 1000);
+
+      while (SK_WA_PROCESSED_MESSAGES.size > 5000) {
+        SK_WA_PROCESSED_MESSAGES.delete(
+          SK_WA_PROCESSED_MESSAGES.keys().next().value
+        );
+      }
     }
 
     console.log('[WA webhook] Incoming message', JSON.stringify({
@@ -2455,7 +2481,7 @@ const wantsImage =
       }
 
       const uploadImage = await Jimp.read(brandedBytes);
-      const whatsappBytes = await uploadImage.getBuffer(JimpMime.jpeg, { quality: 85 });
+      const whatsappBytes = await uploadImage.getBuffer(JimpMime.jpeg, { quality: 92 });
       const finalMime = JimpMime.jpeg;
 
             const form = new FormData();
@@ -3401,13 +3427,16 @@ function skEnhanceImagePrompt(prompt) {
   } else if (otherSpiritualPattern.test(original)) {
     guidance =
       ' Create respectful spiritual artwork matching the exact requested subject. Preserve the recognizable features and traditional visual style of the requested figure or tradition. Use balanced composition, detailed craftsmanship, peaceful lighting and a suitable setting. Do not substitute another spiritual figure.';
+  } else if (/\b(draw|drawing|draing|sketch|illustration|cartoon)\b|வரைதல்|ஓவியம்|சித்திரம்/i.test(original)) {
+    guidance =
+      ' Create a beautiful professional digital illustration of the exact requested subject. Use clean precise outlines, rich natural details, balanced composition, realistic proportions, beautiful colors and professional artistic shading. Make the main subject large, clear and sharply focused.';
   } else {
     guidance =
       ' Make the exact requested subject clear, prominent and well-composed. Use detailed visuals, clean anatomy, suitable lighting and a background matching the requested theme. Do not hide, omit or replace the main subject.';
   }
 
   return original + guidance +
-    ' Avoid unwanted text, random lettering, logos and watermarks unless explicitly requested.';
+    ' Render with high detail, sharp focus, crisp edges, realistic textures, balanced composition, professional lighting and excellent visual clarity. Avoid blur, noise, distorted anatomy, unwanted text, random lettering, logos and watermarks unless explicitly requested.';
 }
 
 async function skSearchRealImage(query) {
