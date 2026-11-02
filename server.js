@@ -3458,12 +3458,16 @@ async function skSearchRealImage(query) {
     /\b(cm|chief minister)\b|முதல்வர்|முதலமைச்சர்/i.test(text) &&
     /\bvijay\b|விஜய்/i.test(text);
   const isElephantSearch = /\belephants?\b|யானை/i.test(text);
+  const isThiruvalluvarSearch =
+    /thiruvalluvar|valluvar|திருவள்ளுவர்|வள்ளுவர்/i.test(text);
+
   const isPestControlVanSearch =
     /pest.?control|fumigation|exterminator|termite control|பூச்சி.?கட்டுப்பாடு/i.test(text) &&
     /van|truck|vehicle|வாகனம்|வேன்/i.test(text);
 
   if (isVijayCmSearch) queryText = 'Joseph Vijay Tamil Nadu politician';
   else if (isElephantSearch) queryText = 'elephant';
+  else if (isThiruvalluvarSearch) queryText = 'Thiruvalluvar Tamil poet philosopher';
   else if (isPestControlVanSearch) queryText = 'pest control van fumigation vehicle';
 
   // SK_JOSEPH_VIJAY_EXACT_SEARCH_V1
@@ -3516,6 +3520,9 @@ async function skSearchRealImage(query) {
         /politician|political|chief minister|minister|election|tvk|tamilaga vettri|mla|legislative|government|அரசியல்|முதல்வர்/i.test(subject);
     }
     if (isElephantSearch) return /\belephants?\b|யானை/i.test(subject);
+    if (isThiruvalluvarSearch) {
+      return /thiruvalluvar|valluvar|திருவள்ளுவர்|வள்ளுவர்/i.test(subject);
+    }
     if (isPestControlVanSearch) {
       return /(pest|fumigation|exterminat|termite|பூச்சி)/i.test(subject) &&
         /(van|truck|vehicle|வாகனம்|வேன்)/i.test(subject);
