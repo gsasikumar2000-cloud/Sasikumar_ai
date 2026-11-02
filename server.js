@@ -1007,6 +1007,25 @@ app.get('/api/pincode', async (req, res) => {
   }
 });
 
+// SK_WEBSITE_PAGESPEED_API_V1
+app.post('/api/pagespeed', async (req, res) => {
+  try {
+    const url = String(req.body?.url || '').trim();
+    const strategy = req.body?.strategy === 'desktop' ? 'desktop' : 'mobile';
+
+    if (!url || url.length > 2048) {
+      return res.status(400).json({ ok: false, error: 'சரியான Website URL அனுப்புங்கள்.' });
+    }
+
+    const report = await skPageSpeedReply(url, strategy);
+    const ok = !report.startsWith('⚠️');
+    return res.status(ok ? 200 : 400).json({ ok, strategy, report });
+  } catch (error) {
+    console.error('[Website PageSpeed API]', error.message);
+    return res.status(500).json({ ok: false, error: 'PageSpeed சோதனை தோல்வியடைந்தது.' });
+  }
+});
+
 app.get('/api/status',(req,res)=>{res.json({status:'WHATSAPP MENU 35 OPTIONS LIVE OK',version:'7.4 Menu',options:35,time:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})});});
 app.get('/api/whatsapp/menu',(req,res)=>{
   res.set('Cache-Control','no-store');
@@ -1887,6 +1906,84 @@ function skMapsReply(place) {
   return '📍 GOOGLE MAPS\n\n🔎 தேடும் இடம்: ' + query + '\n\n🗺️ வரைபடத்தைத் திறக்கவும்:\n' + url;
 }
 
+// SK_GOOGLE_PAGESPEED_WHATSAPP_V1
+async function skPageSpeedReply(input = '', strategy = 'mobile') {
+  try {
+    const apiKey = process.env.PAGESPEED_API_KEY;
+    if (!apiKey) {
+      return '⚠️ Google PageSpeed API key அமைக்கப்படவில்லை. Admin-ஐ தொடர்புகொள்ளவும்.';
+    }
+
+    let target = String(input || '').trim();
+    if (!target) target = 'https://sasikumar-ai-9wdq.onrender.com';
+    target = target.replace(/[),.;]+$/, '');
+
+    let parsed;
+    try {
+      parsed = new URL(target);
+    } catch {
+      return '⚠️ சரியான website URL அனுப்புங்கள்.\nஉதாரணம்: https://example.com';
+    }
+
+    const host = parsed.hostname.toLowerCase();
+    const isPublicDomain =
+      parsed.protocol === 'https:' || parsed.protocol === 'http:';
+    const isBlockedHost =
+      !host ||
+      host === 'localhost' ||
+      host.endsWith('.localhost') ||
+      host.endsWith('.local') ||
+      host.endsWith('.internal') ||
+      /^\d{1,3}(\.\d{1,3}){3}$/.test(host) ||
+      host.includes(':') ||
+      parsed.username ||
+      parsed.password;
+
+    if (!isPublicDomain || isBlockedHost) {
+      return '⚠️ Public website URL மட்டும் அனுப்புங்கள். localhost அல்லது private IP அனுமதி இல்லை.';
+    }
+
+    const endpoint = new URL('https://www.googleapis.com/pagespeedonline/v5/runPagespeed');
+    endpoint.searchParams.set('url', parsed.href);
+    endpoint.searchParams.set('key', apiKey);
+    const testStrategy = strategy === 'desktop' ? 'desktop' : 'mobile';
+    endpoint.searchParams.set('strategy', testStrategy);
+    ['performance', 'accessibility', 'seo', 'best-practices'].forEach(category => {
+      endpoint.searchParams.append('category', category);
+    });
+
+    const response = await fetch(endpoint, {
+      signal: AbortSignal.timeout(90000)
+    });
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      console.error('[PageSpeed API]', response.status, data.error?.status || 'API error');
+      return '⚠️ PageSpeed சோதனை இப்போது முடியவில்லை.\nGoogle API quota அல்லது API அமைப்பைச் சரிபார்க்கவும். சிறிது நேரம் கழித்து முயற்சிக்கவும்.';
+    }
+
+    const categories = data.lighthouseResult?.categories || {};
+    const score = key => {
+      const value = categories[key]?.score;
+      return Number.isFinite(value) ? Math.round(value * 100) + '/100' : 'N/A';
+    };
+
+    return '🚀 SASIKUMAR AI — WEBSITE SPEED REPORT\n\n' +
+      '🌐 Website: ' + parsed.href + '\n' +
+      '📱 Test: ' + (testStrategy === 'desktop' ? 'Desktop' : 'Mobile') + '\n\n' +
+      '⚡ Performance: ' + score('performance') + '\n' +
+      '♿ Accessibility: ' + score('accessibility') + '\n' +
+      '🔎 SEO: ' + score('seo') + '\n' +
+      '🛠️ Best Practices: ' + score('best-practices') + '\n\n' +
+      '📊 Google PageSpeed Insights\n' +
+      'https://pagespeed.web.dev/\n\n' +
+      'குறிப்பு: மதிப்பெண்கள் ஒவ்வொரு சோதனையிலும் மாறலாம்.';
+  } catch (error) {
+    console.error('[PageSpeed]', error.message);
+    return '⚠️ Website speed சோதனையில் தற்காலிகப் பிழை. மீண்டும் முயற்சிக்கவும்.';
+  }
+}
+
 // SK_PINCODE_LOCATION_V1
 async function skLookupPincode(query) {
   const q = String(query || '').trim();
@@ -2056,9 +2153,19 @@ let youtubeVideos = [];
 let youtubeSearchRequested = false;
 let autoPosterForContent = false;
 
+// SK_WHATSAPP_PAGESPEED_V1
+const waSpeedUrl = trimmed.match(/https?:\/\/[^\s<>]+/i);
+const waSpeedCommand = /^(?:speed|website speed|page speed|pagespeed|seo check|website seo)\b/i.test(trimmed);
+const waUrlOnly = /^https?:\/\/\S+$/i.test(trimmed);
+
 const mapsMatch = trimmed.match(/^(?:maps?|வரைபடம்|மேப்)\s*[:\-]?\s*(.*)$/i);
 const pinMatch = trimmed.match(/^(?:pin(?:\s*code)?|pincode|பின்கோடு|அஞ்சல்\s*குறியீடு|area|ஊர்)\s*[:\-]?\s*(.+)$/i);
-if (pinMatch || /^\d{6}$/.test(trimmed)) {
+
+if (waSpeedCommand || waUrlOnly) {
+  const targetUrl = waSpeedUrl ? waSpeedUrl[0].replace(/[),.;]+$/, '') : '';
+  reply = '⏳ Google PageSpeed மூலம் Mobile Website சோதனை நடைபெறுகிறது...';
+  reply += '\n\n' + await skPageSpeedReply(targetUrl);
+} else if (pinMatch || /^\d{6}$/.test(trimmed)) {
   reply = await skPincodeReply(pinMatch ? pinMatch[1] : trimmed);
 } else if (mapsMatch) {
   reply = skMapsReply(mapsMatch[1]);
@@ -5484,6 +5591,21 @@ if (/^(?:share|பகிர்|பகிரவும்)$/i.test(text)) {
         );
       }
 
+      return;
+    }
+
+    // SK_TELEGRAM_PAGESPEED_V1
+    const telegramSpeedUrl = text.match(/https?:\/\/[^\s<>]+/i);
+    const telegramSpeedCommand = /^(?:speed|website speed|page speed|pagespeed|seo check|website seo)\b/i.test(text.trim());
+    const telegramUrlOnly = /^https?:\/\/\S+$/i.test(text.trim());
+
+    if (telegramSpeedCommand || telegramUrlOnly) {
+      const targetUrl = telegramSpeedUrl
+        ? telegramSpeedUrl[0].replace(/[),.;]+$/, '')
+        : '';
+      await skTelegramSendMessage(chatId, '⏳ Google PageSpeed மூலம் Mobile Website சோதனை நடைபெறுகிறது...');
+      const speedReply = await skPageSpeedReply(targetUrl);
+      await skTelegramSendMessage(chatId, speedReply);
       return;
     }
 

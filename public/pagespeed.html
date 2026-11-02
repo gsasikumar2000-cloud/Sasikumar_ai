@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Website Speed Checker | SASIKUMAR AI</title>
+<meta name="description" content="Check website speed, SEO, accessibility and best practices using Google PageSpeed Insights.">
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#e8f4ff,#f3eaff,#e5fbff);color:#17233d;min-height:100vh;padding:20px}
+.wrap{max-width:760px;margin:25px auto}
+header{text-align:center;margin-bottom:22px}
+.logo{font-size:42px}
+h1{font-size:27px;margin:8px 0;color:#253b91}
+header p{color:#42516b;line-height:1.6}
+.card{background:#fff;border-radius:22px;padding:23px;margin:16px 0;box-shadow:0 8px 28px #5269a21a}
+label{display:block;font-weight:700;margin-bottom:9px}
+input[type=url]{width:100%;padding:15px;border:2px solid #dce5f5;border-radius:12px;font-size:16px;outline:none}
+input:focus{border-color:#6178ed}
+.modes{display:flex;gap:12px;margin:17px 0}
+.mode{flex:1;background:#f0f4ff;border:2px solid #dce5ff;border-radius:13px;padding:14px;text-align:center;font-weight:bold;cursor:pointer}
+.mode:has(input:checked){background:#e5edff;border-color:#536fe5;color:#243eaa}
+.mode input{margin-right:7px}
+button{width:100%;border:0;border-radius:13px;padding:16px;background:linear-gradient(90deg,#4169e1,#8255d9);color:white;font-size:17px;font-weight:bold;cursor:pointer}
+button:disabled{opacity:.6;cursor:wait}
+#status{text-align:center;padding:15px;font-weight:bold;white-space:pre-wrap}
+.scores{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.score{background:#f2f7ff;border-radius:15px;padding:17px;text-align:center}
+.score strong{display:block;font-size:30px;color:#3156c9;margin:8px}
+.score span{font-size:14px;color:#42516b}
+.report{white-space:pre-wrap;overflow-wrap:anywhere;background:#f7f9ff;border-radius:13px;padding:16px;line-height:1.7;font-size:14px}
+footer{text-align:center;color:#596780;font-size:13px;padding:20px}
+a{color:#3156c9}
+@media(max-width:480px){body{padding:12px}.wrap{margin:10px auto}h1{font-size:23px}.card{padding:17px}.scores{gap:8px}.score{padding:12px}.score strong{font-size:25px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<div class="logo">🚀</div>
+<h1>SASIKUMAR AI</h1>
+<h2>Website Speed Checker</h2>
+<p>உங்கள் Website Speed, SEO மற்றும் தரத்தை Google PageSpeed மூலம் சோதியுங்கள்.</p>
+</header>
+
+<section class="card">
+<label for="siteUrl">🌐 Website URL</label>
+<input id="siteUrl" type="url" placeholder="https://example.com" autocomplete="url">
+
+<div class="modes">
+<label class="mode"><input type="radio" name="strategy" value="mobile" checked> 📱 Mobile</label>
+<label class="mode"><input type="radio" name="strategy" value="desktop"> 💻 Desktop</label>
+</div>
+
+<button id="checkBtn" type="button">⚡ Check Website Speed</button>
+<div id="status" role="status" aria-live="polite"></div>
+</section>
+
+<section class="card" id="resultCard" hidden>
+<h2>📊 Website Score</h2>
+<div class="scores">
+<div class="score"><span>⚡ Performance</span><strong id="performance">—</strong></div>
+<div class="score"><span>♿ Accessibility</span><strong id="accessibility">—</strong></div>
+<div class="score"><span>🔎 SEO</span><strong id="seo">—</strong></div>
+<div class="score"><span>🛠️ Best Practices</span><strong id="bestPractices">—</strong></div>
+</div>
+<h3>📋 Full Report</h3>
+<div class="report" id="fullReport"></div>
+<p style="text-align:center"><a href="https://pagespeed.web.dev/" target="_blank" rel="noopener">Open Google PageSpeed Insights ↗</a></p>
+</section>
+
+<footer>© SASIKUMAR AI · Powered by Google PageSpeed Insights</footer>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const scorePatterns = [
+  ['performance', /Performance:\s*([^\n]+)/i],
+  ['accessibility', /Accessibility:\s*([^\n]+)/i],
+  ['seo', /SEO:\s*([^\n]+)/i],
+  ['bestPractices', /Best Practices:\s*([^\n]+)/i]
+];
+
+$('checkBtn').addEventListener('click', async () => {
+  const rawUrl = $('siteUrl').value.trim();
+  if (!rawUrl) {
+    $('status').textContent = '⚠️ Website URL உள்ளிடுங்கள்.';
+    $('siteUrl').focus();
+    return;
+  }
+
+  let parsed;
+  try {
+    parsed = new URL(rawUrl);
+    if (!['http:', 'https:'].includes(parsed.protocol)) throw new Error();
+  } catch {
+    $('status').textContent = '⚠️ சரியான URL உள்ளிடுங்கள். உதாரணம்: https://example.com';
+    return;
+  }
+
+  const strategy = document.querySelector('input[name="strategy"]:checked').value;
+  const button = $('checkBtn');
+  button.disabled = true;
+  button.textContent = '⏳ Testing... Please wait';
+  $('status').textContent = 'Google PageSpeed சோதனை நடைபெறுகிறது. 30–90 விநாடிகள் ஆகலாம்...';
+  $('resultCard').hidden = true;
+
+  try {
+    const response = await fetch('/api/pagespeed', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({url: parsed.href, strategy}),
+      signal: AbortSignal.timeout(100000)
+    });
+
+    const data = await response.json();
+    if (!response.ok || !data.ok) {
+      throw new Error(data.error || data.report || 'சோதனை தோல்வியடைந்தது.');
+    }
+
+    const report = String(data.report || '');
+    for (const [id, pattern] of scorePatterns) {
+      const match = report.match(pattern);
+      $(id).textContent = match ? match[1].trim() : 'N/A';
+    }
+
+    $('fullReport').textContent = report;
+    $('resultCard').hidden = false;
+    $('status').textContent = '✅ சோதனை முடிந்தது!';
+  } catch (error) {
+    $('status').textContent = '⚠️ ' + (error.name === 'TimeoutError'
+      ? 'நேரம் முடிந்தது. மீண்டும் முயற்சிக்கவும்.'
+      : error.message);
+  } finally {
+    button.disabled = false;
+    button.textContent = '⚡ Check Website Speed';
+  }
+});
+</script>
+</body>
+</html>
