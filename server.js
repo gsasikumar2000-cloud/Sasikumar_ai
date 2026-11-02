@@ -2136,6 +2136,9 @@ app.post('/api/whatsapp/webhook',async(req,res)=>{
       }
     }
 
+    // SK_WHATSAPP_EARLY_ACK_V1
+    if (!res.headersSent) res.sendStatus(200);
+
     console.log('[WA webhook] Incoming message', JSON.stringify({
       type: msg.type,
       senderLast4: String(msg.from || '').slice(-4)
@@ -2686,10 +2689,10 @@ if (youtubeVideos.length) {
         // END SK_WHATSAPP_AI_IMAGE_REPLY_V1
       }
     }
-    res.sendStatus(200);
+    // Webhook already acknowledged; processing continues.
   }catch(e){
     console.error('[WhatsApp webhook]',e.message||e);
-    res.sendStatus(500);
+    if (!res.headersSent) res.sendStatus(500);
   }
 });
 
