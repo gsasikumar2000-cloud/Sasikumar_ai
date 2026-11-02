@@ -3453,9 +3453,21 @@ async function skSearchRealImage(query) {
     .replace(/\s+/g, ' ')
     .trim();
 
+  // SK_IMAGE_SEARCH_SUBJECT_ROUTING_V1
+  const isVijayCmSearch =
+    /\b(cm|chief minister)\b|முதல்வர்|முதலமைச்சர்/i.test(text) &&
+    /\bvijay\b|விஜய்/i.test(text);
+  const isElephantSearch = /\belephants?\b|யானை/i.test(text);
+  const isPestControlVanSearch =
+    /pest.?control|fumigation|exterminator|termite control|பூச்சி.?கட்டுப்பாடு/i.test(text) &&
+    /van|truck|vehicle|வாகனம்|வேன்/i.test(text);
+
+  if (isVijayCmSearch) queryText = 'Joseph Vijay Tamil Nadu politician';
+  else if (isElephantSearch) queryText = 'elephant';
+  else if (isPestControlVanSearch) queryText = 'pest control van fumigation vehicle';
 
   // SK_JOSEPH_VIJAY_EXACT_SEARCH_V1
-  const isJosephVijaySearch = /^(vijay|விஜய்)$/i.test(queryText.trim());
+  const isJosephVijaySearch = !isVijayCmSearch && /^(vijay|விஜய்)$/i.test(queryText.trim());
   if (isJosephVijaySearch) queryText = 'Joseph Vijay';
 
 
@@ -3480,12 +3492,13 @@ async function skSearchRealImage(query) {
   // SK_GALLERY_PERSON_NAME_FILTER_V1
   const isPersonSearch =
     isJosephVijaySearch ||
+    isVijayCmSearch ||
     isActorCategorySearch ||
     /\b(leader|leaders|political|politician|politicians|president|prime minister|chief minister|scientist|scientists|poet|poets|pulavar|scholar|star|stars)\b/i.test(text) ||
     /தலைவர்|அரசியல்|அரசியல்வாதி|முதல்வர்|பிரதமர்|ஜனாதிபதி|விஞ்ஞானி|அறிவியலாளர்|புலவர்|கவிஞர்|தமிழறிஞர்|நட்சத்திரம்|பிரபலங்கள்/.test(text);
 
   const personTokens = isPersonSearch
-    ? (queryText.toLowerCase().match(/[a-z0-9]+|[\u0B80-\u0BFF]+/g) || [])
+    ? (isVijayCmSearch ? ['vijay'] : (queryText.toLowerCase().match(/[a-z0-9]+|[\u0B80-\u0BFF]+/g) || []))
         .filter(token =>
           token.length >= 2 &&
           ![
@@ -3494,6 +3507,21 @@ async function skSearchRealImage(query) {
           ].includes(token)
         )
     : [];
+
+  // SK_IMAGE_SEARCH_STRICT_SUBJECT_FILTER_V1
+  const matchesRequestedSubject = value => {
+    const subject = String(value || '').toLowerCase();
+    if (isVijayCmSearch) {
+      return (/\bvijay\b|விஜய்/i.test(subject)) &&
+        /politician|political|chief minister|minister|election|tvk|tamilaga vettri|mla|legislative|government|அரசியல்|முதல்வர்/i.test(subject);
+    }
+    if (isElephantSearch) return /\belephants?\b|யானை/i.test(subject);
+    if (isPestControlVanSearch) {
+      return /(pest|fumigation|exterminat|termite|பூச்சி)/i.test(subject) &&
+        /(van|truck|vehicle|வாகனம்|வேன்)/i.test(subject);
+    }
+    return true;
+  };
 
   const params = new URLSearchParams({
     action: 'query',
@@ -3545,6 +3573,8 @@ async function skSearchRealImage(query) {
       metadata.ObjectName?.value || '',
       metadata.ImageDescription?.value || ''
     ].join(' ').replace(/<[^>]*>/g, ' ').toLowerCase();
+
+    if (!matchesRequestedSubject(description)) continue;
 
     if (rule && !rule.terms.some(term => description.includes(term))) {
       continue;
@@ -3652,6 +3682,7 @@ async function skSearchRealImage(query) {
       const data = await res.json();
 
       for (const hit of (data.hits || [])) {
+        if (!matchesRequestedSubject(hit.tags || '')) continue;
         const found = await downloadSearchImage(
           hit.largeImageURL || hit.webformatURL,
           '📷 Pixabay: ' + (hit.tags || queryText) +
@@ -3685,6 +3716,7 @@ async function skSearchRealImage(query) {
       const data = await res.json();
 
       for (const item of (data.results || [])) {
+        if (!matchesRequestedSubject([item.alt_description, item.description].join(' '))) continue;
         const found = await downloadSearchImage(
           item.urls?.regular,
           '📷 Unsplash: ' + (item.alt_description || queryText) +
@@ -3701,51 +3733,6 @@ async function skSearchRealImage(query) {
     }
   }
 
-
-  // [SK_WHATSAPP_SERPAPI_IMAGE_FALLBACK_V1]
-  // Google Images fallback after Wikimedia, Pixabay and Unsplash.
-  const serpKey = process.env.SERPAPI_API_KEY;
-  if (serpKey) {
-    try {
-      const params = new URLSearchParams({
-        engine: 'google_images',
-        q: queryText,
-        api_key: serpKey.trim(),
-        safe: 'active',
-        ijn: '0'
-      });
-
-      const response = await fetch(
-        'https://serpapi.com/search.json?' + params.toString(),
-        { signal: AbortSignal.timeout(20000) }
-      );
-
-      const data = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        throw new Error('SerpAPI HTTP ' + response.status);
-      }
-
-      for (const item of (data.images_results || []).slice(0, 10)) {
-        const imageUrl = item.original || item.thumbnail;
-        if (!imageUrl || !/^https?:\/\//i.test(imageUrl)) continue;
-
-        const found = await downloadSearchImage(
-          imageUrl,
-          '📷 Google Images via SerpAPI: ' +
-          (item.title || queryText) +
-          '\n🔗 ' + (item.link || item.source || 'Google Images')
-        );
-
-        if (found) {
-          console.log('[WhatsApp image] SerpAPI Google Images result found');
-          return found;
-        }
-      }
-    } catch (err) {
-      console.warn('[WhatsApp SerpAPI image search]', err.message);
-    }
-  }
 
   return null;
 }
