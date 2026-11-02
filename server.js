@@ -2071,7 +2071,7 @@ if (pinMatch || /^\d{6}$/.test(trimmed)) {
 🔙 Type 0 for Main Menu`;
   } else if (/loan\s*calculat|emi\s*calculat|கடன்\s*கணக்கீடு/i.test(trimmed)) {
     reply = getMenuReply('3');
-  } else if (/(?:youtube|videos?|live|livestream|stream|songs?|music|movie|trailer|cricket|football|news|பாடல்|வீடியோ|நேரலை|லைவ்|செய்தி|திரைப்படம்|கிரிக்கெட்)/i.test(trimmed)) {
+  } else if (/(?:youtube|\bvideos?\b|\blivestream\b|\bstream\b|\bsongs?\b|\bmusic\b|\btrailer\b|பாடல்|வீடியோ|நேரலை|லைவ்)/i.test(trimmed)) {
     // SK_WHATSAPP_YOUTUBE_SEARCH_LIVE_V1
     youtubeSearchRequested = true;
     const isLiveVideo = /\b(live|livestream|streaming)\b|நேரலை|லைவ்/i.test(trimmed);
@@ -2129,10 +2129,10 @@ if (pinMatch || /^\d{6}$/.test(trimmed)) {
       '12 ராசிகளின் தகவல்கள் மற்றும் ஆன்மீகத் தகவல்களைப் பார்க்கவும்.\n\n' +
       '🌐 ஜோதிடப் பக்கம்: https://sasikumar-ai-9wdq.onrender.com/spiritual-astrology.html';
   } else if (/\bfriendly\b|நண்பா|நண்பரே/i.test(trimmed)) {
-    autoPosterForContent = true;
+    autoPosterForContent = false;
     reply = await getWhatsAppAIReply(trimmed, 'friendly');
   } else {
-    autoPosterForContent = true;
+    autoPosterForContent = false;
     reply = await getWhatsAppAIReply(trimmed, 'normal');
   }
 }
@@ -2293,7 +2293,7 @@ if (youtubeVideos.length) {
 
 const wantsImage =
           wantsPoster ||
-          wantsCatalogImage ||
+          (wantsCatalogImage && /(?:image|picture|photo|படம்)/i.test(trimmed)) ||
           /\b(generate|create|make|draw|design|send|show)\b.{0,100}\b(image|picture|photo|poster|wallpaper|god|deity|krishna|murugan|ganesha|vinayagar|jesus|allah)\b/i.test(trimmed) ||
           /\b(image|picture|photo|poster|wallpaper)\b.{0,100}\b(generate|create|make|draw|design|send|show)\b/i.test(trimmed) ||
           /\b(god|deity|krishna|murugan|ganesha|vinayagar|jesus)\s+(image|picture|photo|poster|wallpaper)\b/i.test(trimmed) ||
