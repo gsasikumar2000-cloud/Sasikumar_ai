@@ -2486,12 +2486,13 @@ if (youtubeVideos.length) {
 
               generated = `data:${posterMime};base64,${posterBytes.toString('base64')}`;
             } else if (wantsCatalogImage) {
-              console.log('[WhatsApp image] Searching Wikimedia Commons:', trimmed);
+              console.log('[WhatsApp image] Searching real images:', trimmed);
               const found = await skSearchRealImage(trimmed);
 
-              if (!found) {
-                console.log('[WhatsApp image] No matching real image found. AI fallback disabled.');
-                generated = null;
+              if (!found || !found.images?.length) {
+                console.log('[WhatsApp image] Real image unavailable; trying AI generation.');
+                galleryImages = null;
+                generated = await skGenerateImage(trimmed);
               } else {
                 galleryImages = found.images || [found];
                 generated = galleryImages[0]?.dataUri || null;
