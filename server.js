@@ -2390,6 +2390,7 @@ const wantsImage =
 
 
 // SK_WHATSAPP_SINGLE_POSTER_LOGO_V1
+      let brandedBytes;
       if (!wantsPoster) {
       // SASIKUMAR AI STUDIO - separate footer below original image
       const baseImage = await Jimp.read(imageBytes);
@@ -2448,19 +2449,21 @@ const wantsImage =
         maxHeight: 48
       });
 
-      const brandedBytes = await finalImage.getBuffer(JimpMime.png);
+      brandedBytes = await finalImage.getBuffer(JimpMime.png);
       } else {
-        var brandedBytes = imageBytes;
+        brandedBytes = imageBytes;
       }
 
-      const finalMime = 'image/png';
+      const uploadImage = await Jimp.read(brandedBytes);
+      const whatsappBytes = await uploadImage.getBuffer(JimpMime.jpeg, { quality: 85 });
+      const finalMime = JimpMime.jpeg;
 
             const form = new FormData();
             form.append('messaging_product', 'whatsapp');
             form.append(
               'file',
-              new Blob([brandedBytes], { type: finalMime }),
-              'sasikumar-ai.png'
+              new Blob([whatsappBytes], { type: finalMime }),
+              'sasikumar-ai.jpg'
             );
             form.append('type', finalMime);
 
