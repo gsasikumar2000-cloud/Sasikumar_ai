@@ -1449,16 +1449,36 @@ async function getWhatsAppAIReply(question, mode = 'normal') {
   let liveSearchResults = [];
   let liveSearchProvider = '';
 
-  const query = String(question || '').trim().slice(0, 1000);
+  // SK_EXTRA_SEARCH_8_CATEGORIES_V1
+  const rawQuery = String(question || '').trim().slice(0, 1000);
+  const searchMatch = rawQuery.match(
+    /^SEARCH\s+(GENERAL|KNOWLEDGE|CONTENT|IMAGE|JOB|AGRI|EDUCATION|EXTRA)\b\s*[:\-]?\s*/i
+  );
+  const searchCategory = searchMatch ? searchMatch[1].toUpperCase() : '';
+  const explicitSearch = /^SEARCH\b/i.test(rawQuery);
+  const query = searchMatch
+    ? rawQuery.slice(searchMatch[0].length).trim()
+    : rawQuery.replace(/^SEARCH\s*[:\-]?\s*/i, '').trim();
 
-  const needsLiveSearch =
+  const categoryTerms = {
+    KNOWLEDGE: 'facts knowledge science history reference',
+    CONTENT: 'articles blogs guides information',
+    JOB: 'jobs vacancies careers recruitment apply',
+    AGRI: 'agriculture farming crops cultivation mandi market prices',
+    EDUCATION: 'education schools colleges exams admissions scholarships',
+    EXTRA: 'detailed comprehensive web results'
+  };
+  const providerQuery = [query, categoryTerms[searchCategory] || '']
+    .filter(Boolean).join(' ');
+
+  const needsLiveSearch = (explicitSearch && query.length > 0) ||
     /(?:latest|current|today|now|recent|live|news|headlines|breaking|weather|gold|silver|price|rate|stock|market|business|election|movie|movies|film|films|cinema|release|releases|upcoming|box office|திரைப்படம்|திரைப்படங்கள்|படம்|படங்கள்|வெளியீடு|வெளியீட்டுத் தேதி|நடிகர்|நடிகைகள்|இன்றைய|தற்போதைய|சமீபத்திய|விலை|செய்தி|செய்திகள்|வானிலை|தங்கம்|வெள்ளி|பங்கு|சந்தை)/i.test(query);
 
   const asksForNews =
     /(?:news|headlines|breaking|தமிழ்நாடு செய்திகள்|இந்திய செய்திகள்|உலக செய்திகள்|இன்றைய செய்திகள்|தலைப்புச் செய்திகள்|செய்தி|செய்திகள்)/i.test(query);
 
   // 1. Try Tavily live web search.
-  if (needsLiveSearch && process.env.TAVILY_API_KEY) {
+  if (needsLiveSearch && searchCategory !== 'IMAGE' && process.env.TAVILY_API_KEY) {
     try {
       const searchResponse = await fetch(
         'https://api.tavily.com/search',
@@ -1467,7 +1487,7 @@ async function getWhatsAppAIReply(question, mode = 'normal') {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             api_key: process.env.TAVILY_API_KEY.trim(),
-            query,
+            query: providerQuery,
             search_depth: 'basic',
             max_results: 5,
             include_answer: false
@@ -1508,7 +1528,7 @@ async function getWhatsAppAIReply(question, mode = 'normal') {
 
     // Firecrawl fallback when Tavily returns no results.
   if (
-    needsLiveSearch &&
+    needsLiveSearch && searchCategory !== 'IMAGE' &&
     liveSearchResults.length === 0 &&
     process.env.FIRECRAWL_API_KEY
   ) {
@@ -1522,7 +1542,7 @@ async function getWhatsAppAIReply(question, mode = 'normal') {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            query,
+            query: providerQuery,
             limit: 5
           }),
           signal: AbortSignal.timeout(15000)
@@ -1567,6 +1587,7 @@ async function getWhatsAppAIReply(question, mode = 'normal') {
 
 // 2. If a news question has no web results, try NewsData.io.
   if (
+    searchCategory !== 'IMAGE' &&
     asksForNews &&
     liveSearchResults.length === 0 &&
     process.env.NEWSDATA_API_KEY
@@ -1617,11 +1638,77 @@ async function getWhatsAppAIReply(question, mode = 'normal') {
     }
   }
 
+
+  // SK_WHATSAPP_SERPAPI_FALLBACK_V1
+  // Try SerpAPI only when earlier live-search providers return no results.
+  if (needsLiveSearch && liveSearchResults.length === 0 && process.env.SERPAPI_API_KEY) {
+    try {
+      const params = new URLSearchParams({
+        engine: searchCategory === 'IMAGE' ? 'google_images' : 'google',
+        q: searchCategory === 'IMAGE' ? query + ' images' : providerQuery,
+        api_key: process.env.SERPAPI_API_KEY.trim(),
+        num: '5'
+      });
+
+      const serpResponse = await fetch(
+        'https://serpapi.com/search.json?' + params.toString(),
+        { signal: AbortSignal.timeout(12000) }
+      );
+
+      const serpData = await serpResponse.json().catch(() => ({}));
+
+      const serpItems = searchCategory === 'IMAGE'
+        ? (serpData.images_results || [])
+        : (serpData.organic_results || []);
+
+      if (serpResponse.ok && Array.isArray(serpItems)) {
+        liveSearchResults = serpItems
+          .filter(item =>
+            item &&
+            typeof (searchCategory === 'IMAGE' ? (item.original || item.thumbnail) : item.link) === 'string' &&
+            /^https?:\/\//i.test(searchCategory === 'IMAGE' ? (item.original || item.thumbnail) : item.link)
+          )
+          .slice(0, 5)
+          .map(item => ({
+            title: String(item.title || 'Web result').slice(0, 200),
+            url: searchCategory === 'IMAGE' ? (item.original || item.thumbnail) : item.link,
+            content: String(searchCategory === 'IMAGE' ? (item.title || item.source || 'Image result') : (item.snippet || '')).slice(0, 1000),
+            published_date: item.date || null
+          }));
+
+        if (liveSearchResults.length) {
+          liveSearchProvider = searchCategory === 'IMAGE' ? 'SerpAPI Google Images' : 'SerpAPI Google Search';
+        }
+      } else {
+        console.warn('[WhatsApp Live Search] SerpAPI HTTP:', serpResponse.status);
+      }
+    } catch (error) {
+      console.warn('[WhatsApp Live Search] SerpAPI:', error.message);
+    }
+  }
+
   const systemPrompt = mode === 'friendly'
     ? 'You are SASIKUMAR AI, a warm, friendly and respectful conversation partner. Match the user language (Tamil, English or Tanglish). Be kind, natural and concise. Never claim to be human.'
     : 'You are SASIKUMAR AI. Answer helpfully, accurately and respectfully. Match the user language (Tamil, English or Tanglish). Normally answer in 3-5 short lines using simple language. Answer directly; avoid long introductions, repetition and unnecessary details. Give more detail only if requested or needed for safety. Never invent current facts. If live search results are absent, clearly say that current information could not be verified instead of claiming to have searched.';
 
   let userContent = query;
+  // SK_EXTRA_SEARCH_CATEGORY_AI_INSTRUCTIONS_V1
+  const categoryInstructions = {
+    GENERAL: 'Provide relevant general web search results.',
+    KNOWLEDGE: 'Focus on factual knowledge, science, history and clear explanations.',
+    CONTENT: 'Focus on useful articles, blogs, guides and readable content.',
+    IMAGE: 'Focus on image search. Show image titles and direct image URLs clearly.',
+    JOB: 'Focus on job vacancies and applications. Prefer official sources. Never invent deadlines.',
+    AGRI: 'Focus on agriculture, crops, farming and market prices. Identify location and date.',
+    EDUCATION: 'Focus on schools, colleges, exams, admissions and scholarships. Prefer official sources.',
+    EXTRA: 'Provide broader and more detailed results from relevant sources.'
+  };
+
+  if (searchCategory) {
+    userContent += '\\n\\nSEARCH CATEGORY: ' + searchCategory +
+      '\\nCATEGORY INSTRUCTIONS: ' + categoryInstructions[searchCategory];
+  }
+
 
   if (liveSearchResults.length) {
     userContent +=
@@ -2201,8 +2288,8 @@ if (youtubeVideos.length) {
         // SK_WHATSAPP_AI_IMAGE_REPLY_V1
         // SK_WHATSAPP_REAL_IMAGE_CATEGORIES_V1
         const wantsCatalogImage =
-          /\b(animal|animals|wildlife|elephant|lion|tiger|dog|cat|bird|birds|peacock|parrot|nature|forest|tree|trees|flower|flowers|plant|plants|mountain|mountains|waterfall|river|sea|ocean|beach|sunset|sunrise|lake|landscape|butterfly|insect|fish|horse|cow|deer|vehicle|car|bike|temple|building|ganesha|ganesh|vinayagar|vinayaka|murugan|amman|krishna|shiva|vishnu|jesus|buddha|agriculture|farming|farmer|paddy|rice|harvesting|tractor|irrigation|education|school|college|hospital|health|doctor|business|industry|factory|technology|computer|robot|sports|cricket|football|construction|house|home|family|festival)\b/i.test(trimmed) ||
-          /விலங்கு|மிருகம்|யானை|சிங்கம்|புலி|நாய்|பூனை|பறவை|மயில்|கிளி|இயற்கை|காடு|மரம்|பூ|மலர்|செடி|மலை|அருவி|ஆறு|கடல்|கடற்கரை|சூரியன்|ஏரி|மீன்|குதிரை|மாடு|மான்|வாகனம்|கார்|கோயில்|விநாயகர்|பிள்ளையார்|முருகன்|அம்மன்|கிருஷ்ணர்|சிவன்|பெருமாள்|இயேசு|புத்தர்|விவசாயம்|விவசாயி|நெல்|நாற்று|நடவு|அறுவடை|டிராக்டர்|பாசனம்|கல்வி|பள்ளி|கல்லூரி|மருத்துவம்|மருத்துவமனை|மருத்துவர்|தொழில்|வணிகம்|தொழில்நுட்பம்|கணினி|விளையாட்டு|கிரிக்கெட்|கால்பந்து|கட்டிடம்|வீடு|குடும்பம்|திருவிழா/i.test(trimmed);
+          /\b(animal|animals|wildlife|elephant|lion|tiger|dog|cat|bird|birds|peacock|parrot|nature|forest|tree|trees|flower|flowers|plant|plants|mountain|mountains|waterfall|river|sea|ocean|beach|sunset|sunrise|lake|landscape|butterfly|insect|fish|horse|cow|deer|vehicle|car|bike|temple|building|ganesha|ganesh|vinayagar|vinayaka|murugan|amman|krishna|shiva|vishnu|jesus|buddha|mother mary|virgin mary|velankanni|leader|leaders|president|prime minister|chief minister|politician|politicians|political|scientist|scientists|science|poet|poets|pulavar|scholar|actor|actress|celebrity|celebrities|star|stars|freedom fighter|historical figure|agriculture|farming|farmer|paddy|rice|harvesting|tractor|irrigation|education|school|college|hospital|health|doctor|business|industry|factory|technology|computer|robot|sports|cricket|football|construction|house|home|family|festival)\b/i.test(trimmed) ||
+          /விலங்கு|மிருகம்|யானை|சிங்கம்|புலி|நாய்|பூனை|பறவை|மயில்|கிளி|இயற்கை|காடு|மரம்|பூ|மலர்|செடி|மலை|அருவி|ஆறு|கடல்|கடற்கரை|சூரியன்|ஏரி|மீன்|குதிரை|மாடு|மான்|வாகனம்|கார்|கோயில்|விநாயகர்|பிள்ளையார்|முருகன்|அம்மன்|கிருஷ்ணர்|சிவன்|பெருமாள்|இயேசு|ஏசு|மாதா|அன்னை மரியா|வேளாங்கண்ணி|தலைவர்|தலைவர்கள்|முதல்வர்|பிரதமர்|ஜனாதிபதி|அரசியல்|அரசியல்வாதி|விஞ்ஞானி|அறிவியலாளர்|புலவர்|கவிஞர்|தமிழறிஞர்|நடிகர்|நடிகை|நட்சத்திரம்|பிரபலங்கள்|சுதந்திர போராட்ட வீரர்|வரலாற்று தலைவர்|விவசாயம்|விவசாயி|நெல்|நாற்று|நடவு|அறுவடை|டிராக்டர்|பாசனம்|கல்வி|பள்ளி|கல்லூரி|மருத்துவம்|மருத்துவமனை|மருத்துவர்|தொழில்|வணிகம்|தொழில்நுட்பம்|கணினி|விளையாட்டு|கிரிக்கெட்|கால்பந்து|கட்டிடம்|வீடு|குடும்பம்|திருவிழா/i.test(trimmed);
 
 const wantsImage =
           wantsPoster ||
@@ -2266,9 +2353,18 @@ const wantsImage =
               const found = await skSearchRealImage(trimmed);
 
               if (!found) {
-          console.log('[WhatsApp image] No verified real image; falling back to AI generation.');
-          generated = await skGenerateImage(trimmed);
-        } else {
+                const personImageRequest =
+                  /\b(leader|leaders|politician|politicians|president|prime minister|chief minister|scientist|scientists|poet|poets|pulavar|scholar|actor|actress|celebrity|celebrities|star|stars|freedom fighter|historical figure)\b/i.test(trimmed) ||
+                  /தலைவர்|அரசியல்|அரசியல்வாதி|முதல்வர்|பிரதமர்|ஜனாதிபதி|விஞ்ஞானி|அறிவியலாளர்|புலவர்|கவிஞர்|தமிழறிஞர்|நடிகர்|நடிகை|நட்சத்திரம்|பிரபலங்கள்|சுதந்திர போராட்ட வீரர்|வரலாற்று தலைவர்/.test(trimmed);
+
+                if (personImageRequest) {
+                  console.log('[WhatsApp image] No matching person image. Blocking unrelated AI fallback.');
+                  generated = null;
+                } else {
+                  console.log('[WhatsApp image] No verified real image; falling back to AI generation.');
+                  generated = await skGenerateImage(trimmed);
+                }
+              } else {
                 generated = found.dataUri;
                 imageAttribution = found.attribution || '';
               }
@@ -2293,7 +2389,9 @@ const wantsImage =
             }
 
 
-// SASIKUMAR AI STUDIO - separate footer below original image
+// SK_WHATSAPP_SINGLE_POSTER_LOGO_V1
+      if (!wantsPoster) {
+      // SASIKUMAR AI STUDIO - separate footer below original image
       const baseImage = await Jimp.read(imageBytes);
 
       const logoPath = path.join(
@@ -2351,8 +2449,11 @@ const wantsImage =
       });
 
       const brandedBytes = await finalImage.getBuffer(JimpMime.png);
+      } else {
+        var brandedBytes = imageBytes;
+      }
 
-                        const finalMime = 'image/png';
+      const finalMime = 'image/png';
 
             const form = new FormData();
             form.append('messaging_product', 'whatsapp');
@@ -2388,7 +2489,11 @@ const wantsImage =
               type: 'image',
               image: {
                 id: uploadData.id,
-                caption: '🤖 SASIKUMAR AI STUDIO'
+                caption: (
+                  skGetDeityPosterTitle(trimmed)
+                    ? '🙏 ' + skGetDeityPosterTitle(trimmed) + '\n'
+                    : ''
+                ) + '🤖 SASIKUMAR AI STUDIO'
               }
             });
 
@@ -3229,7 +3334,24 @@ function skEnhanceImagePrompt(prompt) {
 
   let guidance;
 
-  if (hinduPattern.test(original)) {
+  const muruganPattern =
+    /முருகன்|கந்தன்|சுப்பிரமணியர்|வேலவன்|murugan|karthikeya|kartikeya|subramanya|skanda/i;
+  const palaniPattern =
+    /பழனி|தண்டாயுதபாணி|தண்டபாணி|palani|dhandayuthapani|dhandapani/i;
+  const sixFaceMuruganPattern =
+    /ஆறுமுக|ஆறுபடை|சண்முக|ஷண்முக|shanmukha|shanmuga|arumugam|arumuga|six[- ]faced/i;
+
+  if (muruganPattern.test(original) && palaniPattern.test(original)) {
+    guidance =
+      ' Create a respectful and recognizable traditional Palani Dhandayuthapani Murugan devotional image. Depict Lord Murugan in the distinctive Palani ascetic form: a youthful divine figure with a shaved head, simple traditional kaupina and minimal ornaments, standing calmly and holding the traditional dhandam staff in one hand. Use natural sacred skin tones, accurate human anatomy, a serene expression and authentic South Indian temple sculpture-inspired details. Show the Palani hill temple atmosphere in the background. This is specifically Palani Dhandayuthapani Murugan. Do not depict another deity or add a crown, multiple faces, extra arms, peacock or Vel spear.';
+  } else if (muruganPattern.test(original) && sixFaceMuruganPattern.test(original)) {
+    guidance =
+      ' Create a respectful and recognizable traditional Lord Murugan Shanmukha devotional image. Depict the divine youthful Murugan with exactly six clearly visible faces and twelve arms in traditional iconography, holding appropriate divine attributes including the Vel. Include his peacock vahana and a beautiful South Indian temple background. Keep all six faces distinct, harmonious and anatomically coherent. This must be six-faced Murugan, not Palani Dhandayuthapani. Do not depict Shiva, Vishnu, Ganesha or another deity.';
+  } else if (muruganPattern.test(original)) {
+    guidance =
+      ' Create a respectful and recognizable traditional Lord Murugan devotional image. Depict the youthful Tamil deity with a Vel spear, a peacock nearby and beautiful traditional South Indian ornaments and clothing. Use a serene divine expression, accurate anatomy, detailed devotional Indian art and a suitable South Indian temple background. This is Lord Murugan, not another Hindu deity. Do not use the Palani shaved-head ascetic form unless Palani is explicitly requested, and do not add multiple faces unless six-faced Murugan is explicitly requested.';
+
+  } else if (hinduPattern.test(original)) {
     guidance =
       ' Create a respectful devotional image of the exact Hindu deity requested. Make that deity recognizable, prominent and centered. Preserve the correct traditional appearance, face, clothing, ornaments, attributes and symbols. Use detailed devotional Indian art, harmonious lighting and an appropriate temple or divine background. Do not substitute another deity or omit the requested subject.';
   } else if (christianPattern.test(original)) {
@@ -3296,17 +3418,59 @@ async function skSearchRealImage(query) {
     { re: /கிருஷ்ணர்|கண்ணன்|krishna/i, terms: ['krishna'] },
     { re: /சிவன்|ஈசன்|sivan|shiva/i, terms: ['shiva'] },
     { re: /பெருமாள்|விஷ்ணு|வெங்கடேச|perumal|vishnu|venkateswara/i, terms: ['vishnu', 'venkateswara'] },
-    { re: /இயேசு|ஏசு|jesus|christ/i, terms: ['jesus', 'christ'] },
+    { re: /வேளாங்கண்ணி மாதா|ஆரோக்கிய மாதா|அன்னை மரியா|அன்னை மேரி|மேரி மாதா|மாதா|mother mary|virgin mary|velankanni|arokia matha|our lady of good health/i, terms: ['our lady of good health', 'mother mary', 'virgin mary'] },
+    { re: /இயேசு|ஏசு|jesus|christ/i, terms: ['jesus christ', 'jesus'] },
     { re: /புத்தர்|buddha/i, terms: ['buddha'] }
   ];
 
   const rule = deityRules.find(item => item.re.test(text));
-  if (!rule) return null;
-  const queryText = rule ? rule.terms[0] : text
-    .replace(/\b(real|original|photo|photograph|image|picture|send|show|please)\b/gi, '')
+  let queryText = rule ? rule.terms[0] : text
+    .replace(/\b(real|original|photo|photograph|image|picture|send|show|please|leader|leaders|political|politician|politicians|president|prime minister|chief minister|scientist|scientists|science|poet|poets|pulavar|scholar|actor|actress|celebrity|celebrities|star|stars|photo of|picture of|tamil|indian|film|cinema)\b/gi, '')
+    .replace(/படம்|புகைப்படம்|அனுப்பு|காட்டு|வேண்டும்|தயவு செய்து|தலைவர்|தலைவர்கள்|அரசியல்|அரசியல்வாதி|முதல்வர்|பிரதமர்|ஜனாதிபதி|விஞ்ஞானி|அறிவியலாளர்|புலவர்|கவிஞர்|தமிழறிஞர்|நடிகர்|நடிகை|நட்சத்திரம்|பிரபலங்கள்/g, '')
+    .replace(/\s+/g, ' ')
     .trim();
 
+
+  // SK_JOSEPH_VIJAY_EXACT_SEARCH_V1
+  const isJosephVijaySearch = /^(vijay|விஜய்)$/i.test(queryText.trim());
+  if (isJosephVijaySearch) queryText = 'Joseph Vijay';
+
+
+
+  // SK_ACTOR_CATEGORY_QUERY_V1
+  const isActorCategorySearch =
+    /\b(actor|actors|actress|actresses|celebrity|celebrities|film star|movie star|tamil actor|indian actor)\b/i.test(text) ||
+    /நடிகர்|நடிகர்கள்|நடிகை|நடிகைகள்|திரைப்பட நட்சத்திரம்|சினிமா நட்சத்திரம்/.test(text);
+
+  const isActressCategorySearch =
+    /\b(actress|actresses|female actor|film actress)\b/i.test(text) ||
+    /நடிகை|நடிகைகள்/.test(text);
+
+  if (!queryText && isActorCategorySearch) {
+    queryText = isActressCategorySearch
+      ? 'Tamil film actresses'
+      : 'Tamil film actors';
+  }
+
   if (!queryText) return null;
+
+  // SK_GALLERY_PERSON_NAME_FILTER_V1
+  const isPersonSearch =
+    isJosephVijaySearch ||
+    isActorCategorySearch ||
+    /\b(leader|leaders|political|politician|politicians|president|prime minister|chief minister|scientist|scientists|poet|poets|pulavar|scholar|star|stars)\b/i.test(text) ||
+    /தலைவர்|அரசியல்|அரசியல்வாதி|முதல்வர்|பிரதமர்|ஜனாதிபதி|விஞ்ஞானி|அறிவியலாளர்|புலவர்|கவிஞர்|தமிழறிஞர்|நட்சத்திரம்|பிரபலங்கள்/.test(text);
+
+  const personTokens = isPersonSearch
+    ? (queryText.toLowerCase().match(/[a-z0-9]+|[\u0B80-\u0BFF]+/g) || [])
+        .filter(token =>
+          token.length >= 2 &&
+          ![
+            'the', 'and', 'for', 'tamil', 'indian', 'film', 'cinema',
+            'தமிழ்', 'இந்திய', 'திரைப்பட'
+          ].includes(token)
+        )
+    : [];
 
   const params = new URLSearchParams({
     action: 'query',
@@ -3343,6 +3507,39 @@ async function skSearchRealImage(query) {
     ].join(' ').replace(/<[^>]*>/g, ' ').toLowerCase();
 
     if (rule && !rule.terms.some(term => description.includes(term))) {
+      continue;
+    }
+
+    // SK_ACTOR_CATEGORY_METADATA_FILTER_V1
+    const hasActorContext =
+      /\b(actor|actress|film star|movie star|film actor|film actress|cinema actor|entertainer)\b/i.test(description) ||
+      /நடிகர்|நடிகை|திரைப்பட நடிகர்|திரைப்பட நடிகை/.test(description);
+
+    const hasActressContext =
+      /\b(actress|film actress|movie star|Indian actress|Tamil actress)\b/i.test(description) ||
+      /நடிகை|திரைப்பட நடிகை/.test(description);
+
+    if (isJosephVijaySearch) {
+      const hasVijayName = /\bvijay\b/i.test(description);
+      const hasVijayActorContext =
+        /tamil film actor|film actor|actor vijay|vijay.*(film|actor|audio launch|jilla|puli)|thalapathy/i.test(description);
+
+      if (!hasVijayName || !hasVijayActorContext) continue;
+    } else if (isActorCategorySearch) {
+      if (isActressCategorySearch ? !hasActressContext : !hasActorContext) {
+        continue;
+      }
+
+      if (
+        personTokens.length &&
+        !personTokens.every(token => description.includes(token))
+      ) {
+        continue;
+      }
+    } else if (
+      personTokens.length &&
+      !personTokens.every(token => description.includes(token))
+    ) {
       continue;
     }
 
@@ -3954,6 +4151,28 @@ app.post('/api/any-content', async (req, res) => {
 });
 
 
+
+// SK_DEITY_POSTER_TITLE_V1
+function skGetDeityPosterTitle(input) {
+  const text = String(input || '');
+  const tamil = /[\u0B80-\u0BFF]/.test(text);
+  const rules = [
+    { re: /முருகன்|கந்தன்|சுப்பிரமணியர்|வேலவன்|murugan|karthikeya|kartikeya|subramanya|skanda/i, en: 'Murugan God Photo', ta: 'முருகன் சுவாமி படம்' },
+    { re: /விநாயகர்|வினாயகர்|பிள்ளையார்|ganesha|ganesh|vinayagar|vinayaka/i, en: 'Vinayagar God Photo', ta: 'விநாயகர் சுவாமி படம்' },
+    { re: /மாரியம்மன்|காளியம்மன்|அம்மன்|துர்கை|காளி|amman|mariamman|durga|kali/i, en: 'Amman God Photo', ta: 'அம்மன் சுவாமி படம்' },
+    { re: /சிவன்|ஈசன்|பரமசிவன்|shiva|sivan|mahadev/i, en: 'Shiva God Photo', ta: 'சிவபெருமான் படம்' },
+    { re: /பெருமாள்|விஷ்ணு|வெங்கடேச|திருமால்|vishnu|perumal|venkateswara/i, en: 'Perumal God Photo', ta: 'பெருமாள் சுவாமி படம்' },
+    { re: /கிருஷ்ணர்|கண்ணன்|krishna/i, en: 'Krishna God Photo', ta: 'கிருஷ்ணர் சுவாமி படம்' },
+    { re: /இராமர்|ராமர்|rama|ram/i, en: 'Rama God Photo', ta: 'ஸ்ரீ ராமர் படம்' },
+    { re: /இயேசு|ஏசு|jesus|christ/i, en: 'Jesus Photo', ta: 'இயேசு படம்' },
+    { re: /புத்தர்|buddha/i, en: 'Buddha Photo', ta: 'புத்தர் படம்' }
+  ];
+  const found = rules.find(rule => rule.re.test(text));
+  if (!found) return '';
+  return tamil ? found.ta : found.en;
+}
+// END SK_DEITY_POSTER_TITLE_V1
+
 /* SK_AI_POSTER_COMPOSER_V1 */
 app.post('/api/ai/poster', async (req, res) => {
   let backgroundAttribution = null;
@@ -3967,6 +4186,7 @@ app.post('/api/ai/poster', async (req, res) => {
 
   try {
     const content = String(req.body?.content || '').trim();
+    const posterTitle = skGetDeityPosterTitle(content);
     const theme = String(req.body?.theme || 'professional')
       .replace(/[^a-z0-9 _-]/gi, '').slice(0, 50);
 
@@ -4031,6 +4251,25 @@ app.post('/api/ai/poster', async (req, res) => {
           .slice(0, 120);
 
         let stockUrl = null;
+
+        // SK_DEITY_POSTER_NO_GENERIC_STOCK_V1
+        if (skGetDeityPosterTitle(content)) {
+          const deityImage = await skSearchRealImage(content);
+          if (deityImage?.dataUri) {
+            generated = deityImage.dataUri;
+            backgroundAttribution = {
+              provider: 'Wikimedia Commons',
+              title: 'Deity image search result',
+              artist: '',
+              license: '',
+              sourceUrl: ''
+            };
+          } else {
+            throw new Error(
+              'Deity-specific AI image failed and no matching image was found. Generic stock photos are blocked.'
+            );
+          }
+        } else {
 
         // Unsplash fallback
         const unsplashKey = process.env.UNSPLASH_ACCESS_KEY;
@@ -4175,6 +4414,7 @@ app.post('/api/ai/poster', async (req, res) => {
         generated =
           'data:' + mime.split(';')[0] + ';base64,' +
           stockBytes.toString('base64');
+        }
       }
       let bytes;
 
@@ -4215,7 +4455,7 @@ app.post('/api/ai/poster', async (req, res) => {
     await fs.promises.mkdir(path.dirname(outputFile), { recursive: true });
     await runFile('python3', [
       path.join(__dirname, 'ai-poster-maker.py'),
-      tempFile, content, outputFile
+      tempFile, content, outputFile, posterTitle
     ], { timeout: 60000, maxBuffer: 2 * 1024 * 1024 });
 
     return res.json({
@@ -4905,7 +5145,11 @@ async function skTelegramSendPoster(chatId, prompt) {
     new Blob([imageBytes], { type: 'image/png' }),
     'sasikumar-ai-poster.png'
   );
-  form.append('caption', '🎨 உங்கள் AI Poster தயார்!\n🤖 SASIKUMAR AI');
+  const deityTitle = skGetDeityPosterTitle(content);
+  const posterCaption = deityTitle
+    ? `🙏 ${deityTitle}\n🎨 உங்கள் AI Poster தயார்!\n🤖 SASIKUMAR AI`
+    : '🎨 உங்கள் AI Poster தயார்!\n🤖 SASIKUMAR AI';
+  form.append('caption', posterCaption);
 
   const response = await fetch(
     `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`,

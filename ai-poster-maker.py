@@ -67,7 +67,10 @@ def main():
         raise FileNotFoundError(source)
 
     parts = [line.strip() for line in content.splitlines() if line.strip()]
-    title = clean_title(parts[0]) if parts else "வணக்கம்"
+    explicit_title = sys.argv[4].strip() if len(sys.argv) > 4 else ""
+    title = clean_title(explicit_title) if explicit_title else (
+        clean_title(parts[0]) if parts else "வணக்கம்"
+    )
     if not title:
         title = parts[0] if parts else "வணக்கம்"
     body = "\n".join(parts[1:]).strip()

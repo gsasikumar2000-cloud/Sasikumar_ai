@@ -238,6 +238,27 @@ footer{text-align:center;padding:14px;color:#64748b;font-size:12px}
 </div>
 </section>
 
+
+<section class="card" id="creativeUrlStudio">
+<h2>🔗 Creative URL Studio</h2>
+<p class="hint">Enter any public website URL. Open, copy, share or preview it.</p>
+<label for="creativeUrl">Creative Website URL</label>
+<input id="creativeUrl" type="url"
+ placeholder="https://example.com"
+ autocomplete="url">
+<div class="grid" style="margin-top:10px">
+<button type="button" onclick="skOpenCreativeUrl()">🌐 Open URL</button>
+<button type="button" class="green" onclick="skCopyCreativeUrl()">📋 Copy URL</button>
+<button type="button" class="purple" onclick="skShareCreativeUrl()">📤 Share URL</button>
+<button type="button" class="orange" onclick="skPreviewCreativeUrl()">🔍 Preview</button>
+</div>
+<div id="creativeUrlStatus" class="status" role="status"></div>
+<iframe id="creativeUrlPreview" title="Creative website preview"
+ style="display:none;width:100%;height:360px;border:1px solid #dbeafe;border-radius:12px;margin-top:12px;background:white"
+ loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+<p class="hint">சில Websites பாதுகாப்பு காரணமாக iframe Preview-ஐ அனுமதிக்காது. அப்போது Open URL பயன்படுத்துங்கள்.</p>
+</section>
+
 <section class="card">
 <h2>🤖 5. AI Text Editor</h2>
 <label for="task">Choose an AI task / AI பணியைத் தேர்ந்தெடுக்கவும்</label>
@@ -271,6 +292,61 @@ footer{text-align:center;padding:14px;color:#64748b;font-size:12px}
 </div>
 </main>
 <footer>© SASIKUMAR AI • All-in-One Format Studio</footer>
+
+
+<script>
+function skGetCreativeUrl(){
+ const input=document.getElementById('creativeUrl');
+ const status=document.getElementById('creativeUrlStatus');
+ try{
+  const value=input.value.trim();
+  if(!value) throw new Error('முதலில் URL உள்ளிடுங்கள்.');
+  const url=new URL(value);
+  if(!['http:','https:'].includes(url.protocol))
+   throw new Error('HTTP அல்லது HTTPS URL மட்டும் அனுமதி.');
+  status.textContent='';
+  return url.href;
+ }catch(e){
+  status.textContent='⚠️ '+e.message;
+  return '';
+ }
+}
+function skOpenCreativeUrl(){
+ const url=skGetCreativeUrl();
+ if(url) window.open(url,'_blank','noopener,noreferrer');
+}
+async function skCopyCreativeUrl(){
+ const url=skGetCreativeUrl();
+ if(!url)return;
+ try{
+  await navigator.clipboard.writeText(url);
+  document.getElementById('creativeUrlStatus').textContent='✅ URL Copied!';
+ }catch(e){
+  document.getElementById('creativeUrlStatus').textContent='Copy முடியவில்லை. URL-ஐ manually copy செய்யுங்கள்.';
+ }
+}
+async function skShareCreativeUrl(){
+ const url=skGetCreativeUrl();
+ if(!url)return;
+ try{
+  if(navigator.share) await navigator.share({title:'SASIKUMAR AI Creative URL',url});
+  else {
+   await navigator.clipboard.writeText(url);
+   document.getElementById('creativeUrlStatus').textContent='✅ URL Copied! Share செய்யலாம்.';
+  }
+ }catch(e){
+  if(e.name!=='AbortError')
+   document.getElementById('creativeUrlStatus').textContent='Share முடியவில்லை.';
+ }
+}
+function skPreviewCreativeUrl(){
+ const url=skGetCreativeUrl();
+ if(!url)return;
+ const frame=document.getElementById('creativeUrlPreview');
+ frame.src=url;
+ frame.style.display='block';
+}
+</script>
 
 <script>
 const $=id=>document.getElementById(id);
