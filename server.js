@@ -3701,6 +3701,52 @@ async function skSearchRealImage(query) {
     }
   }
 
+
+  // [SK_WHATSAPP_SERPAPI_IMAGE_FALLBACK_V1]
+  // Google Images fallback after Wikimedia, Pixabay and Unsplash.
+  const serpKey = process.env.SERPAPI_API_KEY;
+  if (serpKey) {
+    try {
+      const params = new URLSearchParams({
+        engine: 'google_images',
+        q: queryText,
+        api_key: serpKey.trim(),
+        safe: 'active',
+        ijn: '0'
+      });
+
+      const response = await fetch(
+        'https://serpapi.com/search.json?' + params.toString(),
+        { signal: AbortSignal.timeout(20000) }
+      );
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error('SerpAPI HTTP ' + response.status);
+      }
+
+      for (const item of (data.images_results || []).slice(0, 10)) {
+        const imageUrl = item.original || item.thumbnail;
+        if (!imageUrl || !/^https?:\/\//i.test(imageUrl)) continue;
+
+        const found = await downloadSearchImage(
+          imageUrl,
+          '📷 Google Images via SerpAPI: ' +
+          (item.title || queryText) +
+          '\n🔗 ' + (item.link || item.source || 'Google Images')
+        );
+
+        if (found) {
+          console.log('[WhatsApp image] SerpAPI Google Images result found');
+          return found;
+        }
+      }
+    } catch (err) {
+      console.warn('[WhatsApp SerpAPI image search]', err.message);
+    }
+  }
+
   return null;
 }
 
