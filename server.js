@@ -3565,6 +3565,10 @@ async function skSearchRealImage(query) {
   const text = String(query || '').trim();
   if (!text) return null;
 
+  // SK_MOTHER_MARY_EXACT_SEARCH_V1
+  const isMotherMarySearch =
+    /mother mary|virgin mary|madonna|our lady|velankanni|arokia matha|அன்னை மரியா|அன்னை மேரி|மேரி மாதா|வேளாங்கண்ணி மாதா|ஆரோக்கிய மாதா/i.test(text);
+
   const deityRules = [
     { re: /விநாயகர்|பிள்ளையார்|வினாயகர்|vinayagar|vinayaka|ganesha|ganesh/i, terms: ['ganesha', 'vinayaka'] },
     { re: /முருகன்|கந்தன்|சுப்பிரமணியர்|murugan|subramanya|karthikeya/i, terms: ['murugan', 'kartikeya', 'subramanya'] },
@@ -3572,13 +3576,17 @@ async function skSearchRealImage(query) {
     { re: /கிருஷ்ணர்|கண்ணன்|krishna/i, terms: ['krishna'] },
     { re: /சிவன்|ஈசன்|sivan|shiva/i, terms: ['shiva'] },
     { re: /பெருமாள்|விஷ்ணு|வெங்கடேச|perumal|vishnu|venkateswara/i, terms: ['vishnu', 'venkateswara'] },
-    { re: /வேளாங்கண்ணி மாதா|ஆரோக்கிய மாதா|அன்னை மரியா|அன்னை மேரி|மேரி மாதா|மாதா|mother mary|virgin mary|velankanni|arokia matha|our lady of good health/i, terms: ['our lady of good health', 'mother mary', 'virgin mary'] },
+    { re: /வேளாங்கண்ணி மாதா|ஆரோக்கிய மாதா|அன்னை மரியா|அன்னை மேரி|மேரி மாதா|mother mary|virgin mary|madonna|our lady|velankanni|arokia matha/i, terms: ['virgin mary', 'mother mary', 'madonna', 'our lady', 'velankanni', 'arokia matha'] },
     { re: /இயேசு|ஏசு|jesus|christ/i, terms: ['jesus christ', 'jesus'] },
     { re: /புத்தர்|buddha/i, terms: ['buddha'] }
   ];
 
   const rule = deityRules.find(item => item.re.test(text));
-  let queryText = rule ? rule.terms[0] : text
+  let queryText = rule
+    ? (isMotherMarySearch && /velankanni|arokia matha|வேளாங்கண்ணி|ஆரோக்கிய/i.test(text)
+        ? 'Our Lady of Good Health Velankanni'
+        : (isMotherMarySearch ? 'Virgin Mary Mother Mary' : rule.terms[0]))
+    : text
     .replace(/\b(real|original|photo|photograph|image|picture|send|show|please|leader|leaders|political|politician|politicians|president|prime minister|chief minister|scientist|scientists|science|poet|poets|pulavar|scholar|actor|actress|celebrity|celebrities|star|stars|photo of|picture of|tamil|indian|film|cinema)\b/gi, '')
     .replace(/படம்|புகைப்படம்|அனுப்பு|காட்டு|வேண்டும்|தயவு செய்து|தலைவர்|தலைவர்கள்|அரசியல்|அரசியல்வாதி|முதல்வர்|பிரதமர்|ஜனாதிபதி|விஞ்ஞானி|அறிவியலாளர்|புலவர்|கவிஞர்|தமிழறிஞர்|நடிகர்|நடிகை|நட்சத்திரம்|பிரபலங்கள்/g, '')
     .replace(/\s+/g, ' ')
@@ -3651,6 +3659,11 @@ async function skSearchRealImage(query) {
   // SK_IMAGE_SEARCH_STRICT_SUBJECT_FILTER_V1
   const matchesRequestedSubject = value => {
     const subject = String(value || '').toLowerCase();
+
+    if (isMotherMarySearch) {
+      return /mother mary|virgin mary|blessed virgin|madonna|marian|our lady|mother of jesus|immaculate conception|velankanni|arokia matha|அன்னை மரியா|அன்னை மேரி|மேரி மாதா|வேளாங்கண்ணி|ஆரோக்கிய மாதா/i.test(subject);
+    }
+
     if (isVijayCmSearch) {
       return (/\bvijay\b|விஜய்/i.test(subject)) &&
         /politician|political|chief minister|minister|election|tvk|tamilaga vettri|mla|legislative|government|அரசியல்|முதல்வர்/i.test(subject);
