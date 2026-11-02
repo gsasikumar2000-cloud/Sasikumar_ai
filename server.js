@@ -2061,6 +2061,123 @@ function skShareReply(key) {
 }
 // END SK_MAPS_SHARE_V1
 
+
+// SK_WHATSAPP_IMAGE_TEXT_ANALYSIS_V1
+async function skWhatsAppSendTextOnly(to, message) {
+  const response = await fetch(
+    `https://graph.facebook.com/v20.0/${WA_PHONE_ID}/messages`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${WA_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        to,
+        type: 'text',
+        text: {
+          preview_url: false,
+          body: String(message || '').slice(0, 4000)
+        }
+      }),
+      signal: AbortSignal.timeout(20000)
+    }
+  );
+
+  if (!response.ok) {
+    const error = await response.text().catch(() => '');
+    console.error('[WA media text send]', response.status, error.slice(0, 300));
+  }
+  return response.ok;
+}
+
+async function skWhatsAppAnalyzeImage(mediaId, caption = '') {
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) throw new Error('Groq API key is unavailable.');
+
+  const metadataResponse = await fetch(
+    `https://graph.facebook.com/v20.0/${encodeURIComponent(mediaId)}`,
+    {
+      headers: { Authorization: `Bearer ${WA_TOKEN}` },
+      signal: AbortSignal.timeout(20000)
+    }
+  );
+
+  if (!metadataResponse.ok) throw new Error('WhatsApp media information unavailable.');
+
+  const metadata = await metadataResponse.json();
+  const mime = String(metadata.mime_type || '').toLowerCase();
+
+  if (!/^image\/(jpeg|png|webp)$/.test(mime) || !metadata.url) {
+    throw new Error('Unsupported image format. Please send JPG, PNG or WebP.');
+  }
+
+  const fileResponse = await fetch(metadata.url, {
+    headers: { Authorization: `Bearer ${WA_TOKEN}` },
+    signal: AbortSignal.timeout(30000)
+  });
+
+  if (!fileResponse.ok) throw new Error('Could not download the WhatsApp image.');
+
+  const buffer = Buffer.from(await fileResponse.arrayBuffer());
+  if (!buffer.length || buffer.length > 8 * 1024 * 1024) {
+    throw new Error('Image is empty or larger than the 8 MB analysis limit.');
+  }
+
+  const imageData = `data:${mime};base64,${buffer.toString('base64')}`;
+
+  const aiResponse = await fetch(
+    'https://api.groq.com/openai/v1/chat/completions',
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'qwen/qwen3.8-27b',
+        messages: [
+          {
+            role: 'system',
+            content:
+              'You are SASIKUMAR AI. Analyze the supplied image and answer in the user’s language: Tamil, English or Tanglish. Describe visible objects and readable text accurately. If the user asks a question, answer it using the image. Clearly state uncertainty. Never claim to see details that are not visible. Return text only. Do not generate or send images, videos or audio.'
+          },
+          {
+            role: 'user',
+            content: [
+              {
+                type: 'text',
+                text: caption.trim()
+                  ? caption.slice(0, 1000)
+                  : 'இந்தப் படத்தைப் பார்த்து என்ன இருக்கிறது என்று விளக்கவும்.'
+              },
+              {
+                type: 'image_url',
+                image_url: { url: imageData }
+              }
+            ]
+          }
+        ],
+        temperature: 0.4,
+        max_completion_tokens: 600
+      }),
+      signal: AbortSignal.timeout(60000)
+    }
+  );
+
+  const result = await aiResponse.json().catch(() => ({}));
+  if (!aiResponse.ok) {
+    throw new Error(result?.error?.message || `Groq HTTP ${aiResponse.status}`);
+  }
+
+  const answer = result?.choices?.[0]?.message?.content;
+  if (!answer) throw new Error('AI returned an empty image analysis.');
+
+  return String(answer).slice(0, 4000);
+}
+// END SK_WHATSAPP_IMAGE_TEXT_ANALYSIS_V1
+
 app.post('/api/whatsapp/webhook',async(req,res)=>{
   try{
     const body=req.body;
@@ -2144,7 +2261,26 @@ app.post('/api/whatsapp/webhook',async(req,res)=>{
       senderLast4: String(msg.from || '').slice(-4)
     }));
 
-    const from=msg.from;
+
+if (msg.type === 'image' && msg.image?.id) {
+  const mediaSender = String(msg.from || '');
+  try {
+    const imageReply = await skWhatsAppAnalyzeImage(
+      msg.image.id,
+      String(msg.image.caption || '')
+    );
+    await skWhatsAppSendTextOnly(mediaSender, imageReply);
+  } catch (mediaError) {
+    console.error('[WA image analysis]', mediaError.message);
+    await skWhatsAppSendTextOnly(
+      mediaSender,
+      'மன்னிக்கவும். இந்தப் படத்தை தற்போது ஆய்வு செய்ய முடியவில்லை. JPG, PNG அல்லது WebP படத்தை மீண்டும் அனுப்புங்கள்.'
+    );
+  }
+  return;
+}
+
+const from=msg.from;
     const trimmed=String(msg.text?.body || msg.image?.caption || '').trim();
     const lower=trimmed.toLowerCase();
 
