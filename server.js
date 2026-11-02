@@ -2328,6 +2328,7 @@ if (youtubeVideos.length) {
         if (wantsImage) {
           try {
             let generated;
+            let galleryImages = null;
             let imageAttribution = '';
 
             if (wantsPoster) {
@@ -2382,7 +2383,8 @@ if (youtubeVideos.length) {
                 console.log('[WhatsApp image] No matching real image found. AI fallback disabled.');
                 generated = null;
               } else {
-                generated = found.dataUri;
+                galleryImages = found.images || [found];
+                generated = galleryImages[0]?.dataUri || null;
                 imageAttribution = found.attribution || '';
               }
             } else {
@@ -2392,7 +2394,13 @@ if (youtubeVideos.length) {
             if (!generated) {
               // No matching real image; do not send an unrelated picture.
             } else {
-            const match = /^data:(image\/[a-zA-Z0-9.+-]+);base64,([A-Za-z0-9+/=\r\n]+)$/.exec(String(generated || ''));
+            const imagesToSend = wantsCatalogImage && galleryImages?.length
+              ? galleryImages.slice(0, 10)
+              : [{ dataUri: generated }];
+
+            for (let imageIndex = 0; imageIndex < imagesToSend.length; imageIndex++) {
+            const currentGenerated = imagesToSend[imageIndex]?.dataUri || generated;
+            const match = /^data:(image\/[a-zA-Z0-9.+-]+);base64,([A-Za-z0-9+/=\r\n]+)$/.exec(String(currentGenerated || ''));
 
             if (!match) {
               throw new Error('Image generator did not return a supported base64 image.');
@@ -2509,11 +2517,13 @@ if (youtubeVideos.length) {
               type: 'image',
               image: {
                 id: uploadData.id,
-                caption: (
-                  skGetDeityPosterTitle(trimmed)
-                    ? '🙏 ' + skGetDeityPosterTitle(trimmed) + '\n'
-                    : ''
-                ) + '🤖 SASIKUMAR AI STUDIO'
+                caption: wantsCatalogImage
+                  ? '🤖 SASIKUMAR AI STUDIO\n📷 ' + (imageIndex + 1) + '/' + imagesToSend.length
+                  : (
+                      skGetDeityPosterTitle(trimmed)
+                        ? '🙏 ' + skGetDeityPosterTitle(trimmed) + '\n'
+                        : ''
+                    ) + '🤖 SASIKUMAR AI STUDIO'
               }
             });
 
@@ -2524,6 +2534,11 @@ if (youtubeVideos.length) {
                   body: '🤖 SASIKUMAR AI\nபடம் உருவானது; ஆனால் WhatsApp-ல் அனுப்ப முடியவில்லை. சிறிது நேரத்தில் மீண்டும் முயற்சிக்கவும்.'
                 }
               });
+            }
+
+            if (imageIndex < imagesToSend.length - 1) {
+              await new Promise(resolve => setTimeout(resolve, 800));
+            }
             }
             }
           } catch (imageError) {
@@ -3493,6 +3508,11 @@ async function skSearchRealImage(query) {
 
   if (!queryText) return null;
 
+  // SK_WHATSAPP_REAL_IMAGE_GALLERY_V1
+  const galleryResults = [];
+  const seenImageUrls = new Set();
+  const MAX_GALLERY_IMAGES = 10;
+
   // SK_GALLERY_PERSON_NAME_FILTER_V1
   const isPersonSearch =
     isJosephVijaySearch ||
@@ -3621,7 +3641,7 @@ async function skSearchRealImage(query) {
     }
 
     const imageUrl = info.url;
-    if (!imageUrl) continue;
+    if (!imageUrl || seenImageUrls.has(imageUrl)) continue;
 
     const imageResponse = await fetch(imageUrl, {
       headers: { 'User-Agent': 'SASIKUMAR-AI/1.0' },
@@ -3640,12 +3660,14 @@ async function skSearchRealImage(query) {
     const license = String(metadata.LicenseShortName?.value || 'License not specified').replace(/<[^>]*>/g, '').trim();
     const source = info.descriptionurl || info.url || '';
 
-    console.log('[Wikimedia] Real image found:', page.title);
-
-    return {
+    seenImageUrls.add(imageUrl);
+    galleryResults.push({
       dataUri: 'data:' + mime + ';base64,' + bytes.toString('base64'),
       attribution: '📷 ' + page.title + '\n👤 ' + artist + '\n📄 ' + license + '\n🔗 ' + source
-    };
+    });
+
+    console.log('[Wikimedia] Gallery image found:', page.title);
+    if (galleryResults.length >= MAX_GALLERY_IMAGES) break;
   }
 
 
@@ -3655,7 +3677,7 @@ async function skSearchRealImage(query) {
 
   // SK_WHATSAPP_PIXABAY_UNSPLASH_FALLBACK_V1
   const downloadSearchImage = async (url, attribution) => {
-    if (!url) return null;
+    if (!url || seenImageUrls.has(url)) return null;
     try {
       const res = await fetch(url, {
         headers: { 'User-Agent': 'SASIKUMAR-AI/1.0' },
@@ -3666,6 +3688,7 @@ async function skSearchRealImage(query) {
       if (!mime.startsWith('image/')) return null;
       const bytes = Buffer.from(await res.arrayBuffer());
       if (!bytes.length || bytes.length > 8 * 1024 * 1024) return null;
+      seenImageUrls.add(url);
       return {
         dataUri: 'data:' + mime + ';base64,' + bytes.toString('base64'),
         attribution
@@ -3678,7 +3701,7 @@ async function skSearchRealImage(query) {
 
   // Pixabay search
   const pixabayKey = process.env.PIXABAY_API_KEY;
-  if (pixabayKey) {
+  if (pixabayKey && galleryResults.length < MAX_GALLERY_IMAGES) {
     try {
       const url = 'https://pixabay.com/api/?key=' +
         encodeURIComponent(pixabayKey) +
@@ -3697,8 +3720,9 @@ async function skSearchRealImage(query) {
           '\n🔗 ' + (hit.pageURL || 'https://pixabay.com/')
         );
         if (found) {
-          console.log('[WhatsApp image] Pixabay result found');
-          return found;
+          galleryResults.push(found);
+          console.log('[WhatsApp image] Pixabay gallery result found');
+          if (galleryResults.length >= MAX_GALLERY_IMAGES) break;
         }
       }
     } catch (err) {
@@ -3708,7 +3732,7 @@ async function skSearchRealImage(query) {
 
   // Unsplash search
   const unsplashKey = process.env.UNSPLASH_ACCESS_KEY;
-  if (unsplashKey) {
+  if (unsplashKey && galleryResults.length < MAX_GALLERY_IMAGES) {
     try {
       const url = 'https://api.unsplash.com/search/photos?query=' +
         encodeURIComponent(queryText) + '&per_page=10';
@@ -3731,8 +3755,9 @@ async function skSearchRealImage(query) {
           '\n🔗 ' + (item.links?.html || 'https://unsplash.com/')
         );
         if (found) {
-          console.log('[WhatsApp image] Unsplash result found');
-          return found;
+          galleryResults.push(found);
+          console.log('[WhatsApp image] Unsplash gallery result found');
+          if (galleryResults.length >= MAX_GALLERY_IMAGES) break;
         }
       }
     } catch (err) {
@@ -3740,8 +3765,15 @@ async function skSearchRealImage(query) {
     }
   }
 
+  console.log('[WhatsApp image] Total relevant gallery images:', galleryResults.length);
 
-  return null;
+  return galleryResults.length
+    ? {
+        dataUri: galleryResults[0].dataUri,
+        attribution: galleryResults[0].attribution,
+        images: galleryResults
+      }
+    : null;
 }
 
 async function skGenerateImage(prompt) {
