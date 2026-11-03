@@ -2565,6 +2565,37 @@ async function skAnalyzeImageBuffer(buffer, mime, caption = '') {
   return String(answer).slice(0, 4000);
 }
 
+
+// SK_AUTO_IMAGE_DETAILS_REPORT_V1
+async function skBuildImageDetailsReport(buffer, mime, caption = '') {
+  const quality = await skCheckImageQuality(buffer, mime, caption);
+
+  const prompt = [
+    'இந்தப் படத்தை முழுமையாக ஆய்வு செய்து தமிழில் விளக்கவும்.',
+    '1. படத்தின் விரிவான விளக்கம்.',
+    '2. படத்தில் உள்ள எழுத்துகள் அனைத்தையும் வாசிக்கவும் (OCR).',
+    '3. மனிதர்கள், பொருட்கள், வாகனங்கள் மற்றும் முக்கியக் காட்சிகள்.',
+    '4. படத்தின் பின்னணி மற்றும் பொருட்களின் அமைவிடம்.',
+    '5. படத்தில் தெரியும் முக்கியமான விவரங்கள்.',
+    '6. படத்தில் சந்தேகத்திற்குரிய மாற்றங்கள் தெரிந்தால் மட்டும் குறிப்பிடவும்.',
+    '7. AI உருவாக்கிய படமாக இருக்கக்கூடிய காட்சி அறிகுறிகள் இருந்தால் கூறவும்.',
+    '8. படம் உண்மையானதா அல்லது AI உருவாக்கியதா என்பதை உறுதியாகக் கூறாதீர்கள்; ஆதாரம் இல்லையெனில் தீர்மானிக்க முடியாது என்று கூறவும்.',
+    'படத்தில் தெரியாத தகவல்களை ஊகித்துச் சொல்லாதீர்கள்.',
+    'பயனர் கேள்வி: ' + String(caption || 'படத்தை விளக்கவும்').slice(0, 400)
+  ].join('\n');
+
+  const details = await skAnalyzeImageBuffer(buffer, mime, prompt);
+
+  return (
+    '🖼️ SASIKUMAR AI — முழுமையான பட விவர அறிக்கை\n\n' +
+    quality +
+    '\n\n🔎 AI பட விளக்கம்:\n' +
+    details +
+    '\n\n⚠️ AI உருவாக்கம் அல்லது படத்தின் உண்மைத்தன்மையை உறுதிப்படுத்தும் சான்றிதழ் இது அல்ல.'
+  ).slice(0, 3900);
+}
+// END SK_AUTO_IMAGE_DETAILS_REPORT_V1
+
 // WhatsApp media download adapter
 async function skWhatsAppAnalyzeImage(mediaId, caption = '', mimeFallback = '') {
   if (!mediaId) throw new Error('WhatsApp image media ID missing.');
@@ -2634,7 +2665,7 @@ async function skWhatsAppAnalyzeImage(mediaId, caption = '', mimeFallback = '') 
     throw new Error('Image download is empty.');
   }
 
-  return skAnalyzeImageBuffer(buffer, mime, caption);
+  return skBuildImageDetailsReport(buffer, mime, caption);
 }
 
 
@@ -3327,7 +3358,7 @@ if (msg.type === 'image' && msg.image?.id) {
     const original = await skWhatsAppDownloadImageBuffer(msg.image.id);
 
     if (skIsImageQualityRequest(imageCaption)) {
-      const report = await skCheckImageQuality(
+      const report = await skBuildImageDetailsReport(
         original.buffer,
         original.mime,
         imageCaption
@@ -3379,7 +3410,7 @@ if (msg.type === 'image' && msg.image?.id) {
       );
 
     } else {
-      const imageReply = await skAnalyzeImageBuffer(
+      const imageReply = await skBuildImageDetailsReport(
         original.buffer,
         original.mime,
         imageCaption
@@ -3432,7 +3463,7 @@ if (msg.type === 'document' && msg.document?.id) {
       const original = await skWhatsAppDownloadImageBuffer(document.id);
 
       if (skIsImageQualityRequest(caption)) {
-        answer = await skCheckImageQuality(
+        answer = await skBuildImageDetailsReport(
           original.buffer, original.mime, caption
         );
       } else {
@@ -3462,7 +3493,7 @@ if (msg.type === 'document' && msg.document?.id) {
         );
         imageSent = true;
       } else {
-        answer = await skAnalyzeImageBuffer(
+        answer = await skBuildImageDetailsReport(
           original.buffer,
           original.mime,
           caption
@@ -7366,7 +7397,7 @@ if (Array.isArray(msg.photo) && msg.photo.length) {
     );
 
     if (skIsImageQualityRequest(telegramCaption)) {
-      const report = await skCheckImageQuality(
+      const report = await skBuildImageDetailsReport(
         imageBuffer,
         'image/jpeg',
         telegramCaption
@@ -7400,7 +7431,7 @@ if (Array.isArray(msg.photo) && msg.photo.length) {
           '\n📐 ' + processed.width + ' × ' + processed.height
       );
     } else {
-      const answer = await skAnalyzeImageBuffer(
+      const answer = await skBuildImageDetailsReport(
         imageBuffer,
         'image/jpeg',
         telegramCaption
@@ -7459,7 +7490,7 @@ if (msg.document?.file_id) {
 
 
       if (skIsImageQualityRequest(telegramCaption)) {
-        answer = await skCheckImageQuality(
+        answer = await skBuildImageDetailsReport(
           imageBuffer, imageTypes[ext], telegramCaption
         );
         answer = '🖼️ படக் கோப்பு: ' + fileName + '\n\n' + answer;
@@ -7491,7 +7522,7 @@ if (msg.document?.file_id) {
 
         imageSent = true;
       } else {
-        answer = await skAnalyzeImageBuffer(
+        answer = await skBuildImageDetailsReport(
           imageBuffer,
           imageTypes[ext],
           telegramCaption
