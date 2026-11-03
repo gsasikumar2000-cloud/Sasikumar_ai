@@ -2175,6 +2175,313 @@ async function skEditImageBuffer(buffer, mime, prompt) {
     mime: imagePart.inlineData.mimeType || 'image/png'
   };
 }
+
+
+// SK_SHARED_IMAGE_QUALITY_CHECK_V1
+function skIsImageQualityRequest(caption = '') {
+  const text = String(caption || '').trim();
+
+  return (
+    /\b(?:image\s*)?(?:quality|sharpness|blur|resolution)\b/i.test(text) ||
+    /\bcheck\s+(?:the\s+)?image\b/i.test(text) ||
+    /\bhow\s+clear\b/i.test(text) ||
+    /படத்தின்\s*தரம்|படம்\s*தரம்|படம்\s*தெளிவாக|படத்\s*தரத்தை|படம்\s*தெளிவா/i.test(text)
+  );
+}
+
+async function skCheckImageQuality(buffer, mime, caption = '') {
+  if (
+    !Buffer.isBuffer(buffer) ||
+    !buffer.length ||
+    buffer.length > 8 * 1024 * 1024
+  ) {
+    throw new Error('Invalid image or image exceeds 8 MB.');
+  }
+
+  const image = await Jimp.read(buffer);
+  const width = image.bitmap.width;
+  const height = image.bitmap.height;
+  const pixels = image.bitmap.data;
+
+  if (!width || !height || !pixels || pixels.length < width * height * 4) {
+    throw new Error('Unable to read image dimensions or pixels.');
+  }
+
+  const step = Math.max(1, Math.ceil(Math.max(width, height) / 256));
+
+  function luminance(x, y) {
+    const i = (y * width + x) * 4;
+    return (
+      0.299 * pixels[i] +
+      0.587 * pixels[i + 1] +
+      0.114 * pixels[i + 2]
+    );
+  }
+
+  let sum = 0;
+  let sumSquares = 0;
+  let samples = 0;
+
+  for (let y = step; y < height - step; y += step) {
+    for (let x = step; x < width - step; x += step) {
+      const center = luminance(x, y);
+      const laplacian =
+        luminance(x - step, y) +
+        luminance(x + step, y) +
+        luminance(x, y - step) +
+        luminance(x, y + step) -
+        (4 * center);
+
+      sum += laplacian;
+      sumSquares += laplacian * laplacian;
+      samples++;
+    }
+  }
+
+  const mean = samples ? sum / samples : 0;
+  const variance = samples
+    ? Math.max(0, sumSquares / samples - mean * mean)
+    : 0;
+
+  const sharpnessScore = Math.round(
+    Math.min(100, Math.sqrt(variance) * 1.6)
+  );
+
+  const longestSide = Math.max(width, height);
+  const resolutionScore =
+    longestSide < 640 ? 35 :
+    longestSide < 1280 ? 60 :
+    longestSide < 1920 ? 80 : 100;
+
+  const qualityScore = Math.round(
+    resolutionScore * 0.45 + sharpnessScore * 0.55
+  );
+
+  const sizeKB = (buffer.length / 1024).toFixed(1);
+  const format = String(mime || 'unknown')
+    .split(';')[0]
+    .trim()
+    .toUpperCase();
+
+  const tamil = /[\u0B80-\u0BFF]/.test(String(caption || ''));
+
+  const suggestions = [];
+
+  if (longestSide < 1280) {
+    suggestions.push(
+      tamil
+        ? '• அதிக Resolution கொண்ட படத்தைப் பயன்படுத்துங்கள்.'
+        : '• Use a higher-resolution image.'
+    );
+  }
+
+  if (sharpnessScore < 35) {
+    suggestions.push(
+      tamil
+        ? '• படம் மங்கலாக இருக்கலாம். கேமராவை நிலையாக வைத்து மீண்டும் எடுக்கவும்.'
+        : '• The image may be blurry. Keep the camera steady and retake it.'
+    );
+  }
+
+  if (buffer.length > 4 * 1024 * 1024) {
+    suggestions.push(
+      tamil
+        ? '• பகிர்வதற்கு முன் படத்தின் File Size-ஐ குறைக்கலாம்.'
+        : '• Consider reducing the file size before sharing.'
+    );
+  }
+
+  if (!suggestions.length) {
+    suggestions.push(
+      tamil
+        ? '• நல்ல தரம். அசல் படத்தைப் பாதுகாத்து வைத்திருங்கள்.'
+        : '• Good image quality. Keep the original image.'
+    );
+  }
+
+  const rating =
+    qualityScore >= 80 ? (tamil ? 'மிகவும் நல்லது' : 'Very Good') :
+    qualityScore >= 60 ? (tamil ? 'நல்லது' : 'Good') :
+    qualityScore >= 40 ? (tamil ? 'சராசரி' : 'Average') :
+    (tamil ? 'மேம்படுத்த வேண்டும்' : 'Needs Improvement');
+
+  if (tamil) {
+    return [
+      '🖼️ SASIKUMAR AI — படத்தின் தர ஆய்வு',
+      '',
+      `📐 Resolution: ${width} × ${height}`,
+      `📦 File Size: ${sizeKB} KB`,
+      `🗂️ Format: ${format}`,
+      `🔍 Sharpness மதிப்பீடு: ${sharpnessScore}/100`,
+      `⭐ மொத்த தர மதிப்பெண்: ${qualityScore}/100`,
+      `📊 தர நிலை: ${rating}`,
+      '',
+      '💡 ஆலோசனைகள்:',
+      ...suggestions,
+      '',
+      'குறிப்பு: Sharpness மற்றும் Quality மதிப்பெண்கள் கணினி அடிப்படையிலான தோராயமான மதிப்பீடுகள்.'
+    ].join('\n');
+  }
+
+  return [
+    '🖼️ SASIKUMAR AI — Image Quality Report',
+    '',
+    `📐 Resolution: ${width} × ${height}`,
+    `📦 File Size: ${sizeKB} KB`,
+    `🗂️ Format: ${format}`,
+    `🔍 Estimated Sharpness: ${sharpnessScore}/100`,
+    `⭐ Overall Quality: ${qualityScore}/100`,
+    `📊 Rating: ${rating}`,
+    '',
+    '💡 Suggestions:',
+    ...suggestions,
+    '',
+    'Note: Sharpness and quality scores are heuristic estimates, not laboratory measurements.'
+  ].join('\n');
+}
+// END SK_SHARED_IMAGE_QUALITY_CHECK_V1
+
+// SK_SHARED_IMAGE_PROCESSOR_V1
+async function skProcessImageCommand(buffer, mime, caption = '') {
+  const text = String(caption || '').trim().toLowerCase();
+
+  let operation = '';
+
+  if (/\b(compress|compressed|reduce size)\b|சுருக்கு|அளவைக் குறை/.test(text)) {
+    operation = 'compress';
+  } else if (/\bresize\b|அளவை மாற்று/.test(text)) {
+    operation = 'resize';
+  } else if (/\b(convert|format)\b|\b(?:png|jpe?g|webp)\s+to\s+(?:png|jpe?g|webp)\b|வடிவம் மாற்று/.test(text)) {
+    operation = 'convert';
+  } else if (/\bcrop\b|வெட்டு|பயிர்/.test(text)) {
+    operation = 'crop';
+  } else if (/\brotate\b|சுழற்று/.test(text)) {
+    operation = 'rotate';
+  } else if (/\bwatermark\b|\badd logo\b|வாட்டர்மார்க்/.test(text)) {
+    operation = 'watermark';
+  }
+
+  if (!operation) return null;
+
+  if (!Buffer.isBuffer(buffer) || !buffer.length ||
+      buffer.length > 8 * 1024 * 1024) {
+    throw new Error('Invalid image or image exceeds 8 MB.');
+  }
+
+  mime = String(mime || '').toLowerCase().split(';')[0].trim();
+
+  if (mime === 'image/webp') {
+    throw new Error('WebP editing is not supported by the current image processor.');
+  }
+
+  const image = await Jimp.read(buffer);
+  const originalWidth = image.width;
+  const originalHeight = image.height;
+
+  const dimensions = text.match(/(\d{2,4})\s*[x×]\s*(\d{2,4})/);
+  const requestedWidth = dimensions ? Number(dimensions[1]) : 0;
+  const requestedHeight = dimensions ? Number(dimensions[2]) : 0;
+
+  let outputMime = JimpMime.jpeg;
+  let quality = 82;
+
+  if (operation === 'resize') {
+    let width = requestedWidth || 1200;
+    let height = requestedHeight || 1200;
+
+    if (width > 4096 || height > 4096 || width < 1 || height < 1) {
+      throw new Error('Resize dimensions must be between 1 and 4096.');
+    }
+
+    const ratio = Math.min(
+      width / originalWidth,
+      height / originalHeight
+    );
+
+    image.resize({
+      w: Math.max(1, Math.round(originalWidth * ratio)),
+      h: Math.max(1, Math.round(originalHeight * ratio))
+    });
+
+  } else if (operation === 'crop') {
+    const width = Math.min(
+      requestedWidth || Math.min(originalWidth, originalHeight),
+      originalWidth
+    );
+
+    const height = Math.min(
+      requestedHeight || Math.min(originalWidth, originalHeight),
+      originalHeight
+    );
+
+    image.crop({
+      x: Math.floor((originalWidth - width) / 2),
+      y: Math.floor((originalHeight - height) / 2),
+      w: width,
+      h: height
+    });
+
+  } else if (operation === 'rotate') {
+    const angleMatch = text.match(/\b(90|180|270)\b/);
+    image.rotate(angleMatch ? Number(angleMatch[1]) : 90);
+
+  } else if (operation === 'compress') {
+    const qualityMatch = text.match(/\bquality\s*[:=]?\s*(\d{1,3})\b/);
+    quality = qualityMatch
+      ? Math.max(30, Math.min(90, Number(qualityMatch[1])))
+      : 65;
+
+  } else if (operation === 'convert') {
+    if (/\b(png)\b/.test(text) && !/\b(png to jpg|png to jpeg)\b/.test(text)) {
+      outputMime = JimpMime.png;
+    } else {
+      outputMime = JimpMime.jpeg;
+    }
+
+  } else if (operation === 'watermark') {
+    const font = await loadFont(
+      path.join(
+        __dirname,
+        'node_modules/@jimp/plugin-print/dist/fonts/open-sans/open-sans-32-black/open-sans-32-black.fnt'
+      )
+    );
+
+    image.print({
+      font,
+      x: 8,
+      y: Math.max(0, image.height - 44),
+      text: 'SASIKUMAR AI',
+      alignmentX: HorizontalAlign.RIGHT,
+      alignmentY: VerticalAlign.MIDDLE,
+      maxWidth: Math.max(1, image.width - 16),
+      maxHeight: 40
+    });
+  }
+
+  let output = outputMime === JimpMime.png
+    ? await image.getBuffer(JimpMime.png)
+    : await image.getBuffer(JimpMime.jpeg, { quality });
+
+  if (output.length > 5 * 1024 * 1024) {
+    outputMime = JimpMime.jpeg;
+    quality = 65;
+    output = await image.getBuffer(JimpMime.jpeg, { quality });
+  }
+
+  if (!output.length || output.length > 5 * 1024 * 1024) {
+    throw new Error('Processed image exceeds the 5 MB delivery limit.');
+  }
+
+  return {
+    buffer: output,
+    mime: outputMime,
+    operation,
+    width: image.width,
+    height: image.height
+  };
+}
+// END SK_SHARED_IMAGE_PROCESSOR_V1
+
 // SK_SHARED_IMAGE_BUFFER_ANALYSIS_V1
 async function skAnalyzeImageBuffer(buffer, mime, caption = '') {
   const apiKey = process.env.GROQ_API_KEY;
@@ -3007,15 +3314,43 @@ if (msg.type === 'image' && msg.image?.id) {
   const mediaSender = String(msg.from || '');
   const imageCaption = String(msg.image.caption || '').trim();
 
+  const imageCommandRequested =
+    /\b(compress|compressed|resize|convert|format|crop|rotate|watermark|add logo|reduce size|png to jpg|png to jpeg)\b/i.test(imageCaption) ||
+    /சுருக்கு|அளவைக் குறை|அளவை மாற்று|வடிவம் மாற்று|வெட்டு|சுழற்று|வாட்டர்மார்க்/i.test(imageCaption);
+
   const wantsImageEdit =
     /\b(edit|change|replace|remove|erase|add|modify|enhance|retouch|restore)\b/i.test(imageCaption) ||
     /\b(change|remove|replace)\s+(the\s+)?background\b/i.test(imageCaption) ||
     /திருத்து|மாற்று|நீக்கு|சேர்|மேம்படுத்து|சரி\s*செய்|பின்னணியை/i.test(imageCaption);
 
   try {
-    if (wantsImageEdit) {
-      const original = await skWhatsAppDownloadImageBuffer(msg.image.id);
+    const original = await skWhatsAppDownloadImageBuffer(msg.image.id);
 
+    if (skIsImageQualityRequest(imageCaption)) {
+      const report = await skCheckImageQuality(
+        original.buffer,
+        original.mime,
+        imageCaption
+      );
+      await skWhatsAppSendTextOnly(mediaSender, report);
+      return;
+    }
+
+    const processed = await skProcessImageCommand(
+      original.buffer,
+      original.mime,
+      imageCaption
+    );
+
+    if (processed) {
+      await skWhatsAppSendImageBuffer(
+        mediaSender,
+        processed.buffer,
+        processed.mime,
+        `🤖 SASIKUMAR AI — ${processed.operation} முடிந்தது (${processed.width}x${processed.height})`
+      );
+
+    } else if (wantsImageEdit) {
       const edited = await skEditImageBuffer(
         original.buffer,
         original.mime,
@@ -3044,8 +3379,9 @@ if (msg.type === 'image' && msg.image?.id) {
       );
 
     } else {
-      const imageReply = await skWhatsAppAnalyzeImage(
-        msg.image.id,
+      const imageReply = await skAnalyzeImageBuffer(
+        original.buffer,
+        original.mime,
         imageCaption
       );
 
@@ -3057,9 +3393,11 @@ if (msg.type === 'image' && msg.image?.id) {
 
     await skWhatsAppSendTextOnly(
       mediaSender,
-      wantsImageEdit
-        ? 'மன்னிக்கவும். படத்தைத் திருத்த முடியவில்லை. JPG அல்லது PNG படத்துடன் தெளிவான editing instruction-ஐ caption-ல் சேர்த்து மீண்டும் அனுப்புங்கள்.'
-        : 'மன்னிக்கவும். இந்தப் படத்தை தற்போது ஆய்வு செய்ய முடியவில்லை. JPG, PNG அல்லது WebP படத்தை மீண்டும் அனுப்புங்கள்.'
+      imageCommandRequested
+        ? 'மன்னிக்கவும். படத்தைச் செயலாக்க முடியவில்லை. JPG அல்லது PNG படத்தை மீண்டும் அனுப்புங்கள்.'
+        : wantsImageEdit
+          ? 'மன்னிக்கவும். படத்தைத் திருத்த முடியவில்லை. JPG அல்லது PNG படத்துடன் தெளிவான editing instruction-ஐ caption-ல் சேர்த்து மீண்டும் அனுப்புங்கள்.'
+          : 'மன்னிக்கவும். இந்தப் படத்தை தற்போது ஆய்வு செய்ய முடியவில்லை. JPG, PNG அல்லது WebP படத்தை மீண்டும் அனுப்புங்கள்.'
     );
   }
 
@@ -3067,31 +3405,71 @@ if (msg.type === 'image' && msg.image?.id) {
 }
 
 
-// SK_WHATSAPP_DOCUMENT_HANDLER_V1
+// SK_WHATSAPP_DOCUMENT_HANDLER_V2
 if (msg.type === 'document' && msg.document?.id) {
   const documentSender = String(msg.from || '');
   const document = msg.document;
+  const fileName = String(document.filename || 'document');
+  const ext = fileName.toLowerCase().split('.').pop();
+  const caption = String(document.caption || '');
+  const imageTypes = {
+    jpg: 'image/jpeg',
+    jpeg: 'image/jpeg',
+    png: 'image/png',
+    webp: 'image/webp',
+    gif: 'image/gif',
+    bmp: 'image/bmp',
+    tif: 'image/tiff',
+    tiff: 'image/tiff'
+  };
+  const isImageDocument = Object.prototype.hasOwnProperty.call(imageTypes, ext);
 
   try {
-    // SK_WA_DOCUMENT_IMAGE_ROUTING_V1
-    const fileName = String(document.filename || 'document');
-    const ext = fileName.toLowerCase().split('.').pop();
-    const caption = String(document.caption || '');
-
-    const imageTypes = {
-      jpg: 'image/jpeg',
-      jpeg: 'image/jpeg',
-      png: 'image/png',
-      webp: 'image/webp',
-      gif: 'image/gif',
-      bmp: 'image/bmp',
-      tif: 'image/tiff',
-      tiff: 'image/tiff'
-    };
-
     let answer;
+    let imageSent = false;
 
-    if (Object.prototype.hasOwnProperty.call(imageTypes, ext)) {
+    if (isImageDocument && ['jpg', 'jpeg', 'png', 'webp'].includes(ext)) {
+      const original = await skWhatsAppDownloadImageBuffer(document.id);
+
+      if (skIsImageQualityRequest(caption)) {
+        answer = await skCheckImageQuality(
+          original.buffer, original.mime, caption
+        );
+      } else {
+      const processed = await skProcessImageCommand(
+        original.buffer,
+        original.mime,
+        caption
+      );
+
+      if (processed) {
+        const names = {
+          compress: 'Image Compress',
+          resize: 'Image Resize',
+          convert: 'Image Format Conversion',
+          crop: 'Image Crop',
+          rotate: 'Image Rotate',
+          watermark: 'SASIKUMAR AI Watermark'
+        };
+
+        await skWhatsAppSendImageBuffer(
+          documentSender,
+          processed.buffer,
+          processed.mime,
+          '🤖 SASIKUMAR AI — ' +
+            (names[processed.operation] || 'Image Processed') +
+            '\n📐 ' + processed.width + ' × ' + processed.height
+        );
+        imageSent = true;
+      } else {
+        answer = await skAnalyzeImageBuffer(
+          original.buffer,
+          original.mime,
+          caption
+        );
+      }
+      }
+    } else if (isImageDocument) {
       answer = await skWhatsAppAnalyzeImage(
         document.id,
         caption,
@@ -3105,17 +3483,21 @@ if (msg.type === 'document' && msg.document?.id) {
       );
     }
 
-    await skWhatsAppSendTextOnly(documentSender, answer);
+    if (!imageSent) {
+      await skWhatsAppSendTextOnly(documentSender, answer);
+    }
   } catch (documentError) {
-    console.error('[WA document analysis]', documentError.message);
+    console.error('[WA document analysis/processing]', documentError.message);
     await skWhatsAppSendTextOnly(
       documentSender,
-      'மன்னிக்கவும். இந்தக் கோப்பை தற்போது வாசிக்க முடியவில்லை. PDF, ZIP, XLSX, CSV, TXT அல்லது ஆதரிக்கப்படும் Code கோப்பை மீண்டும் அனுப்புங்கள்.'
+      isImageDocument
+        ? 'மன்னிக்கவும். இந்தப் படத்தை தற்போது ஆய்வு செய்ய முடியவில்லை. JPG, PNG அல்லது WebP படத்தை மீண்டும் அனுப்புங்கள்.'
+        : 'மன்னிக்கவும். இந்தக் கோப்பை தற்போது வாசிக்க முடியவில்லை. PDF, ZIP, XLSX, CSV, TXT அல்லது ஆதரிக்கப்படும் Code கோப்பை மீண்டும் அனுப்புங்கள்.'
     );
   }
   return;
 }
-// END SK_WHATSAPP_DOCUMENT_HANDLER_V1
+// END SK_WHATSAPP_DOCUMENT_HANDLER_V2
 
 const from=msg.from;
     const trimmed=String(msg.text?.body || msg.image?.caption || '').trim();
@@ -6669,6 +7051,60 @@ async function skTelegramSendSearchImage(chatId, found, query) {
   );
 }
 
+
+// SK_TELEGRAM_SEND_PROCESSED_IMAGE_V1
+async function skTelegramSendProcessedImage(chatId, buffer, mime, caption = '') {
+  mime = String(mime || '').toLowerCase().split(';')[0].trim();
+
+  if (!Buffer.isBuffer(buffer) || !buffer.length ||
+      buffer.length > 5 * 1024 * 1024) {
+    throw new Error('Processed image must be under 5 MB.');
+  }
+
+  if (!['image/jpeg', 'image/png'].includes(mime)) {
+    throw new Error('Only JPEG and PNG processed images are supported.');
+  }
+
+  const validJpeg = mime === 'image/jpeg' &&
+    buffer[0] === 0xFF && buffer[1] === 0xD8 && buffer[2] === 0xFF;
+
+  const validPng = mime === 'image/png' &&
+    buffer.subarray(0, 8).equals(
+      Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])
+    );
+
+  if (!validJpeg && !validPng) {
+    throw new Error('Image content does not match its MIME type.');
+  }
+
+  const form = new FormData();
+  form.append('chat_id', String(chatId));
+  form.append(
+    'photo',
+    new Blob([buffer], { type: mime }),
+    mime === 'image/png' ? 'sasikumar-ai-processed.png' : 'sasikumar-ai-processed.jpg'
+  );
+  form.append('caption', String(caption || '🤖 SASIKUMAR AI — Image processed').slice(0, 1000));
+
+  const response = await fetch(
+    `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`,
+    {
+      method: 'POST',
+      body: form,
+      signal: AbortSignal.timeout(30000)
+    }
+  );
+
+  if (!response.ok) {
+    const details = await response.text();
+    console.error('[Telegram processed image]', response.status, details.slice(0, 400));
+    throw new Error('Telegram processed image delivery failed.');
+  }
+
+  return true;
+}
+// END SK_TELEGRAM_SEND_PROCESSED_IMAGE_V1
+
 // SK_TELEGRAM_AI_POSTER_V1
 async function skTelegramSendPoster(chatId, prompt) {
   const content = String(prompt || '').trim();
@@ -6914,28 +7350,77 @@ if (!chatId) return;
 // SK_TELEGRAM_INCOMING_MEDIA_HANDLER_V1
 const telegramCaption = String(msg.caption || '').trim();
 
-// Telegram photo analysis
+// SK_TELEGRAM_PHOTO_PROCESSING_V2
 if (Array.isArray(msg.photo) && msg.photo.length) {
   try {
     const photo = msg.photo[msg.photo.length - 1];
 
-    await skTelegramSendMessage(chatId, '🖼️ உங்கள் படத்தை SASIKUMAR AI ஆய்வு செய்கிறது...');
+    await skTelegramSendMessage(
+      chatId,
+      '🖼️ உங்கள் படத்தை SASIKUMAR AI ஆய்வு செய்கிறது...'
+    );
 
     const imageBuffer = await skTelegramDownloadFile(
       photo.file_id,
       8 * 1024 * 1024
     );
 
-    const answer = await skAnalyzeImageBuffer(
+    if (skIsImageQualityRequest(telegramCaption)) {
+      const report = await skCheckImageQuality(
+        imageBuffer,
+        'image/jpeg',
+        telegramCaption
+      );
+      await skTelegramSendMessage(chatId, report);
+      return;
+    }
+
+    const processed = await skProcessImageCommand(
       imageBuffer,
       'image/jpeg',
       telegramCaption
     );
 
-    await skTelegramSendMessage(chatId, '🖼️ பட ஆய்வு முடிந்தது!\n\n' + answer);
+    if (processed) {
+      const names = {
+        compress: 'Image Compress',
+        resize: 'Image Resize',
+        convert: 'Image Format Conversion',
+        crop: 'Image Crop',
+        rotate: 'Image Rotate',
+        watermark: 'SASIKUMAR AI Watermark'
+      };
+
+      await skTelegramSendProcessedImage(
+        chatId,
+        processed.buffer,
+        processed.mime,
+        '✅ SASIKUMAR AI — ' +
+          (names[processed.operation] || 'Image Processed') +
+          '\n📐 ' + processed.width + ' × ' + processed.height
+      );
+    } else {
+      const answer = await skAnalyzeImageBuffer(
+        imageBuffer,
+        'image/jpeg',
+        telegramCaption
+      );
+
+      await skTelegramSendMessage(
+        chatId,
+        '🖼️ பட ஆய்வு முடிந்தது!\n\n' + answer
+      );
+    }
   } catch (mediaError) {
-    console.error('[Telegram photo analysis]', mediaError.message || mediaError);
-    await skTelegramSendMessage(chatId, 'மன்னிக்கவும். இந்தப் படத்தை ஆய்வு செய்ய முடியவில்லை. PNG, JPG அல்லது WEBP படத்தை மீண்டும் அனுப்புங்கள்.');
+    console.error(
+      '[Telegram photo analysis/processing]',
+      mediaError.message || mediaError
+    );
+
+    await skTelegramSendMessage(
+      chatId,
+      'மன்னிக்கவும். இந்தப் படத்தை தற்போது ஆய்வு செய்ய முடியவில்லை. JPG, PNG அல்லது WebP படத்தை மீண்டும் அனுப்புங்கள்.'
+    );
   }
 
   return;
@@ -6963,20 +7448,58 @@ if (msg.document?.file_id) {
     await skTelegramSendMessage(chatId, '📄 உங்கள் கோப்பு பெறப்பட்டது. SASIKUMAR AI ஆய்வு செய்கிறது...');
 
     let answer;
+    let imageSent = false;
+    const isImageDocument = Object.prototype.hasOwnProperty.call(imageTypes, ext);
 
-    if (Object.prototype.hasOwnProperty.call(imageTypes, ext)) {
+    if (isImageDocument) {
       const imageBuffer = await skTelegramDownloadFile(
         msg.document.file_id,
         8 * 1024 * 1024
       );
 
-      answer = await skAnalyzeImageBuffer(
+
+      if (skIsImageQualityRequest(telegramCaption)) {
+        answer = await skCheckImageQuality(
+          imageBuffer, imageTypes[ext], telegramCaption
+        );
+        answer = '🖼️ படக் கோப்பு: ' + fileName + '\n\n' + answer;
+      } else {
+      const processed = await skProcessImageCommand(
         imageBuffer,
         imageTypes[ext],
         telegramCaption
       );
 
-      answer = '🖼️ படக் கோப்பு: ' + fileName + '\n\n' + answer;
+      if (processed) {
+        const names = {
+          compress: 'Image Compress',
+          resize: 'Image Resize',
+          convert: 'Image Format Conversion',
+          crop: 'Image Crop',
+          rotate: 'Image Rotate',
+          watermark: 'SASIKUMAR AI Watermark'
+        };
+
+        await skTelegramSendProcessedImage(
+          chatId,
+          processed.buffer,
+          processed.mime,
+          '✅ SASIKUMAR AI — ' +
+            (names[processed.operation] || 'Image Processed') +
+            '\n📐 ' + processed.width + ' × ' + processed.height
+        );
+
+        imageSent = true;
+      } else {
+        answer = await skAnalyzeImageBuffer(
+          imageBuffer,
+          imageTypes[ext],
+          telegramCaption
+        );
+
+        answer = '🖼️ படக் கோப்பு: ' + fileName + '\n\n' + answer;
+      }
+      }
     } else {
       answer = await skTelegramAnalyzeDocument(
         msg.document.file_id,
@@ -6985,10 +7508,19 @@ if (msg.document?.file_id) {
       );
     }
 
-    await skTelegramSendMessage(chatId, answer);
+    if (!imageSent) {
+      await skTelegramSendMessage(chatId, answer);
+    }
   } catch (mediaError) {
     console.error('[Telegram document analysis]', mediaError.message || mediaError);
-    await skTelegramSendMessage(chatId, 'மன்னிக்கவும். இந்தக் கோப்பை ஆய்வு செய்ய முடியவில்லை. ஆதரிக்கப்படும் கோப்புகள்: PNG, JPG, WEBP, GIF, BMP, TIFF, SVG, PDF, ZIP, XLSX, CSV, TXT மற்றும் code files.');
+    if (Object.prototype.hasOwnProperty.call(imageTypes, ext)) {
+      await skTelegramSendMessage(
+        chatId,
+        'மன்னிக்கவும். இந்தப் படத்தை தற்போது ஆய்வு செய்ய முடியவில்லை. JPG, PNG அல்லது WebP படத்தை மீண்டும் அனுப்புங்கள்.'
+      );
+    } else {
+      await skTelegramSendMessage(chatId, 'மன்னிக்கவும். இந்தக் கோப்பை ஆய்வு செய்ய முடியவில்லை. ஆதரிக்கப்படும் கோப்புகள்: PNG, JPG, WEBP, GIF, BMP, TIFF, SVG, PDF, ZIP, XLSX, CSV, TXT மற்றும் code files.');
+    }
   }
 
   return;
