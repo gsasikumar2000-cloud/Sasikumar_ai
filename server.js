@@ -2094,7 +2094,86 @@ async function skWhatsAppSendTextOnly(to, message) {
   }
   return response.ok;
 }
+// SK_GEMINI_IMAGE_EDITING_V1
+async function skEditImageBuffer(buffer, mime, prompt) {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) throw new Error('Gemini API key unavailable.');
 
+  if (!Buffer.isBuffer(buffer) || !buffer.length || buffer.length > 8 * 1024 * 1024) {
+    throw new Error('Image must be under 8 MB.');
+  }
+
+  mime = String(mime || '').split(';')[0].toLowerCase();
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(mime)) {
+    throw new Error('Unsupported image format.');
+  }
+
+  const instruction = String(prompt || '').trim();
+  if (!instruction || instruction.length > 1500) {
+    throw new Error('Invalid editing instruction.');
+  }
+
+  const response = await fetch(
+    'https://generativelanguage.googleapis.com/v1/models/gemini-3.1-flash-image:generateContent',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-goog-api-key': apiKey
+      },
+      body: JSON.stringify({
+        contents: [{
+          parts: [
+            {
+              text: 'Edit the supplied original image according to this instruction: ' +
+                instruction +
+                '. Preserve the original subject and important details unless asked to change them. Return the edited image.'
+            },
+            {
+              inlineData: {
+                mimeType: mime,
+                data: buffer.toString('base64')
+              }
+            }
+          ]
+        }],
+        generationConfig: {
+          responseModalities: ['IMAGE']
+        }
+      }),
+      signal: AbortSignal.timeout(120000)
+    }
+  );
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    console.error('[GEMINI IMAGE EDIT]', response.status);
+    throw new Error('Gemini image editing failed.');
+  }
+
+  const parts = (data.candidates || [])
+    .flatMap(candidate => candidate.content?.parts || []);
+
+  const imagePart = parts.find(part =>
+    part.inlineData?.data &&
+    String(part.inlineData.mimeType || '').startsWith('image/')
+  );
+
+  if (!imagePart) {
+    throw new Error('Gemini did not return an edited image.');
+  }
+
+  const outputBuffer = Buffer.from(imagePart.inlineData.data, 'base64');
+  if (!outputBuffer.length) throw new Error('Edited image is empty.');
+
+  console.log('[GEMINI IMAGE EDIT] Success');
+
+  return {
+    buffer: outputBuffer,
+    mime: imagePart.inlineData.mimeType || 'image/png'
+  };
+}
 // SK_SHARED_IMAGE_BUFFER_ANALYSIS_V1
 async function skAnalyzeImageBuffer(buffer, mime, caption = '') {
   const apiKey = process.env.GROQ_API_KEY;
@@ -2248,6 +2327,122 @@ async function skWhatsAppAnalyzeImage(mediaId, caption = '', mimeFallback = '') 
   }
 
   return skAnalyzeImageBuffer(buffer, mime, caption);
+}
+
+
+// SK_WHATSAPP_IMAGE_EDIT_TRANSPORT_V1
+async function skWhatsAppDownloadImageBuffer(mediaId) {
+  if (!mediaId) throw new Error('WhatsApp image media ID missing.');
+
+  const metaResponse = await fetch(
+    `https://graph.facebook.com/v20.0/${encodeURIComponent(mediaId)}`,
+    {
+      headers: { Authorization: `Bearer ${WA_TOKEN}` },
+      signal: AbortSignal.timeout(20000)
+    }
+  );
+
+  if (!metaResponse.ok) throw new Error('WhatsApp image metadata unavailable.');
+
+  const metadata = await metaResponse.json();
+  if (!metadata.url) throw new Error('WhatsApp image URL unavailable.');
+
+  const response = await fetch(metadata.url, {
+    headers: { Authorization: `Bearer ${WA_TOKEN}` },
+    signal: AbortSignal.timeout(30000)
+  });
+
+  if (!response.ok) throw new Error('WhatsApp image download failed.');
+
+  const maxBytes = 8 * 1024 * 1024;
+  const size = Number(response.headers.get('content-length') || 0);
+  if (size > maxBytes) throw new Error('Image exceeds 8 MB.');
+
+  const buffer = Buffer.from(await response.arrayBuffer());
+  if (!buffer.length || buffer.length > maxBytes) {
+    throw new Error('Invalid image size.');
+  }
+
+  const mime = String(metadata.mime_type || 'image/jpeg')
+    .split(';')[0].toLowerCase();
+
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(mime)) {
+    throw new Error('Unsupported image format.');
+  }
+
+  return { buffer, mime };
+}
+
+async function skWhatsAppSendImageBuffer(to, buffer, mime, caption = '') {
+  if (!WA_TOKEN || !WA_PHONE_ID) {
+    throw new Error('WhatsApp credentials unavailable.');
+  }
+
+  if (!Buffer.isBuffer(buffer) || !buffer.length) {
+    throw new Error('Edited image is empty.');
+  }
+
+  const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+  mime = String(mime || 'image/png').split(';')[0].toLowerCase();
+
+  if (!allowed.includes(mime)) throw new Error('Unsupported output image.');
+
+  const ext = mime === 'image/jpeg' ? 'jpg' : mime.split('/')[1];
+  const form = new FormData();
+
+  form.append('messaging_product', 'whatsapp');
+  form.append(
+    'file',
+    new Blob([buffer], { type: mime }),
+    `sasikumar-ai-edited.${ext}`
+  );
+  form.append('type', mime);
+
+  const uploadResponse = await fetch(
+    `https://graph.facebook.com/v20.0/${WA_PHONE_ID}/media`,
+    {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${WA_TOKEN}` },
+      body: form,
+      signal: AbortSignal.timeout(60000)
+    }
+  );
+
+  const uploadData = await uploadResponse.json().catch(() => ({}));
+  if (!uploadResponse.ok || !uploadData.id) {
+    console.error('[WA edited image upload]', uploadResponse.status);
+    throw new Error('Edited image upload failed.');
+  }
+
+  const sendResponse = await fetch(
+    `https://graph.facebook.com/v20.0/${WA_PHONE_ID}/messages`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${WA_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        recipient_type: 'individual',
+        to: String(to),
+        type: 'image',
+        image: {
+          id: uploadData.id,
+          caption: String(caption || '🤖 SASIKUMAR AI STUDIO').slice(0, 1000)
+        }
+      }),
+      signal: AbortSignal.timeout(30000)
+    }
+  );
+
+  if (!sendResponse.ok) {
+    console.error('[WA edited image send]', sendResponse.status);
+    throw new Error('Edited image could not be sent.');
+  }
+
+  console.log('[WA EDITED IMAGE] Sent successfully');
+  return true;
 }
 
 // SK_WHATSAPP_AUDIO_TEXT_ANALYSIS_V1
@@ -2809,19 +3004,64 @@ if ((msg.type === 'audio' && msg.audio?.id) ||
 
 if (msg.type === 'image' && msg.image?.id) {
   const mediaSender = String(msg.from || '');
+  const imageCaption = String(msg.image.caption || '').trim();
+
+  const wantsImageEdit =
+    /\b(edit|change|replace|remove|erase|add|modify|enhance|retouch|restore)\b/i.test(imageCaption) ||
+    /\b(change|remove|replace)\s+(the\s+)?background\b/i.test(imageCaption) ||
+    /திருத்து|மாற்று|நீக்கு|சேர்|மேம்படுத்து|சரி\s*செய்|பின்னணியை/i.test(imageCaption);
+
   try {
-    const imageReply = await skWhatsAppAnalyzeImage(
-      msg.image.id,
-      String(msg.image.caption || '')
-    );
-    await skWhatsAppSendTextOnly(mediaSender, imageReply);
+    if (wantsImageEdit) {
+      const original = await skWhatsAppDownloadImageBuffer(msg.image.id);
+
+      const edited = await skEditImageBuffer(
+        original.buffer,
+        original.mime,
+        imageCaption
+      );
+
+      if (
+        !Buffer.isBuffer(edited.buffer) ||
+        !edited.buffer.length ||
+        edited.buffer.length > 5 * 1024 * 1024
+      ) {
+        throw new Error('Edited image exceeds the 5 MB WhatsApp image limit.');
+      }
+
+      const outputMime = String(edited.mime || '').split(';')[0].toLowerCase();
+
+      if (!['image/jpeg', 'image/png'].includes(outputMime)) {
+        throw new Error('Unsupported edited image format.');
+      }
+
+      await skWhatsAppSendImageBuffer(
+        mediaSender,
+        edited.buffer,
+        outputMime,
+        '🤖 SASIKUMAR AI — உங்கள் படம் திருத்தப்பட்டது'
+      );
+
+    } else {
+      const imageReply = await skWhatsAppAnalyzeImage(
+        msg.image.id,
+        imageCaption
+      );
+
+      await skWhatsAppSendTextOnly(mediaSender, imageReply);
+    }
+
   } catch (mediaError) {
-    console.error('[WA image analysis]', mediaError.message);
+    console.error('[WA image processing]', mediaError.message);
+
     await skWhatsAppSendTextOnly(
       mediaSender,
-      'மன்னிக்கவும். இந்தப் படத்தை தற்போது ஆய்வு செய்ய முடியவில்லை. JPG, PNG அல்லது WebP படத்தை மீண்டும் அனுப்புங்கள்.'
+      wantsImageEdit
+        ? 'மன்னிக்கவும். படத்தைத் திருத்த முடியவில்லை. JPG அல்லது PNG படத்துடன் தெளிவான editing instruction-ஐ caption-ல் சேர்த்து மீண்டும் அனுப்புங்கள்.'
+        : 'மன்னிக்கவும். இந்தப் படத்தை தற்போது ஆய்வு செய்ய முடியவில்லை. JPG, PNG அல்லது WebP படத்தை மீண்டும் அனுப்புங்கள்.'
     );
   }
+
   return;
 }
 
@@ -3159,6 +3399,13 @@ if (youtubeVideos.length) {
           /\b(image|images|picture|pictures|photo|photos|drawing|drawings|sketch|sketches|illustration|illustrations|artwork|painting|paintings|cartoon|logo|logos|icon|icons|sticker|stickers|clipart|diagram|diagrams|chart|charts|infographic|infographics|map|maps|wallpaper|wallpapers|background|portrait|blueprint)\b/i.test(trimmed) ||
           /படம்|புகைப்படம்|ஓவியம்|வரைபடம்|சித்திரம்|படங்கள்|புகைப்படங்கள்|லோகோ|சின்னம்/.test(trimmed);
 
+        // SK_AI_IMAGE_STYLE_ROUTING_V1
+        const wantsAiGeneratedImage =
+          /\b(ai|artificial intelligence)\b.{0,40}\b(image|picture|photo|drawing|sketch|cartoon|artwork)\b/i.test(trimmed) ||
+          /\b(generate|create|make|draw)\b.{0,60}\b(image|picture|photo|drawing|sketch|cartoon|artwork)\b/i.test(trimmed) ||
+          /\b(drawing|drawings|sketch|sketches|illustration|illustrations|artwork|painting|paintings|cartoon|cartoons)\b/i.test(trimmed) ||
+          /ஓவியம்|சித்திரம்|வரைந்து|உருவாக்கு/i.test(trimmed);
+
         const wantsImage =
           wantsPoster ||
           (wantsCatalogImage && /(?:image|images|picture|pictures|photo|photos|drawing|drawings|sketch|sketches|illustration|illustrations|artwork|painting|paintings|cartoon|logo|logos|icon|icons|sticker|stickers|clipart|diagram|diagrams|chart|charts|infographic|infographics|map|maps|wallpaper|wallpapers|background|portrait|blueprint|படம்|புகைப்படம்|ஓவியம்|வரைபடம்|சின்னம்)/i.test(trimmed)) ||
@@ -3217,14 +3464,14 @@ if (youtubeVideos.length) {
               }
 
               generated = `data:${posterMime};base64,${posterBytes.toString('base64')}`;
-            } else if (wantsCatalogImage) {
+            } else if (wantsCatalogImage && !wantsAiGeneratedImage) {
               console.log('[WhatsApp image] Searching real images:', trimmed);
               const found = await skSearchRealImage(trimmed);
 
               if (!found || !found.images?.length) {
-                console.log('[WhatsApp image] Real image unavailable; trying AI generation.');
                 galleryImages = null;
-                generated = await skGenerateImage(trimmed);
+                console.log('[WhatsApp image] No real image found; AI fallback BLOCKED.');
+                generated = null;
               } else {
                 galleryImages = found.images || [found];
                 generated = galleryImages[0]?.dataUri || null;
@@ -4343,7 +4590,10 @@ async function skSearchRealImage(query) {
   else if (isPestControlVanSearch) queryText = 'pest control van fumigation vehicle';
 
   // SK_JOSEPH_VIJAY_EXACT_SEARCH_V1
-  const isJosephVijaySearch = !isVijayCmSearch && /^(vijay|விஜய்)$/i.test(queryText.trim());
+  const isJosephVijaySearch =
+    !isVijayCmSearch &&
+    /\b(vijay|joseph vijay|thalapathy vijay)\b|விஜய்/i.test(text) &&
+    !/\b(cm|chief minister|politician|political)\b|முதல்வர்|அரசியல்/i.test(text);
   if (isJosephVijaySearch) queryText = 'Joseph Vijay';
 
 
@@ -4383,7 +4633,13 @@ async function skSearchRealImage(query) {
         .filter(token =>
           token.length >= 2 &&
           ![
-            'the', 'and', 'for', 'tamil', 'indian', 'film', 'cinema',
+            'the', 'and', 'for',
+            'tamil', 'indian',
+            'film', 'cinema', 'movie',
+            'actor', 'actors',
+            'actress', 'actresses',
+            'celebrity', 'celebrities',
+            'star', 'stars',
             'தமிழ்', 'இந்திய', 'திரைப்பட'
           ].includes(token)
         )
@@ -4417,8 +4673,11 @@ async function skSearchRealImage(query) {
     if (!isPersonSearch || isActorCategorySearch || isVijayCmSearch) return true;
     const subject = String(value || '').toLowerCase();
     if (isJosephVijaySearch) {
-      return /\bvijay\b/i.test(subject) &&
-        /tamil film actor|film actor|actor vijay|vijay.*(film|actor|audio launch|jilla|puli)|thalapathy/i.test(subject);
+      const hasVijayName = /\bvijay\b|விஜய்/i.test(subject);
+      const hasVijayActorContext =
+        /\b(actor|film star|movie star|film actor|cinema actor|entertainer|thalapathy)\b/i.test(subject) ||
+        /நடிகர்|திரைப்பட நடிகர்/.test(subject);
+      return hasVijayName && hasVijayActorContext;
     }
     return personTokens.length === 0 || personTokens.every(token => subject.includes(token));
   };
@@ -4482,19 +4741,17 @@ async function skSearchRealImage(query) {
 
     // SK_ACTOR_CATEGORY_METADATA_FILTER_V1
     const hasActorContext =
-      /\b(actor|actress|film star|movie star|film actor|film actress|cinema actor|entertainer)\b/i.test(description) ||
-      /நடிகர்|நடிகை|திரைப்பட நடிகர்|திரைப்பட நடிகை/.test(description);
+      /\b(actor|film star|movie star|film actor|cinema actor|entertainer|thalapathy)\b/i.test(description) ||
+      /நடிகர்|திரைப்பட நடிகர்/.test(description);
 
     const hasActressContext =
       /\b(actress|film actress|movie star|Indian actress|Tamil actress)\b/i.test(description) ||
       /நடிகை|திரைப்பட நடிகை/.test(description);
 
     if (isJosephVijaySearch) {
-      const hasVijayName = /\bvijay\b/i.test(description);
-      const hasVijayActorContext =
-        /tamil film actor|film actor|actor vijay|vijay.*(film|actor|audio launch|jilla|puli)|thalapathy/i.test(description);
-
-      if (!hasVijayName || !hasVijayActorContext) continue;
+      const hasExactVijayIdentity =
+        /\bjoseph\s+vijay\b|\bthalapathy\s+vijay\b/i.test(description);
+      if (!hasExactVijayIdentity || !hasActorContext) continue;
     } else if (isActorCategorySearch) {
       if (isActressCategorySearch ? !hasActressContext : !hasActorContext) {
         continue;
@@ -4572,8 +4829,75 @@ async function skSearchRealImage(query) {
     }
   };
 
-  // Pixabay search
-  const pixabayKey = process.env.PIXABAY_API_KEY;
+  // SK_VIJAY_STRICT_PROVIDER_BLOCK_V1
+  // Joseph Vijay: use only Wikimedia results with explicit identity metadata.
+  if (isJosephVijaySearch) {
+    console.log('[WhatsApp image] Strict Vijay search: skipping Pixabay and Unsplash.');
+  } else {
+    // SK_WHATSAPP_PEXELS_FALLBACK_V1
+    const pexelsKey = process.env.PEXELS_API_KEY;
+
+    if (pexelsKey && galleryResults.length < MAX_GALLERY_IMAGES) {
+      try {
+        const pexelsUrl = new URL('https://api.pexels.com/v1/search');
+        pexelsUrl.searchParams.set('query', queryText);
+        pexelsUrl.searchParams.set('per_page', '10');
+
+        const pexelsResponse = await fetch(pexelsUrl, {
+          headers: {
+            Authorization: pexelsKey,
+            'User-Agent': 'SASIKUMAR-AI/1.0'
+          },
+          signal: AbortSignal.timeout(20000)
+        });
+
+        if (!pexelsResponse.ok) {
+          throw new Error('Pexels HTTP ' + pexelsResponse.status);
+        }
+
+        const pexelsData = await pexelsResponse.json();
+
+        for (const photo of (pexelsData.photos || [])) {
+          const imageSubject = [
+            photo.alt,
+            photo.photographer
+          ].filter(Boolean).join(' ');
+
+          if (!matchesRequestedSubject(imageSubject)) continue;
+          if (!matchesPersonMetadata(imageSubject)) continue;
+
+          const imageUrl = photo.src?.large || photo.src?.medium;
+          if (!imageUrl) continue;
+
+          const photographer = String(
+            photo.photographer || 'Pexels contributor'
+          ).slice(0, 150);
+
+          const attribution =
+            '📷 Photo by ' + photographer + ' on Pexels' +
+            '\n👤 ' + photographer +
+            '\n🔗 ' + (photo.url || 'https://www.pexels.com/') +
+            '\nPhotos provided by Pexels: https://www.pexels.com/';
+
+          const found = await downloadSearchImage(
+            imageUrl,
+            attribution
+          );
+
+          if (found) {
+            galleryResults.push(found);
+            console.log('[WhatsApp image] Pexels gallery result found');
+
+            if (galleryResults.length >= MAX_GALLERY_IMAGES) break;
+          }
+        }
+      } catch (err) {
+        console.warn('[WhatsApp Pexels search]', err.message);
+      }
+    }
+
+    // Pixabay search
+    const pixabayKey = process.env.PIXABAY_API_KEY;
   if (pixabayKey && galleryResults.length < MAX_GALLERY_IMAGES) {
     try {
       const url = 'https://pixabay.com/api/?key=' +
@@ -4638,6 +4962,8 @@ async function skSearchRealImage(query) {
     } catch (err) {
       console.warn('[WhatsApp Unsplash search]', err.message);
     }
+  }
+
   }
 
   console.log('[WhatsApp image] Total relevant gallery images:', galleryResults.length);
