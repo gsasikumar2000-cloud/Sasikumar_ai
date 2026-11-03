@@ -4608,6 +4608,13 @@ async function skSearchRealImage(query) {
     /\b(actress|actresses|female actor|film actress)\b/i.test(text) ||
     /நடிகை|நடிகைகள்/.test(text);
 
+  // SK_NAMED_TAMIL_ACTOR_EXACT_SEARCH_V1
+  const isNamedActorSearch =
+    /\b(rajinikanth|rajini|kamal haasan|kamal|ajith kumar|ajith|suriya|dhanush|sivakarthikeyan|vijay sethupathi)\b/i.test(text);
+
+  if (/\brajini\b/i.test(text)) queryText = 'Rajinikanth';
+  if (/\bkamal\b/i.test(text)) queryText = 'Kamal Haasan';
+
   if (!queryText && isActorCategorySearch) {
     queryText = isActressCategorySearch
       ? 'Tamil film actresses'
@@ -4619,13 +4626,73 @@ async function skSearchRealImage(query) {
   // SK_WHATSAPP_REAL_IMAGE_GALLERY_V1
   const galleryResults = [];
   const seenImageUrls = new Set();
-  const MAX_GALLERY_IMAGES = 10;
+  const MAX_GALLERY_IMAGES = 1;
+
+  // SK_IMAGE_DOWNLOAD_STREAM_5MB_JPEG_PNG_V1
+  const readImageResponseLimited = async (response, maxBytes = 5 * 1024 * 1024) => {
+    const mime = (response.headers.get('content-type') || '')
+      .split(';')[0].trim().toLowerCase();
+
+    if (!['image/jpeg', 'image/png'].includes(mime) || !response.body) {
+      return null;
+    }
+
+    const length = Number(response.headers.get('content-length') || 0);
+    if (length > maxBytes) {
+      await response.body.cancel().catch(() => {});
+      return null;
+    }
+
+    const reader = response.body.getReader();
+    const chunks = [];
+    let total = 0;
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        total += value.byteLength;
+        if (total > maxBytes) {
+          await reader.cancel().catch(() => {});
+          return null;
+        }
+
+        chunks.push(Buffer.from(value));
+      }
+    } catch (err) {
+      await reader.cancel().catch(() => {});
+      throw err;
+    } finally {
+      reader.releaseLock();
+    }
+
+    if (!total) return null;
+
+    const bytes = Buffer.concat(chunks, total);
+    const validJpeg =
+      mime === 'image/jpeg' &&
+      bytes.length >= 3 &&
+      bytes[0] === 0xFF && bytes[1] === 0xD8 && bytes[2] === 0xFF;
+
+    const validPng =
+      mime === 'image/png' &&
+      bytes.length >= 8 &&
+      bytes.subarray(0, 8).equals(
+        Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])
+      );
+
+    if (!validJpeg && !validPng) return null;
+
+    return { mime, bytes };
+  };
 
   // SK_GALLERY_PERSON_NAME_FILTER_V1
   const isPersonSearch =
     isJosephVijaySearch ||
     isVijayCmSearch ||
     isActorCategorySearch ||
+    isNamedActorSearch ||
     /\b(leader|leaders|political|politician|politicians|president|prime minister|chief minister|scientist|scientists|poet|poets|pulavar|scholar|star|stars)\b/i.test(text) ||
     /தலைவர்|அரசியல்|அரசியல்வாதி|முதல்வர்|பிரதமர்|ஜனாதிபதி|விஞ்ஞானி|அறிவியலாளர்|புலவர்|கவிஞர்|தமிழறிஞர்|நட்சத்திரம்|பிரபலங்கள்/.test(text);
 
@@ -4781,11 +4848,9 @@ async function skSearchRealImage(query) {
 
     if (!imageResponse.ok) continue;
 
-    const mime = (imageResponse.headers.get('content-type') || '').split(';')[0];
-    if (!mime.startsWith('image/')) continue;
-
-    const bytes = Buffer.from(await imageResponse.arrayBuffer());
-    if (!bytes.length || bytes.length > 8 * 1024 * 1024) continue;
+    const downloadedImage = await readImageResponseLimited(imageResponse);
+    if (!downloadedImage) continue;
+    const { mime, bytes } = downloadedImage;
 
     const artist = String(metadata.Artist?.value || 'Unknown').replace(/<[^>]*>/g, '').trim();
     const license = String(metadata.LicenseShortName?.value || 'License not specified').replace(/<[^>]*>/g, '').trim();
@@ -4794,7 +4859,9 @@ async function skSearchRealImage(query) {
     seenImageUrls.add(imageUrl);
     galleryResults.push({
       dataUri: 'data:' + mime + ';base64,' + bytes.toString('base64'),
-      attribution: '📷 ' + page.title + '\n👤 ' + artist + '\n📄 ' + license + '\n🔗 ' + source
+      attribution: '📷 ' + page.title + '\n👤 ' + artist + '\n📄 ' + license + '\n🔗 ' + source,
+      imageUrl,
+      sourceUrl: source
     });
 
     console.log('[Wikimedia] Gallery image found:', page.title);
@@ -4815,14 +4882,15 @@ async function skSearchRealImage(query) {
         signal: AbortSignal.timeout(30000)
       });
       if (!res.ok) return null;
-      const mime = (res.headers.get('content-type') || '').split(';')[0];
-      if (!mime.startsWith('image/')) return null;
-      const bytes = Buffer.from(await res.arrayBuffer());
-      if (!bytes.length || bytes.length > 8 * 1024 * 1024) return null;
+      const downloadedImage = await readImageResponseLimited(res);
+      if (!downloadedImage) return null;
+      const { mime, bytes } = downloadedImage;
       seenImageUrls.add(url);
       return {
         dataUri: 'data:' + mime + ';base64,' + bytes.toString('base64'),
-        attribution
+        attribution,
+        imageUrl: url,
+        sourceUrl: (String(attribution).match(/🔗\s*(https?:\/\/\S+)/) || [])[1] || ''
       };
     } catch (err) {
       console.warn('[WhatsApp image download]', err.message);
@@ -4832,8 +4900,8 @@ async function skSearchRealImage(query) {
 
   // SK_VIJAY_STRICT_PROVIDER_BLOCK_V1
   // Joseph Vijay: use only Wikimedia results with explicit identity metadata.
-  if (isJosephVijaySearch) {
-    console.log('[WhatsApp image] Strict Vijay search: skipping Pixabay and Unsplash.');
+  if (isJosephVijaySearch || isNamedActorSearch) {
+    console.log('[WhatsApp image] Strict named-person search: skipping Pexels, Pixabay and Unsplash.');
   } else {
     // SK_WHATSAPP_PEXELS_FALLBACK_V1
     const pexelsKey = process.env.PEXELS_API_KEY;
@@ -4973,6 +5041,8 @@ async function skSearchRealImage(query) {
     ? {
         dataUri: galleryResults[0].dataUri,
         attribution: galleryResults[0].attribution,
+        imageUrl: galleryResults[0].imageUrl,
+        sourceUrl: galleryResults[0].sourceUrl,
         images: galleryResults
       }
     : null;
@@ -6534,6 +6604,71 @@ async function skTelegramSendMessage(chatId, message) {
     console.error('[Telegram] sendMessage failed:', response.status, details.slice(0, 500));
   }
 }
+
+// SK_TELEGRAM_REAL_IMAGE_SEARCH_SEND_V1
+async function skTelegramSendSearchImage(chatId, found, query) {
+  const dataUri = String(found?.dataUri || '');
+  const match = dataUri.match(/^data:(image\/(?:jpeg|png));base64,([\s\S]+)$/i);
+
+  if (!match) throw new Error('Only JPEG and PNG search images are supported.');
+
+  const mime = match[1].toLowerCase();
+  const bytes = Buffer.from(match[2], 'base64');
+
+  if (!bytes.length || bytes.length > 5 * 1024 * 1024) {
+    throw new Error('Image exceeds the 5 MB limit.');
+  }
+
+  const validJpeg = mime === 'image/jpeg' &&
+    bytes[0] === 0xFF && bytes[1] === 0xD8 && bytes[2] === 0xFF;
+
+  const validPng = mime === 'image/png' &&
+    bytes.subarray(0, 8).equals(
+      Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])
+    );
+
+  if (!validJpeg && !validPng) {
+    throw new Error('Image content does not match its MIME type.');
+  }
+
+  const form = new FormData();
+  form.append('chat_id', String(chatId));
+  form.append(
+    'photo',
+    new Blob([bytes], { type: mime }),
+    mime === 'image/png' ? 'sasikumar-ai-search.png' : 'sasikumar-ai-search.jpg'
+  );
+  form.append('caption', '📷 SASIKUMAR AI — Image Search\n🔎 ' + String(query || '').slice(0, 150));
+
+  const response = await fetch(
+    `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`,
+    {
+      method: 'POST',
+      body: form,
+      signal: AbortSignal.timeout(30000)
+    }
+  );
+
+  if (!response.ok) {
+    const details = await response.text();
+    console.error('[Telegram image search]', response.status, details.slice(0, 400));
+    throw new Error('Telegram image delivery failed.');
+  }
+
+  const imageUrl = String(found.imageUrl || 'Not available');
+  const sourceUrl = String(found.sourceUrl || 'Not available');
+
+  await skTelegramSendMessage(
+    chatId,
+    '📷 SASIKUMAR AI — Image Search\n\n' +
+    '🔎 தேடல்: ' + String(query || '').slice(0, 150) + '\n\n' +
+    '🌐 Image URL:\n' + imageUrl + '\n\n' +
+    '🔗 Source URL:\n' + sourceUrl + '\n\n' +
+    '🖼️ SASIKUMAR AI Image Search – Click Here:\n' +
+    'https://sasikumar-ai-9wdq.onrender.com/ai-image.html'
+  );
+}
+
 // SK_TELEGRAM_AI_POSTER_V1
 async function skTelegramSendPoster(chatId, prompt) {
   const content = String(prompt || '').trim();
@@ -6888,8 +7023,8 @@ if (/^(?:share|பகிர்|பகிரவும்)$/i.test(text)) {
 
     // SK_TELEGRAM_AI_POSTER_COMMAND_V2
     const posterMatch = text.match(/^(?:poster|ai\s*poster|போஸ்டர்|ஏஐ\s*போஸ்டர்)\s*[:：]\s*([\s\S]+)$/i);
-    const imageRequest = /(?:படம்|புகைப்படம்|போஸ்டர்|உருவாக்கு|உருவாக்கவும்|வரைந்து|image|picture|photo|poster|generate|create|draw|illustration)/i.test(text)
-      && /(?:விநாயகர்|விநாயகா|கணேசா|கடவுள்|சாமி|கோவில்|பக்தி|அழகான|படம்|போஸ்டர்|image|picture|photo|poster|ganesha|ganesh|god|temple|devotional|beautiful)/i.test(text);
+    const imageRequest = /(?:போஸ்டர்|poster|உருவாக்கு|உருவாக்கவும்|வரைந்து|generate|create|draw|illustration)/i.test(text)
+      && /(?:விநாயகர்|விநாயகா|கணேசா|கடவுள்|சாமி|கோவில்|பக்தி|அழகான|படம்|போஸ்டர்|poster|ganesha|ganesh|god|temple|devotional|beautiful)/i.test(text);
 
     if (posterMatch || imageRequest) {
       const posterPrompt = posterMatch ? posterMatch[1].trim() : text;
@@ -6923,6 +7058,44 @@ if (/^(?:share|பகிர்|பகிரவும்)$/i.test(text)) {
           chatId,
           'மன்னிக்கவும், இப்போது படம் உருவாக்க முடியவில்லை. Gemini image generation அமைப்பைச் சரிபார்க்கவும்.'
         );
+      }
+
+      return;
+    }
+
+    // SK_TELEGRAM_REAL_IMAGE_SEARCH_V1
+    const telegramPhotoSearch =
+      /(?:\b(?:image|images|photo|photos|picture|pictures|pic|pics)\b|படம்|புகைப்படம்|படங்கள்)/i.test(text);
+
+    if (telegramPhotoSearch) {
+      const searchQuery = text
+        .replace(/\b(?:please|show|find|search|image|images|photo|photos|picture|pictures|pic|pics)\b/gi, ' ')
+        .replace(/படம்|புகைப்படம்|படங்கள்|காட்டு|தேடு|வேண்டும்/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      if (!searchQuery) {
+        await skTelegramSendMessage(chatId, '🔎 எந்தப் படத்தைத் தேட வேண்டும்? உதாரணம்: Rajinikanth photo');
+        return;
+      }
+
+      await skTelegramSendMessage(chatId, '🔎 SASIKUMAR AI படத்தைத் தேடுகிறது...');
+
+      try {
+        const found = await skSearchRealImage(searchQuery);
+
+        if (!found?.dataUri) {
+          await skTelegramSendMessage(
+            chatId,
+            '❌ Exact matching image not found.\nதவறான படத்தை அனுப்பாமல் தேடலை நிறுத்தியுள்ளோம்.\n\n🖼️ SASIKUMAR AI Image Search:\nhttps://sasikumar-ai-9wdq.onrender.com/ai-image.html'
+          );
+          return;
+        }
+
+        await skTelegramSendSearchImage(chatId, found, searchQuery);
+      } catch (imageError) {
+        console.error('[Telegram real image search]', imageError.message || imageError);
+        await skTelegramSendMessage(chatId, 'மன்னிக்கவும். இப்போது படத்தை அனுப்ப முடியவில்லை. சிறிது நேரம் கழித்து முயற்சிக்கவும்.');
       }
 
       return;
