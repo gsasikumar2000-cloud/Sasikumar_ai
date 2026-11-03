@@ -4412,6 +4412,17 @@ async function skSearchRealImage(query) {
     return true;
   };
 
+  // SK_IMAGE_SEARCH_PERSON_METADATA_FILTER_V1
+  const matchesPersonMetadata = value => {
+    if (!isPersonSearch || isActorCategorySearch || isVijayCmSearch) return true;
+    const subject = String(value || '').toLowerCase();
+    if (isJosephVijaySearch) {
+      return /\bvijay\b/i.test(subject) &&
+        /tamil film actor|film actor|actor vijay|vijay.*(film|actor|audio launch|jilla|puli)|thalapathy/i.test(subject);
+    }
+    return personTokens.length === 0 || personTokens.every(token => subject.includes(token));
+  };
+
   const params = new URLSearchParams({
     action: 'query',
     format: 'json',
@@ -4574,7 +4585,8 @@ async function skSearchRealImage(query) {
       const data = await res.json();
 
       for (const hit of (data.hits || [])) {
-        if (!matchesRequestedSubject(hit.tags || '')) continue;
+        const imageSubject = [hit.tags, hit.user].filter(Boolean).join(' ');
+        if (!matchesRequestedSubject(imageSubject) || !matchesPersonMetadata(imageSubject)) continue;
         const found = await downloadSearchImage(
           hit.largeImageURL || hit.webformatURL,
           '📷 Pixabay: ' + (hit.tags || queryText) +
@@ -4609,7 +4621,8 @@ async function skSearchRealImage(query) {
       const data = await res.json();
 
       for (const item of (data.results || [])) {
-        if (!matchesRequestedSubject([item.alt_description, item.description].join(' '))) continue;
+        const imageSubject = [item.alt_description, item.description, item.user?.name].filter(Boolean).join(' ');
+        if (!matchesRequestedSubject(imageSubject) || !matchesPersonMetadata(imageSubject)) continue;
         const found = await downloadSearchImage(
           item.urls?.regular,
           '📷 Unsplash: ' + (item.alt_description || queryText) +
