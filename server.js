@@ -1059,7 +1059,7 @@ async function getCloudflareAIReply(message, category = 'General AI') {
     const response = await fetch(
       'https://api.cloudflare.com/client/v4/accounts/' +
         account +
-        '/ai/run/@cf/meta/llama-3.1-8b-instruct',
+        '/ai/run/@cf/zai-org/glm-4.7-flash',
       {
         method: 'POST',
         headers: {
@@ -1098,6 +1098,7 @@ async function getCloudflareAIReply(message, category = 'General AI') {
     }
 
     const reply =
+      data.result?.choices?.[0]?.message?.content ||
       data.result?.response ||
       data.result?.output_text ||
       '';
