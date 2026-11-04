@@ -3884,8 +3884,8 @@ if (youtubeVideos.length) {
 
               if (!found || !found.images?.length) {
                 galleryImages = null;
-                console.log('[WhatsApp image] No real image found; AI fallback BLOCKED.');
-                generated = null;
+                console.log('[WhatsApp image] No real image found; trying AI fallback.');
+                generated = await skGenerateImage(trimmed);
               } else {
                 galleryImages = found.images || [found];
                 generated = galleryImages[0]?.dataUri || null;
