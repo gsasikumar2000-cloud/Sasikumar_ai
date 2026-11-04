@@ -50,9 +50,22 @@ const WA_VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || 'sasikumar_ai_verif
 
 const WELCOME_MENU = `🤖 SASIKUMAR AI — MAIN MENU
 
+🙏 வணக்கம் நண்பரே! Welcome!
+
+🌍 தமிழ் • Tanglish • English • हिंदी • తెలుగు • മലയാളം • ಕನ್ನಡ
+
 🌐 Website: https://sasikumar-ai-9wdq.onrender.com
 
-1. 🤖 SASIKUMAR AI — AI Assistant
+🔍 Web Search
+▶️ YouTube Search
+🖼️ Image Search
+🎤 Voice Input — Send a voice message
+🔊 Voice Output — Coming Soon
+💬 Type your question directly in WhatsApp.
+
+📋 ALL 35 SERVICES
+
+1. 🤖 AI Assistant
 2. 🪙 Live Gold & Silver Rate
 3. 🧮 Gold Loan / EMI Calculator
 4. 🏦 Banking Services
@@ -82,18 +95,19 @@ const WELCOME_MENU = `🤖 SASIKUMAR AI — MAIN MENU
 28. 🛠️ AI Tools
 29. 🌐 Website Services
 30. 📞 Contact & Customer Feedback
-31. 📚 ALL CONTENT — Complete Services & Details
+31. 📚 All Content
 32. 🎭 Tamil Comedy & Movie Fun
 33. 🌾 Agriculture — விவசாய உதவியாளர்
+34. 😂 Meme Head — Trending Meme Hub
+35. 🔮 Tamil Astrology & Horoscope
 
 0. 🏠 Main Menu
 
 Any language-la unga question-ai type pannalaam.
 Option number anuppi service select pannunga.
 
-— SASIKUMAR AI
-34. 😂 Meme Head — Trending Meme Hub
-`;
+— SASIKUMAR AI`;
+
 
 const MENU_REPLIES = {
   '1': () => `🤖 AI ASSISTANT — ASK ANYTHING!
@@ -867,7 +881,19 @@ Type 0 for Main Menu`,
 https://sasikumar-ai-9wdq.onrender.com/meme-hub.html
 
 🤖 SASIKUMAR AI வழங்குகிறது
+🔙 Type 0 for Main Menu`,
+
+  '35': () => `🔮 SASIKUMAR AI — தமிழ் ஜோதிடம் & ராசி பலன்கள்
+
+🌙 தினசரி ராசிபலன் மற்றும் ஜோதிடத் தகவல்களுக்கு:
+
+🌐 ஜோதிடப் பக்கம்:
+https://sasikumar-ai-9wdq.onrender.com/spiritual-astrology.html
+
+உங்கள் ராசி அல்லது ஜோதிடக் கேள்வியை அனுப்புங்கள்.
+
 🔙 Type 0 for Main Menu`
+
 };
 async function getLiveGoldSilverWhatsAppReply() {
   const goldUrl = 'https://sasikumar-ai-9wdq.onrender.com/api/gold-rate?state=Tamil%20Nadu&district=Thanjavur';
@@ -3563,7 +3589,7 @@ if (waSpeedCommand || waUrlOnly) {
  } else if (/^(?:central govt|central government|மத்திய அரசு|tn govt|tamil nadu govt|tamilnadu govt|state govt|தமிழ்நாடு அரசு|govt schemes|government schemes|schemes|அரசு திட்டங்கள்|நலத்திட்டங்கள்|latest notifications|latest notification|govt notifications|government notifications|அரசு அறிவிப்புகள்|அறிவிப்புகள்|tnpsc)$/i.test(trimmed)) {
   reply = await getGovernmentReply(trimmed) || WELCOME_MENU;
 } else if (!isWelcome) {
-  const num = trimmed.match(/^\s*(3[0-4]|[12][0-9]|[0-9])\s*$/);
+  const num = trimmed.match(/^\s*(3[0-5]|[12][0-9]|[0-9])\s*$/);
 
   if (num) {
     reply = num[1] === '10'
@@ -3725,23 +3751,30 @@ if (youtubeVideos.length) {
         });
 
         const welcomeCaption = [
-          '🤖 SASIKUMAR AI',
-          '',
-          '🙏 வணக்கம் நண்பரே! Welcome!',
-          '',
-          '🌍 தமிழ் • English • हिंदी • తెలుగు • മലയാളം • ಕನ್ನಡ மற்றும் பல மொழிகளில் சேவை.',
-          '',
-          '💬 உங்கள் கேள்வியை நேரடியாக அனுப்புங்கள்.',
-          '',
-          '📋 32 சேவைகள் கொண்ட Complete Menu அடுத்த படத்தில் உள்ளது.',
-          '',
-          '🌐 Website: https://sasikumar-ai-9wdq.onrender.com',
-          '',
-          '📅 தேதி: ' + date,
-          '🕒 நேரம்: ' + time + ' IST',
-          '',
-          '🤖 SASIKUMAR AI — உங்கள் டிஜிட்டல் உதவியாளர் ❤️'
-        ].join('\n');
+  '🤖 SASIKUMAR AI',
+  '',
+  '🙏 வணக்கம் நண்பரே! Welcome!',
+  '',
+  '🌍 தமிழ் • Tanglish • English • हिंदी • తెలుగు • മലയാളം • ಕನ್ನಡ',
+  '',
+  '💬 Ask your questions directly in:',
+  'தமிழ் • Tanglish • English • हिंदी and other languages.',
+  '',
+  '🔍 Web Search',
+  '▶️ YouTube Search',
+  '🖼️ Image Search',
+  '🎤 Voice Input — Send a voice message',
+  '🔊 Voice Output — Coming Soon',
+  '⌨️ Type your question directly in WhatsApp.',
+  '',
+  '📋 All 35 Services menu in the next message.',
+  '',
+  '🌐 Website: https://sasikumar-ai-9wdq.onrender.com',
+  '📅 தேதி: ' + date,
+  '🕒 நேரம்: ' + time + ' IST',
+  '',
+  '🤖 SASIKUMAR AI — உங்கள் டிஜிட்டல் உதவியாளர் ❤️'
+].join('\n');
 
         await sendWA({
           type: 'image',
@@ -3754,43 +3787,46 @@ if (youtubeVideos.length) {
         await new Promise(resolve => setTimeout(resolve, 800));
 
         const menuCaption = [
-          '🤖 SASIKUMAR AI — COMPLETE MENU',
-          '1. AI Assistant',
-          '2. Live Gold & Silver Rate',
-          '3. Gold Loan / EMI Calculator',
-          '4. Banking Services',
-          '5. Gold Expert',
-          '6. Gold Appraisal',
-          '7. Education',
-          '8. Jobs & Careers',
-          '9. Business & Technology News',
-          '10. Breaking News',
-          '11. General AI Chat',
-          '12. Poster & Creative Design',
-          '13. AI Image Maker',
-          '14. Video Maker',
-          '15. Global Web Search',
-          '16. Sports Updates',
-          '17. Daily Thirukkural',
-          '18. Tamil Kavithai',
-          '19. Ponmozhigal',
-          '20. Thathuvam',
-          '21. Motivation',
-          '22. Leadership History',
-          '23. Audio & Video Songs Hub',
-          '24. Live FM Radio',
-          '25. Audio / Video Song Cutter',
-          '26. Mobile App Download',
-          '27. Business Ideas',
-          '28. AI Tools',
-          '29. Website Services',
-          '30. Contact & Customer Feedback',
-          '31. All Content — Complete Services',
-          '32. Tamil Comedy & Movie Fun',
-          '33. Agriculture — விவசாய உதவியாளர்',
-          '0. Main Menu',
-          'Send an option number to select a service.'
-        ].join('\n');
+  '🤖 SASIKUMAR AI — COMPLETE MENU',
+  '📋 All 35 Services',
+  "1. AI Assistant",
+  "2. Live Gold & Silver Rate",
+  "3. Gold Loan / EMI Calculator",
+  "4. Banking Services",
+  "5. Gold Expert",
+  "6. Gold Appraisal",
+  "7. Education",
+  "8. Jobs & Careers",
+  "9. Business & Technology News",
+  "10. Breaking News",
+  "11. General AI Chat",
+  "12. Poster & Creative Design",
+  "13. AI Image Maker",
+  "14. Video Maker",
+  "15. Global Web Search",
+  "16. Sports Updates",
+  "17. Daily Thirukkural",
+  "18. Tamil Kavithai",
+  "19. Ponmozhigal",
+  "20. Thathuvam",
+  "21. Motivation",
+  "22. Leadership History",
+  "23. Audio & Video Songs Hub",
+  "24. Live FM Radio",
+  "25. Audio / Video Song Cutter",
+  "26. Mobile App Download",
+  "27. Business Ideas",
+  "28. AI Tools",
+  "29. Website Services",
+  "30. Contact & Customer Feedback",
+  "31. All Content — Complete Services",
+  "32. Tamil Comedy & Movie Fun",
+  "33. Agriculture — விவசாய உதவியாளர்",
+  "34. Meme Head — Trending Meme Hub",
+  "35. Tamil Astrology & Horoscope — தமிழ் ஜோதிடம்",
+  '0. Main Menu',
+  'Send an option number to select a service.',
+].join('\n');
 
         await sendWA({
           type: 'text',
@@ -4964,7 +5000,7 @@ async function skSearchRealImage(query) {
     /mother mary|virgin mary|madonna|our lady|velankanni|arokia matha|அன்னை மரியா|அன்னை மேரி|மேரி மாதா|வேளாங்கண்ணி மாதா|ஆரோக்கிய மாதா/i.test(text);
 
   const deityRules = [
-    { re: /விநாயகர்|பிள்ளையார்|வினாயகர்|vinayagar|vinayaka|ganesha|ganesh/i, terms: ['ganesha', 'vinayaka'] },
+    { re: /விநாயகர்|வினாயகர்|பிள்ளையார்|கணபதி|vinayagar|vinayaka|ganesha|ganesh|ganapati|ganapathy|pillaiyar/i, terms: ['ganesha', 'vinayaka', 'ganapati', 'ganapathy', 'ganesh', 'vinayagar', 'pillaiyar', 'பிள்ளையார்', 'விநாயகர்', 'வினாயகர்', 'கணபதி'] },
     { re: /முருகன்|கந்தன்|சுப்பிரமணியர்|murugan|subramanya|karthikeya/i, terms: ['murugan', 'kartikeya', 'subramanya'] },
     { re: /அம்மன்|மாரியம்மன்|காளியம்மன்|துர்கை|amman|mariamman|kali|durga/i, terms: ['amman', 'mariamman', 'durga', 'kali'] },
     { re: /கிருஷ்ணர்|கண்ணன்|krishna/i, terms: ['krishna'] },
