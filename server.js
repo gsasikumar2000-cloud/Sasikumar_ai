@@ -5039,7 +5039,7 @@ async function skSearchRealImage(query) {
   // SK_WHATSAPP_REAL_IMAGE_GALLERY_V1
   const galleryResults = [];
   const seenImageUrls = new Set();
-  const MAX_GALLERY_IMAGES = 1;
+  const MAX_GALLERY_IMAGES = 10;
 
   // SK_IMAGE_DOWNLOAD_STREAM_5MB_JPEG_PNG_V1
   const readImageResponseLimited = async (response, maxBytes = 5 * 1024 * 1024) => {
@@ -5169,7 +5169,7 @@ async function skSearchRealImage(query) {
     generator: 'search',
     gsrsearch: 'filetype:bitmap ' + queryText,
     gsrnamespace: '6',
-    gsrlimit: '20',
+    gsrlimit: '50',
     prop: 'imageinfo',
     iiprop: 'url|extmetadata',});
 
@@ -5323,7 +5323,7 @@ async function skSearchRealImage(query) {
       try {
         const pexelsUrl = new URL('https://api.pexels.com/v1/search');
         pexelsUrl.searchParams.set('query', queryText);
-        pexelsUrl.searchParams.set('per_page', '10');
+        pexelsUrl.searchParams.set('per_page', '30');
 
         const pexelsResponse = await fetch(pexelsUrl, {
           headers: {
@@ -5385,7 +5385,7 @@ async function skSearchRealImage(query) {
       const url = 'https://pixabay.com/api/?key=' +
         encodeURIComponent(pixabayKey) +
         '&q=' + encodeURIComponent(queryText) +
-        '&image_type=all&safesearch=true&per_page=10';
+        '&image_type=all&safesearch=true&per_page=30';
       const res = await fetch(url, { signal: AbortSignal.timeout(20000) });
       if (!res.ok) throw new Error('Pixabay HTTP ' + res.status);
       const data = await res.json();
@@ -5415,7 +5415,7 @@ async function skSearchRealImage(query) {
   if (unsplashKey && galleryResults.length < MAX_GALLERY_IMAGES) {
     try {
       const url = 'https://api.unsplash.com/search/photos?query=' +
-        encodeURIComponent(queryText) + '&per_page=10';
+        encodeURIComponent(queryText) + '&per_page=30';
       const res = await fetch(url, {
         headers: {
           Authorization: 'Client-ID ' + unsplashKey,
@@ -5446,6 +5446,111 @@ async function skSearchRealImage(query) {
     }
   }
 
+  }
+
+
+  // SK_WHATSAPP_SERPAPI_GOOGLE_IMAGES_FALLBACK_V2
+  // Runs after Wikimedia and stock providers; keeps strict subject validation.
+  const serpApiKey = process.env.SERPAPI_API_KEY;
+
+  if (serpApiKey && galleryResults.length < MAX_GALLERY_IMAGES) {
+    try {
+      const serpUrl = new URL('https://serpapi.com/search.json');
+      serpUrl.searchParams.set('engine', 'google_images');
+      serpUrl.searchParams.set('q', queryText);
+      serpUrl.searchParams.set('safe', 'active');
+      serpUrl.searchParams.set('api_key', serpApiKey.trim());
+
+      const serpResponse = await fetch(serpUrl, {
+        headers: { 'User-Agent': 'SASIKUMAR-AI/1.0' },
+        signal: AbortSignal.timeout(20000)
+      });
+
+      if (!serpResponse.ok) {
+        throw new Error('SerpAPI Google Images HTTP ' + serpResponse.status);
+      }
+
+      const serpData = await serpResponse.json();
+
+      for (const item of (serpData.images_results || [])) {
+        if (galleryResults.length >= MAX_GALLERY_IMAGES) break;
+
+        const identityText = [
+          item.title,
+          item.snippet
+        ].filter(Boolean).join(' ');
+
+        const imageSubject = [
+          identityText,
+          item.source
+        ].filter(Boolean).join(' ');
+
+        if (!matchesRequestedSubject(imageSubject)) continue;
+
+        // Strict named-person validation: source/domain alone is not identity evidence.
+        if (isJosephVijaySearch) {
+          const hasExactVijayIdentity =
+            /\bjoseph\s+vijay\b|\bthalapathy\s+vijay\b/i.test(identityText);
+          const hasActorContext =
+            /\b(actor|film star|movie star|film actor|cinema actor|entertainer|thalapathy)\b/i.test(identityText) ||
+            /நடிகர்|திரைப்பட நடிகர்/.test(identityText);
+
+          if (!hasExactVijayIdentity || !hasActorContext) continue;
+        } else if (isPersonSearch && !isActorCategorySearch && !isVijayCmSearch) {
+          if (!matchesPersonMetadata(identityText)) continue;
+        }
+
+        if (isActorCategorySearch) {
+          const actorContext =
+            /\b(actor|film star|movie star|film actor|cinema actor|entertainer|thalapathy)\b/i.test(identityText) ||
+            /நடிகர்|திரைப்பட நடிகர்/.test(identityText);
+          const actressContext =
+            /\b(actress|film actress|movie star|Indian actress|Tamil actress)\b/i.test(identityText) ||
+            /நடிகை|திரைப்பட நடிகை/.test(identityText);
+
+          if (isActressCategorySearch ? !actressContext : !actorContext) {
+            continue;
+          }
+        }
+
+        const imageUrl = item.original;
+        if (!imageUrl || seenImageUrls.has(imageUrl)) continue;
+
+        let parsedImageUrl;
+        try {
+          parsedImageUrl = new URL(imageUrl);
+        } catch {
+          continue;
+        }
+
+        if (
+          parsedImageUrl.protocol !== 'https:' ||
+          !parsedImageUrl.hostname ||
+          parsedImageUrl.hostname === 'localhost' ||
+          parsedImageUrl.hostname.endsWith('.localhost')
+        ) {
+          continue;
+        }
+
+        const title = String(item.title || queryText).slice(0, 180);
+        const source = String(item.source || 'Google Images').slice(0, 120);
+        const pageUrl = String(item.link || 'https://www.google.com/').slice(0, 500);
+
+        const found = await downloadSearchImage(
+          imageUrl,
+          '📷 Google Images via SerpAPI: ' + title +
+          '\n🌐 ' + source +
+          '\n🔗 ' + pageUrl
+        );
+
+        if (found) {
+          galleryResults.push(found);
+          console.log('[WhatsApp image] SerpAPI Google Images result found');
+        }
+      }
+    } catch (err) {
+      console.warn('[WhatsApp SerpAPI image search]', err.message);
+    }
   }
 
   console.log('[WhatsApp image] Total relevant gallery images:', galleryResults.length);
