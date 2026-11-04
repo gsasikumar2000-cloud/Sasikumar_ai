@@ -3576,7 +3576,7 @@ const waUrlOnly = /^https?:\/\/\S+$/i.test(trimmed);
 const mapsMatch = trimmed.match(/^(?:maps?|வரைபடம்|மேப்)\s*[:\-]?\s*(.*)$/i);
 const pinMatch = trimmed.match(/^(?:pin(?:\s*code)?|pincode|பின்கோடு|அஞ்சல்\s*குறியீடு|area|ஊர்)\s*[:\-]?\s*(.+)$/i);
 
-if (waSpeedCommand || waUrlOnly) {
+if (waSpeedCommand || waSpeedUrl) {
   const targetUrl = waSpeedUrl ? waSpeedUrl[0].replace(/[),.;]+$/, '') : '';
   reply = '⏳ Google PageSpeed மூலம் Mobile Website சோதனை நடைபெறுகிறது...';
   reply += '\n\n' + await skPageSpeedReply(targetUrl);
@@ -3869,6 +3869,7 @@ if (youtubeVideos.length) {
             let generated;
             let galleryImages = null;
             let imageAttribution = '';
+            let imageSearchTimedOut = false;
 
             if (wantsPoster) {
               console.log('[WhatsApp AI poster] Using dedicated poster maker');
@@ -3916,12 +3917,27 @@ if (youtubeVideos.length) {
               generated = `data:${posterMime};base64,${posterBytes.toString('base64')}`;
             } else if (wantsCatalogImage && !wantsAiGeneratedImage) {
               console.log('[WhatsApp image] Searching real images:', trimmed);
-              const found = await skSearchRealImage(trimmed);
+              let searchTimer;
+              const found = await Promise.race([
+                skSearchRealImage(trimmed),
+                new Promise(resolve => {
+                  searchTimer = setTimeout(
+                    () => resolve({ timedOut: true, images: [] }),
+                    10000
+                  );
+                })
+              ]);
+              clearTimeout(searchTimer);
+
+              if (found?.timedOut) {
+                imageSearchTimedOut = true;
+                console.warn('[WhatsApp image] Real image search timed out after 10 seconds.');
+              }
 
               if (!found || !found.images?.length) {
                 galleryImages = null;
-                console.log('[WhatsApp image] No real image found; trying AI fallback.');
-                generated = await skGenerateImage(trimmed);
+                console.log('[WhatsApp image] No real image found; AI fallback disabled for real-photo search.');
+                generated = null;
               } else {
                 galleryImages = found.images || [found];
                 generated = galleryImages[0]?.dataUri || null;
@@ -3933,15 +3949,34 @@ if (youtubeVideos.length) {
 
             if (!generated) {
               console.log('[WhatsApp image] No image found; sending text fallback.');
-              await sendWA({
-                type: 'text',
-                text: {
-                  body: '🤖 SASIKUMAR AI\n📷 இந்தத் தேடலுக்கு பொருத்தமான படம் கிடைக்கவில்லை.\nவேறு பெயர் அல்லது தேடல் சொல்லுடன் மீண்டும் முயற்சிக்கவும்.'
-                }
-              });
+              if (imageSearchTimedOut) {
+                await sendWA({
+                  type: 'interactive',
+                  interactive: {
+                    type: 'cta_url',
+                    body: {
+                      text: '🤖 SASIKUMAR AI\n⏳ படம் தேடும் நேரம் முடிந்துவிட்டது. கீழே கிளிக் செய்து படங்களைத் தேடுங்கள்.'
+                    },
+                    action: {
+                      name: 'cta_url',
+                      parameters: {
+                        display_text: '🌐 Search Images',
+                        url: 'https://sasikumar-ai-9wdq.onrender.com/google-search.html#gsc.tab=0'
+                      }
+                    }
+                  }
+                });
+              } else {
+                await sendWA({
+                  type: 'text',
+                  text: {
+                    body: '🤖 SASIKUMAR AI\\n📷 இந்தத் தேடலுக்கு பொருத்தமான படம் கிடைக்கவில்லை.\\nவேறு பெயர் அல்லது தேடல் சொல்லுடன் மீண்டும் முயற்சிக்கவும்.'
+                  }
+                });
+              }
             } else {
             const imagesToSend = wantsCatalogImage && galleryImages?.length
-              ? galleryImages.slice(0, 10)
+              ? galleryImages.slice(0, 1)
               : [{ dataUri: generated }];
 
             for (let imageIndex = 0; imageIndex < imagesToSend.length; imageIndex++) {
@@ -4995,30 +5030,29 @@ async function skSearchRealImage(query) {
   const text = String(query || '').trim();
   if (!text) return null;
 
-  // SK_MOTHER_MARY_EXACT_SEARCH_V1
+  // SK_MOTHER_MARY_EXACT_SEARCH_V2
   const isMotherMarySearch =
-    /mother mary|virgin mary|madonna|our lady|velankanni|arokia matha|அன்னை மரியா|அன்னை மேரி|மேரி மாதா|வேளாங்கண்ணி மாதா|ஆரோக்கிய மாதா/i.test(text);
+    /\b(?:mother mary|virgin mary|our lady|velankanni|arokia matha)\b|அன்னை மரியா|அன்னை மேரி|மேரி மாதா|வேளாங்கண்ணி மாதா|ஆரோக்கிய மாதா/i.test(text);
 
   const deityRules = [
-    { re: /விநாயகர்|வினாயகர்|பிள்ளையார்|கணபதி|vinayagar|vinayaka|ganesha|ganesh|ganapati|ganapathy|pillaiyar/i, terms: ['ganesha', 'vinayaka', 'ganapati', 'ganapathy', 'ganesh', 'vinayagar', 'pillaiyar', 'பிள்ளையார்', 'விநாயகர்', 'வினாயகர்', 'கணபதி'] },
-    { re: /முருகன்|கந்தன்|சுப்பிரமணியர்|murugan|subramanya|karthikeya/i, terms: ['murugan', 'kartikeya', 'subramanya'] },
-    { re: /அம்மன்|மாரியம்மன்|காளியம்மன்|துர்கை|amman|mariamman|kali|durga/i, terms: ['amman', 'mariamman', 'durga', 'kali'] },
-    { re: /கிருஷ்ணர்|கண்ணன்|krishna/i, terms: ['krishna'] },
-    { re: /சிவன்|ஈசன்|sivan|shiva/i, terms: ['shiva'] },
-    { re: /பெருமாள்|விஷ்ணு|வெங்கடேச|perumal|vishnu|venkateswara/i, terms: ['vishnu', 'venkateswara'] },
-    { re: /வேளாங்கண்ணி மாதா|ஆரோக்கிய மாதா|அன்னை மரியா|அன்னை மேரி|மேரி மாதா|mother mary|virgin mary|madonna|our lady|velankanni|arokia matha/i, terms: ['virgin mary', 'mother mary', 'madonna', 'our lady', 'velankanni', 'arokia matha'] },
-    { re: /இயேசு|ஏசு|jesus|christ/i, terms: ['jesus christ', 'jesus'] },
-    { re: /புத்தர்|buddha/i, terms: ['buddha'] }
+    { re: /விநாயகர்|வினாயகர்|பிள்ளையார்|கணபதி|\b(?:vinayagar|vinayaka|ganesha|ganesh|ganapati|ganapathy|pillaiyar)\b/i, terms: ['ganesha', 'vinayaka', 'ganapati', 'ganapathy', 'ganesh', 'vinayagar', 'pillaiyar', 'பிள்ளையார்', 'விநாயகர்', 'வினாயகர்', 'கணபதி'] },
+    { re: /முருகன்|கந்தன்|சுப்பிரமணியர்|\b(?:murugan|subramanya|karthikeya|kartikeya)\b/i, terms: ['murugan', 'kartikeya', 'subramanya'] },
+    { re: /அம்மன்|மாரியம்மன்|காளியம்மன்|துர்கை|\b(?:amman|mariamman|kali|durga)\b/i, terms: ['amman', 'mariamman', 'durga', 'kali'] },
+    { re: /கிருஷ்ணர்|கண்ணன்|\bkrishna\b/i, terms: ['krishna'] },
+    { re: /சிவன்|ஈசன்|\b(?:sivan|shiva)\b/i, terms: ['shiva'] },
+    { re: /பெருமாள்|விஷ்ணு|வெங்கடேச|\b(?:perumal|vishnu|venkateswara)\b/i, terms: ['vishnu', 'venkateswara'] },
+    { re: /வேளாங்கண்ணி மாதா|ஆரோக்கிய மாதா|அன்னை மரியா|அன்னை மேரி|மேரி மாதா|\b(?:mother mary|virgin mary|our lady|velankanni|arokia matha)\b/i, terms: ['virgin mary', 'mother mary', 'our lady', 'velankanni', 'arokia matha'] },
+    { re: /இயேசு|ஏசு|\b(?:jesus|christ)\b/i, terms: ['jesus christ', 'jesus'] },
+    { re: /புத்தர்|\bbuddha\b/i, terms: ['buddha'] }
   ];
-
   const rule = deityRules.find(item => item.re.test(text));
   let queryText = rule
     ? (isMotherMarySearch && /velankanni|arokia matha|வேளாங்கண்ணி|ஆரோக்கிய/i.test(text)
         ? 'Our Lady of Good Health Velankanni'
         : (isMotherMarySearch ? 'Virgin Mary Mother Mary' : rule.terms[0]))
     : text
-    .replace(/\b(real|original|photo|photograph|image|picture|send|show|please|leader|leaders|political|politician|politicians|president|prime minister|chief minister|scientist|scientists|science|poet|poets|pulavar|scholar|actor|actress|celebrity|celebrities|star|stars|photo of|picture of|tamil|indian|film|cinema)\b/gi, '')
-    .replace(/படம்|புகைப்படம்|அனுப்பு|காட்டு|வேண்டும்|தயவு செய்து|தலைவர்|தலைவர்கள்|அரசியல்|அரசியல்வாதி|முதல்வர்|பிரதமர்|ஜனாதிபதி|விஞ்ஞானி|அறிவியலாளர்|புலவர்|கவிஞர்|தமிழறிஞர்|நடிகர்|நடிகை|நட்சத்திரம்|பிரபலங்கள்/g, '')
+    .replace(/\b(real|original|photo|photograph|image|picture|send|show|please|pic|pics|photos|images|find|search|want|give|me|of|the)\b/gi, '')
+    .replace(/படம்|புகைப்படம்|அனுப்பு|காட்டு|வேண்டும்|தயவு செய்து|கொடு|தேடு/g, '')
     .replace(/\s+/g, ' ')
     .trim();
 
@@ -5034,17 +5068,15 @@ async function skSearchRealImage(query) {
     /pest.?control|fumigation|exterminator|termite control|பூச்சி.?கட்டுப்பாடு/i.test(text) &&
     /van|truck|vehicle|வாகனம்|வேன்/i.test(text);
 
-  if (isVijayCmSearch) queryText = 'Joseph Vijay Tamil Nadu politician';
-  else if (isElephantSearch) queryText = 'elephant';
-  else if (isThiruvalluvarSearch) queryText = 'Thiruvalluvar Tamil poet philosopher';
-  else if (isPestControlVanSearch) queryText = 'pest control van fumigation vehicle';
+  // Keep the user's complete query. Do not replace multi-subject searches
+  // with a single canonical subject.
 
   // SK_JOSEPH_VIJAY_EXACT_SEARCH_V1
   const isJosephVijaySearch =
     !isVijayCmSearch &&
     /\b(vijay|joseph vijay|thalapathy vijay)\b|விஜய்/i.test(text) &&
     !/\b(cm|chief minister|politician|political)\b|முதல்வர்|அரசியல்/i.test(text);
-  if (isJosephVijaySearch) queryText = 'Joseph Vijay';
+  // Keep additional subjects such as elephant in Vijay searches.
 
 
 
@@ -5061,8 +5093,13 @@ async function skSearchRealImage(query) {
   const isNamedActorSearch =
     /\b(rajinikanth|rajini|kamal haasan|kamal|ajith kumar|ajith|suriya|dhanush|sivakarthikeyan|vijay sethupathi)\b/i.test(text);
 
-  if (/\brajini\b/i.test(text)) queryText = 'Rajinikanth';
-  if (/\bkamal\b/i.test(text)) queryText = 'Kamal Haasan';
+  // Preserve additional subjects when canonicalizing actor names.
+  if (/\brajini\b/i.test(queryText)) {
+    queryText = queryText.replace(/\brajini\b/gi, 'Rajinikanth');
+  }
+  if (/\bkamal\b/i.test(queryText)) {
+    queryText = queryText.replace(/\bkamal\b/gi, 'Kamal Haasan');
+  }
 
   if (!queryText && isActorCategorySearch) {
     queryText = isActressCategorySearch
@@ -5075,7 +5112,7 @@ async function skSearchRealImage(query) {
   // SK_WHATSAPP_REAL_IMAGE_GALLERY_V1
   const galleryResults = [];
   const seenImageUrls = new Set();
-  const MAX_GALLERY_IMAGES = 10;
+  const MAX_GALLERY_IMAGES = 1;
 
   // SK_IMAGE_DOWNLOAD_STREAM_5MB_JPEG_PNG_V1
   const readImageResponseLimited = async (response, maxBytes = 5 * 1024 * 1024) => {
@@ -5166,22 +5203,39 @@ async function skSearchRealImage(query) {
   const matchesRequestedSubject = value => {
     const subject = String(value || '').toLowerCase();
 
-    if (isMotherMarySearch) {
-      return /mother mary|virgin mary|blessed virgin|madonna|marian|our lady|mother of jesus|immaculate conception|velankanni|arokia matha|அன்னை மரியா|அன்னை மேரி|மேரி மாதா|வேளாங்கண்ணி|ஆரோக்கிய மாதா/i.test(subject);
+    if (isMotherMarySearch &&
+        !/mother mary|virgin mary|blessed virgin|our lady|mother of jesus|immaculate conception|velankanni|arokia matha|அன்னை மரியா|அன்னை மேரி|மேரி மாதா|வேளாங்கண்ணி|ஆரோக்கிய மாதா/i.test(subject)) {
+      return false;
     }
 
-    if (isVijayCmSearch) {
-      return (/\bvijay\b|விஜய்/i.test(subject)) &&
-        /politician|political|chief minister|minister|election|tvk|tamilaga vettri|mla|legislative|government|அரசியல்|முதல்வர்/i.test(subject);
+    if (isVijayCmSearch &&
+        !(/\bvijay\b|விஜய்/i.test(subject) &&
+          /politician|political|chief minister|minister|election|tvk|tamilaga vettri|mla|legislative|government|அரசியல்|முதல்வர்/i.test(subject))) {
+      return false;
     }
-    if (isElephantSearch) return /\belephants?\b|யானை/i.test(subject);
-    if (isThiruvalluvarSearch) {
-      return /thiruvalluvar|valluvar|திருவள்ளுவர்|வள்ளுவர்/i.test(subject);
+
+    if (isElephantSearch && !(/\belephants?\b|யானை/i.test(subject))) return false;
+
+    if (isThiruvalluvarSearch &&
+        !/thiruvalluvar|valluvar|திருவள்ளுவர்|வள்ளுவர்/i.test(subject)) {
+      return false;
     }
-    if (isPestControlVanSearch) {
-      return /(pest|fumigation|exterminat|termite|பூச்சி)/i.test(subject) &&
-        /(van|truck|vehicle|வாகனம்|வேன்)/i.test(subject);
+
+    if (isPestControlVanSearch &&
+        !(/(pest|fumigation|exterminat|termite|பூச்சி)/i.test(subject) &&
+          /(van|truck|vehicle|வாகனம்|வேன்)/i.test(subject))) {
+      return false;
     }
+
+    // A combined request must satisfy every detected subject.
+    if (isJosephVijaySearch && !(/\bvijay\b|விஜய்/i.test(subject))) return false;
+    if (rule && !rule.terms.some(term => {
+      const value = term.toLowerCase();
+      if (/[அ-ஹ]/u.test(value)) return subject.includes(value);
+      const escaped = value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      return new RegExp('\\b' + escaped + '\\b', 'i').test(subject);
+    })) return false;
+
     return true;
   };
 
@@ -5199,11 +5253,28 @@ async function skSearchRealImage(query) {
     return personTokens.length === 0 || personTokens.every(token => subject.includes(token));
   };
 
+  const extraQueryText = rule
+    ? text.replace(rule.re, '')
+        .replace(/\b(real|original|photo|photograph|image|picture|send|show|please|pic|pics|photos|images|find|search|want|give|me|of|the)\b/gi, '')
+        .replace(/படம்|புகைப்படம்|அனுப்பு|காட்டு|வேண்டும்|தயவு செய்து|கொடு|தேடு/g, '')
+        .replace(/\s+/g, ' ')
+        .trim()
+    : '';
+
+  const searchTerms = rule
+    ? [...new Set(rule.terms.map(term =>
+        [term, extraQueryText].filter(Boolean).join(' ')
+      ))]
+    : [queryText];
+
+  for (const searchTerm of searchTerms) {
+    if (galleryResults.length >= MAX_GALLERY_IMAGES) break;
+
   const params = new URLSearchParams({
     action: 'query',
     format: 'json',
     generator: 'search',
-    gsrsearch: 'filetype:bitmap ' + queryText,
+    gsrsearch: 'filetype:bitmap ' + searchTerm,
     gsrnamespace: '6',
     gsrlimit: '50',
     prop: 'imageinfo',
@@ -5318,8 +5389,10 @@ async function skSearchRealImage(query) {
   }
 
 
+
   } catch (err) {
     console.warn('[WhatsApp Wikimedia search] Wikimedia search failed; trying other providers:', err.message);
+  }
   }
 
   // SK_WHATSAPP_PIXABAY_UNSPLASH_FALLBACK_V1
