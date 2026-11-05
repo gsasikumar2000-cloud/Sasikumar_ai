@@ -3293,10 +3293,11 @@ async function skBuildYouTubeGrid(videos) {
       const image = await Jimp.read(bytes);
       image.cover({ w: cell, h: cell });
 
-      grid.composite(image, {
-        x: (i % 4) * cell,
-        y: Math.floor(i / 4) * cell
-      });
+      grid.composite(
+        image,
+        (i % 4) * cell,
+        Math.floor(i / 4) * cell
+      );
       added++;
     } catch (error) {
       console.warn('[YouTube thumbnail]', i, error.message);
