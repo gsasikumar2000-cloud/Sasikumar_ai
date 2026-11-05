@@ -2811,6 +2811,53 @@ async function skWhatsAppSendImageBuffer(to, buffer, mime, caption = '') {
   return true;
 }
 
+
+// SK_WHATSAPP_DIRECT_VIDEO_PLAYER_V1
+async function skWhatsAppSendVideoUrl(to, videoUrl, caption = '') {
+  if (!WA_TOKEN || !WA_PHONE_ID) {
+    throw new Error('WhatsApp credentials missing.');
+  }
+
+  const parsed = new URL(String(videoUrl));
+
+  if (parsed.protocol !== 'https:' || !/\.mp4$/i.test(parsed.pathname)) {
+    throw new Error('A public HTTPS MP4 video is required.');
+  }
+
+  const response = await fetch(
+    `https://graph.facebook.com/v20.0/${WA_PHONE_ID}/messages`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${WA_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        recipient_type: 'individual',
+        to: String(to),
+        type: 'video',
+        video: {
+          link: parsed.href,
+          caption: String(caption || '🤖 SASIKUMAR AI STUDIO').slice(0, 1024)
+        }
+      }),
+      signal: AbortSignal.timeout(60000)
+    }
+  );
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    console.error('[WA VIDEO ERROR]', response.status, data);
+    throw new Error('WhatsApp video sending failed.');
+  }
+
+  console.log('[WA VIDEO SUCCESS]', data.messages?.[0]?.id);
+  return true;
+}
+// END SK_WHATSAPP_DIRECT_VIDEO_PLAYER_V1
+
 // SK_WHATSAPP_AUDIO_TEXT_ANALYSIS_V1
 async function skWhatsAppAnalyzeAudio(mediaId, caption = '') {
   const apiKey = process.env.GROQ_API_KEY;
@@ -3622,10 +3669,12 @@ const isWelcome = !trimmed || trimmed === '0' ||
 let reply = WELCOME_MENU;
 let youtubeVideos = [];
 let youtubeSearchRequested = false;
+let youtubeSelectedVideo = null;
 let youtubePageNumber = 0;
 let youtubeHasNext = false;
 let youtubeHasPrevious = false;
 const youtubeNavigation = /^yt_(?:next|prev)$/.test(waButtonId);
+const youtubePlayRequested = /^yt_play_\d+$/.test(waButtonId);
 let autoPosterForContent = false;
 
 // SK_WHATSAPP_PAGESPEED_V1
@@ -3636,7 +3685,26 @@ const waUrlOnly = /^https?:\/\/\S+$/i.test(trimmed);
 const mapsMatch = trimmed.match(/^(?:maps?|வரைபடம்|மேப்)\s*[:\-]?\s*(.*)$/i);
 const pinMatch = trimmed.match(/^(?:pin(?:\s*code)?|pincode|பின்கோடு|அஞ்சல்\s*குறியீடு|area|ஊர்)\s*[:\-]?\s*(.+)$/i);
 
-if (youtubeNavigation) {
+if (youtubePlayRequested) {
+  youtubeSearchRequested = true;
+
+  const session = SK_WA_YOUTUBE_SESSIONS.get(String(from));
+  const match = waButtonId.match(/^yt_play_(\d+)$/);
+  const index = match ? Number(match[1]) : -1;
+
+  youtubeSelectedVideo =
+    session && Date.now() - session.updatedAt <= 30 * 60 * 1000
+      ? session.videos[index]
+      : null;
+
+  if (!youtubeSelectedVideo?.videoId) {
+    youtubeSelectedVideo = null;
+    reply = '⌛ இந்த வீடியோ தேர்வு காலாவதியாகிவிட்டது. புதிய YouTube தேடலை அனுப்புங்கள்.';
+  } else {
+    reply = '🎬 ' + youtubeSelectedVideo.title;
+  }
+
+} else if (youtubeNavigation) {
   youtubeSearchRequested = true;
   const session = SK_WA_YOUTUBE_SESSIONS.get(String(from));
   if (!session || Date.now() - session.updatedAt > 30 * 60 * 1000) {
@@ -3728,6 +3796,8 @@ if (youtubeNavigation) {
     const allVideos = (ytData.items || [])
       .filter(x => x.id?.videoId)
       .map(x => ({
+        videoId: x.id.videoId,
+        watchUrl: `https://www.youtube.com/watch?v=${x.id.videoId}`,
         title: x.snippet?.title || 'YouTube Video',
         channel: x.snippet?.channelTitle || 'YouTube',
         thumbnail:
@@ -3829,7 +3899,30 @@ if(WA_TOKEN && WA_PHONE_ID){
 
       // One branded image message for every WhatsApp reply.
       const answerText = String(reply || WELCOME_MENU);
-if (youtubeVideos.length) {
+if (youtubeSelectedVideo) {
+        const videoUrl =
+          'https://www.youtube.com/watch?v=' +
+          encodeURIComponent(youtubeSelectedVideo.videoId);
+
+        await sendWA({
+          type: 'interactive',
+          interactive: {
+            type: 'cta_url',
+            body: {
+              text: '🎬 ' + String(youtubeSelectedVideo.title || 'YouTube Video').slice(0, 900) +
+                '\n\n▶ கீழே உள்ள PLAY பொத்தானை அழுத்துங்கள்.'
+            },
+            action: {
+              name: 'cta_url',
+              parameters: {
+                display_text: '▶ PLAY VIDEO',
+                url: videoUrl
+              }
+            }
+          }
+        });
+
+      } else if (youtubeVideos.length) {
         try {
           const gridBuffer = await skBuildYouTubeGrid(youtubeVideos);
           const titleList = youtubeVideos.map((v, i) =>
@@ -3849,6 +3942,44 @@ if (youtubeVideos.length) {
             'image/jpeg',
             caption
           );
+
+          // Send video choices in two WhatsApp lists (8 videos each).
+          for (let offset = 0; offset < youtubeVideos.length; offset += 8) {
+            const batch = youtubeVideos.slice(offset, offset + 8);
+
+            const rows = batch.map((video, i) => ({
+              id: 'yt_play_' + (youtubePageNumber * 16 + offset + i),
+              title: ('▶ ' + String(video.title || 'YouTube Video')).slice(0, 24),
+              description: String(video.channel || 'YouTube').slice(0, 72)
+            }));
+
+            await sendWA({
+              type: 'interactive',
+              interactive: {
+                type: 'list',
+                header: {
+                  type: 'text',
+                  text: 'SASIKUMAR AI — VIDEO PLAY'
+                },
+                body: {
+                  text: '🎬 வீடியோவைத் தேர்ந்தெடுத்து PLAY செய்யுங்கள்.'
+                },
+                footer: {
+                  text: 'YouTube Video Gallery'
+                },
+                action: {
+                  button: 'SELECT VIDEO',
+                  sections: [{
+                    title: 'Videos ' +
+                      (youtubePageNumber * 16 + offset + 1) +
+                      '-' +
+                      (youtubePageNumber * 16 + offset + batch.length),
+                    rows
+                  }]
+                }
+              }
+            });
+          }
 
           const navButtons = [];
           if (youtubeHasPrevious) {
@@ -3894,7 +4025,7 @@ if (youtubeVideos.length) {
 
 
       if (youtubeSearchRequested) {
-        if (!youtubeVideos.length) {
+        if (!youtubeVideos.length && !youtubeSelectedVideo) {
           await sendWA({ type: 'text', text: { body: answerText } });
         }
       } else if (!isWelcome && (answerText.startsWith('📍 GOOGLE MAPS') ||
