@@ -3697,9 +3697,9 @@ if (youtubePlayRequested) {
       ? session.videos[index]
       : null;
 
-  if (!youtubeSelectedVideo?.videoId) {
+  if (!youtubeSelectedVideo?.videoId && !youtubeSelectedVideo?.pageUrl) {
     youtubeSelectedVideo = null;
-    reply = '⌛ இந்த வீடியோ தேர்வு காலாவதியாகிவிட்டது. புதிய YouTube தேடலை அனுப்புங்கள்.';
+    reply = '⌛ இந்த வீடியோ தேர்வு காலாவதியாகிவிட்டது. புதிய வீடியோ தேடலை அனுப்புங்கள்.';
   } else {
     reply = '🎬 ' + youtubeSelectedVideo.title;
   }
@@ -3708,7 +3708,7 @@ if (youtubePlayRequested) {
   youtubeSearchRequested = true;
   const session = SK_WA_YOUTUBE_SESSIONS.get(String(from));
   if (!session || Date.now() - session.updatedAt > 30 * 60 * 1000) {
-    reply = '⌛ YouTube தேடல் காலாவதியாகிவிட்டது. புதிய தேடலை அனுப்புங்கள்.';
+    reply = '⌛ Video Gallery காலாவதியாகிவிட்டது. புதிய தேடலை அனுப்புங்கள்.';
   } else {
     youtubePageNumber = session.page || 0;
     youtubePageNumber += waButtonId === 'yt_next' ? 1 : -1;
@@ -3723,7 +3723,7 @@ if (youtubePlayRequested) {
     youtubeVideos = session.videos.slice(start, start + 16);
     youtubeHasPrevious = youtubePageNumber > 0;
     youtubeHasNext = start + 16 < session.videos.length;
-    reply = '🎬 SASIKUMAR AI — YouTube Gallery';
+    reply = '🎬 SASIKUMAR AI — Video Gallery';
   }
 } else if (waSpeedCommand || waSpeedUrl) {
   const targetUrl = waSpeedUrl ? waSpeedUrl[0].replace(/[),.;]+$/, '') : '';
@@ -3768,7 +3768,7 @@ if (youtubePlayRequested) {
 🔙 Type 0 for Main Menu`;
   } else if (/loan\s*calculat|emi\s*calculat|கடன்\s*கணக்கீடு/i.test(trimmed)) {
     reply = getMenuReply('3');
-  } else if (/(?:youtube|\bvideos?\b|\bshorts?\b|\blivestream\b|\bstream\b|\bsongs?\b|\bmusic\b|\btrailer\b|பாடல்|வீடியோ|நேரலை|லைவ்)/i.test(trimmed)) {
+  } else if (/(?:youtube|pixabay|\bvideos?\b|\bshorts?\b|\blivestream\b|\bstream\b|\bsongs?\b|\bmusic\b|\btrailer\b|பாடல்|வீடியோ|நேரலை|லைவ்)/i.test(trimmed)) {
     // SK_WHATSAPP_YOUTUBE_GALLERY_V2
     youtubeSearchRequested = true;
 
@@ -3776,7 +3776,7 @@ if (youtubePlayRequested) {
     const isShortsVideo = /\bshorts?\b/i.test(trimmed);
 
     const query = trimmed.replace(
-      /^(?:please\s+)?(?:search\s+)?(?:youtube\s+)?(?:shorts?|videos?|live|livestream|stream|songs?|music|movie|trailer)\s*(?:search)?\s*[:\-]?\s*/i,
+      /^(?:please\s+)?(?:search\s+)?(?:(?:youtube|pixabay|pexels)\s+)?(?:shorts?|videos?|live|livestream|stream|songs?|music|movie|trailer)?\s*(?:search)?\s*[:\-]?\s*/i,
       ''
     ).trim() || (isLiveVideo ? 'Tamil live' : 'Tamil videos');
 
@@ -3784,28 +3784,96 @@ if (youtubePlayRequested) {
       ? (query + ' shorts').slice(0, 150)
       : query.slice(0, 150);
 
-    const ytData = await skYouTubeRequest('search', {
-      part: 'snippet',
-      type: 'video',
-      q: searchQuery,
-      maxResults: 50,
-      order: 'relevance',
-      ...(isLiveVideo ? { eventType: 'live' } : {})
-    });
+    const searches = await Promise.allSettled([
+      skYouTubeRequest('search', {
+        part: 'snippet',
+        type: 'video',
+        q: searchQuery,
+        maxResults: 50,
+        order: 'relevance',
+        ...(isLiveVideo ? { eventType: 'live' } : {})
+      }),
+      (!isLiveVideo && process.env.PIXABAY_API_KEY)
+        ? fetch(
+            'https://pixabay.com/api/videos/?' +
+            new URLSearchParams({
+              key: process.env.PIXABAY_API_KEY,
+              q: query.slice(0, 100),
+              per_page: '30',
+              safesearch: 'true',
+              order: 'popular'
+            }),
+            { signal: AbortSignal.timeout(15000) }
+          ).then(async r => {
+            if (!r.ok) throw new Error('Pixabay HTTP ' + r.status);
+            return r.json();
+          })
+        : Promise.resolve({ hits: [] })
+    ]);
 
-    const allVideos = (ytData.items || [])
+    const ytData = searches[0].status === 'fulfilled'
+      ? searches[0].value : { items: [] };
+
+    if (searches[0].status === 'rejected') {
+      console.warn('[WA YouTube search]', searches[0].reason?.message);
+    }
+    if (searches[1].status === 'rejected') {
+      console.warn('[WA Pixabay search]', searches[1].reason?.message);
+    }
+
+    const youtubeResults = (ytData.items || [])
       .filter(x => x.id?.videoId)
       .map(x => ({
+        provider: 'YouTube',
         videoId: x.id.videoId,
         watchUrl: `https://www.youtube.com/watch?v=${x.id.videoId}`,
+        pageUrl: `https://www.youtube.com/watch?v=${x.id.videoId}`,
         title: x.snippet?.title || 'YouTube Video',
-        channel: x.snippet?.channelTitle || 'YouTube',
+        channel: 'YouTube • ' + (x.snippet?.channelTitle || 'YouTube'),
         thumbnail:
           x.snippet?.thumbnails?.high?.url ||
           x.snippet?.thumbnails?.medium?.url ||
           x.snippet?.thumbnails?.default?.url || ''
       }))
       .filter(x => x.thumbnail);
+
+    const pxData = searches[1].status === 'fulfilled'
+      ? searches[1].value : { hits: [] };
+
+    const pixabayResults = (pxData.hits || []).map(hit => {
+      const sizes = hit.videos || {};
+      const candidates = ['large', 'medium', 'small', 'tiny']
+        .map(name => ({ name, ...(sizes[name] || {}) }));
+
+      const mp4 = candidates.find(item => {
+        if (!item.url || !Number.isFinite(Number(item.size)) ||
+            Number(item.size) > 16 * 1024 * 1024) return false;
+        try {
+          const u = new URL(item.url);
+          return u.protocol === 'https:' && /\.mp4$/i.test(u.pathname);
+        } catch {
+          return false;
+        }
+      });
+
+      return {
+        provider: 'Pixabay',
+        videoId: null,
+        watchUrl: hit.pageURL || 'https://pixabay.com/',
+        pageUrl: hit.pageURL || 'https://pixabay.com/',
+        mp4Url: mp4?.url || '',
+        title: String(hit.tags || 'Pixabay Video').slice(0, 150),
+        channel: 'Pixabay • ' + String(hit.user || 'Video contributor'),
+        thumbnail:
+          sizes.medium?.thumbnail ||
+          sizes.small?.thumbnail ||
+          sizes.tiny?.thumbnail ||
+          sizes.large?.thumbnail || ''
+      };
+    }).filter(x => x.thumbnail && x.pageUrl);
+
+    const allVideos = [...youtubeResults, ...pixabayResults];
+
 
     if (allVideos.length) {
       SK_WA_YOUTUBE_SESSIONS.set(String(from), {
@@ -3825,11 +3893,11 @@ if (youtubePlayRequested) {
       youtubeHasPrevious = false;
       youtubeHasNext = allVideos.length > 16;
 
-      reply = '🎬 SASIKUMAR AI — YouTube ' +
+      reply = '🎬 SASIKUMAR AI — Video ' +
         (isLiveVideo ? 'LIVE' : isShortsVideo ? 'SHORTS' : 'VIDEO') +
         ' GALLERY';
     } else {
-      reply = '🔎 இந்தத் தேடலுக்கு தற்போது YouTube வீடியோக்கள் கிடைக்கவில்லை. வேறு வார்த்தைகளில் முயற்சிக்கவும்.';
+      reply = '🔎 இந்தத் தேடலுக்கு தற்போது வீடியோக்கள் கிடைக்கவில்லை. வேறு வார்த்தைகளில் முயற்சிக்கவும்.';
     }
   } else if (/tamil\s*(breaking\s*)?news|breaking\s*news|தமிழ்.*செய்தி|முக்கியச் செய்திகள்/i.test(trimmed)) {
     reply = await getTamilBreakingNews();
@@ -3900,37 +3968,59 @@ if(WA_TOKEN && WA_PHONE_ID){
       // One branded image message for every WhatsApp reply.
       const answerText = String(reply || WELCOME_MENU);
 if (youtubeSelectedVideo) {
-        const videoUrl =
-          'https://www.youtube.com/watch?v=' +
-          encodeURIComponent(youtubeSelectedVideo.videoId);
+        const videoUrl = youtubeSelectedVideo.watchUrl ||
+          youtubeSelectedVideo.pageUrl ||
+          (youtubeSelectedVideo.videoId
+            ? 'https://www.youtube.com/watch?v=' +
+              encodeURIComponent(youtubeSelectedVideo.videoId)
+            : 'https://pixabay.com/');
 
-        await sendWA({
-          type: 'interactive',
-          interactive: {
-            type: 'cta_url',
-            body: {
-              text: '🎬 ' + String(youtubeSelectedVideo.title || 'YouTube Video').slice(0, 900) +
-                '\n\n▶ கீழே உள்ள PLAY பொத்தானை அழுத்துங்கள்.'
-            },
-            action: {
-              name: 'cta_url',
-              parameters: {
-                display_text: '▶ PLAY VIDEO',
-                url: videoUrl
+        let videoSent = false;
+
+        if (youtubeSelectedVideo.provider === 'Pixabay' &&
+            youtubeSelectedVideo.mp4Url) {
+          try {
+            await skWhatsAppSendVideoUrl(
+              from,
+              youtubeSelectedVideo.mp4Url,
+              '🎬 ' + String(youtubeSelectedVideo.title || 'Pixabay Video').slice(0, 800) +
+                '\n📷 Pixabay'
+            );
+            videoSent = true;
+          } catch (videoError) {
+            console.warn('[WA Pixabay MP4 fallback]', videoError.message);
+          }
+        }
+
+        if (!videoSent) {
+          await sendWA({
+            type: 'interactive',
+            interactive: {
+              type: 'cta_url',
+              body: {
+                text: '🎬 ' + String(youtubeSelectedVideo.title || 'Video').slice(0, 900) +
+                  '\n\n▶ கீழே உள்ள PLAY பொத்தானை அழுத்துங்கள்.'
+              },
+              action: {
+                name: 'cta_url',
+                parameters: {
+                  display_text: '▶ PLAY VIDEO',
+                  url: videoUrl
+                }
               }
             }
-          }
-        });
+          });
+        }
 
       } else if (youtubeVideos.length) {
         try {
           const gridBuffer = await skBuildYouTubeGrid(youtubeVideos);
           const titleList = youtubeVideos.map((v, i) =>
-            (i + 1) + '. ' + v.title
+            (i + 1) + '. [' + (v.provider || 'Video') + '] ' + v.title
           ).join('\n');
 
           const caption = [
-            '🎬 SASIKUMAR AI — YouTube Gallery',
+            '🎬 SASIKUMAR AI — Video Gallery',
             '📄 Page ' + (youtubePageNumber + 1),
             '',
             titleList
@@ -3965,7 +4055,7 @@ if (youtubeSelectedVideo) {
                   text: '🎬 வீடியோவைத் தேர்ந்தெடுத்து PLAY செய்யுங்கள்.'
                 },
                 footer: {
-                  text: 'YouTube Video Gallery'
+                  text: 'YouTube + Pixabay Video Gallery'
                 },
                 action: {
                   button: 'SELECT VIDEO',
@@ -4001,7 +4091,7 @@ if (youtubeSelectedVideo) {
               interactive: {
                 type: 'button',
                 body: {
-                  text: '🎬 YouTube Gallery — Page ' +
+                  text: '🎬 Video Gallery — Page ' +
                     (youtubePageNumber + 1)
                 },
                 action: { buttons: navButtons }
