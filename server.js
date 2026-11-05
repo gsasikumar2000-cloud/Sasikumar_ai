@@ -1916,6 +1916,7 @@ async function getTamilBreakingNews() {
 // SK_MAPS_SHARE_V1
 const SK_LAST_BOT_REPLIES = new Map();
 const SK_WA_PROCESSED_MESSAGES = new Map();
+const SK_WA_YOUTUBE_SESSIONS = new Map();
 
 
 function skRememberLastReply(key, message) {
@@ -3263,6 +3264,50 @@ async function skWhatsAppAnalyzeDocument(mediaId, fileName, caption = '') {
 
 // END SK_EXCEL_TEXT_EXTRACTION_V1
 
+
+// SK_WHATSAPP_YOUTUBE_4X4_GRID_V1
+async function skBuildYouTubeGrid(videos) {
+  const { Jimp } = await import('jimp');
+  const cell = 270;
+  const grid = new Jimp({
+    width: 1080,
+    height: 1080,
+    color: 0xfff4f7fb
+  });
+
+  let added = 0;
+
+  for (let i = 0; i < Math.min(16, videos.length); i++) {
+    try {
+      const url = videos[i]?.thumbnail;
+      if (!url) continue;
+
+      const response = await fetch(url, {
+        signal: AbortSignal.timeout(10000)
+      });
+      if (!response.ok) continue;
+
+      const bytes = Buffer.from(await response.arrayBuffer());
+      if (!bytes.length || bytes.length > 5 * 1024 * 1024) continue;
+
+      const image = await Jimp.read(bytes);
+      image.cover({ w: cell, h: cell });
+
+      grid.composite(image, {
+        x: (i % 4) * cell,
+        y: Math.floor(i / 4) * cell
+      });
+      added++;
+    } catch (error) {
+      console.warn('[YouTube thumbnail]', i, error.message);
+    }
+  }
+
+  if (!added) throw new Error('No usable YouTube thumbnails');
+  return await grid.getBuffer('image/jpeg', { quality: 82 });
+}
+// END SK_WHATSAPP_YOUTUBE_4X4_GRID_V1
+
 // END SK_PDF_ZIP_TEXT_EXTRACTION_V1
 
 app.post('/api/whatsapp/webhook',async(req,res)=>{
@@ -3557,7 +3602,17 @@ if (msg.type === 'document' && msg.document?.id) {
 // END SK_WHATSAPP_DOCUMENT_HANDLER_V2
 
 const from=msg.from;
-    const trimmed=String(msg.text?.body || msg.image?.caption || '').trim();
+    const waButtonId = String(
+  msg.interactive?.button_reply?.id ||
+  msg.interactive?.list_reply?.id ||
+  msg.button?.payload || ''
+).trim();
+const waButtonTitle = String(
+  msg.interactive?.button_reply?.title ||
+  msg.interactive?.list_reply?.title ||
+  msg.button?.text || ''
+).trim();
+const trimmed=String(msg.text?.body || msg.image?.caption || waButtonTitle || '').trim();
     const lower=trimmed.toLowerCase();
 
 const isWelcome = !trimmed || trimmed === '0' ||
@@ -3566,6 +3621,10 @@ const isWelcome = !trimmed || trimmed === '0' ||
 let reply = WELCOME_MENU;
 let youtubeVideos = [];
 let youtubeSearchRequested = false;
+let youtubePageNumber = 0;
+let youtubeHasNext = false;
+let youtubeHasPrevious = false;
+const youtubeNavigation = /^yt_(?:next|prev)$/.test(waButtonId);
 let autoPosterForContent = false;
 
 // SK_WHATSAPP_PAGESPEED_V1
@@ -3576,7 +3635,28 @@ const waUrlOnly = /^https?:\/\/\S+$/i.test(trimmed);
 const mapsMatch = trimmed.match(/^(?:maps?|வரைபடம்|மேப்)\s*[:\-]?\s*(.*)$/i);
 const pinMatch = trimmed.match(/^(?:pin(?:\s*code)?|pincode|பின்கோடு|அஞ்சல்\s*குறியீடு|area|ஊர்)\s*[:\-]?\s*(.+)$/i);
 
-if (waSpeedCommand || waSpeedUrl) {
+if (youtubeNavigation) {
+  youtubeSearchRequested = true;
+  const session = SK_WA_YOUTUBE_SESSIONS.get(String(from));
+  if (!session || Date.now() - session.updatedAt > 30 * 60 * 1000) {
+    reply = '⌛ YouTube தேடல் காலாவதியாகிவிட்டது. புதிய தேடலை அனுப்புங்கள்.';
+  } else {
+    youtubePageNumber = session.page || 0;
+    youtubePageNumber += waButtonId === 'yt_next' ? 1 : -1;
+    youtubePageNumber = Math.max(0, Math.min(
+      youtubePageNumber,
+      Math.ceil(session.videos.length / 16) - 1
+    ));
+    session.page = youtubePageNumber;
+    session.updatedAt = Date.now();
+
+    const start = youtubePageNumber * 16;
+    youtubeVideos = session.videos.slice(start, start + 16);
+    youtubeHasPrevious = youtubePageNumber > 0;
+    youtubeHasNext = start + 16 < session.videos.length;
+    reply = '🎬 SASIKUMAR AI — YouTube Gallery';
+  }
+} else if (waSpeedCommand || waSpeedUrl) {
   const targetUrl = waSpeedUrl ? waSpeedUrl[0].replace(/[),.;]+$/, '') : '';
   reply = '⏳ Google PageSpeed மூலம் Mobile Website சோதனை நடைபெறுகிறது...';
   reply += '\n\n' + await skPageSpeedReply(targetUrl);
@@ -3619,36 +3699,67 @@ if (waSpeedCommand || waSpeedUrl) {
 🔙 Type 0 for Main Menu`;
   } else if (/loan\s*calculat|emi\s*calculat|கடன்\s*கணக்கீடு/i.test(trimmed)) {
     reply = getMenuReply('3');
-  } else if (/(?:youtube|\bvideos?\b|\blivestream\b|\bstream\b|\bsongs?\b|\bmusic\b|\btrailer\b|பாடல்|வீடியோ|நேரலை|லைவ்)/i.test(trimmed)) {
-    // SK_WHATSAPP_YOUTUBE_SEARCH_LIVE_V1
+  } else if (/(?:youtube|\bvideos?\b|\bshorts?\b|\blivestream\b|\bstream\b|\bsongs?\b|\bmusic\b|\btrailer\b|பாடல்|வீடியோ|நேரலை|லைவ்)/i.test(trimmed)) {
+    // SK_WHATSAPP_YOUTUBE_GALLERY_V2
     youtubeSearchRequested = true;
+
     const isLiveVideo = /\b(live|livestream|streaming)\b|நேரலை|லைவ்/i.test(trimmed);
-    const query = trimmed.replace(/^(?:please\s+)?(?:search\s+)?(?:youtube\s+)?(?:videos?|live|livestream|stream|songs?|music|movie|trailer)\s*(?:search)?\s*[:\-]?\s*/i, '').trim()
-      || (isLiveVideo ? 'Tamil live' : 'Tamil videos');
+    const isShortsVideo = /\bshorts?\b/i.test(trimmed);
+
+    const query = trimmed.replace(
+      /^(?:please\s+)?(?:search\s+)?(?:youtube\s+)?(?:shorts?|videos?|live|livestream|stream|songs?|music|movie|trailer)\s*(?:search)?\s*[:\-]?\s*/i,
+      ''
+    ).trim() || (isLiveVideo ? 'Tamil live' : 'Tamil videos');
+
+    const searchQuery = isShortsVideo
+      ? (query + ' shorts').slice(0, 150)
+      : query.slice(0, 150);
 
     const ytData = await skYouTubeRequest('search', {
       part: 'snippet',
       type: 'video',
-      q: query.slice(0, 150),
-      maxResults: 3,
+      q: searchQuery,
+      maxResults: 50,
       order: 'relevance',
       ...(isLiveVideo ? { eventType: 'live' } : {})
     });
 
-    youtubeVideos = (ytData.items || [])
+    const allVideos = (ytData.items || [])
       .filter(x => x.id?.videoId)
-      .slice(0, 3)
       .map(x => ({
         title: x.snippet?.title || 'YouTube Video',
         channel: x.snippet?.channelTitle || 'YouTube',
-        thumbnail: x.snippet?.thumbnails?.high?.url || x.snippet?.thumbnails?.default?.url || '',
-        url: 'https://www.youtube.com/watch?v=' + x.id.videoId
-      }));
+        thumbnail:
+          x.snippet?.thumbnails?.high?.url ||
+          x.snippet?.thumbnails?.medium?.url ||
+          x.snippet?.thumbnails?.default?.url || ''
+      }))
+      .filter(x => x.thumbnail);
 
-    reply = youtubeVideos.length
-      ? '🎬 SASIKUMAR AI — YouTube ' + (isLiveVideo ? 'LIVE' : 'VIDEO') + ' SEARCH\n\n' +
-        youtubeVideos.map((v, i) => (i + 1) + '. ' + v.title + '\n📺 ' + v.channel + '\n' + v.url).join('\n\n')
-      : '🔎 இந்தத் தேடலுக்கு தற்போது YouTube வீடியோக்கள் கிடைக்கவில்லை. வேறு வார்த்தைகளில் முயற்சிக்கவும்.';
+    if (allVideos.length) {
+      SK_WA_YOUTUBE_SESSIONS.set(String(from), {
+        videos: allVideos,
+        page: 0,
+        updatedAt: Date.now()
+      });
+
+      while (SK_WA_YOUTUBE_SESSIONS.size > 500) {
+        SK_WA_YOUTUBE_SESSIONS.delete(
+          SK_WA_YOUTUBE_SESSIONS.keys().next().value
+        );
+      }
+
+      youtubeVideos = allVideos.slice(0, 16);
+      youtubePageNumber = 0;
+      youtubeHasPrevious = false;
+      youtubeHasNext = allVideos.length > 16;
+
+      reply = '🎬 SASIKUMAR AI — YouTube ' +
+        (isLiveVideo ? 'LIVE' : isShortsVideo ? 'SHORTS' : 'VIDEO') +
+        ' GALLERY';
+    } else {
+      reply = '🔎 இந்தத் தேடலுக்கு தற்போது YouTube வீடியோக்கள் கிடைக்கவில்லை. வேறு வார்த்தைகளில் முயற்சிக்கவும்.';
+    }
   } else if (/tamil\s*(breaking\s*)?news|breaking\s*news|தமிழ்.*செய்தி|முக்கியச் செய்திகள்/i.test(trimmed)) {
     reply = await getTamilBreakingNews();
   } else if (/\b(kavithai|poem|poetry)\b|கவிதை|கவிதைகள்/i.test(trimmed)) {
@@ -3718,12 +3829,61 @@ if(WA_TOKEN && WA_PHONE_ID){
       // One branded image message for every WhatsApp reply.
       const answerText = String(reply || WELCOME_MENU);
 if (youtubeVideos.length) {
-        for (const video of youtubeVideos) {
-          const videoText = '🎬 ' + video.title + '\n📺 ' + video.channel + '\n' + video.url;
-          const sent = video.thumbnail
-            ? await sendWA({ type: 'image', image: { link: video.thumbnail, caption: videoText.substring(0, 1000) } })
-            : false;
-          if (!sent) await sendWA({ type: 'text', text: { body: videoText } });
+        try {
+          const gridBuffer = await skBuildYouTubeGrid(youtubeVideos);
+          const titleList = youtubeVideos.map((v, i) =>
+            (i + 1) + '. ' + v.title
+          ).join('\n');
+
+          const caption = [
+            '🎬 SASIKUMAR AI — YouTube Gallery',
+            '📄 Page ' + (youtubePageNumber + 1),
+            '',
+            titleList
+          ].join('\n').slice(0, 1000);
+
+          await skWhatsAppSendImageBuffer(
+            from,
+            gridBuffer,
+            'image/jpeg',
+            caption
+          );
+
+          const navButtons = [];
+          if (youtubeHasPrevious) {
+            navButtons.push({
+              type: 'reply',
+              reply: { id: 'yt_prev', title: '⬅️ PREVIOUS' }
+            });
+          }
+          if (youtubeHasNext) {
+            navButtons.push({
+              type: 'reply',
+              reply: { id: 'yt_next', title: 'NEXT ➡️' }
+            });
+          }
+
+          if (navButtons.length) {
+            await sendWA({
+              type: 'interactive',
+              interactive: {
+                type: 'button',
+                body: {
+                  text: '🎬 YouTube Gallery — Page ' +
+                    (youtubePageNumber + 1)
+                },
+                action: { buttons: navButtons }
+              }
+            });
+          }
+        } catch (gridError) {
+          console.error('[YouTube 4x4 grid]', gridError.message);
+          await sendWA({
+            type: 'text',
+            text: {
+              body: 'மன்னிக்கவும். Thumbnail Gallery உருவாக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.'
+            }
+          });
         }
       } else if (!isWelcome &&
     !answerText.startsWith('📍 GOOGLE MAPS') &&
