@@ -7,6 +7,7 @@ import pg from 'pg';
 import { createAuthMiddleware, registerAuthRoutes } from './auth-routes.js';
 import { registerVideoEngine } from './ai-video-engine.js';
 import { registerGovernmentLive, getGovernmentReply } from './government-live.js';
+import { registerMartRoutes } from './mart-routes-v2.js';
 import path from 'path';
 import fs from 'fs';
 import {
@@ -7546,6 +7547,7 @@ app.delete('/api/company-ads/admin/:id', requireCompanyAdsAdmin, async (req, res
 /* SKAI_AUTH_API_V1 */
 const auth = createAuthMiddleware(jobDbPool);
 registerAuthRoutes(app, jobDbPool, auth);
+registerMartRoutes(app, jobDbPool, auth);
 registerVideoEngine(app, { pool: jobDbPool, auth });
 registerGovernmentLive(app);
 app.get('/api/admin/maintenance', auth.requireAdmin, (req, res) => {
