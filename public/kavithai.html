@@ -25,6 +25,12 @@ button,.btn{border:0;border-radius:10px;padding:11px 14px;background:#9333ea;col
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 small{color:#86198f}
 footer{text-align:center;padding:20px}
+
+textarea,select{width:100%;padding:12px;border:1px solid #e9a8d4;border-radius:10px;font-size:16px;margin:7px 0;background:#fff;color:#4a044e}
+textarea{min-height:125px;resize:vertical}
+#skKavithaiResult{white-space:pre-wrap;line-height:2;font-size:18px;color:#581c87}
+#skKavithaiStatus{margin:10px 0;font-weight:bold}
+
 </style>
 </head>
 <body>
@@ -44,6 +50,70 @@ footer{text-align:center;padding:20px}
 <button class="btn2" onclick="document.getElementById('search').value='';render()">அனைத்தும்</button>
 </div>
 </section>
+
+<section class="card" id="skKavithaiMaker">
+  <h2>🤖 AI கவிதை உருவாக்கி</h2>
+  <p>உங்கள் கருத்து அல்லது கோப்பிலிருந்து புதிய கவிதை உருவாக்குங்கள்.</p>
+
+  <label for="skKavithaiInput">✍️ உங்கள் கருத்து / உள்ளடக்கம்</label>
+  <textarea id="skKavithaiInput" maxlength="9000"
+    placeholder="உதாரணம்: அம்மாவின் அன்பைப் பற்றி ஒரு அழகான கவிதை எழுதுங்கள்..."></textarea>
+
+  <label for="skKavithaiFile">📁 கோப்பிலிருந்து உள்ளடக்கம் எடுக்கவும்</label>
+  <input id="skKavithaiFile" type="file"
+    accept=".pdf,.xlsx,.zip,.csv,.txt,.md,.json,.html,.css,.js,.mjs,.cjs,.ts,.tsx,.jsx,.py,.php,.sql,.xml,.yaml,.yml,.svg">
+
+  <label for="skKavithaiLanguage">🌐 கவிதை மொழி</label>
+  <select id="skKavithaiLanguage">
+    <option value="Auto">தானாகத் தேர்வு</option>
+    <option value="Tamil">தமிழ்</option>
+    <option value="English">English</option>
+    <option value="Tanglish">Tanglish</option>
+    <option value="Hindi">हिन्दी</option>
+    <option value="Mixed Tamil and English">Tamil + English Mixed</option>
+  </select>
+
+  <label for="skKavithaiCategory">❤️ கவிதை வகை</label>
+  <select id="skKavithaiCategory">
+    <option>Suitable</option>
+    <option>Love</option>
+    <option>Friendship</option>
+    <option>Devotional</option>
+    <option>Family</option>
+    <option>Mother</option>
+    <option>Father</option>
+    <option>Nature</option>
+    <option>Sad</option>
+    <option>Comedy</option>
+    <option>Birthday</option>
+    <option>Motivation</option>
+    <option>Social Awareness</option>
+    <option>Philosophy</option>
+  </select>
+
+  <label for="skKavithaiStyle">🎨 கவிதை நடை</label>
+  <select id="skKavithaiStyle">
+    <option value="Beautiful and emotional">அழகான உணர்ச்சிப்பூர்வமான நடை</option>
+    <option value="Traditional poetic">மரபுக் கவிதை நடை</option>
+    <option value="Modern free verse">புதுக்கவிதை நடை</option>
+    <option value="Simple and meaningful">எளிமையான நடை</option>
+    <option value="Rhyming lyrical">இசைநயமான நடை</option>
+    <option value="Short and powerful">சிறிய கவிதை</option>
+  </select>
+
+  <button type="button" id="skKavithaiGenerate">✨ கவிதை உருவாக்கு</button>
+  <div id="skKavithaiStatus" role="status"></div>
+
+  <article class="poem" id="skKavithaiOutput" hidden>
+    <h3>🌸 உங்கள் புதிய கவிதை</h3>
+    <div id="skKavithaiResult" class="poemtext"></div>
+    <div class="actions">
+      <button type="button" id="skKavithaiCopy">📋 Copy</button>
+      <button type="button" class="btn2" id="skKavithaiShare">📤 Share</button>
+    </div>
+  </article>
+</section>
+
 <section class="card">
 <h2>🌸 கவிதை வகைகள்</h2>
 <div class="categories" id="categories"></div>
@@ -100,6 +170,120 @@ document.getElementById("categories").addEventListener("click", function(e) {
 document.getElementById("search").addEventListener("input", render);
 render();
 render();
+
+// SK_KAVITHAI_WEBSITE_GENERATOR_V1
+const skKInput = document.getElementById('skKavithaiInput');
+const skKFile = document.getElementById('skKavithaiFile');
+const skKStatus = document.getElementById('skKavithaiStatus');
+const skKOutput = document.getElementById('skKavithaiOutput');
+const skKResult = document.getElementById('skKavithaiResult');
+
+async function skKavithaiGenerate() {
+  let content = skKInput.value.trim();
+  const file = skKFile.files[0];
+  const button = document.getElementById('skKavithaiGenerate');
+
+  if (!content && !file) {
+    skKStatus.textContent = 'முதலில் கருத்தை உள்ளிடுங்கள் அல்லது கோப்பைத் தேர்வு செய்யுங்கள்.';
+    return;
+  }
+
+  button.disabled = true;
+  skKStatus.textContent = '⏳ உங்கள் உள்ளடக்கத்தைத் தயார் செய்கிறோம்...';
+  skKOutput.hidden = true;
+
+  try {
+    if (file) {
+      const params = new URLSearchParams({name: file.name});
+      const extractResponse = await fetch(
+        '/api/ai/video/content-extract?' + params.toString(),
+        {
+          method: 'POST',
+          headers: {'Content-Type': 'application/octet-stream'},
+          credentials: 'same-origin',
+          body: file
+        }
+      );
+
+      const extracted = await extractResponse.json().catch(() => ({}));
+
+      if (extractResponse.status === 401) {
+        window.location.href = '/?skAuth=login';
+        return;
+      }
+      if (!extractResponse.ok || !extracted.extractedText) {
+        throw new Error(extracted.message || 'கோப்பைப் படிக்க முடியவில்லை.');
+      }
+
+      content = (content ? content + '\n\n' : '') +
+        'File: ' + file.name + '\n' + extracted.extractedText;
+    }
+
+    skKStatus.textContent = '✍️ AI கவிதை எழுதுகிறது...';
+
+    const response = await fetch('/api/ai/kavithai/generate', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      credentials: 'same-origin',
+      body: JSON.stringify({
+        content,
+        language: document.getElementById('skKavithaiLanguage').value,
+        category: document.getElementById('skKavithaiCategory').value,
+        style: document.getElementById('skKavithaiStyle').value
+      })
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (response.status === 401) {
+      window.location.href = '/?skAuth=login';
+      return;
+    }
+    if (!response.ok || !data.ok || !data.poem) {
+      throw new Error(data.message || 'கவிதை உருவாக்க முடியவில்லை.');
+    }
+
+    skKResult.textContent = data.poem;
+    skKOutput.hidden = false;
+    skKStatus.textContent = '✅ கவிதை தயார்!';
+  } catch (error) {
+    skKStatus.textContent = '⚠️ ' + (error.message || 'தற்காலிகப் பிழை.');
+  } finally {
+    button.disabled = false;
+  }
+}
+
+document.getElementById('skKavithaiGenerate')
+  .addEventListener('click', skKavithaiGenerate);
+
+document.getElementById('skKavithaiCopy')
+  .addEventListener('click', async () => {
+    const text = skKResult.textContent + '\n\n— SASIKUMAR AI';
+    try {
+      await navigator.clipboard.writeText(text);
+      skKStatus.textContent = '📋 கவிதை Copy செய்யப்பட்டது!';
+    } catch {
+      prompt('கவிதையை Copy செய்யவும்:', text);
+    }
+  });
+
+document.getElementById('skKavithaiShare')
+  .addEventListener('click', async () => {
+    const text = skKResult.textContent + '\n\n— SASIKUMAR AI';
+    if (navigator.share) {
+      try { await navigator.share({title: 'SASIKUMAR AI Kavithai', text}); }
+      catch (error) { if (error.name !== 'AbortError') skKStatus.textContent = 'Share செய்ய முடியவில்லை.'; }
+    } else {
+      try {
+        await navigator.clipboard.writeText(text);
+        skKStatus.textContent = 'கவிதை Copy செய்யப்பட்டது!';
+      } catch {
+        prompt('கவிதையை Share செய்ய Copy செய்யவும்:', text);
+      }
+    }
+  });
+// END SK_KAVITHAI_WEBSITE_GENERATOR_V1
+
 </script>
 </body>
 </html>
