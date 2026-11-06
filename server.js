@@ -2858,6 +2858,164 @@ async function skWhatsAppSendVideoUrl(to, videoUrl, caption = '') {
 }
 // END SK_WHATSAPP_DIRECT_VIDEO_PLAYER_V1
 
+
+// SK_WHATSAPP_GEMINI_TTS_V1
+async function skGeminiTextToOggOpus(text) {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) throw new Error('Gemini API key unavailable.');
+
+  const response = await fetch(
+    'https://generativelanguage.googleapis.com/v1beta/interactions',
+    {
+      method: 'POST',
+      headers: {
+        'x-goog-api-key': apiKey,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'gemini-3.8-flash-lite-tts',
+        input: [{
+          type: 'user_input',
+          content: [{
+            type: 'text',
+            text: String(text || '').slice(0, 1200),
+            annotations: [{
+              type: 'speech_metadata',
+              style: 'casual, friendly and clear'
+            }]
+          }]
+        }],
+        response_format: { type: 'audio' },
+        generation_config: {
+          speech_config: [{ voice: 'Kore' }]
+        }
+      }),
+      signal: AbortSignal.timeout(90000)
+    }
+  );
+
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(result?.error?.message || 'Gemini TTS failed.');
+  }
+
+  let audioData = result?.output_audio?.data || '';
+
+  if (!audioData && Array.isArray(result?.steps)) {
+    for (const step of result.steps) {
+      for (const item of (Array.isArray(step?.content) ? step.content : [])) {
+        if (typeof item?.data === 'string' && item.data.length > 100) {
+          audioData = item.data;
+          break;
+        }
+      }
+      if (audioData) break;
+    }
+  }
+
+  if (!audioData) throw new Error('Gemini returned no audio data.');
+
+  const wav = Buffer.from(audioData, 'base64');
+  if (wav.length < 100 || wav.toString('ascii', 0, 4) !== 'RIFF') {
+    throw new Error('Gemini audio is not a valid WAV file.');
+  }
+
+  const os = await import('node:os');
+  const { execFile } = await import('node:child_process');
+  const { promisify } = await import('node:util');
+  const runFile = promisify(execFile);
+
+  const tempDir = await fs.promises.mkdtemp(
+    path.join(os.tmpdir(), 'sk-wa-tts-')
+  );
+
+  try {
+    const inputFile = path.join(tempDir, 'reply.wav');
+    const outputFile = path.join(tempDir, 'reply.ogg');
+
+    await fs.promises.writeFile(inputFile, wav);
+
+    await runFile('ffmpeg', [
+      '-y', '-i', inputFile, '-vn',
+      '-ac', '1', '-ar', '24000',
+      '-c:a', 'libopus', '-b:a', '24k',
+      '-application', 'voip', outputFile
+    ], { timeout: 60000, maxBuffer: 2 * 1024 * 1024 });
+
+    const ogg = await fs.promises.readFile(outputFile);
+
+    if (!ogg.length || ogg.length > 16 * 1024 * 1024) {
+      throw new Error('Converted voice file is empty or too large.');
+    }
+
+    if (ogg.toString('ascii', 0, 4) !== 'OggS') {
+      throw new Error('Voice conversion did not produce OGG.');
+    }
+
+    return ogg;
+  } finally {
+    await fs.promises.rm(tempDir, { recursive: true, force: true });
+  }
+}
+
+async function skWhatsAppSendVoiceBuffer(to, oggBuffer) {
+  if (!WA_TOKEN || !WA_PHONE_ID) {
+    throw new Error('WhatsApp credentials unavailable.');
+  }
+
+  const form = new FormData();
+  form.append('messaging_product', 'whatsapp');
+  form.append(
+    'file',
+    new Blob([oggBuffer], { type: 'audio/ogg; codecs=opus' }),
+    'reply.ogg'
+  );
+
+  const upload = await fetch(
+    `https://graph.facebook.com/v20.0/${WA_PHONE_ID}/media`,
+    {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${WA_TOKEN}` },
+      body: form,
+      signal: AbortSignal.timeout(30000)
+    }
+  );
+
+  const uploaded = await upload.json().catch(() => ({}));
+
+  if (!upload.ok || !uploaded.id) {
+    throw new Error(uploaded?.error?.message || 'WhatsApp audio upload failed.');
+  }
+
+  const sent = await fetch(
+    `https://graph.facebook.com/v20.0/${WA_PHONE_ID}/messages`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${WA_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        to: String(to),
+        type: 'audio',
+        audio: { id: uploaded.id, voice: true }
+      }),
+      signal: AbortSignal.timeout(30000)
+    }
+  );
+
+  const data = await sent.json().catch(() => ({}));
+
+  if (!sent.ok) {
+    throw new Error(data?.error?.message || 'WhatsApp voice send failed.');
+  }
+
+  console.log('[WA voice output] Sent:', data.messages?.[0]?.id || 'OK');
+  return true;
+}
+// END SK_WHATSAPP_GEMINI_TTS_V1
+
 // SK_WHATSAPP_AUDIO_TEXT_ANALYSIS_V1
 async function skWhatsAppAnalyzeAudio(mediaId, caption = '') {
   const apiKey = process.env.GROQ_API_KEY;
@@ -2891,22 +3049,55 @@ async function skWhatsAppAnalyzeAudio(mediaId, caption = '') {
     mime.includes('wav') ? 'wav' :
     mime.includes('webm') ? 'webm' : 'm4a';
 
-  const form = new FormData();
-  form.append('file', new Blob([buffer], { type: mime }), `voice.${ext}`);
-  form.append('model', 'whisper-large-v3-turbo');
-  form.append('response_format', 'json');
 
-  const transRes = await fetch(
-    'https://api.groq.com/openai/v1/audio/transcriptions',
-    { method: 'POST',
-      headers: { Authorization: `Bearer ${apiKey}` },
-      body: form, signal: AbortSignal.timeout(90000) }
-  );
-  const trans = await transRes.json().catch(() => ({}));
-  if (!transRes.ok) throw new Error(trans?.error?.message || 'Audio transcription failed.');
+  async function transcribeVoice(language = '') {
+    const form = new FormData();
+    form.append('file', new Blob([buffer], { type: mime }), `voice.${ext}`);
+    form.append('model', 'whisper-large-v3-turbo');
+    form.append('response_format', 'json');
+    form.append(
+      'prompt',
+      'Transcribe the speech exactly in its original language and script. ' +
+      'The speaker may use Tamil, English, Hindi, Tanglish, or any other language. ' +
+      'Do not translate or change the spoken language.'
+    );
+    if (language) form.append('language', language);
 
-  const transcript = String(trans.text || '').trim();
+    const response = await fetch(
+      'https://api.groq.com/openai/v1/audio/transcriptions',
+      {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${apiKey}` },
+        body: form,
+        signal: AbortSignal.timeout(90000)
+      }
+    );
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(data?.error?.message || 'Audio transcription failed.');
+    }
+    return String(data.text || '').trim();
+  }
+
+  let transcript = await transcribeVoice();
+
+  // Retry when auto-detection produces suspicious Icelandic characters.
+  if (/[ÞþÐðÆæØø\u0900-\u097F\u4E00-\u9FFF]/.test(transcript)) {
+    console.warn('[WA Whisper] Suspicious language detected; retrying Tamil/Hindi.');
+
+    const tamilRetry = await transcribeVoice('ta').catch(() => '');
+    if (/[\u0B80-\u0BFF]/.test(tamilRetry)) {
+      transcript = tamilRetry;
+    } else {
+      const hindiRetry = await transcribeVoice('hi').catch(() => '');
+      if (/[\u0900-\u097F]/.test(hindiRetry)) {
+        transcript = hindiRetry;
+      }
+    }
+  }
+
   if (!transcript) throw new Error('No speech detected.');
+
 
   const aiRes = await fetch(
     'https://api.groq.com/openai/v1/chat/completions',
@@ -2915,7 +3106,7 @@ async function skWhatsAppAnalyzeAudio(mediaId, caption = '') {
       body: JSON.stringify({
         model: 'openai/gpt-oss-20b',
         messages: [
-          { role: 'system', content: 'You are SASIKUMAR AI. Understand the voice transcript and answer the speaker helpfully in the same language, Tamil, English or Tanglish. If it is a question, answer it. Otherwise briefly summarize or respond naturally. Text only; never generate media.' },
+          { role: 'system', content: 'You are SASIKUMAR AI. Understand the voice transcript and answer helpfully in the same language the speaker used. Support Tamil, English, Hindi, Tanglish and other languages. Do not translate unless requested. If it is a question, answer it. Otherwise briefly summarize or respond naturally. Text only; never generate media.' },
           { role: 'user', content: (caption ? caption + '\n' : '') + 'Voice transcript:\n' + transcript }
         ],
         temperature: 0.4,
@@ -2926,9 +3117,15 @@ async function skWhatsAppAnalyzeAudio(mediaId, caption = '') {
   const result = await aiRes.json().catch(() => ({}));
   if (!aiRes.ok) throw new Error(result?.error?.message || 'AI reply failed.');
 
-  return '🎤 கேட்ட குரல்:\n' + transcript.slice(0, 1500) +
-    '\n\n🤖 SASIKUMAR AI:\n' +
-    String(result?.choices?.[0]?.message?.content || 'பதில் கிடைக்கவில்லை.').slice(0, 2200);
+  const aiAnswer = String(
+    result?.choices?.[0]?.message?.content || 'பதில் கிடைக்கவில்லை.'
+  ).trim();
+
+  return {
+    text: '🎤 கேட்ட குரல்:\n' + transcript.slice(0, 1500) +
+      '\n\n🤖 SASIKUMAR AI:\n' + aiAnswer.slice(0, 2200),
+    speechText: aiAnswer.slice(0, 1200)
+  };
 }
 // END SK_WHATSAPP_AUDIO_TEXT_ANALYSIS_V1
 
@@ -3315,16 +3512,17 @@ async function skWhatsAppAnalyzeDocument(mediaId, fileName, caption = '') {
 // SK_WHATSAPP_YOUTUBE_4X4_GRID_V1
 async function skBuildYouTubeGrid(videos) {
   const { Jimp } = await import('jimp');
-  const cell = 270;
+  const cellWidth = 540;
+  const cellHeight = 304;
   const grid = new Jimp({
     width: 1080,
-    height: 1080,
+    height: 912,
     color: 0xfff4f7fb
   });
 
   let added = 0;
 
-  for (let i = 0; i < Math.min(16, videos.length); i++) {
+  for (let i = 0; i < Math.min(5, videos.length); i++) {
     try {
       const url = videos[i]?.thumbnail;
       if (!url) continue;
@@ -3338,12 +3536,11 @@ async function skBuildYouTubeGrid(videos) {
       if (!bytes.length || bytes.length > 5 * 1024 * 1024) continue;
 
       const image = await Jimp.read(bytes);
-      image.cover({ w: cell, h: cell });
-
+      image.cover({ w: cellWidth, h: cellHeight });
       grid.composite(
         image,
-        (i % 4) * cell,
-        Math.floor(i / 4) * cell
+        (i % 2) * cellWidth,
+        Math.floor(i / 2) * cellHeight
       );
       added++;
     } catch (error) {
@@ -3449,7 +3646,15 @@ if ((msg.type === 'audio' && msg.audio?.id) ||
     const answer = await skWhatsAppAnalyzeAudio(
       audio.id, String(audio.caption || '')
     );
-    await skWhatsAppSendTextOnly(String(msg.from || ''), answer);
+    const recipient = String(msg.from || '');
+    await skWhatsAppSendTextOnly(recipient, answer.text);
+
+    try {
+      const voiceBuffer = await skGeminiTextToOggOpus(answer.speechText);
+      await skWhatsAppSendVoiceBuffer(recipient, voiceBuffer);
+    } catch (voiceError) {
+      console.warn('[WA voice output]', voiceError.message);
+    }
   } catch (err) {
     console.error('[WA audio analysis]', err.message);
     await skWhatsAppSendTextOnly(
@@ -3697,9 +3902,17 @@ if (youtubePlayRequested) {
       ? session.videos[index]
       : null;
 
-  if (!youtubeSelectedVideo?.videoId && !youtubeSelectedVideo?.pageUrl) {
+  const selectedIsValid = youtubeSelectedVideo &&
+    (
+      (youtubeSelectedVideo.provider === 'Pixabay' &&
+        Boolean(youtubeSelectedVideo.mp4Url)) ||
+      (youtubeSelectedVideo.provider === 'YouTube' &&
+        Boolean(youtubeSelectedVideo.videoId))
+    );
+
+  if (!selectedIsValid) {
     youtubeSelectedVideo = null;
-    reply = '⌛ இந்த வீடியோ தேர்வு காலாவதியாகிவிட்டது. புதிய வீடியோ தேடலை அனுப்புங்கள்.';
+    reply = '⌛ வீடியோ தேர்வு காலாவதியாகிவிட்டது அல்லது வீடியோ கிடைக்கவில்லை. புதிய வீடியோ தேடலை அனுப்புங்கள்.';
   } else {
     reply = '🎬 ' + youtubeSelectedVideo.title;
   }
@@ -3714,15 +3927,15 @@ if (youtubePlayRequested) {
     youtubePageNumber += waButtonId === 'yt_next' ? 1 : -1;
     youtubePageNumber = Math.max(0, Math.min(
       youtubePageNumber,
-      Math.ceil(session.videos.length / 16) - 1
+      Math.ceil(session.videos.length / 5) - 1
     ));
     session.page = youtubePageNumber;
     session.updatedAt = Date.now();
 
-    const start = youtubePageNumber * 16;
-    youtubeVideos = session.videos.slice(start, start + 16);
+    const start = youtubePageNumber * 5;
+    youtubeVideos = session.videos.slice(start, start + 5);
     youtubeHasPrevious = youtubePageNumber > 0;
-    youtubeHasNext = start + 16 < session.videos.length;
+    youtubeHasNext = start + 5 < session.videos.length;
     reply = '🎬 SASIKUMAR AI — Video Gallery';
   }
 } else if (waSpeedCommand || waSpeedUrl) {
@@ -3870,14 +4083,16 @@ if (youtubePlayRequested) {
           sizes.tiny?.thumbnail ||
           sizes.large?.thumbnail || ''
       };
-    }).filter(x => x.thumbnail && x.pageUrl);
+    }).filter(x => x.thumbnail && x.pageUrl && x.mp4Url);
 
-    const allVideos = [...youtubeResults, ...pixabayResults];
+    const selectedVideos = [
+      ...pixabayResults.slice(0, 3),
+      ...youtubeResults.slice(0, 2)
+    ];
 
-
-    if (allVideos.length) {
+    if (selectedVideos.length) {
       SK_WA_YOUTUBE_SESSIONS.set(String(from), {
-        videos: allVideos,
+        videos: selectedVideos,
         page: 0,
         updatedAt: Date.now()
       });
@@ -3888,10 +4103,10 @@ if (youtubePlayRequested) {
         );
       }
 
-      youtubeVideos = allVideos.slice(0, 16);
+      youtubeVideos = selectedVideos;
       youtubePageNumber = 0;
       youtubeHasPrevious = false;
-      youtubeHasNext = allVideos.length > 16;
+      youtubeHasNext = false;
 
       reply = '🎬 SASIKUMAR AI — Video ' +
         (isLiveVideo ? 'LIVE' : isShortsVideo ? 'SHORTS' : 'VIDEO') +
@@ -3992,19 +4207,26 @@ if (youtubeSelectedVideo) {
           }
         }
 
-        if (!videoSent) {
+        if (youtubeSelectedVideo.provider === 'Pixabay' && !videoSent) {
+          await sendWA({
+            type: 'text',
+            text: {
+              body: '⚠️ இந்த MP4 வீடியோவை WhatsApp-ல் அனுப்ப முடியவில்லை. வேறு வீடியோவைத் தேர்ந்தெடுக்கவும்.'
+            }
+          });
+        } else if (youtubeSelectedVideo.provider === 'YouTube') {
           await sendWA({
             type: 'interactive',
             interactive: {
               type: 'cta_url',
               body: {
                 text: '🎬 ' + String(youtubeSelectedVideo.title || 'Video').slice(0, 900) +
-                  '\n\n▶ கீழே உள்ள PLAY பொத்தானை அழுத்துங்கள்.'
+                  '\n\n▶ YouTube-ல் பார்க்க PLAY அழுத்துங்கள்.'
               },
               action: {
                 name: 'cta_url',
                 parameters: {
-                  display_text: '▶ PLAY VIDEO',
+                  display_text: '▶ PLAY YOUTUBE',
                   url: videoUrl
                 }
               }
@@ -4013,99 +4235,60 @@ if (youtubeSelectedVideo) {
         }
 
       } else if (youtubeVideos.length) {
-        try {
-          const gridBuffer = await skBuildYouTubeGrid(youtubeVideos);
-          const titleList = youtubeVideos.map((v, i) =>
-            (i + 1) + '. [' + (v.provider || 'Video') + '] ' + v.title
-          ).join('\n');
+        for (let i = 0; i < youtubeVideos.length; i++) {
+          const video = youtubeVideos[i];
 
-          const caption = [
-            '🎬 SASIKUMAR AI — Video Gallery',
-            '📄 Page ' + (youtubePageNumber + 1),
-            '',
-            titleList
-          ].join('\n').slice(0, 1000);
-
-          await skWhatsAppSendImageBuffer(
-            from,
-            gridBuffer,
-            'image/jpeg',
-            caption
-          );
-
-          // Send video choices in two WhatsApp lists (8 videos each).
-          for (let offset = 0; offset < youtubeVideos.length; offset += 8) {
-            const batch = youtubeVideos.slice(offset, offset + 8);
-
-            const rows = batch.map((video, i) => ({
-              id: 'yt_play_' + (youtubePageNumber * 16 + offset + i),
-              title: ('▶ ' + String(video.title || 'YouTube Video')).slice(0, 24),
-              description: String(video.channel || 'YouTube').slice(0, 72)
-            }));
-
-            await sendWA({
-              type: 'interactive',
-              interactive: {
-                type: 'list',
-                header: {
-                  type: 'text',
-                  text: 'SASIKUMAR AI — VIDEO PLAY'
-                },
-                body: {
-                  text: '🎬 வீடியோவைத் தேர்ந்தெடுத்து PLAY செய்யுங்கள்.'
-                },
-                footer: {
-                  text: 'YouTube + Pixabay Video Gallery'
-                },
-                action: {
-                  button: 'SELECT VIDEO',
-                  sections: [{
-                    title: 'Videos ' +
-                      (youtubePageNumber * 16 + offset + 1) +
-                      '-' +
-                      (youtubePageNumber * 16 + offset + batch.length),
-                    rows
-                  }]
-                }
-              }
+          try {
+            const thumbResponse = await fetch(video.thumbnail, {
+              signal: AbortSignal.timeout(15000)
             });
-          }
+            if (!thumbResponse.ok) throw new Error('Thumbnail download failed.');
 
-          const navButtons = [];
-          if (youtubeHasPrevious) {
-            navButtons.push({
-              type: 'reply',
-              reply: { id: 'yt_prev', title: '⬅️ PREVIOUS' }
-            });
-          }
-          if (youtubeHasNext) {
-            navButtons.push({
-              type: 'reply',
-              reply: { id: 'yt_next', title: 'NEXT ➡️' }
-            });
-          }
+            const mime = String(
+              thumbResponse.headers.get('content-type') || 'image/jpeg'
+            ).split(';')[0].toLowerCase();
 
-          if (navButtons.length) {
+            if (!['image/jpeg', 'image/png', 'image/webp'].includes(mime)) {
+              throw new Error('Unsupported thumbnail format.');
+            }
+
+            const thumbBuffer = Buffer.from(await thumbResponse.arrayBuffer());
+
+            await skWhatsAppSendImageBuffer(
+              from,
+              thumbBuffer,
+              mime,
+              '🎬 VIDEO ' + (i + 1) + '/5\n' +
+              '[' + video.provider + '] ' +
+              String(video.title || 'Video').slice(0, 700) +
+              '\n\n👇 கீழே PLAY அழுத்துங்கள்.'
+            );
+
             await sendWA({
               type: 'interactive',
               interactive: {
                 type: 'button',
                 body: {
-                  text: '🎬 Video Gallery — Page ' +
-                    (youtubePageNumber + 1)
+                  text: '🎬 ' + String(video.title || 'Video').slice(0, 700) +
+                    '\n\n▶ PLAY அழுத்தி வீடியோ பார்க்கவும்.'
                 },
-                action: { buttons: navButtons }
+                action: {
+                  buttons: [{
+                    type: 'reply',
+                    reply: { id: 'yt_play_' + i, title: '▶ PLAY' }
+                  }]
+                }
               }
             });
+
+            console.log('[WA VIDEO ITEM] Sent', i + 1, video.provider);
+          } catch (itemError) {
+            console.warn('[WA VIDEO ITEM ERROR]', i + 1, itemError.message);
+            await sendWA({
+              type: 'text',
+              text: { body: '⚠️ Video ' + (i + 1) + ' thumbnail அனுப்ப முடியவில்லை.' }
+            });
           }
-        } catch (gridError) {
-          console.error('[YouTube 4x4 grid]', gridError.message);
-          await sendWA({
-            type: 'text',
-            text: {
-              body: 'மன்னிக்கவும். Thumbnail Gallery உருவாக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.'
-            }
-          });
         }
       } else if (!isWelcome &&
     !answerText.startsWith('📍 GOOGLE MAPS') &&
@@ -4305,7 +4488,7 @@ if (youtubeSelectedVideo) {
                 new Promise(resolve => {
                   searchTimer = setTimeout(
                     () => resolve({ timedOut: true, images: [] }),
-                    10000
+                    120000
                   );
                 })
               ]);
@@ -4313,7 +4496,7 @@ if (youtubeSelectedVideo) {
 
               if (found?.timedOut) {
                 imageSearchTimedOut = true;
-                console.warn('[WhatsApp image] Real image search timed out after 10 seconds.');
+                console.warn('[WhatsApp image] Real image search timed out after 120 seconds.');
               }
 
               if (!found || !found.images?.length) {
@@ -4358,8 +4541,73 @@ if (youtubeSelectedVideo) {
               }
             } else {
             const imagesToSend = wantsCatalogImage && galleryImages?.length
-              ? galleryImages.slice(0, 1)
+              ? galleryImages.slice(0, 16)
               : [{ dataUri: generated }];
+
+            // SK_WHATSAPP_IMAGE_GALLERY_4X4_GRID_V1
+            if (wantsCatalogImage && imagesToSend.length) {
+              try {
+                const { Jimp } = await import('jimp');
+                const cell = 270;
+                const grid = new Jimp({
+                  width: 1080,
+                  height: 1080,
+                  color: 0xfff4f7fb
+                });
+
+                let added = 0;
+
+                for (let i = 0; i < imagesToSend.length; i++) {
+                  try {
+                    const uri = String(imagesToSend[i]?.dataUri || '');
+                    const match = /^data:(image\/[a-zA-Z0-9.+-]+);base64,([A-Za-z0-9+/=\r\n]+)$/.exec(uri);
+
+                    if (!match) continue;
+
+                    const bytes = Buffer.from(
+                      match[2].replace(/\s/g, ''),
+                      'base64'
+                    );
+
+                    if (!bytes.length || bytes.length > 5 * 1024 * 1024) {
+                      continue;
+                    }
+
+                    const tile = await Jimp.read(bytes);
+                    tile.cover({ w: cell, h: cell });
+
+                    grid.composite(
+                      tile,
+                      (i % 4) * cell,
+                      Math.floor(i / 4) * cell
+                    );
+
+                    added++;
+                  } catch (tileError) {
+                    console.warn('[Image Gallery Grid] Tile failed:', i, tileError.message);
+                  }
+                }
+
+                if (added > 0) {
+                  const gridBuffer = await grid.getBuffer(
+                    'image/jpeg',
+                    { quality: 82 }
+                  );
+
+                  await skWhatsAppSendImageBuffer(
+                    from,
+                    gridBuffer,
+                    'image/jpeg',
+                    '🤖 SASIKUMAR AI STUDIO\n📷 Image Gallery — 4×4 Grid\n🖼️ ' + added + ' images'
+                  );
+
+                  console.log('[Image Gallery Grid] Sent:', added);
+                }
+              } catch (gridError) {
+                console.warn('[Image Gallery Grid] Failed; sending individual images:', gridError.message);
+              }
+            }
+            // END SK_WHATSAPP_IMAGE_GALLERY_4X4_GRID_V1
 
             for (let imageIndex = 0; imageIndex < imagesToSend.length; imageIndex++) {
             const currentGenerated = imagesToSend[imageIndex]?.dataUri || generated;
@@ -5494,7 +5742,7 @@ async function skSearchRealImage(query) {
   // SK_WHATSAPP_REAL_IMAGE_GALLERY_V1
   const galleryResults = [];
   const seenImageUrls = new Set();
-  const MAX_GALLERY_IMAGES = 1;
+  const MAX_GALLERY_IMAGES = 16;
 
   // SK_IMAGE_DOWNLOAD_STREAM_5MB_JPEG_PNG_V1
   const readImageResponseLimited = async (response, maxBytes = 5 * 1024 * 1024) => {

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI - YouTube Studio</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#eff6ff;color:#1e293b;font-family:Arial,sans-serif}
+header{padding:20px 14px;text-align:center;background:linear-gradient(120deg,#dbeafe,#ede9fe,#cffafe)}
+h1{margin:5px;font-size:23px;color:#1d4ed8}
+header p{margin:7px;font-size:13px}
+main{max-width:700px;margin:15px auto;padding:12px}
+.panel{background:white;padding:15px;border-radius:15px;margin-bottom:13px;box-shadow:0 3px 12px #1e40af12}
+input{width:100%;padding:13px;border:1px solid #cbd5e1;border-radius:10px;font-size:16px}
+button{border:0;border-radius:9px;padding:11px 13px;color:white;font-weight:700;cursor:pointer}
+.actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:10px}
+.blue{background:#2563eb}.purple{background:#7c3aed}
+.green{background:#059669}.orange{background:#d97706}
+.cyan{background:#0891b2}
+.video{display:flex;gap:11px;padding:11px 0;border-bottom:1px solid #e2e8f0}
+.video img{width:125px;height:75px;object-fit:cover;border-radius:8px}
+.video h3{font-size:13px;margin:0 0 6px}
+.video p{font-size:11px;color:#64748b;margin:4px 0}
+.video button{font-size:11px;padding:7px;margin:3px 3px 0 0}
+#message{font-size:13px;color:#475569;line-height:1.6}
+a{color:#2563eb}
+@media(max-width:380px){.video img{width:100px;height:65px}}
+</style>
+</head>
+<body>
+<header>
+<h1>🤖 SASIKUMAR AI</h1>
+<strong>▶️ YouTube Studio</strong>
+<p>Search · Trending · Tamil News · Tamil Songs</p>
+</header>
+<main>
+<section class="panel">
+<h3>🔎 Search YouTube Videos</h3>
+<form id="searchForm">
+<input id="query" placeholder="Search Tamil videos..." maxlength="150" required>
+<div style="margin-top:10px">
+<button class="blue" type="submit">🔍 Search Videos</button>
+</div>
+</form>
+<div class="actions">
+<button class="purple" onclick="loadVideos('/api/youtube/trending','🔥 Trending Videos')">🔥 Trending</button>
+<button class="green" onclick="loadVideos('/api/youtube/news','📰 Tamil News')">📰 Tamil News</button>
+<button class="orange" onclick="loadVideos('/api/youtube/songs','🎵 Tamil Songs')">🎵 Tamil Songs</button>
+<button class="cyan" onclick="loadVideos('/api/youtube/search?q=business%20motivation','💡 Motivation')">💡 Motivation</button>
+</div>
+</section>
+<section class="panel">
+<h3 id="heading">📺 Videos</h3>
+<div id="message">Search for a video or choose a category above.</div>
+<div id="results"></div>
+</section>
+<div style="text-align:center;padding:10px">
+<a href="/">🏠 Back to SASIKUMAR AI Home</a>
+</div>
+</main>
+<script>
+const results=document.getElementById('results');
+const message=document.getElementById('message');
+const heading=document.getElementById('heading');
+
+async function loadVideos(url,title){
+  heading.textContent=title;
+  results.innerHTML='';
+  message.textContent='⏳ Loading videos...';
+  try{
+    const response=await fetch(url,{cache:'no-store'});
+    const data=await response.json();
+    if(!response.ok||!data.ok)throw new Error(data.error||'YouTube request failed');
+    const videos=data.videos||[];
+    message.textContent=videos.length?videos.length+' videos found.':'No videos found.';
+    videos.forEach(v=>{
+      const card=document.createElement('article');
+      card.className='video';
+      const img=document.createElement('img');
+      img.src=v.thumbnail||'';
+      img.alt='Video thumbnail';
+      const info=document.createElement('div');
+      info.style.flex='1';
+      const titleEl=document.createElement('h3');
+      titleEl.textContent=v.title||'YouTube Video';
+      const channel=document.createElement('p');
+      channel.textContent=v.channel||'';
+      const open=document.createElement('a');
+      open.href=v.url;
+      open.target='_blank';
+      open.rel='noopener noreferrer';
+      open.textContent='▶ Watch';
+      const details=document.createElement('button');
+      details.className='blue';
+      details.textContent='ℹ️ Details';
+      details.onclick=()=>showDetails(v.id);
+      const share=document.createElement('button');
+      share.className='green';
+      share.textContent='🔗 Share';
+      share.onclick=()=>shareVideo(v.id);
+      info.append(titleEl,channel,open,document.createTextNode(' '),details,share);
+      card.append(img,info);
+      results.append(card);
+    });
+  }catch(e){
+    message.textContent='⚠️ '+e.message;
+  }
+}
+
+document.getElementById('searchForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const q=document.getElementById('query').value.trim();
+  if(q)loadVideos('/api/youtube/search?q='+encodeURIComponent(q),'🔎 Search Results');
+});
+
+async function showDetails(id){
+  message.textContent='⏳ Loading video details...';
+  try{
+    const r=await fetch('/api/youtube/details?id='+encodeURIComponent(id));
+    const d=await r.json();
+    if(!r.ok||!d.ok)throw new Error(d.error||'Details unavailable');
+    message.textContent='📺 '+d.title+' | Channel: '+d.channel+
+      ' | Views: '+Number(d.views||0).toLocaleString('en-IN')+
+      ' | Published: '+d.publishedAt;
+  }catch(e){message.textContent='⚠️ '+e.message}
+}
+
+async function shareVideo(id){
+  try{
+    const r=await fetch('/api/youtube/share?id='+encodeURIComponent(id));
+    const d=await r.json();
+    if(!r.ok||!d.ok)throw new Error(d.error||'Share unavailable');
+    if(navigator.share){
+      await navigator.share({title:'SASIKUMAR AI YouTube Video',url:d.shareUrl});
+    }else if(navigator.clipboard){
+      await navigator.clipboard.writeText(d.shareUrl);
+      message.textContent='✅ Video link copied: '+d.shareUrl;
+    }else{
+      message.textContent=d.shareUrl;
+    }
+  }catch(e){
+    if(e.name!=='AbortError')message.textContent='⚠️ '+e.message;
+  }
+}
+</script>
+</body>
+</html>
