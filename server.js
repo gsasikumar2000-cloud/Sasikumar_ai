@@ -9058,4 +9058,78 @@ app.get("/api/youtube/share", (req, res) => {
 
 app.get('*',(req,res)=>{const fp=path.join(publicPath,'index.html');if(fs.existsSync(fp))res.sendFile(fp);else res.status(404).send('Not Found');});
 
+
+// SK_CENTRAL_BRAIN_USER_GUIDANCE_V1
+// Central AI gateway: safely reuses the existing /api/chat engine.
+app.post('/api/brain/ask', async (req, res) => {
+  res.set('Cache-Control', 'no-store');
+
+  try {
+    const message = String(req.body?.message || '').trim();
+    const category = String(
+      req.body?.category || 'User Help & Guidance'
+    ).slice(0, 100);
+
+    if (!message) {
+      return res.status(400).json({
+        ok: false,
+        reply: 'தயவுசெய்து உங்கள் கேள்வியை உள்ளிடுங்கள்.'
+      });
+    }
+
+    if (message.length > 6000) {
+      return res.status(413).json({
+        ok: false,
+        reply: 'கேள்வி மிகவும் நீளமாக உள்ளது. சுருக்கமாக அனுப்புங்கள்.'
+      });
+    }
+
+    const guidance = [
+      'You are SASIKUMAR AI User Help and Guidance assistant.',
+      'Answer in the same language as the user.',
+      'Explain clearly and use numbered steps when useful.',
+      'Be patient when users repeat questions or say they do not understand.',
+      'Never invent facts, verification results, or completed actions.',
+      'If uncertain, say so and explain how the user can verify.',
+      'For unresolved problems, guide the user to human admin support.',
+      'Do not claim that an admin has been contacted unless confirmed.',
+      '',
+      'User question:',
+      message
+    ].join('\n');
+
+    const upstream = await fetch(
+      `http://127.0.0.1:${PORT}/api/chat`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: guidance,
+          category
+        }),
+        signal: AbortSignal.timeout(120000)
+      }
+    );
+
+    const result = await upstream.json().catch(() => ({}));
+
+    return res.status(upstream.status).json({
+      ok: upstream.ok,
+      reply: result.reply || result.answer ||
+        'மன்னிக்கவும். AI பதில் கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.',
+      answer: result.answer || result.reply || '',
+      api: 'SASIKUMAR AI Central Brain',
+      engine: result.api || 'Existing AI Chat Engine'
+    });
+  } catch (error) {
+    console.error('[Central Brain]', error.message || 'Request failed');
+
+    return res.status(502).json({
+      ok: false,
+      reply: 'AI இணைப்பில் தற்காலிகப் பிழை. சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.'
+    });
+  }
+});
+// END SK_CENTRAL_BRAIN_USER_GUIDANCE_V1
+
 app.listen(PORT,()=>console.log(`🤖 35 OPTIONS WHATSAPP MENU http://localhost:${PORT} - OK`));
