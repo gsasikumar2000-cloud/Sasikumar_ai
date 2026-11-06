@@ -94,6 +94,24 @@ canvas,video{display:block;width:100%;max-height:520px;background:#0b1020;border
 </section>
 
 
+
+<section class="card" id="skContentVideoPanel">
+<h2>📄 Any Content → Video Maker</h2>
+<p class="small">PDF, Excel, ZIP, CSV, TXT, Markdown and Code files.</p>
+<label for="skContentFile">📁 Select your content file</label>
+<input id="skContentFile" type="file" accept=".pdf,.xlsx,.zip,.csv,.txt,.md,.json,.html,.css,.js,.mjs,.cjs,.ts,.tsx,.jsx,.py,.php,.sql,.xml,.yaml,.yml,.svg">
+<label for="skContentTitle">Video title</label>
+<input id="skContentTitle" type="text" maxlength="100" value="SASIKUMAR AI PRESENTATION">
+<label for="skContentIntro">Introduction (optional)</label>
+<textarea id="skContentIntro" maxlength="300" placeholder="Tamil or English introduction"></textarea>
+<button type="button" class="primary" id="skContentCreate">📄 Read File & Create Video</button>
+<p id="skContentStatus" class="small" role="status">Select a supported file.</p>
+<details id="skContentPreviewBox" hidden>
+<summary>📖 Extracted content preview</summary>
+<pre id="skContentPreview" style="white-space:pre-wrap;overflow-wrap:anywhere;max-height:260px;overflow:auto;background:#f1f5f9;padding:12px;border-radius:10px"></pre>
+</details>
+</section>
+
 <section class="card" id="skAiVideoPanel">
 <h2>🤖 AI Text-to-Video (MP4)</h2>
 <p class="small">Create a 5-second AI video from your text prompt. Login is required. The provider may charge for generation.</p>
@@ -289,6 +307,279 @@ skStartVoice.addEventListener('click', async () => {
 skStopVoice.addEventListener('click', () => {
   if (skVoiceRecorder && skVoiceRecorder.state !== 'inactive') skVoiceRecorder.stop();
 });
+
+
+// SK_CONTENT_VIDEO_GENERATOR_V1
+
+const skContentFile = $('skContentFile');
+const skContentCreate = $('skContentCreate');
+const skContentStatus = $('skContentStatus');
+const skContentPreview = $('skContentPreview');
+const skContentPreviewBox = $('skContentPreviewBox');
+
+function skContentChunks(text, limit = 300) {
+  const words = String(text).replace(/\r/g, '').split(/\s+/).filter(Boolean);
+  const pages = [];
+  let page = '';
+
+  for (const word of words) {
+    const next = page ? page + ' ' + word : word;
+    if (next.length > limit && page) {
+      pages.push(page);
+      page = word;
+    } else {
+      page = next;
+    }
+  }
+
+  if (page) pages.push(page);
+  return pages.slice(0, 60);
+}
+
+function skDrawContentSlide(title, intro, content, page, total) {
+  const w = canvas.width;
+  const h = canvas.height;
+
+  const bg = ctx.createLinearGradient(0, 0, w, h);
+  bg.addColorStop(0, '#123b72');
+  bg.addColorStop(1, '#5632a8');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, w, h);
+
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#ffe08a';
+  ctx.font = 'bold ' + Math.round(w * 0.032) + 'px Arial';
+  ctx.fillText('SASIKUMAR AI', w / 2, h * 0.07);
+
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold ' + Math.round(w * 0.040) +
+    'px "Noto Sans Tamil", Arial, sans-serif';
+  ctx.fillText(title, w / 2, h * 0.16, w * 0.88);
+
+  if (intro && page === 1) {
+    ctx.font = Math.round(w * 0.023) +
+      'px "Noto Sans Tamil", Arial, sans-serif';
+    ctx.fillText(intro, w / 2, h * 0.23, w * 0.86);
+  }
+
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(w * 0.055, h * 0.29, w * 0.89, h * 0.59);
+
+  ctx.fillStyle = '#17233d';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'top';
+
+  const fontSize = Math.round(w * 0.026);
+  ctx.font = fontSize + 'px "Noto Sans Tamil", Arial, sans-serif';
+
+  const lines = [];
+  let line = '';
+  const maxWidth = w * 0.80;
+
+  for (const word of content.split(/\s+/)) {
+    const test = line ? line + ' ' + word : word;
+    if (ctx.measureText(test).width > maxWidth && line) {
+      lines.push(line);
+      line = word;
+    } else {
+      line = test;
+    }
+  }
+  if (line) lines.push(line);
+
+  const lineHeight = fontSize * 1.5;
+  const maxLines = Math.floor((h * 0.49) / lineHeight);
+
+  lines.slice(0, maxLines).forEach((t, i) => {
+    ctx.fillText(t, w * 0.095, h * 0.34 + i * lineHeight, maxWidth);
+  });
+
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold ' + Math.round(w * 0.020) + 'px Arial';
+  ctx.fillText('SASIKUMAR AI  •  ' + page + ' / ' + total,
+    w / 2, h * 0.94);
+}
+
+skContentCreate.addEventListener('click', async () => {
+  if (working) return;
+
+  const file = skContentFile.files && skContentFile.files[0];
+
+  if (!file) {
+    skContentStatus.textContent = 'Please select a file first.';
+    return;
+  }
+
+  if (file.size > 8 * 1024 * 1024) {
+    skContentStatus.textContent = 'Maximum file size is 8 MB.';
+    return;
+  }
+
+  if (!window.MediaRecorder || !canvas.captureStream) {
+    skContentStatus.textContent = 'Video recording is not supported in this browser.';
+    return;
+  }
+
+  working = true;
+  skContentCreate.disabled = true;
+  create.disabled = true;
+  download.hidden = true;
+  preview.hidden = true;
+
+  if (resultUrl) {
+    URL.revokeObjectURL(resultUrl);
+    resultUrl = null;
+  }
+
+  let stream = null;
+  let recorder = null;
+
+  try {
+    skContentStatus.textContent = '⏳ Reading your file...';
+
+    const response = await fetch(
+      '/api/ai/video/content-extract?name=' + encodeURIComponent(file.name),
+      {
+        method: 'POST',
+        credentials: 'same-origin',
+        cache: 'no-store',
+        headers: {'Content-Type': 'application/octet-stream'},
+        body: file
+      }
+    );
+
+    const data = await response.json().catch(() => ({}));
+
+    if (response.status === 401) {
+      throw new Error('Please log in before uploading your file.');
+    }
+
+    if (!response.ok || !data.ok) {
+      throw new Error(data.message || 'File extraction failed.');
+    }
+
+    const extracted = String(data.extractedText || '').trim();
+    if (!extracted) throw new Error('No readable content found.');
+
+    skContentPreview.textContent = extracted.slice(0, 12000);
+    skContentPreviewBox.hidden = false;
+
+    const pages = skContentChunks(extracted);
+    if (!pages.length) throw new Error('No slides could be created.');
+
+    const [w, h] = dimensions();
+    canvas.width = w;
+    canvas.height = h;
+
+    const seconds = Number($('seconds').value) || 3;
+    const title = $('skContentTitle').value.trim() || data.fileName;
+    const intro = $('skContentIntro').value.trim();
+
+    stream = canvas.captureStream(25);
+
+    try {
+      skInitAudioMixer();
+      await skAudioContext.resume();
+      skAudioDestination.stream.getAudioTracks().forEach(track => {
+        stream.addTrack(track);
+      });
+    } catch (audioError) {
+      console.warn('Audio mixer unavailable:', audioError);
+    }
+
+    const types = [
+      'video/webm;codecs=vp9',
+      'video/webm;codecs=vp8',
+      'video/webm'
+    ];
+    const mime = types.find(t => MediaRecorder.isTypeSupported(t)) || '';
+
+    recorder = new MediaRecorder(stream, mime ? {mimeType:mime} : undefined);
+    const chunks = [];
+
+    recorder.ondataavailable = e => {
+      if (e.data && e.data.size) chunks.push(e.data);
+    };
+
+    recorder.onerror = () => {
+      skContentStatus.textContent = 'Video recording failed.';
+    };
+
+    recorder.onstop = () => {
+      [skMusicPreview, skVoicePreview].forEach(audio => {
+        audio.pause();
+        audio.currentTime = 0;
+      });
+
+      stream.getTracks().forEach(t => t.stop());
+
+      if (!chunks.length) {
+        skContentStatus.textContent = 'No video data was created.';
+      } else {
+        const blob = new Blob(chunks, {
+          type: recorder.mimeType || 'video/webm'
+        });
+
+        resultUrl = URL.createObjectURL(blob);
+        preview.src = resultUrl;
+        preview.hidden = false;
+        download.href = resultUrl;
+        download.download = 'sasikumar-ai-content-video.webm';
+        download.hidden = false;
+
+        skContentStatus.textContent =
+          '✅ Video created! ' + pages.length +
+          ' slides. Download your WebM video below.';
+      }
+
+      working = false;
+      skContentCreate.disabled = false;
+      create.disabled = false;
+    };
+
+    try {
+      await skAudioContext?.resume();
+
+      for (const audio of [skMusicPreview, skVoicePreview]) {
+        if (audio.dataset.hasAudio === '1') {
+          audio.currentTime = 0;
+          await audio.play();
+        }
+      }
+    } catch (audioError) {
+      console.warn('Optional audio could not start:', audioError);
+    }
+
+    skContentStatus.textContent =
+      '🎬 Creating ' + pages.length + ' slides. Please wait...';
+
+    recorder.start(250);
+
+    for (let i = 0; i < pages.length; i++) {
+      skDrawContentSlide(title, intro, pages[i], i + 1, pages.length);
+      await new Promise(resolve => setTimeout(resolve, seconds * 1000));
+    }
+
+    recorder.stop();
+
+  } catch (error) {
+    if (recorder && recorder.state !== 'inactive') {
+      recorder.stop();
+    } else {
+      if (stream) stream.getTracks().forEach(t => t.stop());
+      working = false;
+      skContentCreate.disabled = false;
+      create.disabled = false;
+    }
+
+    skContentStatus.textContent = '❌ ' +
+      (error.message || 'Unable to create video.');
+  }
+});
+
+// END SK_CONTENT_VIDEO_GENERATOR_V1
 
 create.addEventListener('click',async()=>{
  if(working)return;

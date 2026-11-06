@@ -7549,6 +7549,106 @@ const auth = createAuthMiddleware(jobDbPool);
 registerAuthRoutes(app, jobDbPool, auth);
 registerMartRoutes(app, jobDbPool, auth);
 registerVideoEngine(app, { pool: jobDbPool, auth });
+
+// SK_ANY_CONTENT_VIDEO_EXTRACT_V1
+app.post(
+  '/api/ai/video/content-extract',
+  auth.requireAuth,
+  express.raw({ type: 'application/octet-stream', limit: '8mb' }),
+  async (req, res) => {
+    res.set('Cache-Control', 'no-store');
+
+    try {
+      const fileName = String(req.query.name || '')
+        .split(/[\\/]/).pop().slice(0, 150);
+
+      const ext = fileName.toLowerCase().split('.').pop();
+
+      const textTypes = new Set([
+        'csv', 'txt', 'md', 'json', 'html', 'css',
+        'js', 'mjs', 'cjs', 'ts', 'tsx', 'jsx',
+        'py', 'php', 'sql', 'xml', 'yaml', 'yml', 'svg'
+      ]);
+
+      if (!fileName || !fileName.includes('.')) {
+        return res.status(400).json({
+          ok: false,
+          message: 'Valid file name is required.'
+        });
+      }
+
+      if (!['pdf', 'xlsx', 'zip'].includes(ext) &&
+          !textTypes.has(ext)) {
+        return res.status(400).json({
+          ok: false,
+          message: 'Supported: PDF, XLSX, ZIP, CSV, TXT, MD and Code files.'
+        });
+      }
+
+      const buffer = req.body;
+
+      if (!Buffer.isBuffer(buffer) || !buffer.length) {
+        return res.status(400).json({
+          ok: false,
+          message: 'Please select a valid file.'
+        });
+      }
+
+      const maxBytes = ext === 'zip'
+        ? 5 * 1024 * 1024
+        : textTypes.has(ext)
+          ? 1024 * 1024
+          : 8 * 1024 * 1024;
+
+      if (buffer.length > maxBytes) {
+        return res.status(413).json({
+          ok: false,
+          message: 'File exceeds the allowed size.'
+        });
+      }
+
+      let extracted = '';
+
+      if (ext === 'pdf') {
+        extracted = await skExtractPdfText(buffer);
+      } else if (ext === 'xlsx') {
+        extracted = await skExtractExcelText(buffer);
+      } else if (ext === 'zip') {
+        extracted = await skExtractZipText(buffer);
+      } else {
+        extracted = buffer.toString('utf8')
+          .replace(/\u0000/g, '')
+          .slice(0, 24000);
+      }
+
+      if (!String(extracted || '').trim()) {
+        return res.status(422).json({
+          ok: false,
+          message: 'No readable content found in this file.'
+        });
+      }
+
+      return res.json({
+        ok: true,
+        fileName,
+        fileType: ext,
+        extractedText: String(extracted).slice(0, 30000),
+        characters: String(extracted).length
+      });
+
+    } catch (error) {
+      console.error('Content video extraction:', error.message);
+
+      return res.status(400).json({
+        ok: false,
+        message: error.message || 'Unable to read this file.'
+      });
+    }
+  }
+);
+// END SK_ANY_CONTENT_VIDEO_EXTRACT_V1
+
+
 registerGovernmentLive(app);
 app.get('/api/admin/maintenance', auth.requireAdmin, (req, res) => {
   res.set('Cache-Control', 'no-store');
