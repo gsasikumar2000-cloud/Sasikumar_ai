@@ -1565,6 +1565,12 @@ async function skGenerateKavithai(content, options = {}) {
 }
 // END SK_ANY_CONTENT_KAVITHAI_AI_V1
 
+function skIsKavithaiRequest(value = '') {
+  return /\b(?:kavithai|poem|poetry)\b|கவிதை|கவிதைகள்/i.test(
+    String(value || '')
+  );
+}
+
 // SK_WA_FRIENDLY_COMEDY_AI_V2_LIVE_SEARCH
 async function getWhatsAppAIReply(question, mode = 'normal') {
   const apiKey = process.env.GROQ_API_KEY;
@@ -3187,6 +3193,18 @@ async function skWhatsAppAnalyzeAudio(mediaId, caption = '') {
 
   if (!transcript) throw new Error('No speech detected.');
 
+  if (
+    skIsKavithaiRequest(caption) ||
+    skIsKavithaiRequest(transcript)
+  ) {
+    const poem = await skGenerateKavithai(
+      ('குரல் பதிவின் உரை:\\n' + transcript).slice(0, 9000)
+    );
+    return {
+      text: poem,
+      speechText: poem.slice(0, 1200)
+    };
+  }
 
   const aiRes = await fetch(
     'https://api.groq.com/openai/v1/chat/completions',
@@ -3551,6 +3569,12 @@ async function skWhatsAppAnalyzeDocument(mediaId, fileName, caption = '') {
     throw new Error('No readable content found in this document.');
   }
 
+  if (skIsKavithaiRequest(caption)) {
+    return await skGenerateKavithai(
+      ('கோப்பு: ' + safeName + '\\n\\n' + String(extracted)).slice(0, 9000)
+    );
+  }
+
   const aiRes = await fetch(
     'https://api.groq.com/openai/v1/chat/completions',
     {
@@ -3770,6 +3794,17 @@ if (msg.type === 'image' && msg.image?.id) {
   try {
     const original = await skWhatsAppDownloadImageBuffer(msg.image.id);
 
+    if (skIsKavithaiRequest(imageCaption)) {
+      const details = await skBuildImageDetailsReport(
+        original.buffer,
+        original.mime,
+        'படத்தின் காட்சி, முக்கிய பொருட்கள், சூழல் மற்றும் உணர்வை விவரிக்கவும். கவிதை எழுத வேண்டாம்.'
+      );
+      const poem = await skGenerateKavithai(details);
+      await skWhatsAppSendTextOnly(mediaSender, poem);
+      return;
+    }
+
     if (skIsImageQualityRequest(imageCaption)) {
       const report = await skBuildImageDetailsReport(
         original.buffer,
@@ -3875,7 +3910,14 @@ if (msg.type === 'document' && msg.document?.id) {
     if (isImageDocument && ['jpg', 'jpeg', 'png', 'webp'].includes(ext)) {
       const original = await skWhatsAppDownloadImageBuffer(document.id);
 
-      if (skIsImageQualityRequest(caption)) {
+      if (skIsKavithaiRequest(caption)) {
+        const details = await skBuildImageDetailsReport(
+          original.buffer,
+          original.mime,
+          'படத்தின் காட்சி, முக்கிய பொருட்கள், சூழல் மற்றும் உணர்வை விவரிக்கவும். கவிதை எழுத வேண்டாம்.'
+        );
+        answer = await skGenerateKavithai(details);
+      } else if (skIsImageQualityRequest(caption)) {
         answer = await skBuildImageDetailsReport(
           original.buffer, original.mime, caption
         );
@@ -3914,11 +3956,16 @@ if (msg.type === 'document' && msg.document?.id) {
       }
       }
     } else if (isImageDocument) {
-      answer = await skWhatsAppAnalyzeImage(
+      const imageReport = await skWhatsAppAnalyzeImage(
         document.id,
-        caption,
+        skIsKavithaiRequest(caption)
+          ? 'படத்தின் காட்சி, முக்கிய பொருட்கள், சூழல் மற்றும் உணர்வை விவரிக்கவும். கவிதை எழுத வேண்டாம்.'
+          : caption,
         imageTypes[ext]
       );
+      answer = skIsKavithaiRequest(caption)
+        ? await skGenerateKavithai(imageReport)
+        : imageReport;
     } else {
       answer = await skWhatsAppAnalyzeDocument(
         document.id,
