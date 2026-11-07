@@ -3284,27 +3284,14 @@ async function skWhatsAppAnalyzeAudio(mediaId, caption = '') {
     };
   }
 
-  const aiRes = await fetch(
-    'https://api.groq.com/openai/v1/chat/completions',
-    { method: 'POST',
-      headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'openai/gpt-oss-20b',
-        messages: [
-          { role: 'system', content: 'You are SASIKUMAR AI. Understand the voice transcript and answer helpfully in the same language the speaker used. Support Tamil, English, Hindi, Tanglish and other languages. Do not translate unless requested. If it is a question, answer it. Otherwise briefly summarize or respond naturally. Text only; never generate media.' },
-          { role: 'user', content: (caption ? caption + '\n' : '') + 'Voice transcript:\n' + transcript }
-        ],
-        temperature: 0.4,
-        max_completion_tokens: 700
-      }),
-      signal: AbortSignal.timeout(60000) }
-  );
-  const result = await aiRes.json().catch(() => ({}));
-  if (!aiRes.ok) throw new Error(result?.error?.message || 'AI reply failed.');
+  const voiceQuestion =
+    (caption ? caption + '\n' : '') +
+    'Voice transcript:\n' + transcript;
 
-  const aiAnswer = String(
-    result?.choices?.[0]?.message?.content || 'பதில் கிடைக்கவில்லை.'
-  ).trim();
+  const aiAnswer = await getWhatsAppAIReply(
+    voiceQuestion,
+    'normal'
+  );
 
   return {
     text: '🎤 கேட்ட குரல்:\n' + transcript.slice(0, 1500) +
