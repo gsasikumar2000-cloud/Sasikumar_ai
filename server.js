@@ -3314,7 +3314,7 @@ const SK_ZIP_MAX_TOTAL_BYTES = 5 * 1024 * 1024;
 async function skExtractPdfText(input) {
   const data = Buffer.from(input || []);
   if (!data.length || data.length > SK_PDF_MAX_BYTES) {
-    throw new Error('PDF size is invalid or exceeds 8 MB.');
+    throw new Error('PDF size is invalid or exceeds 5 MB.');
   }
   if (data.subarray(0, 5).toString() !== '%PDF-') {
     throw new Error('Invalid PDF file.');
