@@ -9167,7 +9167,7 @@ async function skCentralBrainReply(options = {}) {
       status: upstream.status,
       reply,
       answer: result.answer || reply,
-      api: 'SASIKUMAR AI Central Brain V2.1',
+      api: 'SASIKUMAR AI Central Brain V2.2',
       engine: result.api || 'Existing AI Chat Engine'
     };
   } catch (error) {
