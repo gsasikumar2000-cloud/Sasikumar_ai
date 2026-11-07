@@ -3145,6 +3145,56 @@ async function skWhatsAppAnalyzeAudio(mediaId, caption = '') {
     mime.includes('webm') ? 'webm' : 'm4a';
 
 
+
+  async function skSarvamTranscribeVoice() {
+    const sarvamKey = process.env.SARVAM_API_KEY;
+    if (!sarvamKey) throw new Error('Sarvam API key unavailable.');
+
+    const form = new FormData();
+    form.append(
+      'file',
+      new Blob([buffer], { type: mime }),
+      `voice.${ext}`
+    );
+    form.append('model', 'saaras:v4');
+    form.append('mode', 'transcribe');
+    form.append('language_code', 'unknown');
+
+    const response = await fetch(
+      'https://api.sarvam.ai/speech-to-text',
+      {
+        method: 'POST',
+        headers: {
+          'api-subscription-key': sarvamKey
+        },
+        body: form,
+        signal: AbortSignal.timeout(90000)
+      }
+    );
+
+    const data = await response.json().catch(() => ({}));
+    console.log(
+      '[WA Sarvam STT] Detected language:',
+      data.language_code || 'unknown',
+      'confidence:',
+      data.language_probability ?? 'n/a'
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        data?.error?.message ||
+        data?.message ||
+        'Sarvam STT failed: HTTP ' + response.status
+      );
+    }
+
+    return {
+      transcript: String(data.transcript || '').trim(),
+      languageCode: String(data.language_code || 'unknown').trim(),
+      languageProbability: data.language_probability ?? null
+    };
+  }
+
   async function transcribeVoice(language = '') {
     const form = new FormData();
     form.append('file', new Blob([buffer], { type: mime }), `voice.${ext}`);
@@ -3174,11 +3224,39 @@ async function skWhatsAppAnalyzeAudio(mediaId, caption = '') {
     return String(data.text || '').trim();
   }
 
-  let transcript = await transcribeVoice();
+  let transcript = '';
+  let sarvamLanguageCode = 'unknown';
+  let sarvamLanguageProbability = null;
+  let usedGroqFallback = false;
 
-  // Retry when auto-detection produces suspicious Icelandic characters.
-  if (/[ÞþÐðÆæØø\u0900-\u097F\u4E00-\u9FFF]/.test(transcript)) {
-    console.warn('[WA Whisper] Suspicious language detected; retrying Tamil/Hindi.');
+  try {
+    const sarvamResult = await skSarvamTranscribeVoice();
+    transcript = sarvamResult.transcript;
+    sarvamLanguageCode = sarvamResult.languageCode;
+    sarvamLanguageProbability = sarvamResult.languageProbability;
+
+    if (transcript) {
+      console.log(
+        '[WA Sarvam STT] Transcription successful. Language:',
+        sarvamLanguageCode,
+        'confidence:',
+        sarvamLanguageProbability ?? 'n/a'
+      );
+    } else {
+      throw new Error('Sarvam returned an empty transcript.');
+    }
+  } catch (sarvamError) {
+    console.warn(
+      '[WA Sarvam STT] Fallback to Groq:',
+      sarvamError.message
+    );
+    usedGroqFallback = true;
+    transcript = await transcribeVoice();
+  }
+
+  // Retry only Groq fallback output when suspicious Icelandic characters appear.
+  if (usedGroqFallback && /[ÞþÐðÆæØø]/.test(transcript)) {
+    console.warn('[WA Whisper] Suspicious characters; retrying Tamil/Hindi.');
 
     const tamilRetry = await transcribeVoice('ta').catch(() => '');
     if (/[\u0B80-\u0BFF]/.test(tamilRetry)) {
