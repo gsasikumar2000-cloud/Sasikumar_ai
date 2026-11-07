@@ -4285,10 +4285,22 @@ if (youtubePlayRequested) {
       '🌐 ஜோதிடப் பக்கம்: https://sasikumar-ai-9wdq.onrender.com/spiritual-astrology.html';
   } else if (/\bfriendly\b|நண்பா|நண்பரே/i.test(trimmed)) {
     autoPosterForContent = false;
-    reply = await getWhatsAppAIReply(trimmed, 'friendly');
+    const brainResult = await skCentralBrainReply({
+      message: trimmed,
+      category: 'WhatsApp Friendly AI',
+      source: 'whatsapp',
+      mode: 'friendly'
+    });
+    reply = brainResult.reply;
   } else {
     autoPosterForContent = false;
-    reply = await getWhatsAppAIReply(trimmed, 'normal');
+    const brainResult = await skCentralBrainReply({
+      message: trimmed,
+      category: 'WhatsApp General AI',
+      source: 'whatsapp',
+      mode: 'normal'
+    });
+    reply = brainResult.reply;
   }
 }
 if(WA_TOKEN && WA_PHONE_ID){
@@ -8892,9 +8904,16 @@ if (/^(?:share|பகிர்|பகிரவும்)$/i.test(text)) {
       return;
     }
 
-    // Keep normal Telegram AI chat working.
-    const reply = await getWhatsAppAIReply(text, 'normal');
-    await skTelegramSendMessage(chatId, reply);
+    // Route normal Telegram AI through Central Brain V2.2.
+    const brainResult = await skCentralBrainReply({
+      message: text,
+      category: 'General AI',
+      source: 'telegram'
+    });
+    await skTelegramSendMessage(
+      chatId,
+      brainResult.reply || 'மன்னிக்கவும். AI பதில் கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.'
+    );
   } catch (error) {
     console.error('[Telegram] webhook processing failed:', error.message, 'CAUSE:', error.cause?.code || error.cause?.message || 'unknown');
   }
@@ -9059,77 +9078,129 @@ app.get("/api/youtube/share", (req, res) => {
 app.get('*',(req,res)=>{const fp=path.join(publicPath,'index.html');if(fs.existsSync(fp))res.sendFile(fp);else res.status(404).send('Not Found');});
 
 
-// SK_CENTRAL_BRAIN_USER_GUIDANCE_V1
-// Central AI gateway: safely reuses the existing /api/chat engine.
+// SK_CENTRAL_BRAIN_V2_1
+// Shared internal gateway for Website, WhatsApp and Telegram.
+async function skCentralBrainReply(options = {}) {
+  const message = String(options.message || '').trim();
+  const category = String(options.category || 'General AI').slice(0, 100);
+  const source = String(options.source || 'unknown').slice(0, 30);
+  const includeGuidance = options.guidance === true;
+
+  if (!message) {
+    return {
+      ok: false,
+      status: 400,
+      reply: 'தயவுசெய்து உங்கள் கேள்வியை உள்ளிடுங்கள்.'
+    };
+  }
+
+  if (message.length > 6000) {
+    return {
+      ok: false,
+      status: 413,
+      reply: 'கேள்வி மிகவும் நீளமாக உள்ளது. சுருக்கமாக அனுப்புங்கள்.'
+    };
+  }
+
+  const requestMessage = includeGuidance
+    ? [
+        'You are SASIKUMAR AI User Help and Guidance assistant.',
+        'Answer in the same language as the user.',
+        'Explain clearly and use numbered steps when useful.',
+        'Be patient when users repeat questions or need more help.',
+        'Never invent facts, verification results, or completed actions.',
+        'If uncertain, explain how the user can verify.',
+        'For unresolved problems, guide the user to human admin support.',
+        'Never claim an admin was contacted unless confirmed.',
+        '',
+        'User question:',
+        message
+      ].join('\n')
+    : message;
+
+  // WhatsApp adapter: preserve the existing WhatsApp AI engine.
+  if (source === 'whatsapp') {
+    const reply = await getWhatsAppAIReply(
+      message,
+      options.mode === 'friendly' ? 'friendly' : 'normal'
+    );
+
+    const failedReplies = [
+      'மன்னிக்கவும் நண்பா 😊 AI சேவை இப்போது கிடைக்கவில்லை. சிறிது நேரம் கழித்து முயற்சிக்கவும்.',
+      'மன்னிக்கவும் நண்பா 😊 இப்போது AI பதில் கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.',
+      'மன்னிக்கவும் நண்பா 😊 பதில் கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.',
+      'மன்னிக்கவும் நண்பா 😊 AI இணைப்பில் தற்காலிகப் பிழை. மீண்டும் முயற்சிக்கவும்.'
+    ];
+
+    const aiFailed = failedReplies.includes(String(reply || '').trim());
+
+    return {
+      ok: !aiFailed,
+      status: aiFailed ? 503 : 200,
+      reply,
+      answer: reply,
+      api: 'SASIKUMAR AI Central Brain V2.2',
+      engine: 'Existing WhatsApp AI: Groq, Live Search and Cloudflare fallback'
+    };
+  }
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 120000);
+
+  try {
+    const upstream = await fetch(`http://127.0.0.1:${PORT}/api/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: requestMessage,
+        category
+      }),
+      signal: controller.signal
+    });
+
+    const result = await upstream.json().catch(() => ({}));
+    const reply = result.reply || result.answer ||
+      'மன்னிக்கவும். AI பதில் கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.';
+
+    return {
+      ok: upstream.ok,
+      status: upstream.status,
+      reply,
+      answer: result.answer || reply,
+      api: 'SASIKUMAR AI Central Brain V2.1',
+      engine: result.api || 'Existing AI Chat Engine'
+    };
+  } catch (error) {
+    console.error(
+      `[Central Brain:${source}]`,
+      error.message || 'Request failed'
+    );
+
+    return {
+      ok: false,
+      status: 502,
+      reply: error.name === 'AbortError'
+        ? 'AI பதில் பெற அதிக நேரமாகிறது. மீண்டும் முயற்சிக்கவும்.'
+        : 'AI இணைப்பில் தற்காலிகப் பிழை. சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.'
+    };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// Public User Help & Guidance API.
 app.post('/api/brain/ask', async (req, res) => {
   res.set('Cache-Control', 'no-store');
 
-  try {
-    const message = String(req.body?.message || '').trim();
-    const category = String(
-      req.body?.category || 'User Help & Guidance'
-    ).slice(0, 100);
+  const result = await skCentralBrainReply({
+    message: req.body?.message,
+    category: req.body?.category || 'User Help & Guidance',
+    source: 'website',
+    guidance: true
+  });
 
-    if (!message) {
-      return res.status(400).json({
-        ok: false,
-        reply: 'தயவுசெய்து உங்கள் கேள்வியை உள்ளிடுங்கள்.'
-      });
-    }
-
-    if (message.length > 6000) {
-      return res.status(413).json({
-        ok: false,
-        reply: 'கேள்வி மிகவும் நீளமாக உள்ளது. சுருக்கமாக அனுப்புங்கள்.'
-      });
-    }
-
-    const guidance = [
-      'You are SASIKUMAR AI User Help and Guidance assistant.',
-      'Answer in the same language as the user.',
-      'Explain clearly and use numbered steps when useful.',
-      'Be patient when users repeat questions or say they do not understand.',
-      'Never invent facts, verification results, or completed actions.',
-      'If uncertain, say so and explain how the user can verify.',
-      'For unresolved problems, guide the user to human admin support.',
-      'Do not claim that an admin has been contacted unless confirmed.',
-      '',
-      'User question:',
-      message
-    ].join('\n');
-
-    const upstream = await fetch(
-      `http://127.0.0.1:${PORT}/api/chat`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: guidance,
-          category
-        }),
-        signal: AbortSignal.timeout(120000)
-      }
-    );
-
-    const result = await upstream.json().catch(() => ({}));
-
-    return res.status(upstream.status).json({
-      ok: upstream.ok,
-      reply: result.reply || result.answer ||
-        'மன்னிக்கவும். AI பதில் கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.',
-      answer: result.answer || result.reply || '',
-      api: 'SASIKUMAR AI Central Brain',
-      engine: result.api || 'Existing AI Chat Engine'
-    });
-  } catch (error) {
-    console.error('[Central Brain]', error.message || 'Request failed');
-
-    return res.status(502).json({
-      ok: false,
-      reply: 'AI இணைப்பில் தற்காலிகப் பிழை. சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.'
-    });
-  }
+  return res.status(result.status || 502).json(result);
 });
-// END SK_CENTRAL_BRAIN_USER_GUIDANCE_V1
+// END SK_CENTRAL_BRAIN_V2_1
 
 app.listen(PORT,()=>console.log(`🤖 35 OPTIONS WHATSAPP MENU http://localhost:${PORT} - OK`));
