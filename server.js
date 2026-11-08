@@ -4128,6 +4128,7 @@ let youtubeSelectedVideo = null;
 let youtubePageNumber = 0;
 let youtubeHasNext = false;
 let youtubeHasPrevious = false;
+let youtubeIsSongSearch = false;
 const youtubeNavigation = /^yt_(?:next|prev)$/.test(waButtonId);
 const youtubePlayRequested = /^yt_play_\d+$/.test(waButtonId);
 let autoPosterForContent = false;
@@ -4144,6 +4145,7 @@ if (youtubePlayRequested) {
   youtubeSearchRequested = true;
 
   const session = SK_WA_YOUTUBE_SESSIONS.get(String(from));
+  youtubeIsSongSearch = Boolean(session?.isSongSearch);
   const match = waButtonId.match(/^yt_play_(\d+)$/);
   const index = match ? Number(match[1]) : -1;
 
@@ -4170,6 +4172,7 @@ if (youtubePlayRequested) {
 } else if (youtubeNavigation) {
   youtubeSearchRequested = true;
   const session = SK_WA_YOUTUBE_SESSIONS.get(String(from));
+  youtubeIsSongSearch = Boolean(session?.isSongSearch);
   if (!session || Date.now() - session.updatedAt > 30 * 60 * 1000) {
     reply = '⌛ Video Gallery காலாவதியாகிவிட்டது. புதிய தேடலை அனுப்புங்கள்.';
   } else {
@@ -4231,17 +4234,19 @@ if (youtubePlayRequested) {
 🔙 Type 0 for Main Menu`;
   } else if (/loan\s*calculat|emi\s*calculat|கடன்\s*கணக்கீடு/i.test(trimmed)) {
     reply = getMenuReply('3');
-  } else if (/(?:youtube|pixabay|\bvideos?\b|\bshorts?\b|\blivestream\b|\bstream\b|\bsongs?\b|\bmusic\b|\btrailer\b|பாடல்|வீடியோ|நேரலை|லைவ்)/i.test(trimmed)) {
+  } else if (/(?:youtube|pixabay|\bvideos?\b|\bshorts?\b|\blivestream\b|\bstream\b|\bsongs?\b|\bmusic\b|\baudio\b|\btracks?\b|\balbums?\b|\bmelody\b|\bscenes?\b|\btrailer\b|பாடல்|இசை|ஆடியோ|வீடியோ|காட்சிகள்|நேரலை|லைவ்)/i.test(trimmed)) {
     // SK_WHATSAPP_YOUTUBE_GALLERY_V2
     youtubeSearchRequested = true;
 
     const isLiveVideo = /\b(live|livestream|streaming)\b|நேரலை|லைவ்/i.test(trimmed);
     const isShortsVideo = /\bshorts?\b/i.test(trimmed);
+    const isSongSearch = /\b(songs?|music|audio|tracks?|albums?|melody)\b|பாடல்|இசை|ஆடியோ/i.test(trimmed);
+    youtubeIsSongSearch = isSongSearch;
 
     const query = trimmed.replace(
       /^(?:please\s+)?(?:search\s+)?(?:(?:youtube|pixabay|pexels)\s+)?(?:shorts?|videos?|live|livestream|stream|songs?|music|movie|trailer)?\s*(?:search)?\s*[:\-]?\s*/i,
       ''
-    ).trim() || (isLiveVideo ? 'Tamil live' : 'Tamil videos');
+    ).trim() || (isLiveVideo ? 'Tamil live' : isSongSearch ? 'Tamil songs' : 'Tamil videos');
 
     const searchQuery = isShortsVideo
       ? (query + ' shorts').slice(0, 150)
@@ -4254,9 +4259,10 @@ if (youtubePlayRequested) {
         q: searchQuery,
         maxResults: 50,
         order: 'relevance',
+        ...(isSongSearch ? { videoCategoryId: '10' } : {}),
         ...(isLiveVideo ? { eventType: 'live' } : {})
       }),
-      (!isLiveVideo && process.env.PIXABAY_API_KEY)
+      (!isLiveVideo && !isSongSearch && process.env.PIXABAY_API_KEY)
         ? fetch(
             'https://pixabay.com/api/videos/?' +
             new URLSearchParams({
@@ -4335,14 +4341,14 @@ if (youtubePlayRequested) {
       };
     }).filter(x => x.thumbnail && x.pageUrl && x.mp4Url);
 
-    const selectedVideos = [
-      ...pixabayResults.slice(0, 3),
-      ...youtubeResults.slice(0, 2)
-    ];
+    const selectedVideos = isSongSearch
+      ? youtubeResults.slice(0, 5)
+      : [...pixabayResults.slice(0, 3), ...youtubeResults.slice(0, 2)];
 
     if (selectedVideos.length) {
       SK_WA_YOUTUBE_SESSIONS.set(String(from), {
         videos: selectedVideos,
+        isSongSearch,
         page: 0,
         updatedAt: Date.now()
       });
@@ -4358,9 +4364,11 @@ if (youtubePlayRequested) {
       youtubeHasPrevious = false;
       youtubeHasNext = false;
 
-      reply = '🎬 SASIKUMAR AI — Video ' +
-        (isLiveVideo ? 'LIVE' : isShortsVideo ? 'SHORTS' : 'VIDEO') +
-        ' GALLERY';
+      reply = isSongSearch
+        ? '🎵 SASIKUMAR AI — SONG GALLERY'
+        : '🎬 SASIKUMAR AI — Video ' +
+          (isLiveVideo ? 'LIVE' : isShortsVideo ? 'SHORTS' : 'VIDEO') +
+          ' GALLERY';
     } else {
       reply = '🔎 இந்தத் தேடலுக்கு தற்போது வீடியோக்கள் கிடைக்கவில்லை. வேறு வார்த்தைகளில் முயற்சிக்கவும்.';
     }
@@ -4488,13 +4496,13 @@ if (youtubeSelectedVideo) {
             interactive: {
               type: 'cta_url',
               body: {
-                text: '🎬 ' + String(youtubeSelectedVideo.title || 'Video').slice(0, 900) +
-                  '\n\n▶ YouTube-ல் பார்க்க PLAY அழுத்துங்கள்.'
+                text: (youtubeIsSongSearch ? '🎵 ' : '🎬 ') + String(youtubeSelectedVideo.title || (youtubeIsSongSearch ? 'Song' : 'Video')).slice(0, 900) +
+                  (youtubeIsSongSearch ? '\n\n▶ YouTube-ல் கேட்க PLAY அழுத்துங்கள்.' : '\n\n▶ YouTube-ல் பார்க்க PLAY அழுத்துங்கள்.')
               },
               action: {
                 name: 'cta_url',
                 parameters: {
-                  display_text: '▶ PLAY YOUTUBE',
+                  display_text: youtubeIsSongSearch ? '▶ PLAY SONG' : '▶ PLAY YOUTUBE',
                   url: videoUrl
                 }
               }
@@ -4526,10 +4534,10 @@ if (youtubeSelectedVideo) {
               from,
               thumbBuffer,
               mime,
-              '🎬 VIDEO ' + (i + 1) + '/5\n' +
+              (youtubeIsSongSearch ? '🎵 SONG ' : '🎬 VIDEO ') + (i + 1) + '/5\n' +
               '[' + video.provider + '] ' +
               String(video.title || 'Video').slice(0, 700) +
-              '\n\n👇 கீழே PLAY அழுத்துங்கள்.'
+              youtubeIsSongSearch ? '\n\n👇 கீழே PLAY SONG அழுத்துங்கள்.' : '\n\n👇 கீழே PLAY அழுத்துங்கள்.'
             );
 
             await sendWA({
@@ -4537,13 +4545,13 @@ if (youtubeSelectedVideo) {
               interactive: {
                 type: 'button',
                 body: {
-                  text: '🎬 ' + String(video.title || 'Video').slice(0, 700) +
-                    '\n\n▶ PLAY அழுத்தி வீடியோ பார்க்கவும்.'
+                  text: (youtubeIsSongSearch ? '🎵 ' : '🎬 ') + String(video.title || (youtubeIsSongSearch ? 'Song' : 'Video')).slice(0, 700) +
+                    (youtubeIsSongSearch ? '\n\n▶ PLAY அழுத்தி பாடல் கேட்கவும்.' : '\n\n▶ PLAY அழுத்தி வீடியோ பார்க்கவும்.')
                 },
                 action: {
                   buttons: [{
                     type: 'reply',
-                    reply: { id: 'yt_play_' + i, title: '▶ PLAY' }
+                    reply: { id: 'yt_play_' + i, title: youtubeIsSongSearch ? '▶ PLAY SONG' : '▶ PLAY' }
                   }]
                 }
               }
