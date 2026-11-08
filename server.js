@@ -7880,8 +7880,12 @@ app.delete('/api/company-ads/admin/:id', requireCompanyAdsAdmin, async (req, res
 const auth = createAuthMiddleware(jobDbPool);
 registerAuthRoutes(app, jobDbPool, auth);
 registerMartRoutes(app, jobDbPool, auth);
-registerVideoEngine(app, { pool: jobDbPool, auth });
-registerAgoraLiveRoutes(app, { pool: jobDbPool, auth });
+if (jobDbPool) {
+  registerVideoEngine(app, { pool: jobDbPool, auth });
+  registerAgoraLiveRoutes(app, { pool: jobDbPool, auth });
+} else {
+  console.warn("[VIDEO/AGORA] DATABASE_URL not configured; Video Engine and Agora Live disabled.");
+}
 registerWatchmodeRoutes(app);
 
 // SK_ANY_CONTENT_VIDEO_EXTRACT_V1
