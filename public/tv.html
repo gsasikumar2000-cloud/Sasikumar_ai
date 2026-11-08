@@ -45,6 +45,11 @@ a{overflow-wrap:anywhere}
  color:#2563eb;
  font-weight:bold;
 }
+
+#tamilLivePlayer{background:#fff;padding:12px;border-radius:14px;margin:14px 0}
+#tamilLiveFrame{width:100%;aspect-ratio:16/9;border:0;border-radius:10px;background:#dbeafe}
+.live-btn{display:block;width:100%;margin-top:9px;background:#16a34a}
+
 </style>
 </head>
 <body>
@@ -76,6 +81,19 @@ a{overflow-wrap:anywhere}
 <div class="card" id="tamil-tv-section">
  <h2>📺 TAMIL LIVE TV</h2>
  <p>தமிழ் தொலைக்காட்சி சேனல்கள்</p>
+
+<div class="card" id="tamilLivePlayer" style="display:none">
+ <h2 id="liveTitle">🔴 TAMIL LIVE TV</h2>
+ <iframe id="tamilLiveFrame"
+  src="about:blank"
+  title="Tamil Live TV"
+  allow="autoplay; encrypted-media; picture-in-picture"
+  allowfullscreen></iframe>
+ <p><a id="liveFallback" href="https://www.youtube.com/" target="_blank" rel="noopener">▶ Open official YouTube Live</a></p>
+ <p><small>Live availability and embedding depend on the broadcaster.</small></p>
+ <button onclick="closeTamilLive()">CLOSE PLAYER</button>
+</div>
+
  <input id="tamilTvSearch" placeholder="Search Tamil channels..."
   oninput="filterTamilTV()" style="width:100%;margin-bottom:12px">
  <div class="tv-grid" id="tamilTvGrid">
@@ -194,13 +212,13 @@ a{overflow-wrap:anywhere}
  </div>
 
  <div class="tv-item" data-search="thanthi tv news tamil official channel">
-  📺<br><b>Thanthi TV</b>
+  📺<br><b>Thanthi TV</b><br><button class="live-btn" onclick="playTamilLive('Thanthi TV','UC-JFyL0zDFOsPMpuWu39rPA','https://www.youtube.com/@thanthitv/live')">▶ PLAY ON WEBSITE</button>
   <br><small>News • Official channel</small>
   <br><a href="https://www.jiotv.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
  </div>
 
  <div class="tv-item" data-search="puthiya thalaimurai news tamil official channel">
-  📺<br><b>Puthiya Thalaimurai</b>
+  📺<br><b>Puthiya Thalaimurai</b><br><button class="live-btn" onclick="playTamilLive('Puthiya Thalaimurai','UCmyKnNRH0wH-r8I-ceP-dsg','https://www.youtube.com/@puthiyathalaimuraitv/live')">▶ PLAY ON WEBSITE</button>
   <br><small>News • Official channel</small>
   <br><a href="https://www.jiotv.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
  </div>
@@ -218,7 +236,7 @@ a{overflow-wrap:anywhere}
  </div>
 
  <div class="tv-item" data-search="polimer news news tamil official channel">
-  📺<br><b>Polimer News</b>
+  📺<br><b>Polimer News</b><br><button class="live-btn" onclick="playTamilLive('Polimer News','UC8Z-VjXBtDJTvq6aqkIskPg','https://www.youtube.com/@polimernews/live')">▶ PLAY ON WEBSITE</button>
   <br><small>News • Official channel</small>
   <br><a href="https://www.jiotv.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
  </div>
@@ -346,12 +364,38 @@ async function showDetails(id){
  }catch(e){$('details').innerHTML='<div class="card">⚠️ '+safe(e.message)+'</div>'}
 }
 
+
+function playTamilLive(name, channelId, liveUrl){
+ const box=document.getElementById('tamilLivePlayer');
+ const frame=document.getElementById('tamilLiveFrame');
+ document.getElementById('liveTitle').textContent='🔴 '+name+' LIVE';
+ document.getElementById('liveFallback').textContent=
+   'Live stream loading... If unavailable, the broadcaster may restrict website playback.';
+ box.style.display='block';
+ box.scrollIntoView({behavior:'smooth'});
+ frame.src='https://www.youtube.com/embed/live_stream?channel='
+   +encodeURIComponent(channelId)+'&autoplay=1&mute=1&playsinline=1';
+}
+function playOfficialSite(name, url){
+ const box=document.getElementById('tamilLivePlayer');
+ const frame=document.getElementById('tamilLiveFrame');
+ document.getElementById('liveTitle').textContent='🔴 '+name+' LIVE';
+ frame.src=url;
+ box.style.display='block';
+ box.scrollIntoView({behavior:'smooth'});
+}
+
+function closeTamilLive(){
+ document.getElementById('tamilLiveFrame').src='about:blank';
+ document.getElementById('tamilLivePlayer').style.display='none';
+}
+
 function filterTamilTV(){
  const q=document.getElementById('tamilTvSearch').value.toLowerCase();
  document.querySelectorAll('#tamilTvGrid .tv-item').forEach(item=>{
   item.style.display=item.dataset.search.includes(q)?'block':'none';
  });
 }
-\n</script>
+</script>
 </body>
 </html>

@@ -45,6 +45,18 @@ footer{text-align:center;padding:20px}
 #fmStatus{font-size:14px;line-height:1.6;overflow-wrap:anywhere}
 @media(max-width:400px){.fm-controls{grid-template-columns:1fr}.fm-controls .wide{grid-column:auto}.fm-list{grid-template-columns:1fr}}
 
+
+/* SK_MULTICOLOR_PAGE_V1 */
+main > section.panel:nth-of-type(1){background:linear-gradient(135deg,#dbeafe,#eff6ff)}
+main > section.panel:nth-of-type(2){background:linear-gradient(135deg,#dcfce7,#f0fdf4)}
+main > section.panel:nth-of-type(3){background:linear-gradient(135deg,#ede9fe,#f5f3ff)}
+main > section.panel:nth-of-type(4){background:linear-gradient(135deg,#ffedd5,#fff7ed)}
+main > section.panel:nth-of-type(5){background:linear-gradient(135deg,#cffafe,#ecfeff)}
+main > section.panel:nth-of-type(6){background:linear-gradient(135deg,#fef3c7,#fffbeb)}
+main > section.panel:nth-of-type(7){background:linear-gradient(135deg,#fce7f3,#fdf2f8)}
+main > section.panel:nth-of-type(n+8){background:linear-gradient(135deg,#e0f2fe,#f3e8ff)}
+#skAudioStudio{background:linear-gradient(135deg,#dbeafe,#f3e8ff,#dcfce7)!important}
+
 </style>
 </head>
 <body>
@@ -232,12 +244,47 @@ onerror="this.style.display='none'">
 <p><small>YouTube போன்ற தளங்களின் தேடல் பக்க URL-ஐ நேரடியாகப் பதிவிறக்க முடியாது. தளத்தின் அதிகாரப்பூர்வ Download வசதியைப் பயன்படுத்தவும்.</small></p>
 </section>
 
+<!-- SK_AUDIO_STUDIO_V1 -->
+<section class="card" id="skAudioStudio" style="margin:24px 0;padding:20px;background:linear-gradient(135deg,#e0f2fe,#f3e8ff,#dcfce7);border-radius:22px;box-shadow:0 8px 24px rgba(50,80,130,.14)">
+  <h2>🎧 SASIKUMAR AI Audio Studio</h2>
+  <p>Spotify • MP3 Player • Playlist</p>
+
+  <div style="padding:16px;margin:14px 0;background:linear-gradient(135deg,#dcfce7,#bbf7d0);border:1px solid #86efac;border-radius:16px;color:#164e2b">
+    <h3>🎵 Spotify Songs & Podcasts</h3>
+    <input id="skSpotifyQuery" type="search" placeholder="பாடல் / பாடகர் / Podcast பெயர்" style="width:100%;padding:12px;box-sizing:border-box">
+    <button type="button" onclick="skSpotifySearch()">Search Spotify</button>
+    <input id="skSpotifyUrl" type="url" placeholder="Spotify track / episode / playlist URL" style="width:100%;padding:12px;margin-top:10px;box-sizing:border-box">
+    <button type="button" onclick="skSpotifyEmbed()">Play Spotify</button>
+    <div id="skSpotifyStatus" role="status" style="margin:8px 0"></div>
+    <iframe id="skSpotifyFrame" title="Spotify Player" style="width:100%;height:152px;border:0;border-radius:12px;display:none" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+  </div>
+
+  <div style="padding:16px;margin:14px 0;background:linear-gradient(135deg,#ede9fe,#dbeafe);border:1px solid #c4b5fd;border-radius:16px;color:#312e81">
+    <h3>🎧 MP3 Audio Player & Playlist</h3>
+    <input id="skStudioFiles" type="file" accept="audio/*" multiple style="width:100%">
+    <p id="skStudioTrack">Audio கோப்புகளைத் தேர்ந்தெடுக்கவும்.</p>
+    <audio id="skStudioPlayer" controls style="width:100%"></audio>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0">
+      <button type="button" onclick="skStudioPrevious()">⏮️ Previous</button>
+      <button type="button" onclick="skStudioNext()">⏭️ Next</button>
+      <button type="button" onclick="skStudioClear()">Clear Playlist</button>
+    </div>
+    <label for="skStudioVolume">🔊 Volume</label>
+    <input id="skStudioVolume" type="range" min="0" max="1" step="0.05" value="0.8" style="width:100%">
+    <ol id="skStudioPlaylist"></ol>
+    <p id="skStudioStatus" role="status">உங்கள் சாதனத்திலிருந்து MP3 / Audio கோப்புகளைத் தேர்ந்தெடுக்கலாம்.</p>
+  </div>
+</section>
+
 <footer>
 <div class="actions" style="justify-content:center">
 <button class="pink" onclick="closeHub()">❌ CLOSE</button>
 <a class="btn green" href="/">🏠 MAIN</a>
 </div>
 <p><small>© SASIKUMAR AI • Audio & Video Hub</small></p>
+
+
+
 </footer>
 </main>
 <script>
@@ -648,6 +695,119 @@ async function skFmShowFavorites() {
     skFmSetStatus('Favorites நிலைய விவரங்களை ஏற்ற முடியவில்லை. ' + err.message);
   }
 }
+
+
+/* SK_AUDIO_STUDIO_V1 */
+let skStudioItems = [];
+let skStudioIndex = -1;
+let skStudioObjectUrls = [];
+
+function skSpotifySearch(){
+  const q = document.getElementById('skSpotifyQuery').value.trim();
+  if(!q){
+    document.getElementById('skSpotifyStatus').textContent = 'பாடல் பெயரை உள்ளிடவும்.';
+    return;
+  }
+  window.open('https://open.spotify.com/search/' + encodeURIComponent(q), '_blank', 'noopener,noreferrer');
+}
+
+function skSpotifyEmbed(){
+  const input = document.getElementById('skSpotifyUrl');
+  const status = document.getElementById('skSpotifyStatus');
+  const frame = document.getElementById('skSpotifyFrame');
+  try{
+    const u = new URL(input.value.trim());
+    const match = u.hostname === 'open.spotify.com'
+      ? u.pathname.match(/^\/(track|episode|playlist|album|artist|show)\/([A-Za-z0-9]+)\/?$/)
+      : null;
+    if(!match) throw new Error('Spotify track / episode / playlist URL சரிபார்க்கவும்.');
+    frame.src = 'https://open.spotify.com/embed/' + match[1] + '/' + match[2];
+    frame.style.display = 'block';
+    status.textContent = 'Spotify Player ஏற்றப்படுகிறது. Playback Spotify அனுமதியைப் பொறுத்தது.';
+  }catch(e){
+    status.textContent = e.message || 'சரியான Spotify URL உள்ளிடவும்.';
+  }
+}
+
+function skStudioRender(){
+  const list = document.getElementById('skStudioPlaylist');
+  list.replaceChildren();
+  skStudioItems.forEach((item, i) => {
+    const li = document.createElement('li');
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = item.name;
+    b.style.margin = '4px';
+    b.addEventListener('click', () => skStudioPlay(i));
+    if(i === skStudioIndex) b.setAttribute('aria-current','true');
+    li.appendChild(b);
+    list.appendChild(li);
+  });
+}
+
+function skStudioPlay(index){
+  if(index < 0 || index >= skStudioItems.length) return;
+  skStudioIndex = index;
+  const player = document.getElementById('skStudioPlayer');
+  player.src = skStudioItems[index].url;
+  document.getElementById('skStudioTrack').textContent =
+    'இப்போது இயங்குவது: ' + skStudioItems[index].name;
+  document.getElementById('skStudioStatus').textContent =
+    (index + 1) + ' / ' + skStudioItems.length;
+  skStudioRender();
+  player.play().catch(() => {
+    document.getElementById('skStudioStatus').textContent =
+      'Play அழுத்தி Audio இயக்கவும்.';
+  });
+}
+
+function skStudioPrevious(){
+  if(!skStudioItems.length) return;
+  skStudioPlay((skStudioIndex - 1 + skStudioItems.length) % skStudioItems.length);
+}
+
+function skStudioNext(){
+  if(!skStudioItems.length) return;
+  skStudioPlay((skStudioIndex + 1) % skStudioItems.length);
+}
+
+function skStudioClear(){
+  const player = document.getElementById('skStudioPlayer');
+  player.pause();
+  player.removeAttribute('src');
+  player.load();
+  skStudioObjectUrls.forEach(url => URL.revokeObjectURL(url));
+  skStudioObjectUrls = [];
+  skStudioItems = [];
+  skStudioIndex = -1;
+  document.getElementById('skStudioFiles').value = '';
+  document.getElementById('skStudioTrack').textContent = 'Playlist காலி செய்யப்பட்டது.';
+  document.getElementById('skStudioStatus').textContent = 'புதிய Audio கோப்புகளைத் தேர்ந்தெடுக்கலாம்.';
+  skStudioRender();
+}
+
+document.getElementById('skStudioFiles').addEventListener('change', function(){
+  const files = Array.from(this.files || []).filter(file => file.type.startsWith('audio/'));
+  skStudioClear();
+  if(!files.length){
+    document.getElementById('skStudioStatus').textContent = 'Audio கோப்புகளை மட்டும் தேர்ந்தெடுக்கவும்.';
+    return;
+  }
+  skStudioItems = files.map(file => {
+    const url = URL.createObjectURL(file);
+    skStudioObjectUrls.push(url);
+    return {name:file.name, url};
+  });
+  skStudioRender();
+  skStudioPlay(0);
+});
+
+document.getElementById('skStudioVolume').addEventListener('input', function(){
+  document.getElementById('skStudioPlayer').volume = Number(this.value);
+});
+
+document.getElementById('skStudioPlayer').volume = 0.8;
+document.getElementById('skStudioPlayer').addEventListener('ended', skStudioNext);
 
 function closeHub(){if(history.length>1)history.back();else location.href='/'}
 </script>
