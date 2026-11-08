@@ -1,6 +1,31 @@
 const BASE_URL = 'https://api.watchmode.com/v1';
 
 export function registerWatchmodeRoutes(app) {
+  const responseCache = new Map();
+  const inFlight = new Map();
+
+  const CACHE_TTL_MS = 5 * 60 * 1000;
+  const MAX_CACHE_ENTRIES = 500;
+
+  // Maximum 60 uncached Watchmode API requests per minute per instance.
+  const RATE_LIMIT = 60;
+  const RATE_WINDOW_MS = 60 * 1000;
+  let rateWindowStartedAt = Date.now();
+  let rateCount = 0;
+
+  function allowWatchmodeRequest() {
+    const now = Date.now();
+
+    if (now - rateWindowStartedAt >= RATE_WINDOW_MS) {
+      rateWindowStartedAt = now;
+      rateCount = 0;
+    }
+
+    if (rateCount >= RATE_LIMIT) return false;
+
+    rateCount++;
+    return true;
+  }
 
   async function watchmodeRequest(endpoint, params = {}) {
     const apiKey = process.env.WATCHMODE_API_KEY;
@@ -9,39 +34,110 @@ export function registerWatchmodeRoutes(app) {
       throw new Error('WATCHMODE_API_KEY is missing');
     }
 
-    const url = new URL(`${BASE_URL}${endpoint}`);
+    const sortedParams = Object.entries(params)
+      .filter(([, value]) => value !== undefined && value !== null)
+      .sort(([a], [b]) => a.localeCompare(b));
 
-    url.searchParams.set('apiKey', apiKey);
+    const cacheKey = JSON.stringify([endpoint, sortedParams]);
+    const now = Date.now();
 
-    for (const [key, value] of Object.entries(params)) {
-      if (value !== undefined && value !== null) {
+    const cached = responseCache.get(cacheKey);
+
+    if (cached && now < cached.expiresAt) {
+      return cached.data;
+    }
+
+    if (cached) responseCache.delete(cacheKey);
+
+    // Combine simultaneous identical requests.
+    if (inFlight.has(cacheKey)) {
+      return inFlight.get(cacheKey);
+    }
+
+    if (!allowWatchmodeRequest()) {
+      const error = new Error('Watchmode rate limit reached');
+      error.statusCode = 429;
+      throw error;
+    }
+
+    const requestPromise = (async () => {
+      const url = new URL(`${BASE_URL}${endpoint}`);
+      url.searchParams.set('apiKey', apiKey);
+
+      for (const [key, value] of sortedParams) {
         url.searchParams.set(key, String(value));
       }
-    }
 
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000);
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15000);
+
+      try {
+        const response = await fetch(url, {
+          signal: controller.signal,
+          headers: { Accept: 'application/json' }
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          throw new Error(`Watchmode API error: ${response.status}`);
+        }
+
+        // Remove expired entries before adding new data.
+        for (const [key, entry] of responseCache) {
+          if (Date.now() >= entry.expiresAt) {
+            responseCache.delete(key);
+          }
+        }
+
+        // Keep cache size bounded.
+        if (responseCache.size >= MAX_CACHE_ENTRIES) {
+          const oldestKey = responseCache.keys().next().value;
+          if (oldestKey !== undefined) {
+            responseCache.delete(oldestKey);
+          }
+        }
+
+        responseCache.set(cacheKey, {
+          data,
+          expiresAt: Date.now() + CACHE_TTL_MS
+        });
+
+        return data;
+      } finally {
+        clearTimeout(timeout);
+      }
+    })();
+
+    inFlight.set(cacheKey, requestPromise);
 
     try {
-      const response = await fetch(url, {
-        signal: controller.signal,
-        headers: { Accept: 'application/json' }
-      });
-
-      const data = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        throw new Error(`Watchmode API error: ${response.status}`);
-      }
-
-      return data;
+      return await requestPromise;
     } finally {
-      clearTimeout(timeout);
+      inFlight.delete(cacheKey);
     }
+  }
+
+  function sendRouteError(res, error, label, fallbackMessage) {
+    console.error(label, error.message);
+
+    if (error.statusCode === 429) {
+      return res.status(429).json({
+        success: false,
+        error: 'Too many requests. Please try again in a minute.'
+      });
+    }
+
+    return res.status(502).json({
+      success: false,
+      error: fallbackMessage
+    });
   }
 
   // TV status
   app.get('/api/tv/watchmode/status', (req, res) => {
+    res.set('Cache-Control', 'no-store');
+
     res.json({
       success: true,
       service: 'SASIKUMAR AI TV',
@@ -74,14 +170,13 @@ export function registerWatchmodeRoutes(app) {
         results: data.title_results || [],
         people: data.people_results || []
       });
-
     } catch (error) {
-      console.error('[WATCHMODE SEARCH]', error.message);
-
-      res.status(502).json({
-        success: false,
-        error: 'Movie search temporarily unavailable'
-      });
+      return sendRouteError(
+        res,
+        error,
+        '[WATCHMODE SEARCH]',
+        'Movie search temporarily unavailable'
+      );
     }
   });
 
@@ -105,14 +200,13 @@ export function registerWatchmodeRoutes(app) {
         success: true,
         details: data
       });
-
     } catch (error) {
-      console.error('[WATCHMODE DETAILS]', error.message);
-
-      res.status(502).json({
-        success: false,
-        error: 'Title details unavailable'
-      });
+      return sendRouteError(
+        res,
+        error,
+        '[WATCHMODE DETAILS]',
+        'Title details unavailable'
+      );
     }
   });
 
@@ -147,16 +241,15 @@ export function registerWatchmodeRoutes(app) {
         region,
         sources: data
       });
-
     } catch (error) {
-      console.error('[WATCHMODE SOURCES]', error.message);
-
-      res.status(502).json({
-        success: false,
-        error: 'Streaming availability unavailable'
-      });
+      return sendRouteError(
+        res,
+        error,
+        '[WATCHMODE SOURCES]',
+        'Streaming availability unavailable'
+      );
     }
   });
 
-  console.log('📺 SASIKUMAR AI TV - Watchmode routes registered');
+  console.log('📺 SASIKUMAR AI TV - Watchmode routes registered with cache and rate limit');
 }
