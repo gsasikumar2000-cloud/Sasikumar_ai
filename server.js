@@ -6,6 +6,8 @@ import express from 'express';
 import pg from 'pg';
 import { createAuthMiddleware, registerAuthRoutes } from './auth-routes.js';
 import { registerVideoEngine } from './ai-video-engine.js';
+import { registerAgoraLiveRoutes } from './agora-live-routes.js';
+import { registerWatchmodeRoutes } from './watchmode-routes.js';
 import { registerGovernmentLive, getGovernmentReply } from './government-live.js';
 import { registerMartRoutes } from './mart-routes-v2.js';
 import path from 'path';
@@ -1081,6 +1083,7 @@ async function getCloudflareAIReply(message, category = 'General AI') {
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 25000);
+  const diagnosticStartedAt = Date.now();
 
   try {
     const response = await fetch(
@@ -1115,6 +1118,11 @@ async function getCloudflareAIReply(message, category = 'General AI') {
 
     const data = await response.json().catch(() => ({}));
 
+    console.info('[Cloudflare AI] Response metadata', {
+      status: response.status,
+      elapsedMs: Date.now() - diagnosticStartedAt
+    });
+
     if (!response.ok || data.success === false) {
       console.error(
         '[Cloudflare AI]',
@@ -1134,7 +1142,11 @@ async function getCloudflareAIReply(message, category = 'General AI') {
       ? reply.trim()
       : null;
   } catch (error) {
-    console.error('[Cloudflare AI]', error.message || 'Request failed');
+    console.error('[Cloudflare AI] Request diagnostic', {
+      name: error.name || 'Error',
+      message: error.message || 'Request failed',
+      elapsedMs: Date.now() - diagnosticStartedAt
+    });
     return null;
   } finally {
     clearTimeout(timer);
@@ -1254,7 +1266,8 @@ app.post('/api/chat', async (req, res) => {
             .map(item => ({
               title: String(item.title || 'Web source').slice(0, 200),
               url: item.url,
-              content: String(item.content || '').slice(0, 1200)
+              content: String(item.content || '').slice(0, 1200),
+            published_date: item.published_date || item.publishedDate || null
             }));
         } else {
           console.warn('SK live search unavailable; HTTP:', searchResponse.status);
@@ -1264,9 +1277,11 @@ app.post('/api/chat', async (req, res) => {
       }
     }
 
+    const asksForNews = !imageData && /(?:news|headlines|breaking|latest updates|தமிழ்நாடு செய்திகள்|இந்திய செய்திகள்|உலக செய்திகள்|இன்றைய செய்திகள்|தலைப்புச் செய்திகள்|செய்தி|செய்திகள்)/i.test(userMessage);
+
     // SK_GENERAL_AI_NEWSDATA_FALLBACK_V1
     // Use NewsData only for news questions when web search returns no results.
-    const asksForNews = !imageData && /(?:news|headlines|breaking|latest updates|தமிழ்நாடு செய்திகள்|இந்திய செய்திகள்|உலக செய்திகள்|இன்றைய செய்திகள்|தலைப்புச் செய்திகள்|செய்தி|செய்திகள்)/i.test(userMessage);
+    if (asksForNews) liveSearchResults = skFilterFreshNewsResults(liveSearchResults);
 
     if (asksForNews && liveSearchResults.length === 0 && process.env.NEWSDATA_API_KEY) {
       try {
@@ -1309,6 +1324,7 @@ app.post('/api/chat', async (req, res) => {
         ).join('\n\n')
         + '\n\nAnswer using these results when relevant. Be clear about dates and uncertainty. Do not invent facts or claim the snippets prove more than they say. Cite relevant source URLs in your answer.';
     }
+    if (asksForNews) liveSearchResults = skFilterFreshNewsResults(liveSearchResults);
     // END SK_GENERAL_AI_LIVE_SEARCH_V1
 
     const requestModel = imageData
@@ -1572,13 +1588,14 @@ function skIsKavithaiRequest(value = '') {
 }
 
 // SK_WA_FRIENDLY_COMEDY_AI_V2_LIVE_SEARCH
-async function getWhatsAppAIReply(question, mode = 'normal') {
+async function getWhatsAppAIReply(question, mode = 'normal', context = '') {
+  const aiContext = String(context || '').trim();
   const apiKey = process.env.GROQ_API_KEY;
 
   if (!apiKey) {
     console.warn('[WhatsApp AI] Groq key missing; trying Cloudflare fallback.');
     const fallbackReply = await getCloudflareAIReply(
-      question,
+      aiContext ? aiContext + '\n\nUser question:\n' + question : question,
       'WhatsApp AI'
     );
     if (fallbackReply) {
@@ -1670,7 +1687,9 @@ async function getWhatsAppAIReply(question, mode = 'normal') {
     }
   }
 
-    // Firecrawl fallback when Tavily returns no results.
+    // Filter stale Tavily news before fallback.
+  if (asksForNews) liveSearchResults = skFilterFreshNewsResults(liveSearchResults);
+// Firecrawl fallback when Tavily returns no results.
   if (
     needsLiveSearch && searchCategory !== 'IMAGE' &&
     liveSearchResults.length === 0 &&
@@ -1729,6 +1748,8 @@ async function getWhatsAppAIReply(question, mode = 'normal') {
     }
   }
 
+// Filter stale Firecrawl news before NewsData fallback.
+  if (asksForNews) liveSearchResults = skFilterFreshNewsResults(liveSearchResults);
 // 2. If a news question has no web results, try NewsData.io.
   if (
     searchCategory !== 'IMAGE' &&
@@ -1783,7 +1804,9 @@ async function getWhatsAppAIReply(question, mode = 'normal') {
   }
 
 
-  // SK_WHATSAPP_SERPAPI_FALLBACK_V1
+  // Filter stale NewsData results before SerpAPI fallback.
+  if (asksForNews) liveSearchResults = skFilterFreshNewsResults(liveSearchResults);
+// SK_WHATSAPP_SERPAPI_FALLBACK_V1
   // Try SerpAPI only when earlier live-search providers return no results.
   if (needsLiveSearch && liveSearchResults.length === 0 && process.env.SERPAPI_API_KEY) {
     try {
@@ -1831,11 +1854,14 @@ async function getWhatsAppAIReply(question, mode = 'normal') {
     }
   }
 
+  if (asksForNews) liveSearchResults = skFilterFreshNewsResults(liveSearchResults);
   const systemPrompt = mode === 'friendly'
     ? 'You are SASIKUMAR AI, a warm, friendly and respectful conversation partner. Match the user language (Tamil, English or Tanglish). Be kind, natural and concise. Never claim to be human.'
     : 'You are SASIKUMAR AI. Answer helpfully, accurately and respectfully. Match the user language (Tamil, English or Tanglish). Normally answer in 3-5 short lines using simple language. Answer directly; avoid long introductions, repetition and unnecessary details. Give more detail only if requested or needed for safety. Never invent current facts. If live search results are absent, clearly say that current information could not be verified instead of claiming to have searched.';
 
-  let userContent = query;
+  let userContent = aiContext
+    ? aiContext + '\n\nUser question:\n' + query
+    : query;
   // SK_EXTRA_SEARCH_CATEGORY_AI_INSTRUCTIONS_V1
   const categoryInstructions = {
     GENERAL: 'Provide relevant general web search results.',
@@ -1910,6 +1936,15 @@ async function getWhatsAppAIReply(question, mode = 'normal') {
       return 'மன்னிக்கவும் நண்பா 😊 இப்போது AI பதில் கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.';
     }
 
+    console.info('[WhatsApp AI] Groq response metadata', {
+      finishReason: data?.choices?.[0]?.finish_reason || null,
+      promptTokens: data?.usage?.prompt_tokens ?? null,
+      completionTokens: data?.usage?.completion_tokens ?? null,
+      contentLength: typeof data?.choices?.[0]?.message?.content === 'string'
+        ? data.choices[0].message.content.length
+        : 0
+    });
+
     const answer = data?.choices?.[0]?.message?.content?.trim();
 
     if (!answer) {
@@ -1951,8 +1986,10 @@ app.get('/api/whatsapp/webhook',(req,res)=>{const mode=req.query['hub.mode'];con
 
 // SK_WA_LEADERSHIP_TAMIL_BREAKING_NEWS_V1
 async function getTamilBreakingNews() {
-  const now = new Date().toLocaleString('en-IN', {
-    timeZone: 'Asia/Kolkata'
+  const now = new Date().toLocaleString('ta-IN', {
+    timeZone: 'Asia/Kolkata',
+    dateStyle: 'full',
+    timeStyle: 'short'
   });
 
   try {
@@ -3271,6 +3308,13 @@ async function skWhatsAppAnalyzeAudio(mediaId, caption = '') {
 
   if (!transcript) throw new Error('No speech detected.');
 
+  const voiceClockText = 'இன்றைய தேதி மற்றும் நேரம்: ' +
+    new Date().toLocaleString('ta-IN', {
+      timeZone: 'Asia/Kolkata',
+      dateStyle: 'full',
+      timeStyle: 'short'
+    });
+
   if (
     skIsKavithaiRequest(caption) ||
     skIsKavithaiRequest(transcript)
@@ -3279,24 +3323,29 @@ async function skWhatsAppAnalyzeAudio(mediaId, caption = '') {
       ('குரல் பதிவின் உரை:\\n' + transcript).slice(0, 9000)
     );
     return {
-      text: poem,
-      speechText: poem.slice(0, 1200)
+      text: '🕒 ' + voiceClockText + '\n\n' + poem,
+      speechText: (voiceClockText + '. ' + poem).slice(0, 1200)
     };
   }
 
-  const voiceQuestion =
-    (caption ? caption + '\n' : '') +
-    'Voice transcript:\n' + transcript;
+  const voiceContext =
+    'Current India date/time (IST): ' + voiceClockText + '\n' +
+    'For current news, use only fresh dated live-search results. ' +
+    'If no verified fresh results exist, clearly say current news cannot be verified. ' +
+    'Never present old or undated news as current.\n\n' +
+    (caption ? 'Additional user context:\n' + caption : '');
 
   const aiAnswer = await getWhatsAppAIReply(
-    voiceQuestion,
-    'normal'
+    transcript,
+    'normal',
+    voiceContext
   );
 
   return {
-    text: '🎤 கேட்ட குரல்:\n' + transcript.slice(0, 1500) +
+    text: '🕒 ' + voiceClockText +
+      '\n\n🎤 கேட்ட குரல்:\n' + transcript.slice(0, 1500) +
       '\n\n🤖 SASIKUMAR AI:\n' + aiAnswer.slice(0, 2200),
-    speechText: aiAnswer.slice(0, 1200)
+    speechText: (voiceClockText + '. ' + aiAnswer).slice(0, 1200)
   };
 }
 // END SK_WHATSAPP_AUDIO_TEXT_ANALYSIS_V1
@@ -5268,6 +5317,69 @@ app.get('/api/global-search', async (req, res) => {
 
 
 
+// SK_NEWS_FRESHNESS_HELPER_V1
+const SK_NEWS_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+
+function skIsFreshNewsDate(value, now = Date.now()) {
+  if (value === null || value === undefined || value === '') return false;
+
+  let publishedAt;
+
+  if (typeof value === 'number') {
+    publishedAt = value;
+  } else {
+    const text = String(value).trim();
+    if (!text) return false;
+
+    publishedAt = Date.parse(text);
+
+    if (!Number.isFinite(publishedAt)) {
+      const relative = text.match(
+        /^(?:about\s+)?(just now|moments ago|\d+\s*(?:seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w)\s+ago|a minute ago|an hour ago|a day ago)$/i
+      );
+
+      if (!relative) return false;
+
+      const phrase = relative[1].toLowerCase();
+
+      if (phrase === 'just now' || phrase === 'moments ago') {
+        publishedAt = now;
+      } else {
+        const match = phrase.match(/(\d+|a|an)\s*(seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w)\s+ago/i);
+        if (!match) return false;
+
+        const amount = match[1] === 'a' || match[1] === 'an'
+          ? 1
+          : Number(match[1]);
+
+        const unit = match[2].toLowerCase();
+        const factors = {
+          second: 1000, seconds: 1000, sec: 1000, secs: 1000, s: 1000,
+          minute: 60000, minutes: 60000, min: 60000, mins: 60000, m: 60000,
+          hour: 3600000, hours: 3600000, hr: 3600000, hrs: 3600000, h: 3600000,
+          day: 86400000, days: 86400000, d: 86400000,
+          week: 604800000, weeks: 604800000, w: 604800000
+        };
+
+        const factor = factors[unit.replace(/s$/, '')] || factors[unit];
+        if (!factor || !Number.isFinite(amount)) return false;
+
+        publishedAt = now - amount * factor;
+      }
+    }
+  }
+
+  if (!Number.isFinite(publishedAt)) return false;
+  const age = now - publishedAt;
+  return age >= -5 * 60 * 1000 && age <= SK_NEWS_MAX_AGE_MS;
+}
+
+function skFilterFreshNewsResults(items) {
+  return (Array.isArray(items) ? items : [])
+    .filter(item => item && skIsFreshNewsDate(item.published_date))
+    .slice(0, 5);
+}
+
 // SK_LIVE_TAMIL_NEWS_JSON_API_V1
 const SK_NEWS_CACHE_MS = 5 * 60 * 1000;
 const skNewsCache = new Map();
@@ -5304,8 +5416,10 @@ app.get('/api/breaking-news', async (req, res) => {
 
   const normalize = items => (Array.isArray(items) ? items : [])
     .filter(item => {
+      if (!item) return false;
       const url = item.url || item.link;
-      return item && item.title && url && /^https?:\/\//i.test(String(url));
+      const published = item.publishedAt || item.published_at || item.pubDate;
+      return Boolean(item.title && url && /^https?:\/\//i.test(String(url)) && skIsFreshNewsDate(published));
     })
     .slice(0, 5)
     .map(item => ({
@@ -7767,6 +7881,8 @@ const auth = createAuthMiddleware(jobDbPool);
 registerAuthRoutes(app, jobDbPool, auth);
 registerMartRoutes(app, jobDbPool, auth);
 registerVideoEngine(app, { pool: jobDbPool, auth });
+registerAgoraLiveRoutes(app, { pool: jobDbPool, auth });
+registerWatchmodeRoutes(app);
 
 // SK_ANY_CONTENT_VIDEO_EXTRACT_V1
 app.post(
