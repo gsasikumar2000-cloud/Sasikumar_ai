@@ -2020,7 +2020,10 @@ async function getWhatsAppAIReply(question, mode = 'normal', context = '') {
 app.get('/api/whatsapp/webhook',(req,res)=>{const mode=req.query['hub.mode'];const token=req.query['hub.verify_token'];const challenge=req.query['hub.challenge'];if(mode==='subscribe' && token===WA_VERIFY_TOKEN) res.status(200).send(challenge); else res.sendStatus(403);});
 
 // SK_WA_LEADERSHIP_TAMIL_BREAKING_NEWS_V1
-async function getTamilBreakingNews() {
+async function getTamilBreakingNews(category = 'tamil-nadu', topic = '') {
+  const params = new URLSearchParams({ category });
+  if (topic) params.set('topic', topic);
+
   const now = new Date().toLocaleString('ta-IN', {
     timeZone: 'Asia/Kolkata',
     dateStyle: 'full',
@@ -2029,56 +2032,64 @@ async function getTamilBreakingNews() {
 
   try {
     const response = await fetch(
-      'https://sasikumar-ai-9wdq.onrender.com/api/breaking-news?category=Tamil%20Nadu',
+      'https://sasikumar-ai-9wdq.onrender.com/api/breaking-news?' + params.toString(),
       { signal: AbortSignal.timeout(25000) }
     );
-
     const data = await response.json().catch(() => ({}));
 
     if (!response.ok || data.ok !== true) {
-      console.error(
-        '[Tamil Breaking News] Live API error:',
-        response.status,
-        String(data.error || 'Unknown error').slice(0, 200)
-      );
-      return '📰 தமிழ் முக்கியச் செய்திகள்\n\n' +
-        'தற்போதைய செய்திகளைப் பெற முடியவில்லை. சிறிது நேரம் கழித்து முயற்சிக்கவும்.\n' +
-        '🌐 https://sasikumar-ai-9wdq.onrender.com/live-news.html\n' +
-        '🤖 SASIKUMAR AI';
+      return '📰 தற்போது செய்திகள் கிடைக்கவில்லை. சிறிது நேரம் கழித்து முயற்சிக்கவும்.\n' +
+        '🌐 https://sasikumar-ai-9wdq.onrender.com/live-news.html\n🤖 SASIKUMAR AI';
     }
 
     const articles = Array.isArray(data.articles) ? data.articles : [];
-
     if (!articles.length) {
-      return '📰 இப்போது செய்திகள் கிடைக்கவில்லை. பின்னர் முயற்சிக்கவும்.\n' +
-        '🌐 https://sasikumar-ai-9wdq.onrender.com/live-news.html\n' +
-        '🤖 SASIKUMAR AI';
+      return '📰 கடந்த 24 மணி நேரத்தில் தொடர்புடைய செய்திகள் கிடைக்கவில்லை.\n' +
+        '🌐 https://sasikumar-ai-9wdq.onrender.com/live-news.html\n🤖 SASIKUMAR AI';
     }
 
-    let out = '🤖 SASIKUMAR AI\n' +
-      '📰 தமிழ் முக்கியச் செய்திகள்\n' +
-      '🕒 ' + now + '\n\n';
+    const labels = {
+      'tamil-nadu': 'தமிழ்நாடு செய்திகள்',
+      india: 'இந்தியச் செய்திகள்',
+      world: 'உலகச் செய்திகள்',
+      business: 'வணிகச் செய்திகள்',
+      technology: 'தொழில்நுட்பச் செய்திகள்',
+      sports: 'விளையாட்டுச் செய்திகள்',
+      topic: topic + ' செய்திகள்'
+    };
+
+    let out = '🤖 SASIKUMAR AI\n📰 ' +
+      (labels[category] || 'செய்திகள்') + '\n🕒 ' + now +
+      '\n⏱️ கடந்த 24 மணி நேரச் செய்திகள் மட்டும்\n\n';
 
     for (const [i, item] of articles.slice(0, 5).entries()) {
-      out += `${i + 1}. ${String(item.title || 'செய்தி').slice(0, 220)}\n`;
-      if (item.url && (String(item.url).startsWith('https://') || String(item.url).startsWith('http://'))) {
-        out += item.url + '\n';
+      out += (i + 1) + '. ' + String(item.title || 'செய்தி').slice(0, 220) + '\n';
+
+      if (item.published_date) {
+        const date = new Date(item.published_date);
+        if (!Number.isNaN(date.getTime())) {
+          out += '🗓️ ' + date.toLocaleString('ta-IN', {
+            timeZone: 'Asia/Kolkata',
+            dateStyle: 'medium',
+            timeStyle: 'short'
+          }) + '\n';
+        }
+      }
+
+      if (item.url && /^https?:\/\//i.test(String(item.url))) {
+        out += '🔗 ' + item.url + '\n';
       }
       out += '\n';
     }
 
-    out += '🌐 மேலும் செய்திகள்: https://sasikumar-ai-9wdq.onrender.com/live-news.html\n' +
-      '🤖 SASIKUMAR AI';
-
+    out += '🌐 மேலும்: https://sasikumar-ai-9wdq.onrender.com/live-news.html\n🤖 SASIKUMAR AI';
     return out.slice(0, 3500);
   } catch (error) {
     console.error('[Tamil Breaking News] Live API fetch error:', error.message || error);
     return '📰 செய்திகளைப் பெறுவதில் தற்காலிகப் பிழை. மீண்டும் முயற்சிக்கவும்.\n' +
-      '🌐 https://sasikumar-ai-9wdq.onrender.com/live-news.html\n' +
-      '🤖 SASIKUMAR AI';
+      '🌐 https://sasikumar-ai-9wdq.onrender.com/live-news.html\n🤖 SASIKUMAR AI';
   }
 }
-
 
 // SK_MAPS_SHARE_V1
 const SK_LAST_BOT_REPLIES = new Map();
@@ -4489,8 +4500,21 @@ if (youtubePlayRequested) {
     } else {
       reply = '🔎 இந்தத் தேடலுக்கு தற்போது வீடியோக்கள் கிடைக்கவில்லை. வேறு வார்த்தைகளில் முயற்சிக்கவும்.';
     }
-  } else if (/tamil\s*(breaking\s*)?news|breaking\s*news|தமிழ்.*செய்தி|முக்கியச் செய்திகள்/i.test(trimmed)) {
-    reply = await getTamilBreakingNews();
+  } else if (/^(?:india|indian)\s+(?:breaking\s+)?news$/i.test(trimmed)) {
+    reply = await getTamilBreakingNews('india');
+  } else if (/^(?:world|international)\s+(?:breaking\s+)?news$/i.test(trimmed)) {
+    reply = await getTamilBreakingNews('world');
+  } else if (/^(?:news|breaking\s+news)\s*[:：-]\s*(.+)$/i.test(trimmed)) {
+    const newsTopic = trimmed.match(/^(?:news|breaking\s+news)\s*[:：-]\s*(.+)$/i)[1].trim();
+    reply = await getTamilBreakingNews('topic', newsTopic);
+  } else if (/^(business|technology|sports)\s+(?:breaking\s+)?news$/i.test(trimmed)) {
+    const newsCategory = trimmed.match(/^(business|technology|sports)/i)[1].toLowerCase();
+    reply = await getTamilBreakingNews(newsCategory);
+  } else if (/^(?:(?:tamil(?:\s+nadu)?)\s+)?(?:breaking\s+)?news$/i.test(trimmed) || /தமிழ்.*செய்தி|முக்கியச் செய்திகள்/i.test(trimmed)) {
+    reply = await getTamilBreakingNews('tamil-nadu');
+  } else if (/^(.{2,60})\s+(?:breaking\s+)?news$/i.test(trimmed)) {
+    const newsTopic = trimmed.match(/^(.{2,60})\s+(?:breaking\s+)?news$/i)[1].trim();
+    reply = await getTamilBreakingNews('topic', newsTopic);
   } else if (/^(?:kavithai|poem|poetry|கவிதை|கவிதைகள்)\s*[:：\-]/i.test(trimmed)) {
     const poemMatch = trimmed.match(/^(?:kavithai|poem|poetry|கவிதை|கவிதைகள்)\s*[:：\-]\s*([\s\S]*)$/i);
     const poemContent = (poemMatch?.[1] || '').trim();
@@ -5554,28 +5578,69 @@ app.get('/api/breaking-news', async (req, res) => {
   const requested = String(req.query.category || 'tamil-nadu')
     .trim().toLowerCase().replace(/\s+/g, '-');
 
+  const topic = String(req.query.topic || '')
+    .trim().replace(/[^\p{L}\p{N}\s.-]/gu, '').slice(0, 80);
+
   const configs = {
-    'tamil-nadu': { label: 'Tamil Nadu', q: 'Tamil Nadu OR Chennai OR தமிழ்நாடு', country: 'in', language: 'ta' },
-    'india': { label: 'India', q: 'India', country: 'in', language: 'en' },
-    'world': { label: 'World', q: 'world news', language: 'en' },
-    'business': { label: 'Business', q: 'business', country: 'in', language: 'en' },
-    'technology': { label: 'Technology', q: 'technology', country: 'in', language: 'en' },
-    'sports': { label: 'Sports', q: 'sports', country: 'in', language: 'en' }
+    'tamil-nadu': {
+      label: 'Tamil Nadu',
+      q: 'Tamil Nadu OR Chennai OR தமிழ்நாடு',
+      country: 'in',
+      language: 'ta'
+    },
+    india: {
+      label: 'India',
+      q: 'India',
+      country: 'in',
+      language: 'en'
+    },
+    world: {
+      label: 'World',
+      q: 'world news',
+      language: 'en'
+    },
+    business: {
+      label: 'Business',
+      q: 'business India',
+      country: 'in',
+      language: 'en'
+    },
+    technology: {
+      label: 'Technology',
+      q: 'technology India',
+      country: 'in',
+      language: 'en'
+    },
+    sports: {
+      label: 'Sports',
+      q: 'sports India',
+      country: 'in',
+      language: 'en'
+    },
+    topic: {
+      label: topic || 'Topic',
+      q: topic,
+      language: 'en'
+    }
   };
 
-  const cached = skNewsCache.get(requested);
-  if (cached && Date.now() - cached.time < SK_NEWS_CACHE_MS) {
-    return res.json({ ...cached.payload, cached: true });
-  }
-
   const config = configs[requested];
-  if (!config) {
+  if (!config || (requested === 'topic' && !topic)) {
     return res.status(400).json({
       ok: false,
-      error: 'Invalid news category.',
+      error: 'Invalid news category or missing topic.',
       supportedCategories: Object.keys(configs),
       articles: []
     });
+  }
+
+  const cacheKey = requested === 'topic'
+    ? 'topic:' + topic.toLowerCase()
+    : requested;
+
+  const cached = skNewsCache.get(cacheKey);
+  if (cached && Date.now() - cached.time < SK_NEWS_CACHE_MS) {
+    return res.json({ ...cached.payload, cached: true });
   }
 
   const normalize = items => (Array.isArray(items) ? items : [])
@@ -5583,9 +5648,13 @@ app.get('/api/breaking-news', async (req, res) => {
       if (!item) return false;
       const url = item.url || item.link;
       const published = item.publishedAt || item.published_at || item.pubDate;
-      return Boolean(item.title && url && /^https?:\/\//i.test(String(url)) && skIsFreshNewsDate(published));
+      return Boolean(
+        item.title &&
+        url &&
+        /^https?:\/\//i.test(String(url)) &&
+        skIsFreshNewsDate(published)
+      );
     })
-    .slice(0, 5)
     .map(item => ({
       title: String(item.title).slice(0, 250),
       url: String(item.url || item.link),
@@ -5601,16 +5670,21 @@ app.get('/api/breaking-news', async (req, res) => {
       url: () => {
         const params = new URLSearchParams({
           apikey: process.env.GNEWS_API_KEY.trim(),
-          lang: config.language === 'ta' ? 'ta' : 'en',
-          max: '5',
-          q: config.q
+          lang: config.language,
+          max: '10',
+          q: config.q,
+          from: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
         });
+
         if (config.country) params.set('country', config.country);
+
         if (requested === 'sports') {
           params.delete('q');
+          params.delete('from');
           params.set('category', 'sports');
           return 'https://gnews.io/api/v4/top-headlines?' + params.toString();
         }
+
         return 'https://gnews.io/api/v4/search?' + params.toString();
       },
       extract: data => data.articles
@@ -5623,17 +5697,27 @@ app.get('/api/breaking-news', async (req, res) => {
       url: () => {
         const params = new URLSearchParams({
           access_key: process.env.MEDIASTACK_ACCESS_KEY.trim(),
-          limit: '5',
+          limit: '10',
           sort: 'published_desc'
         });
+
         if (config.country) params.set('countries', config.country);
-        if (config.language === 'en' || config.language === 'ta') params.set('languages', config.language);
+        params.set('languages', config.language);
+
         const categoryMap = {
           business: 'business',
           technology: 'technology',
           sports: 'sports'
         };
-        if (categoryMap[requested]) params.set('categories', categoryMap[requested]);
+
+        if (categoryMap[requested]) {
+          params.set('categories', categoryMap[requested]);
+        } else if (requested === 'topic') {
+          params.set('keywords', topic);
+        } else if (requested === 'world') {
+          params.set('countries', 'us,gb,au,ca');
+        }
+
         return 'https://api.mediastack.com/v1/news?' + params.toString();
       },
       extract: data => data.data
@@ -5647,6 +5731,7 @@ app.get('/api/breaking-news', async (req, res) => {
       const response = await fetch(provider.url(), {
         signal: AbortSignal.timeout(12000)
       });
+
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok || data.errors || data.status === 'error') {
@@ -5656,12 +5741,24 @@ app.get('/api/breaking-news', async (req, res) => {
       }
 
       // SK_TN_BREAKING_NEWS_FILTER_V1
-      const normalizedArticles = normalize(provider.extract(data));
-      const articles = requested === 'tamil-nadu'
-        ? skFilterFreshNewsResults(normalizedArticles, 'Tamil Nadu')
-        : normalizedArticles;
+      let articles = normalize(provider.extract(data));
+
+      if (requested === 'tamil-nadu') {
+        articles = skFilterFreshNewsResults(articles, 'Tamil Nadu');
+      }
+
+      if (requested === 'topic') {
+        const words = topic.toLowerCase().split(/\s+/).filter(Boolean);
+        articles = articles.filter(item => {
+          const haystack = (item.title + ' ' + item.content).toLowerCase();
+          return words.some(word => haystack.includes(word));
+        });
+      }
+
+      articles = articles.slice(0, 5);
+
       if (!articles.length) {
-        lastError = provider.name + ' returned no usable articles.';
+        lastError = provider.name + ' returned no relevant fresh articles.';
         continue;
       }
 
@@ -5671,9 +5768,11 @@ app.get('/api/breaking-news', async (req, res) => {
         category: config.label,
         language: config.language,
         updatedAt: new Date().toISOString(),
+        window: 'last-24-hours',
         articles
       };
-      skNewsCache.set(requested, { time: Date.now(), payload });
+
+      skNewsCache.set(cacheKey, { time: Date.now(), payload });
       return res.json(payload);
     } catch (error) {
       lastError = provider.name + ': ' + (error.message || 'request failed');
@@ -5681,13 +5780,16 @@ app.get('/api/breaking-news', async (req, res) => {
     }
   }
 
+  console.error('[Live News] No provider returned fresh relevant articles:', lastError);
+
   return res.status(502).json({
     ok: false,
-    error: 'News providers are temporarily unavailable.',
+    error: 'கடந்த 24 மணி நேரத்தில் தொடர்புடைய செய்திகள் கிடைக்கவில்லை அல்லது செய்தி சேவை தற்காலிகமாக இல்லை.',
     category: config.label,
     articles: []
   });
 });
+
 // END SK_LIVE_TAMIL_NEWS_JSON_API_V1
 
 
