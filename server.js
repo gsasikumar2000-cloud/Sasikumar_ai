@@ -5568,6 +5568,196 @@ function skFilterFreshNewsResults(items, query = '') {
     .slice(0, 5);
 }
 
+
+async function skTranslateNewsArticlesToTamil(items) {
+  const apiKey = process.env.GEMINI_API_KEY?.trim();
+  if (!apiKey || !Array.isArray(items) || !items.length) return [];
+
+  const input = items.map((item, index) => ({
+    index,
+    title: item.title,
+    content: item.content || ''
+  }));
+
+  const response = await fetch(
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=' + encodeURIComponent(apiKey),
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{
+          parts: [{
+            text: 'Translate every news title and content into natural Tamil. Preserve names, places and numbers. Do not add facts. Return ONLY a valid JSON array of objects with index, title and content fields. Input:\n' + JSON.stringify(input)
+          }]
+        }],
+        generationConfig: {
+          temperature: 0.1,
+          maxOutputTokens: 4096,
+          responseMimeType: 'application/json'
+        }
+      }),
+      signal: AbortSignal.timeout(45000)
+    }
+  );
+
+  if (!response.ok) {
+    console.error('[Tamil News Translation] Gemini HTTP', response.status);
+    return [];
+  }
+
+  const data = await response.json();
+  const raw = data?.candidates?.[0]?.content?.parts
+    ?.map(part => part.text || '').join('').trim();
+
+  if (!raw) return [];
+
+  let translated;
+  try {
+    translated = JSON.parse(raw);
+  } catch {
+    return [];
+  }
+
+  if (!Array.isArray(translated)) return [];
+
+  return items.map((item, index) => {
+    const result = translated.find(x => Number(x.index) === index);
+    if (!result || !String(result.title || '').trim()) return null;
+
+    return {
+      ...item,
+      title: String(result.title).trim().slice(0, 250),
+      content: String(result.content || '').trim().slice(0, 500)
+    };
+  }).filter(Boolean);
+}
+
+
+function skDecodeRSSValue(value) {
+  return String(value || '')
+    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&#(\d+);/g, (_, n) => {
+      try { return String.fromCodePoint(Number(n)); } catch { return ''; }
+    })
+    .replace(/&#x([0-9a-f]+);/gi, (_, n) => {
+      try { return String.fromCodePoint(parseInt(n, 16)); } catch { return ''; }
+    })
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+async function skFetchTamilNewsRSS() {
+  const feeds = [
+    {
+      name: 'The Hindu Tamil Nadu',
+      url: 'https://www.thehindu.com/news/national/tamil-nadu/feeder/default.rss',
+      language: 'en'
+    },
+    {
+      name: 'Puthiya Thalaimurai',
+      url: 'https://www.puthiyathalaimurai.com/feed',
+      language: 'ta'
+    },
+    {
+      name: 'BBC Tamil',
+      url: 'https://feeds.bbci.co.uk/tamil/rss.xml',
+      language: 'ta'
+    }
+  ];
+
+  const results = [];
+
+  const readTag = (xml, tag) => {
+    const escaped = tag.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const match = xml.match(new RegExp(
+      '<' + escaped + '(?:\\s[^>]*)?>([\\s\\S]*?)</' + escaped + '\\s*>',
+      'i'
+    ));
+    return match ? skDecodeRSSValue(match[1]) : '';
+  };
+
+  const readLink = xml => {
+    const link = readTag(xml, 'link');
+    if (link) return link;
+
+    const atom = xml.match(/<link\b[^>]*href=["']([^"']+)["']/i);
+    return atom ? skDecodeRSSValue(atom[1]) : '';
+  };
+
+  const isFresh = date => {
+    if (!date) return false;
+    return skIsFreshNewsDate(date);
+  };
+
+  const settled = await Promise.allSettled(feeds.map(async feed => {
+    const response = await fetch(feed.url, {
+      headers: {
+        'User-Agent': 'SASIKUMAR-AI-News/1.0',
+        'Accept': 'application/rss+xml, application/xml, text/xml'
+      },
+      signal: AbortSignal.timeout(12000)
+    });
+
+    if (!response.ok) {
+      throw new Error(feed.name + ' HTTP ' + response.status);
+    }
+
+    const xml = await response.text();
+
+    if (!/<(?:rss|feed)\b/i.test(xml)) {
+      throw new Error(feed.name + ' returned invalid RSS/XML');
+    }
+
+    const items = [...xml.matchAll(/<item\b[^>]*>([\s\S]*?)<\/item\s*>/gi)];
+
+    for (const match of items) {
+      const block = match[1];
+      const title = readTag(block, 'title');
+      const url = readLink(block);
+      const published =
+        readTag(block, 'pubDate') ||
+        readTag(block, 'published') ||
+        readTag(block, 'updated') ||
+        readTag(block, 'dc:date');
+
+      const content =
+        readTag(block, 'description') ||
+        readTag(block, 'content:encoded') ||
+        readTag(block, 'summary');
+
+      if (!title || !/^https?:\/\//i.test(url) || !isFresh(published)) {
+        continue;
+      }
+
+      results.push({
+        title: title.slice(0, 250),
+        url,
+        content: content.slice(0, 500),
+        published_date: published,
+        source: feed.name,
+        source_language: feed.language
+      });
+    }
+
+    console.log('[Tamil News RSS]', feed.name, 'items:', items.length);
+  }));
+
+  settled.forEach((result, index) => {
+    if (result.status === 'rejected') {
+      console.error('[Tamil News RSS]', feeds[index].name,
+        result.reason?.message || 'Feed unavailable');
+    }
+  });
+
+  return results;
+}
+
 // SK_LIVE_TAMIL_NEWS_JSON_API_V1
 const SK_NEWS_CACHE_MS = 5 * 60 * 1000;
 const skNewsCache = new Map();
@@ -5584,7 +5774,7 @@ app.get('/api/breaking-news', async (req, res) => {
   const configs = {
     'tamil-nadu': {
       label: 'Tamil Nadu',
-      q: 'Tamil Nadu OR Chennai OR தமிழ்நாடு',
+      q: 'Tamil Nadu OR Chennai OR Coimbatore OR Madurai OR Trichy OR Thanjavur OR Kumbakonam OR Salem OR Tirunelveli OR தமிழ்நாடு OR சென்னை OR மதுரை OR கோயம்புத்தூர்',
       country: 'in',
       language: 'ta'
     },
@@ -5667,12 +5857,12 @@ app.get('/api/breaking-news', async (req, res) => {
   if (process.env.GNEWS_API_KEY?.trim()) {
     providers.push({
       name: 'GNews',
-      url: () => {
+      url: (language) => {
         const params = new URLSearchParams({
           apikey: process.env.GNEWS_API_KEY.trim(),
-          lang: config.language,
+          lang: language || config.language,
           max: '10',
-          q: config.q,
+          q: requested === 'topic' && /\bgold\b/i.test(topic) ? 'gold price OR gold rate OR bullion OR gold market OR 22K OR 24K' : config.q,
           from: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
         });
 
@@ -5694,7 +5884,7 @@ app.get('/api/breaking-news', async (req, res) => {
   if (process.env.MEDIASTACK_ACCESS_KEY?.trim()) {
     providers.push({
       name: 'Mediastack',
-      url: () => {
+      url: (language) => {
         const params = new URLSearchParams({
           access_key: process.env.MEDIASTACK_ACCESS_KEY.trim(),
           limit: '10',
@@ -5702,7 +5892,7 @@ app.get('/api/breaking-news', async (req, res) => {
         });
 
         if (config.country) params.set('countries', config.country);
-        params.set('languages', config.language);
+        params.set('languages', language || config.language);
 
         const categoryMap = {
           business: 'business',
@@ -5713,7 +5903,7 @@ app.get('/api/breaking-news', async (req, res) => {
         if (categoryMap[requested]) {
           params.set('categories', categoryMap[requested]);
         } else if (requested === 'topic') {
-          params.set('keywords', topic);
+          params.set('keywords', /\bgold\b/i.test(topic) ? 'gold price,gold rate,bullion,22K,24K' : topic);
         } else if (requested === 'world') {
           params.set('countries', 'us,gb,au,ca');
         }
@@ -5740,51 +5930,183 @@ app.get('/api/breaking-news', async (req, res) => {
         continue;
       }
 
-      // SK_TN_BREAKING_NEWS_FILTER_V1
+      // SK_NEWS_RELEVANCE_FILTER_V2
       let articles = normalize(provider.extract(data));
 
       const newsText = item =>
-        (item.title + ' ' + item.content).toLowerCase();
+        (String(item.title || '') + ' ' + String(item.content || '')).toLowerCase();
+
+      const hasAny = (text, terms) =>
+        terms.some(term => text.includes(term));
+
+      const indiaTerms = [
+        'india', 'indian', 'new delhi', 'mumbai', 'chennai',
+        'kolkata', 'bengaluru', 'bangalore', 'hyderabad', 'pune',
+        'ahmedabad', 'lucknow', 'jaipur', 'chandigarh',
+        'uttar pradesh', 'madhya pradesh', 'tamil nadu',
+        'kerala', 'karnataka', 'telangana', 'andhra pradesh',
+        'maharashtra', 'gujarat', 'rajasthan', 'bihar',
+        'west bengal', 'odisha', 'assam', 'punjab', 'haryana',
+        'goa', 'jharkhand', 'chhattisgarh', 'uttarakhand',
+        'himachal pradesh', 'jammu and kashmir', 'manipur',
+        'meghalaya', 'tripura', 'mizoram', 'nagaland', 'sikkim',
+        'delhi', 'india government', 'reserve bank of india',
+        'supreme court of india'
+      ];
+
+      const worldTerms = [
+        'united states', 'u.s.', 'usa', 'america', 'american',
+        'united kingdom', 'britain', 'england', 'london',
+        'france', 'paris', 'germany', 'berlin', 'italy', 'rome',
+        'spain', 'madrid', 'portugal', 'ukraine', 'russia',
+        'moscow', 'kyiv', 'china', 'beijing', 'japan', 'tokyo',
+        'south korea', 'north korea', 'taiwan', 'israel',
+        'palestine', 'gaza', 'iran', 'iraq', 'yemen', 'syria',
+        'saudi arabia', 'dubai', 'uae', 'qatar', 'turkey',
+        'mexico', 'canada', 'brazil', 'argentina', 'australia',
+        'new zealand', 'poland', 'krakow', 'africa', 'europe',
+        'middle east', 'united nations', 'nato', 'european union'
+      ];
+
+      const weatherTerms = [
+        'weather forecast', 'temperature forecast',
+        'hourly forecast', 'weekly forecast',
+        'rain chances', 'air quality', 'aqi',
+        'humidity forecast'
+      ];
 
       if (requested === 'tamil-nadu') {
         articles = skFilterFreshNewsResults(articles, 'Tamil Nadu');
+
+        // Tamil-first: fetch English fallback only when Tamil results are insufficient.
+        if (articles.length < 5 && process.env.GEMINI_API_KEY?.trim()) {
+          try {
+            const fallbackResponse = await fetch(provider.url('en'), {
+              signal: AbortSignal.timeout(12000)
+            });
+
+            if (fallbackResponse.ok) {
+              const fallbackData = await fallbackResponse.json().catch(() => ({}));
+
+              if (!fallbackData.errors && fallbackData.status !== 'error') {
+                let fallbackArticles = skFilterFreshNewsResults(
+                  normalize(provider.extract(fallbackData)),
+                  'Tamil Nadu'
+                );
+
+                const existing = new Set(
+                  articles.flatMap(item => [
+                    String(item.title || '').toLowerCase().trim(),
+                    String(item.url || '').toLowerCase().trim()
+                  ])
+                );
+
+                fallbackArticles = fallbackArticles.filter(item =>
+                  !existing.has(String(item.title || '').toLowerCase().trim()) &&
+                  !existing.has(String(item.url || '').toLowerCase().trim())
+                ).slice(0, 5 - articles.length);
+
+                const tamilFallback =
+                  await skTranslateNewsArticlesToTamil(fallbackArticles);
+
+                articles = articles.concat(tamilFallback);
+              }
+            }
+          } catch (error) {
+            console.error(
+              '[Tamil News English Fallback]',
+              error?.message || 'Fallback unavailable'
+            );
+          }
+        }
+
       } else if (requested === 'india') {
-        const indiaTerms = [
-          'india', 'indian', 'new delhi', 'mumbai', 'chennai',
-          'kolkata', 'bengaluru', 'hyderabad', 'pune', 'ahmedabad',
-          'uttar pradesh', 'madhya pradesh', 'tamil nadu', 'kerala',
-          'karnataka', 'telangana', 'andhra pradesh', 'maharashtra',
-          'gujarat', 'rajasthan', 'bihar', 'west bengal', 'odisha',
-          'assam', 'punjab', 'haryana', 'goa', 'jharkhand',
-          'chhattisgarh', 'uttarakhand', 'himachal pradesh',
-          'jammu and kashmir', 'manipur', 'meghalaya', 'tripura',
-          'mizoram', 'nagaland', 'sikkim', 'delhi'
+        const strongIndiaTerms = [
+          'new delhi', 'mumbai', 'chennai', 'kolkata',
+          'bengaluru', 'bangalore', 'hyderabad', 'pune',
+          'ahmedabad', 'lucknow', 'jaipur', 'chandigarh',
+          'uttar pradesh', 'madhya pradesh', 'tamil nadu',
+          'kerala', 'karnataka', 'telangana', 'andhra pradesh',
+          'maharashtra', 'gujarat', 'rajasthan', 'bihar',
+          'west bengal', 'odisha', 'assam', 'punjab', 'haryana',
+          'goa', 'jharkhand', 'chhattisgarh', 'uttarakhand',
+          'himachal pradesh', 'jammu and kashmir', 'manipur',
+          'meghalaya', 'tripura', 'mizoram', 'nagaland', 'sikkim',
+          'delhi', 'india government', 'government of india',
+          'reserve bank of india', 'supreme court of india',
+          'indian citizens', 'indian nationals', 'indian seafarers',
+          'indian embassy', 'indian army', 'indian navy',
+          'indian air force', 'indian economy', 'indian rupee'
         ];
-        articles = articles.filter(item =>
-          indiaTerms.some(term => newsText(item).includes(term))
-        );
+        articles = articles.filter(item => {
+          const text = newsText(item);
+          if (hasAny(text, weatherTerms)) return false;
+          return hasAny(text, strongIndiaTerms);
+        });
+
       } else if (requested === 'world') {
-        const indiaTerms = [
-          'india', 'indian', 'new delhi', 'mumbai', 'chennai',
-          'tamil nadu', 'kerala', 'karnataka', 'hyderabad'
+        const worldNoiseTerms = [
+          'weather forecast', 'temperature forecast',
+          'hourly forecast', 'weekly forecast', 'rain chances',
+          'air quality', 'humidity forecast', 'yellow weather warning',
+          'football', 'cricket', 'soccer', 'basketball',
+          'tennis', 'rugby', 'formula one', 'f1 racing',
+          'premier league', 'champions league', 'ipl'
         ];
-        articles = articles.filter(item =>
-          !indiaTerms.some(term => newsText(item).includes(term))
-        );
+        articles = articles.filter(item => {
+          const text = newsText(item);
+          return hasAny(text, worldTerms) &&
+            !hasAny(text, worldNoiseTerms);
+        });
       }
 
       if (requested === 'topic') {
-        const words = topic.toLowerCase().split(/\s+/).filter(word => word.length > 1);
+        const words = topic.toLowerCase().split(/\s+/)
+          .filter(word => word.length > 1);
+
         articles = articles.filter(item => {
-          const haystack = newsText(item);
-          if (!words.length || !words.every(word => haystack.includes(word))) return false;
+          const text = newsText(item);
+
+          if (!words.length || !words.every(word => text.includes(word))) {
+            return false;
+          }
 
           if (/\bgold\b/i.test(topic)) {
-            return /gold price|gold rate|gold market|gold trading|gold demand|gold import|gold export|gold jewellery|gold jewelry|gold investment|bullion|தங்கம்|தங்க விலை|நகை/i.test(haystack);
+            const hasGoldSubject =
+              /\b(gold|bullion|22k|24k|18k)\b|தங்கம்|ஆபரண தங்கம்|சவரன்/i;
+
+            const hasGoldMarketContext =
+              /\b(price|prices|rate|rates|market|trading|trades|futures|rally|rises|falls|surges|drops|ounce|per gram|per ounce|demand|imports?|exports?|jewellery|jewelry|central bank)\b|தங்க விலை|தங்கம் விலை/i;
+
+            return hasGoldSubject.test(text) &&
+              hasGoldMarketContext.test(text);
           }
+
           return true;
         });
       }
+
+      // END SK_NEWS_RELEVANCE_FILTER_V2
+      const seenNewsKeys = new Set();
+      articles = articles.filter(item => {
+        const titleKey = String(item.title || '')
+          .toLowerCase()
+          .replace(/[^\p{L}\p{N}]+/gu, ' ')
+          .trim()
+          .replace(/\s+/g, ' ');
+        let urlKey = '';
+        try {
+          const parsed = new URL(item.url);
+          urlKey = parsed.hostname.replace(/^www\./, '') +
+            parsed.pathname.replace(/\/+$/, '');
+        } catch {}
+        const key = titleKey || urlKey;
+        if (!key || seenNewsKeys.has(key) ||
+            (urlKey && seenNewsKeys.has('url:' + urlKey))) return false;
+        seenNewsKeys.add(key);
+        if (urlKey) seenNewsKeys.add('url:' + urlKey);
+        return true;
+      });
 
       articles = articles.slice(0, 5);
 
@@ -5810,6 +6132,87 @@ app.get('/api/breaking-news', async (req, res) => {
       console.error('[Live News]', lastError);
     }
   }
+
+  // SK_TAMIL_RSS_FALLBACK_V1
+  if (requested === 'tamil-nadu') {
+    try {
+      let rssArticles = await skFetchTamilNewsRSS();
+
+      rssArticles = rssArticles.filter(item => {
+        if (!skIsFreshNewsDate(item.published_date)) return false;
+        if (item.source === 'The Hindu Tamil Nadu') return true;
+        return skFilterFreshNewsResults([item], 'Tamil Nadu').length > 0;
+      });
+
+      const englishArticles = rssArticles.filter(
+        item => item.source_language === 'en'
+      );
+
+      const tamilArticles = rssArticles.filter(
+        item => item.source_language === 'ta'
+      );
+
+      let translatedEnglish = [];
+      if (englishArticles.length && process.env.GEMINI_API_KEY?.trim()) {
+        translatedEnglish =
+          await skTranslateNewsArticlesToTamil(englishArticles);
+        translatedEnglish = translatedEnglish.map(item => ({
+          ...item,
+          source_language: 'ta'
+        }));
+      }
+
+      rssArticles = tamilArticles.concat(translatedEnglish);
+
+      const rssSeen = new Set();
+      rssArticles = rssArticles.filter(item => {
+        const titleKey = String(item.title || '')
+          .toLowerCase()
+          .replace(/[^\p{L}\p{N}]+/gu, ' ')
+          .trim()
+          .replace(/\s+/g, ' ');
+
+        let urlKey = '';
+        try {
+          const parsed = new URL(item.url);
+          urlKey = parsed.hostname.replace(/^www\./, '') +
+            parsed.pathname.replace(/\/+$/, '');
+        } catch {}
+
+        const key = titleKey || urlKey;
+        if (!key || rssSeen.has(key) ||
+            (urlKey && rssSeen.has('url:' + urlKey))) return false;
+
+        rssSeen.add(key);
+        if (urlKey) rssSeen.add('url:' + urlKey);
+        return true;
+      });
+
+      rssArticles = rssArticles.slice(0, 5);
+
+      if (rssArticles.length) {
+        const payload = {
+          ok: true,
+          provider: 'Tamil RSS',
+          category: config.label,
+          language: 'ta',
+          updatedAt: new Date().toISOString(),
+          window: 'last-24-hours',
+          articles: rssArticles
+        };
+
+        skNewsCache.set(cacheKey, { time: Date.now(), payload });
+        return res.json(payload);
+      }
+
+      lastError += ' RSS feeds returned no relevant fresh Tamil Nadu articles.';
+    } catch (error) {
+      lastError += ' RSS fallback: ' + (error.message || 'unavailable');
+      console.error('[Tamil News RSS Fallback]', error.message || error);
+    }
+  }
+
+  // END SK_TAMIL_RSS_FALLBACK_V1
 
   console.error('[Live News] No provider returned fresh relevant articles:', lastError);
 
