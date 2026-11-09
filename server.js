@@ -1660,8 +1660,12 @@ async function getWhatsAppAIReply(question, mode = 'normal', context = '') {
     EDUCATION: 'education schools colleges exams admissions scholarships',
     EXTRA: 'detailed comprehensive web results'
   };
-  const providerQuery = [query, categoryTerms[searchCategory] || '']
-    .filter(Boolean).join(' ');
+  const isTamilNaduQuery = skIsTamilNaduNewsQuery(query);
+  const providerQuery = [
+    query,
+    categoryTerms[searchCategory] || '',
+    isTamilNaduQuery ? 'Tamil Nadu Chennai district local news' : ''
+  ].filter(Boolean).join(' ');
 
   const needsLiveSearch = (explicitSearch && query.length > 0) ||
     /(?:latest|current|today|now|recent|live|news|headlines|breaking|weather|gold|silver|price|rate|stock|market|business|election|movie|movies|film|films|cinema|release|releases|upcoming|box office|திரைப்படம்|திரைப்படங்கள்|படம்|படங்கள்|வெளியீடு|வெளியீட்டுத் தேதி|நடிகர்|நடிகைகள்|இன்றைய|தற்போதைய|சமீபத்திய|விலை|செய்தி|செய்திகள்|வானிலை|தங்கம்|வெள்ளி|பங்கு|சந்தை)/i.test(query);
@@ -1719,7 +1723,7 @@ async function getWhatsAppAIReply(question, mode = 'normal', context = '') {
   }
 
     // Filter stale Tavily news before fallback.
-  if (asksForNews) liveSearchResults = skFilterFreshNewsResults(liveSearchResults);
+  if (asksForNews) liveSearchResults = skFilterFreshNewsResults(liveSearchResults, query);
 // Firecrawl fallback when Tavily returns no results.
   if (
     needsLiveSearch && searchCategory !== 'IMAGE' &&
@@ -1780,7 +1784,7 @@ async function getWhatsAppAIReply(question, mode = 'normal', context = '') {
   }
 
 // Filter stale Firecrawl news before NewsData fallback.
-  if (asksForNews) liveSearchResults = skFilterFreshNewsResults(liveSearchResults);
+  if (asksForNews) liveSearchResults = skFilterFreshNewsResults(liveSearchResults, query);
 // 2. If a news question has no web results, try NewsData.io.
   if (
     searchCategory !== 'IMAGE' &&
@@ -1792,7 +1796,7 @@ async function getWhatsAppAIReply(question, mode = 'normal', context = '') {
       const params = new URLSearchParams({
         apikey: process.env.NEWSDATA_API_KEY.trim(),
         country: 'in',
-        language: /தமிழ்|தமிழ்நாடு|இன்றைய செய்திகள்|தமிழ் செய்திகள்/i.test(query)
+        language: /தமிழ்|தமிழ்நாடு|தமிழ்நாட்டின்|தமிழ்நாட்டில்|தமிழக|இன்றைய.*செய்தி|தமிழ் செய்திகள்/i.test(query)
           ? 'ta'
           : 'en'
       });
@@ -1836,7 +1840,7 @@ async function getWhatsAppAIReply(question, mode = 'normal', context = '') {
 
 
   // Filter stale NewsData results before SerpAPI fallback.
-  if (asksForNews) liveSearchResults = skFilterFreshNewsResults(liveSearchResults);
+  if (asksForNews) liveSearchResults = skFilterFreshNewsResults(liveSearchResults, query);
 // SK_WHATSAPP_SERPAPI_FALLBACK_V1
   // Try SerpAPI only when earlier live-search providers return no results.
   if (needsLiveSearch && liveSearchResults.length === 0 && process.env.SERPAPI_API_KEY) {
@@ -1885,7 +1889,7 @@ async function getWhatsAppAIReply(question, mode = 'normal', context = '') {
     }
   }
 
-  if (asksForNews) liveSearchResults = skFilterFreshNewsResults(liveSearchResults);
+  if (asksForNews) liveSearchResults = skFilterFreshNewsResults(liveSearchResults, query);
   const systemPrompt = mode === 'friendly'
     ? 'You are SASIKUMAR AI, a warm, friendly and respectful conversation partner. Match the user language (Tamil, English or Tanglish). Be kind, natural and concise. Never claim to be human.'
     : 'You are SASIKUMAR AI. Answer helpfully, accurately and respectfully. Match the user language (Tamil, English or Tanglish). Normally answer in 3-5 short lines using simple language. Answer directly; avoid long introductions, repetition and unnecessary details. Give more detail only if requested or needed for safety. Never invent current facts. If live search results are absent, clearly say that current information could not be verified instead of claiming to have searched.';
@@ -5651,7 +5655,11 @@ app.get('/api/breaking-news', async (req, res) => {
         continue;
       }
 
-      const articles = normalize(provider.extract(data));
+      // SK_TN_BREAKING_NEWS_FILTER_V1
+      const normalizedArticles = normalize(provider.extract(data));
+      const articles = requested === 'tamil-nadu'
+        ? skFilterFreshNewsResults(normalizedArticles, 'Tamil Nadu')
+        : normalizedArticles;
       if (!articles.length) {
         lastError = provider.name + ' returned no usable articles.';
         continue;
