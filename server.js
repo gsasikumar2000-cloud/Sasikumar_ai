@@ -4665,7 +4665,9 @@ if (youtubeSelectedVideo) {
             type: 'interactive',
             interactive: {
               type: 'cta_url',
-              body: { text: answerText },
+              body: {
+                text: answerText + '\n\n🌐 FM HUB — நேரடியாகத் திறக்க:\n' + fmUrl
+              },
               action: {
                 name: 'cta_url',
                 parameters: {
