@@ -4541,15 +4541,6 @@ if(WA_TOKEN && WA_PHONE_ID){
       // One branded image message for every WhatsApp reply.
       const answerText = String(reply || WELCOME_MENU);
 if (youtubeSelectedVideo) {
-        const videoUrl = youtubeSelectedVideo.watchUrl ||
-          youtubeSelectedVideo.pageUrl ||
-          (youtubeSelectedVideo.videoId
-            ? 'https://www.youtube.com/watch?v=' +
-              encodeURIComponent(youtubeSelectedVideo.videoId)
-            : 'https://pixabay.com/');
-
-        let videoSent = false;
-
         if (youtubeSelectedVideo.provider === 'Pixabay' &&
             youtubeSelectedVideo.mp4Url) {
           try {
@@ -4557,45 +4548,29 @@ if (youtubeSelectedVideo) {
               from,
               youtubeSelectedVideo.mp4Url,
               '🎬 ' + String(youtubeSelectedVideo.title || 'Pixabay Video').slice(0, 800) +
-                '\n📷 Pixabay'
+                '\\n📷 Pixabay'
             );
-            videoSent = true;
           } catch (videoError) {
-            console.warn('[WA Pixabay MP4 fallback]', videoError.message);
+            console.warn('[WA Pixabay MP4 error]', videoError.message);
           }
-        }
-
-        if (youtubeSelectedVideo.provider === 'Pixabay' && !videoSent) {
+        } else {
+          const videoUrl = youtubeSelectedVideo.watchUrl ||
+            youtubeSelectedVideo.pageUrl ||
+            (youtubeSelectedVideo.videoId
+              ? 'https://www.youtube.com/watch?v=' +
+                encodeURIComponent(youtubeSelectedVideo.videoId)
+              : '');
           await sendWA({
             type: 'text',
             text: {
-              body: '⚠️ இந்த MP4 வீடியோவை WhatsApp-ல் அனுப்ப முடியவில்லை. வேறு வீடியோவைத் தேர்ந்தெடுக்கவும்.'
-            }
-          });
-        } else if (youtubeSelectedVideo.provider === 'YouTube') {
-          await sendWA({
-            type: 'interactive',
-            interactive: {
-              type: 'cta_url',
-              body: {
-                text: (youtubeIsSongSearch ? '🎵 ' : '🎬 ') + String(youtubeSelectedVideo.title || (youtubeIsSongSearch ? 'Song' : 'Video')).slice(0, 900) +
-                  (youtubeIsSongSearch ? '\n\n▶ YouTube-ல் கேட்க PLAY அழுத்துங்கள்.' : '\n\n▶ YouTube-ல் பார்க்க PLAY அழுத்துங்கள்.')
-              },
-              action: {
-                name: 'cta_url',
-                parameters: {
-                  display_text: youtubeIsSongSearch ? '▶ PLAY SONG' : '▶ PLAY YOUTUBE',
-                  url: videoUrl
-                }
-              }
+              body: '🎬 ' + String(youtubeSelectedVideo.title || 'Video') +
+                (videoUrl ? '\\n' + videoUrl : '')
             }
           });
         }
-
       } else if (youtubeVideos.length) {
         for (let i = 0; i < youtubeVideos.length; i++) {
           const video = youtubeVideos[i];
-
           try {
             const thumbResponse = await fetch(video.thumbnail, {
               signal: AbortSignal.timeout(15000)
@@ -4616,35 +4591,28 @@ if (youtubeSelectedVideo) {
               from,
               thumbBuffer,
               mime,
-              (youtubeIsSongSearch ? '🎵 SONG ' : '🎬 VIDEO ') + (i + 1) + '/5\n' +
-              '[' + video.provider + '] ' +
-              String(video.title || 'Video').slice(0, 700) +
-              youtubeIsSongSearch ? '\n\n👇 கீழே PLAY SONG அழுத்துங்கள்.' : '\n\n👇 கீழே PLAY அழுத்துங்கள்.'
+              (youtubeIsSongSearch ? '🎵 SONG ' : '🎬 VIDEO ') + (i + 1) + '/5\\n' +
+                '[' + video.provider + '] ' +
+                String(video.title || 'Video').slice(0, 700)
             );
 
-            await sendWA({
-              type: 'interactive',
-              interactive: {
-                type: 'button',
-                body: {
-                  text: (youtubeIsSongSearch ? '🎵 ' : '🎬 ') + String(video.title || (youtubeIsSongSearch ? 'Song' : 'Video')).slice(0, 700) +
-                    (youtubeIsSongSearch ? '\n\n▶ PLAY அழுத்தி பாடல் கேட்கவும்.' : '\n\n▶ PLAY அழுத்தி வீடியோ பார்க்கவும்.')
-                },
-                action: {
-                  buttons: [{
-                    type: 'reply',
-                    reply: { id: 'yt_play_' + i, title: youtubeIsSongSearch ? '▶ PLAY SONG' : '▶ PLAY' }
-                  }]
-                }
-              }
-            });
+            if (video.provider === 'Pixabay' && video.mp4Url) {
+              await skWhatsAppSendVideoUrl(
+                from,
+                video.mp4Url,
+                '🎬 ' + String(video.title || 'Pixabay Video').slice(0, 800) +
+                  '\\n📷 Pixabay'
+              );
+            }
 
-            console.log('[WA VIDEO ITEM] Sent', i + 1, video.provider);
+            console.log('[WA VIDEO GALLERY] Sent', i + 1, video.provider);
           } catch (itemError) {
-            console.warn('[WA VIDEO ITEM ERROR]', i + 1, itemError.message);
+            console.warn('[WA VIDEO GALLERY ERROR]', i + 1, itemError.message);
             await sendWA({
               type: 'text',
-              text: { body: '⚠️ Video ' + (i + 1) + ' thumbnail அனுப்ப முடியவில்லை.' }
+              text: {
+                body: '⚠️ Video ' + (i + 1) + ' thumbnail / MP4 அனுப்ப முடியவில்லை.'
+              }
             });
           }
         }
