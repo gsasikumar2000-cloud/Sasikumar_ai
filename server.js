@@ -5743,15 +5743,46 @@ app.get('/api/breaking-news', async (req, res) => {
       // SK_TN_BREAKING_NEWS_FILTER_V1
       let articles = normalize(provider.extract(data));
 
+      const newsText = item =>
+        (item.title + ' ' + item.content).toLowerCase();
+
       if (requested === 'tamil-nadu') {
         articles = skFilterFreshNewsResults(articles, 'Tamil Nadu');
+      } else if (requested === 'india') {
+        const indiaTerms = [
+          'india', 'indian', 'new delhi', 'mumbai', 'chennai',
+          'kolkata', 'bengaluru', 'hyderabad', 'pune', 'ahmedabad',
+          'uttar pradesh', 'madhya pradesh', 'tamil nadu', 'kerala',
+          'karnataka', 'telangana', 'andhra pradesh', 'maharashtra',
+          'gujarat', 'rajasthan', 'bihar', 'west bengal', 'odisha',
+          'assam', 'punjab', 'haryana', 'goa', 'jharkhand',
+          'chhattisgarh', 'uttarakhand', 'himachal pradesh',
+          'jammu and kashmir', 'manipur', 'meghalaya', 'tripura',
+          'mizoram', 'nagaland', 'sikkim', 'delhi'
+        ];
+        articles = articles.filter(item =>
+          indiaTerms.some(term => newsText(item).includes(term))
+        );
+      } else if (requested === 'world') {
+        const indiaTerms = [
+          'india', 'indian', 'new delhi', 'mumbai', 'chennai',
+          'tamil nadu', 'kerala', 'karnataka', 'hyderabad'
+        ];
+        articles = articles.filter(item =>
+          !indiaTerms.some(term => newsText(item).includes(term))
+        );
       }
 
       if (requested === 'topic') {
-        const words = topic.toLowerCase().split(/\s+/).filter(Boolean);
+        const words = topic.toLowerCase().split(/\s+/).filter(word => word.length > 1);
         articles = articles.filter(item => {
-          const haystack = (item.title + ' ' + item.content).toLowerCase();
-          return words.some(word => haystack.includes(word));
+          const haystack = newsText(item);
+          if (!words.length || !words.every(word => haystack.includes(word))) return false;
+
+          if (/\bgold\b/i.test(topic)) {
+            return /gold price|gold rate|gold market|gold trading|gold demand|gold import|gold export|gold jewellery|gold jewelry|gold investment|bullion|தங்கம்|தங்க விலை|நகை/i.test(haystack);
+          }
+          return true;
         });
       }
 
