@@ -668,7 +668,7 @@ function skFmLoadMore() {
 
 async function skFmShowFavorites() {
   skFmFavoriteMode = true;
-  ++skFmRequestId;
+  const requestId = ++skFmRequestId;
   $('fmStations').replaceChildren();
 
   if (!skFmFavoriteIds.length) {
@@ -678,20 +678,28 @@ async function skFmShowFavorites() {
 
   skFmSetStatus('❤️ Favorites நிலையங்களை ஏற்றுகிறது...');
   try {
-    const params = new URLSearchParams({
-      hidebroken: 'false',
-      limit: '100'
-    });
-    skFmFavoriteIds.forEach(id => {});
-    const response = await fetch(skFmApi + '?' + params.toString());
-    if (!response.ok) throw new Error('HTTP ' + response.status);
-    const all = await response.json();
-    const wanted = new Set(skFmFavoriteIds);
-    skFmStations = all.filter(station => wanted.has(station.stationuuid));
+    const results = await Promise.all(
+      skFmFavoriteIds.map(async id => {
+        const response = await fetch(
+          'https://de1.api.radio-browser.info/json/stations/byuuid/' +
+          encodeURIComponent(id),
+          { signal: AbortSignal.timeout(12000) }
+        );
+        if (!response.ok) return null;
+        const data = await response.json();
+        const station = Array.isArray(data) ? data[0] : null;
+        return station && station.stationuuid ? station : null;
+      })
+    );
+
+    if (requestId !== skFmRequestId) return;
+
+    skFmStations = results.filter(Boolean);
     skFmRender();
     skFmSetStatus('❤️ சேமித்த நிலையங்கள்: ' + skFmStations.length +
-      '. ஏதேனும் நிலையம் காணப்படாவிட்டால் அது தற்போது பட்டியலில் கிடைக்காமல் இருக்கலாம்.');
+      ' / ' + skFmFavoriteIds.length + ' கிடைத்துள்ளன.');
   } catch (err) {
+    if (requestId !== skFmRequestId) return;
     skFmSetStatus('Favorites நிலைய விவரங்களை ஏற்ற முடியவில்லை. ' + err.message);
   }
 }
@@ -808,6 +816,54 @@ document.getElementById('skStudioVolume').addEventListener('input', function(){
 
 document.getElementById('skStudioPlayer').volume = 0.8;
 document.getElementById('skStudioPlayer').addEventListener('ended', skStudioNext);
+
+
+
+// SK_WA_FM_DEEP_LINK_V1
+(async function skFmWhatsAppDeepLink() {
+  const id = new URLSearchParams(location.search).get('fmstation');
+  if (!id) return;
+
+  try {
+    skFmRequestId++;
+    skFmFavoriteMode = false;
+
+    const r = await fetch(
+      'https://de1.api.radio-browser.info/json/stations/byuuid/' +
+      encodeURIComponent(id),
+      { signal: AbortSignal.timeout(12000) }
+    );
+
+    if (!r.ok) throw Error('Station lookup failed');
+
+    const data = await r.json();
+    const station = Array.isArray(data) ? data[0] : null;
+
+    if (!station || !station.stationuuid ||
+        Number(station.lastcheckok) !== 1 ||
+        !(station.url_resolved || station.url)) {
+      throw Error('Station unavailable');
+    }
+
+    $('fmSearch').value = station.name || '';
+    skFmStations = [station];
+    skFmOffset = 0;
+    skFmRender();
+
+    skFmSetStatus(
+      '✅ ' + (station.name || 'FM Station') +
+      ' கிடைத்துள்ளது. Play பொத்தானை அழுத்திக் கேட்கவும்.'
+    );
+
+    $('skGlobalFmRadio').scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  } catch (e) {
+    console.warn('[FM DEEP LINK]', e.message);
+    skFmSetStatus('⚠️ FM நிலையம் தற்போது கிடைக்கவில்லை. மீண்டும் தேடவும்.');
+  }
+})();
 
 function closeHub(){if(history.length>1)history.back();else location.href='/'}
 </script>

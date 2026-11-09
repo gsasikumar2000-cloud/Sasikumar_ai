@@ -4129,6 +4129,8 @@ let youtubePageNumber = 0;
 let youtubeHasNext = false;
 let youtubeHasPrevious = false;
 let youtubeIsSongSearch = false;
+let waFmSearchRequested = false;
+let waFmStation = null;
 const youtubeNavigation = /^yt_(?:next|prev)$/.test(waButtonId);
 const youtubePlayRequested = /^yt_play_\d+$/.test(waButtonId);
 let autoPosterForContent = false;
@@ -4233,7 +4235,87 @@ if (youtubePlayRequested) {
 குறிப்பு: நேரடி மனித பதில் ஆதரவு குழு கிடைப்பதைப் பொறுத்தது.
 🔙 Type 0 for Main Menu`;
   } else if (/loan\s*calculat|emi\s*calculat|கடன்\s*கணக்கீடு/i.test(trimmed)) {
-    reply = getMenuReply('3');
+    reply = '🧮 EMI Calculator\nஉதாரணம்: EMI 100000 12 12\n🌐 https://sasikumar-ai-9wdq.onrender.com/loan-calculator.html';
+  } else if (
+    /(?:\bfm\b|\bradio\b|suryan|hello\s*fm|mirchi|radio\s*city|air\s*fm|வானொலி|ரேடியோ)/i.test(trimmed) &&
+    !/\b(?:youtube|videos?|songs?|music|shorts?|trailer)\b/i.test(trimmed) &&
+    !/(?:பாடல்|இசை|வீடியோ)/i.test(trimmed)
+  ) {
+    // SK_WHATSAPP_FM_SEARCH_V1
+    waFmSearchRequested = true;
+
+    const fmTamil = /^(?:tamil\s*fm|தமிழ்\s*எப்.?எம்)$/i.test(trimmed);
+    const fmFrequency = trimmed.match(/\b\d{2,3}(?:\.\d)?\b/);
+
+    let fmName = trimmed
+      .replace(/^(?:please\s+)?(?:search|find|play|listen to|tune in to)\s+/i, '')
+      .replace(/\bfm\b/ig, '')
+      .replace(/\bradio\b/ig, '')
+      .replace(/\bstation\b/ig, '')
+      .trim();
+
+    if (/suryan/i.test(fmName)) fmName = 'Suryan';
+    else if (/hello/i.test(fmName)) fmName = 'Hello';
+    else if (/mirchi/i.test(fmName)) fmName = 'Mirchi';
+    else if (/radio\s*city|city/i.test(fmName)) fmName = 'City';
+    else if (/air|gold/i.test(fmName)) fmName = 'AIR Gold';
+    else if (fmFrequency) fmName = fmFrequency[0];
+    else if (fmTamil) fmName = '';
+
+    try {
+      const p = new URLSearchParams({
+        countrycode: 'IN',
+        hidebroken: 'true',
+        order: 'votes',
+        reverse: 'true',
+        limit: '10'
+      });
+
+      if (fmName) p.set('name', fmName);
+      if (fmTamil) p.set('language', 'tamil');
+
+      const r = await fetch(
+        'https://de1.api.radio-browser.info/json/stations/search?' + p.toString(),
+        { signal: AbortSignal.timeout(12000) }
+      );
+
+      if (!r.ok) throw Error('Radio API HTTP ' + r.status);
+
+      const data = await r.json();
+
+      const stations = (Array.isArray(data) ? data : [])
+        .filter(x => {
+          if (!x.stationuuid || Number(x.lastcheckok) !== 1) return false;
+          try {
+            const u = new URL(x.url_resolved || x.url);
+            return u.protocol === 'http:' || u.protocol === 'https:';
+          } catch (_) {
+            return false;
+          }
+        })
+        .sort((a, b) => Number(b.votes || 0) - Number(a.votes || 0));
+
+      if (stations.length) {
+        waFmStation = stations[0];
+        reply =
+          '📻 SASIKUMAR AI — FM RADIO\n\n' +
+          '🎙️ Station: ' + String(waFmStation.name || 'FM Radio').slice(0, 150) +
+          '\n📍 ' + [waFmStation.state, waFmStation.country].filter(Boolean).join(', ') +
+          '\n🗣️ ' + String(waFmStation.language || 'Not listed') +
+          '\n\n✅ Radio Browser reports this stream as working.\n' +
+          '👇 PLAY FM அழுத்தி Hub திறக்கவும். அங்கே Play அழுத்திக் கேட்கலாம்.';
+      } else {
+        reply =
+          '📻 இந்தப் பெயரில் இயங்கும் FM நிலையம் கிடைக்கவில்லை.\n' +
+          'வேறு Station பெயரை முயற்சிக்கவும்.\n\n' +
+          'FM Hub: https://sasikumar-ai-9wdq.onrender.com/audio-video-hub.html';
+      }
+    } catch (e) {
+      console.warn('[WA FM SEARCH]', e.message);
+      reply =
+        '⚠️ FM தேடல் தற்போது கிடைக்கவில்லை. சிறிது நேரம் கழித்து முயற்சிக்கவும்.\n\n' +
+        'FM Hub: https://sasikumar-ai-9wdq.onrender.com/audio-video-hub.html';
+    }
   } else if (/(?:youtube|pixabay|\bvideos?\b|\bshorts?\b|\blivestream\b|\bstream\b|\bsongs?\b|\bmusic\b|\baudio\b|\btracks?\b|\balbums?\b|\bmelody\b|\bscenes?\b|\btrailer\b|பாடல்|இசை|ஆடியோ|வீடியோ|காட்சிகள்|நேரலை|லைவ்)/i.test(trimmed)) {
     // SK_WHATSAPP_YOUTUBE_GALLERY_V2
     youtubeSearchRequested = true;
@@ -4573,7 +4655,33 @@ if (youtubeSelectedVideo) {
 }
 
 
-      if (youtubeSearchRequested) {
+      if (waFmSearchRequested) {
+        if (waFmStation) {
+          const fmUrl =
+            'https://sasikumar-ai-9wdq.onrender.com/audio-video-hub.html?fmstation=' +
+            encodeURIComponent(waFmStation.stationuuid);
+
+          await sendWA({
+            type: 'interactive',
+            interactive: {
+              type: 'cta_url',
+              body: { text: answerText },
+              action: {
+                name: 'cta_url',
+                parameters: {
+                  display_text: '▶ PLAY FM',
+                  url: fmUrl
+                }
+              }
+            }
+          });
+        } else {
+          await sendWA({
+            type: 'text',
+            text: { body: answerText }
+          });
+        }
+      } else if (youtubeSearchRequested) {
         if (!youtubeVideos.length && !youtubeSelectedVideo) {
           await sendWA({ type: 'text', text: { body: answerText } });
         }
