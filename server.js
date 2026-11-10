@@ -4533,16 +4533,12 @@ if (youtubePlayRequested) {
     reply = getMenuReply('21');
   } else if (/audio\s*(and|&)\s*video\s*hub|audio.video.hub|audio|songs?|music|video\s*hub|movie\s*videos?|பாடல்கள்?|ஆடியோ|வீடியோ ஹப்|ஒலி/i.test(trimmed)) {
     reply = getMenuReply('23');
+  } else if (/\bmemes?\b|மீம்|மீம்ஸ்/i.test(trimmed)) {
+    reply = '🔥 SASIKUMAR AI — TAMIL MEME\n🖼️ உங்கள் மீம் படம் தயாராகிறது...';
   } else if (/\b(comedy|joke|funny|laugh|next)\b|காமெடி|ஜோக்|நகைச்சுவை/i.test(trimmed)) {
-    const jokes = [
-      '😂 ஆசிரியர்: ஏன் லேட்டா வந்தாய்? மாணவர்: சார், கனவில் பள்ளிக்கு வந்தேன்; அதனால் நிஜத்தில் லேட்டாகிவிட்டது! 🤣',
-      '🤣 நண்பன்: என் மொபைல் என்னை ரொம்ப நேசிக்குது! மற்றவன்: எப்படி? நண்பன்: எப்போதும் என்னைக் கட்டிப்பிடிச்சு சார்ஜ் கேட்குது! 😂📱',
-      '😄 மருத்துவர்: தினமும் உடற்பயிற்சி செய்யுங்கள். நோயாளி: சரி டாக்டர், இனிமேல் உடற்பயிற்சி வீடியோக்களை தினமும் பார்ப்பேன்! 😂',
-      '😂 கணவர்: இன்று சாப்பாட்டில் என்ன ஸ்பெஷல்? மனைவி: உங்களுக்காக அன்புடன் செய்தேன்! கணவர்: அதனால்தான் உப்புக்கூட அன்பாக அதிகமா இருக்கா? 🤣'
-    ];
-    reply = jokes[Math.floor(Math.random() * jokes.length)] +
+    reply = await skGenerateTamilComedy(trimmed, 'website') +
       '\n\n😄 இன்னொரு காமெடிக்கு Next அனுப்புங்கள்!';
-   } else if (/^(35|ஜோதிடம்|ராசிபலன்|ராசி பலன்|horoscope|astrology)$/i.test(trimmed)) {
+  } else if (/^(35|ஜோதிடம்|ராசிபலன்|ராசி பலன்|horoscope|astrology)$/i.test(trimmed)) {
     reply = '🔮 SASIKUMAR AI — தமிழ் ஜோதிடம் & ராசி பலன்கள்\n\n' +
       '12 ராசிகளின் தகவல்கள் மற்றும் ஆன்மீகத் தகவல்களைப் பார்க்கவும்.\n\n' +
       '🌐 ஜோதிடப் பக்கம்: https://sasikumar-ai-9wdq.onrender.com/spiritual-astrology.html';
@@ -4599,6 +4595,11 @@ if(WA_TOKEN && WA_PHONE_ID){
 
       // One branded image message for every WhatsApp reply.
       const answerText = String(reply || WELCOME_MENU);
+// SK_UNIVERSAL_MEME_ROUTING_V1
+const waTamilMemeRequested = /tamil\s*meme|தமிழ்\s*மீம்|தமிழ்\s*மீம்ஸ்/i.test(trimmed);
+const waMemeRequested = /\bmeme(s)?\b|மீம்|மீம்ஸ்/i.test(trimmed);
+const waMondayMemeRequested = /\b(monday\s*(morning\s*)?(cat\s*)?meme|cat\s*coffee\s*meme|monday\s*morning\s*cat)\b/i.test(trimmed);
+
 if (youtubeSelectedVideo) {
         if (youtubeSelectedVideo.provider === 'Pixabay' &&
             youtubeSelectedVideo.mp4Url) {
@@ -4812,8 +4813,79 @@ if (youtubeSelectedVideo) {
             body: menuCaption
           }
         });
+      } else if (waMondayMemeRequested) {
+        try {
+          const prompt = 'Create a hilarious photorealistic Monday morning meme image: a very sleepy cute fluffy cat stuck comfortably inside a large coffee mug, sleepy eyes, cozy morning kitchen, warm coffee steam, funny expressive face, professional high quality meme photography, portrait 4:5 composition. Leave clean empty space at the top and bottom for captions. Absolutely no text, no letters, no watermark.';
+          const generated = await skGenerateImage(prompt);
+          const match = /^data:(image\/[a-zA-Z0-9.+-]+);base64,([A-Za-z0-9+/=\r\n]+)$/.exec(String(generated || ''));
+
+          if (!match) throw new Error('Unsupported generated meme image.');
+
+          const imageBytes = Buffer.from(match[2].replace(/\s/g, ''), 'base64');
+          if (!imageBytes.length) throw new Error('Generated meme is empty.');
+
+          const caption = '😂 Monday Morning...\n\nநீங்கள் இன்னும் விழித்திருக்கிறீர்களா? ☕😴\n\nWhen Monday hits and your brain says: இன்னும் 5 நிமிடங்கள்!\n\n🤖 SASIKUMAR AI STUDIO';
+
+          await skWhatsAppSendImageBuffer(from, imageBytes, match[1], caption);
+
+          console.log('[WA MONDAY MEME] AI Cat Meme sent successfully.');
+        } catch (memeError) {
+          console.error('[WA MONDAY MEME ERROR]', memeError.message);
+          await sendWA({
+            type: 'text',
+            text: { body: '⚠️ Monday Meme உருவாக்க முடியவில்லை. சிறிது நேரம் கழித்து முயற்சிக்கவும்.' }
+          });
+        }
+      } else if (waMemeRequested) {
+        try {
+          const memeSubject = trimmed
+            .replace(/\bmemes?\b/gi, '')
+            .replace(/மீம்ஸ்?|மீம்/gi, '')
+            .replace(/\s+/g, ' ')
+            .trim() || 'Tamil everyday life';
+
+          const prompt =
+            'Create exactly ONE hilarious, high-quality meme image based on this subject: "' +
+            memeSubject.slice(0, 180) +
+            '". Make the humour relevant to the named person or topic. ' +
+            'If the subject is Vijay, create a respectful funny meme inspired by Tamil cinema comedy situations. ' +
+            'Use expressive visual storytelling, funny facial expressions, vibrant colourful composition, portrait 4:5 format. ' +
+            'No text, no letters, no captions, no watermark.';
+
+          const generated = await skGenerateImage(prompt);
+          const match = /^data:(image\/[a-zA-Z0-9.+-]+);base64,([A-Za-z0-9+/=\r\n]+)$/.exec(String(generated || ''));
+
+          if (!match) throw new Error('AI Meme image generation failed.');
+
+          const imageBytes = Buffer.from(match[2].replace(/\s/g, ''), 'base64');
+          if (!imageBytes.length) throw new Error('Generated meme is empty.');
+
+          await skWhatsAppSendImageBuffer(
+            from,
+            imageBytes,
+            match[1],
+            '😂 ' + memeSubject.slice(0, 300) + ' MEME\n\n🤖 SASIKUMAR AI STUDIO'
+          );
+
+          console.log('[WA AI MEME] One AI meme image sent.');
+        } catch (memeError) {
+          console.error('[WA AI MEME ERROR]', memeError.message);
+          await sendWA({
+            type: 'text',
+            text: { body: '⚠️ AI Meme படம் உருவாக்க முடியவில்லை. சிறிது நேரம் கழித்து முயற்சிக்கவும்.' }
+          });
+        }
+
       } else {
-        const caption = ('🤖 SASIKUMAR AI\n' + answerText).substring(0, 1000);
+        const isComedyText =
+          /\b(comedy|funny|joke|humour|humor)\b|நகைச்சுவை|காமெடி|ஜோக்/i.test(trimmed) &&
+          !/\b(meme|memes|image|photo|picture|poster)\b|மீம்|படம்/i.test(trimmed);
+
+        const comedyGalleryLabel = isComedyText
+          ? '\n\n🖼️ Related Gallery: Comedy • Animation • Animal Memes'
+          : '';
+
+        const caption = ('🤖 SASIKUMAR AI\n' + answerText + comedyGalleryLabel).substring(0, 1000);
 
         // SK_WHATSAPP_AI_POSTER_ROUTE_V1
         const wantsPoster =
@@ -4825,17 +4897,19 @@ if (youtubeSelectedVideo) {
         // SK_WHATSAPP_REAL_IMAGE_CATEGORIES_V1
         const wantsCatalogImage =
           /\b(image|images|picture|pictures|photo|photos|drawing|drawings|sketch|sketches|illustration|illustrations|artwork|painting|paintings|cartoon|logo|logos|icon|icons|sticker|stickers|clipart|diagram|diagrams|chart|charts|infographic|infographics|map|maps|wallpaper|wallpapers|background|portrait|blueprint)\b/i.test(trimmed) ||
-          /படம்|புகைப்படம்|ஓவியம்|வரைபடம்|சித்திரம்|படங்கள்|புகைப்படங்கள்|லோகோ|சின்னம்/.test(trimmed);
+          /\b(animal|animals|bird|birds|pet|pets|nature|actor|actors|actress|actresses|celebrity|celebrities|gallery|galleries)\b/i.test(trimmed) ||
+          /படம்|புகைப்படம்|ஓவியம்|வரைபடம்|சித்திரம்|படங்கள்|புகைப்படங்கள்|லோகோ|சின்னம்|விலங்குகள்|பறவைகள்/.test(trimmed);
 
         // SK_AI_IMAGE_STYLE_ROUTING_V1
         const wantsAiGeneratedImage =
-          /\b(ai|artificial intelligence)\b.{0,40}\b(image|picture|photo|drawing|sketch|cartoon|artwork)\b/i.test(trimmed) ||
-          /\b(generate|create|make|draw)\b.{0,60}\b(image|picture|photo|drawing|sketch|cartoon|artwork)\b/i.test(trimmed) ||
+          /\b(meme|memes|animation|animated|ai)\b/i.test(trimmed) ||
+          /\b(create|generate|make|draw)\b.{0,80}\b(image|picture|photo|drawing|sketch|cartoon|artwork|animation)\b/i.test(trimmed) ||
           /\b(drawing|drawings|sketch|sketches|illustration|illustrations|artwork|painting|paintings|cartoon|cartoons)\b/i.test(trimmed) ||
-          /ஓவியம்|சித்திரம்|வரைந்து|உருவாக்கு/i.test(trimmed);
+          /ஓவியம்|சித்திரம்|வரைந்து|உருவாக்கு|மீம்|மீம்ஸ்/i.test(trimmed);
 
         const wantsImage =
           wantsPoster ||
+          wantsAiGeneratedImage ||
           (wantsCatalogImage && /(?:image|images|picture|pictures|photo|photos|drawing|drawings|sketch|sketches|illustration|illustrations|artwork|painting|paintings|cartoon|logo|logos|icon|icons|sticker|stickers|clipart|diagram|diagrams|chart|charts|infographic|infographics|map|maps|wallpaper|wallpapers|background|portrait|blueprint|படம்|புகைப்படம்|ஓவியம்|வரைபடம்|சின்னம்)/i.test(trimmed)) ||
           /\b(generate|create|make|draw|design|send|show)\b.{0,100}\b(image|picture|photo|poster|wallpaper|god|deity|krishna|murugan|ganesha|vinayagar|jesus|allah)\b/i.test(trimmed) ||
           /\b(image|picture|photo|poster|wallpaper)\b.{0,100}\b(generate|create|make|draw|design|send|show)\b/i.test(trimmed) ||
@@ -4957,70 +5031,6 @@ if (youtubeSelectedVideo) {
               ? galleryImages.slice(0, 16)
               : [{ dataUri: generated }];
 
-            // SK_WHATSAPP_IMAGE_GALLERY_4X4_GRID_V1
-            if (wantsCatalogImage && imagesToSend.length) {
-              try {
-                const { Jimp } = await import('jimp');
-                const cell = 270;
-                const grid = new Jimp({
-                  width: 1080,
-                  height: 1080,
-                  color: 0xfff4f7fb
-                });
-
-                let added = 0;
-
-                for (let i = 0; i < imagesToSend.length; i++) {
-                  try {
-                    const uri = String(imagesToSend[i]?.dataUri || '');
-                    const match = /^data:(image\/[a-zA-Z0-9.+-]+);base64,([A-Za-z0-9+/=\r\n]+)$/.exec(uri);
-
-                    if (!match) continue;
-
-                    const bytes = Buffer.from(
-                      match[2].replace(/\s/g, ''),
-                      'base64'
-                    );
-
-                    if (!bytes.length || bytes.length > 5 * 1024 * 1024) {
-                      continue;
-                    }
-
-                    const tile = await Jimp.read(bytes);
-                    tile.cover({ w: cell, h: cell });
-
-                    grid.composite(
-                      tile,
-                      (i % 4) * cell,
-                      Math.floor(i / 4) * cell
-                    );
-
-                    added++;
-                  } catch (tileError) {
-                    console.warn('[Image Gallery Grid] Tile failed:', i, tileError.message);
-                  }
-                }
-
-                if (added > 0) {
-                  const gridBuffer = await grid.getBuffer(
-                    'image/jpeg',
-                    { quality: 82 }
-                  );
-
-                  await skWhatsAppSendImageBuffer(
-                    from,
-                    gridBuffer,
-                    'image/jpeg',
-                    '🤖 SASIKUMAR AI STUDIO\n📷 Image Gallery — 4×4 Grid\n🖼️ ' + added + ' images'
-                  );
-
-                  console.log('[Image Gallery Grid] Sent:', added);
-                }
-              } catch (gridError) {
-                console.warn('[Image Gallery Grid] Failed; sending individual images:', gridError.message);
-              }
-            }
-            // END SK_WHATSAPP_IMAGE_GALLERY_4X4_GRID_V1
 
             for (let imageIndex = 0; imageIndex < imagesToSend.length; imageIndex++) {
             const currentGenerated = imagesToSend[imageIndex]?.dataUri || generated;
@@ -5853,6 +5863,31 @@ app.get('/api/breaking-news', async (req, res) => {
     }));
 
   const providers = [];
+
+  // SK_NEWSDATA_PRIMARY_PROVIDER_V1
+  if (process.env.NEWSDATA_API_KEY?.trim()) {
+    providers.push({
+      name: 'NewsData.io',
+      url: (language) => {
+        const params = new URLSearchParams({
+          apikey: process.env.NEWSDATA_API_KEY.trim(),
+          language: language || config.language
+        });
+
+        if (config.country) params.set('country', config.country);
+
+        const newsQuery =
+          requested === 'topic' && /\\bgold\\b/i.test(topic)
+            ? 'gold price OR gold rate OR bullion OR gold market OR 22K OR 24K'
+            : config.q;
+
+        if (newsQuery) params.set('q', newsQuery);
+
+        return 'https://newsdata.io/api/1/latest?' + params.toString();
+      },
+      extract: data => data.results
+    });
+  }
 
   if (process.env.GNEWS_API_KEY?.trim()) {
     providers.push({
@@ -9661,7 +9696,48 @@ if (/^(?:share|பகிர்|பகிரவும்)$/i.test(text)) {
       return;
     }
 
-    // SK_TELEGRAM_REAL_IMAGE_SEARCH_V1
+    // SK_TELEGRAM_MEME_COMEDY_PHASE3
+    if (/\bmemes?\b|மீம்|மீம்ஸ்/i.test(text)) {
+      await skTelegramSendMessage(chatId, '🔥 SASIKUMAR AI — TAMIL MEME\n🖼️ மீம் படம் தேடப்படுகிறது...');
+
+      try {
+        const memes = await skFetchTamilMemes(1);
+        if (!memes.length) throw new Error('No Tamil memes available.');
+
+        const meme = memes[0];
+        const downloaded = await skDownloadTamilMemeImage(meme.image);
+
+        await skTelegramSendProcessedImage(
+          chatId,
+          downloaded.buffer,
+          downloaded.mime,
+          '😂 ' + String(meme.title || 'Tamil Meme').slice(0, 500) +
+            '\n📷 Reddit\n' + meme.sourceUrl
+        );
+      } catch (memeError) {
+        console.error('[Telegram MEME ERROR]', memeError.message);
+        await skTelegramSendMessage(chatId, '⚠️ இப்போது Meme படம் கிடைக்கவில்லை. பின்னர் முயற்சிக்கவும்.');
+      }
+      return;
+    }
+
+    if (/\b(comedy|jokes?|funny|laugh)\b|காமெடி|ஜோக்|நகைச்சுவை/i.test(text)) {
+      const topic = text
+        .replace(/\b(tamil\s+)?(comedy|jokes?|funny|laugh)\b/ig, '')
+        .replace(/காமெடி|ஜோக்|நகைச்சுவை/g, '')
+        .replace(/^\s*[:：-]\s*/, '')
+        .trim() || 'புதிய தமிழ் நகைச்சுவை';
+
+      const comedy = await skGenerateTamilComedy(topic, 'telegram');
+      await skTelegramSendMessage(
+        chatId,
+        comedy + '\n\n😄 SASIKUMAR AI — Tamil Comedy'
+      );
+      return;
+    }
+    // END SK_TELEGRAM_MEME_COMEDY_PHASE3
+
+// SK_TELEGRAM_REAL_IMAGE_SEARCH_V1
     const telegramPhotoSearch =
       /(?:\b(?:image|images|photo|photos|picture|pictures|pic|pics)\b|படம்|புகைப்படம்|படங்கள்)/i.test(text);
 
@@ -9963,6 +10039,238 @@ app.get("/api/youtube/share", (req, res) => {
     shareUrl: `https://www.youtube.com/watch?v=${id}`
   });
 });
+
+
+// SK_MEME_ENGINE_V1
+let skTamilMemeCache = { expires: 0, items: [] };
+
+async function skFetchTamilMemes(count = 8) {
+  if (skTamilMemeCache.expires > Date.now() &&
+      skTamilMemeCache.items.length) {
+    return skTamilMemeCache.items.slice(0, count);
+  }
+
+  const response = await fetch(
+    'https://meme-api.com/gimme/TamilMemes/10',
+    { signal: AbortSignal.timeout(15000) }
+  );
+
+  if (!response.ok) {
+    throw new Error('Tamil meme provider unavailable');
+  }
+
+  const data = await response.json();
+  const posts = Array.isArray(data.memes)
+    ? data.memes
+    : data ? [data] : [];
+
+  const items = posts
+    .filter(x =>
+      x &&
+      x.nsfw !== true &&
+      x.spoiler !== true &&
+      typeof x.url === 'string' &&
+      /^https:\/\/i\.redd\.it\//i.test(x.url)
+    )
+    .map(x => ({
+      title: String(x.title || 'Tamil Meme').slice(0, 180),
+      image: x.url,
+      author: String(x.author || 'Reddit user').slice(0, 60),
+      upvotes: Number(x.ups || 0),
+      source: 'Reddit',
+      sourceUrl: /^https:\/\/www\.reddit\.com\//i.test(x.postLink || '')
+        ? x.postLink
+        : 'https://www.reddit.com/r/TamilMemes/'
+    }));
+
+  skTamilMemeCache = {
+    expires: Date.now() + 60000,
+    items
+  };
+
+  return items.slice(0, count);
+}
+
+
+async function skDownloadTamilMemeImage(imageUrl) {
+  const parsed = new URL(String(imageUrl || ''));
+
+  if (
+    parsed.protocol !== 'https:' ||
+    parsed.hostname !== 'i.redd.it' ||
+    parsed.username || parsed.password
+  ) {
+    throw new Error('Untrusted meme image URL.');
+  }
+
+  const response = await fetch(parsed.href, {
+    redirect: 'error',
+    signal: AbortSignal.timeout(15000)
+  });
+
+  if (!response.ok) throw new Error('Meme image download failed.');
+
+  const finalUrl = new URL(response.url);
+  if (
+    finalUrl.protocol !== 'https:' ||
+    finalUrl.hostname !== 'i.redd.it'
+  ) {
+    throw new Error('Unexpected meme image host.');
+  }
+
+  const mime = String(
+    response.headers.get('content-type') || ''
+  ).split(';')[0].trim().toLowerCase();
+
+  if (!['image/jpeg', 'image/png'].includes(mime)) {
+    throw new Error('Unsupported meme image format.');
+  }
+
+  const declaredSize = Number(
+    response.headers.get('content-length') || 0
+  );
+
+  if (declaredSize > 5 * 1024 * 1024) {
+    throw new Error('Meme image exceeds 5 MB.');
+  }
+
+  const buffer = Buffer.from(await response.arrayBuffer());
+
+  if (!buffer.length || buffer.length > 5 * 1024 * 1024) {
+    throw new Error('Invalid meme image size.');
+  }
+
+  const validJpeg = mime === 'image/jpeg' &&
+    buffer[0] === 0xFF &&
+    buffer[1] === 0xD8 &&
+    buffer[2] === 0xFF;
+
+  const validPng = mime === 'image/png' &&
+    buffer.subarray(0, 8).equals(
+      Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])
+    );
+
+  if (!validJpeg && !validPng) {
+    throw new Error('Meme image content validation failed.');
+  }
+
+  return { buffer, mime };
+}
+
+async function skGenerateTamilComedy(topic = 'புதிய தமிழ் நகைச்சுவை', source = 'website') {
+  const cleanTopic = String(topic || '')
+    .replace(/\\b(comedy|joke|funny|laugh|next)\\b|காமெடி|ஜோக்|நகைச்சுவை/gi, '')
+    .trim()
+    .slice(0, 300) || 'நண்பர்கள் அன்றாட வாழ்க்கை';
+
+  const prompt = [
+    'நீங்கள் சிறந்த தமிழ் நகைச்சுவை எழுத்தாளர்.',
+    'முழுக்க முழுக்க இயல்பான பேச்சுத் தமிழில் மட்டும் எழுதுங்கள்.',
+    'ஆங்கில வாக்கியங்கள் அல்லது ஆங்கில ஜோக்குகள் வேண்டாம்.',
+    'மூன்று புதிய, அசலான, சிரிக்க வைக்கும் நகைச்சுவைகள் எழுதுங்கள்.',
+    'ஒவ்வொரு நகைச்சுவைக்கும் இரண்டு அல்லது மூன்று வரிகள் இருக்கட்டும்.',
+    'கடைசி வரியில் எதிர்பாராத நகைச்சுவையான Punchline இருக்க வேண்டும்.',
+    'குடும்பத்துடன் பகிரக்கூடிய நகைச்சுவையாக இருக்க வேண்டும்.',
+    'சினிமா வசனங்களையோ ஏற்கனவே உள்ள ஜோக்குகளையோ நகலெடுக்க வேண்டாம்.',
+    'தமிழ் எழுத்துக்களை மட்டுமே பயன்படுத்துங்கள். தேவையான இடங்களில் emoji பயன்படுத்தலாம்.',
+    'தலைப்பு: ' + cleanTopic
+  ].join('\\n');
+
+  const aiSource = source === 'whatsapp' ? 'website' : source;
+
+  try {
+    let result = await skCentralBrainReply({
+      message: prompt,
+      category: 'Tamil Comedy Writing',
+      source: aiSource
+    });
+
+    let reply = String(result?.reply || '').trim();
+
+    if (/[\\u0B80-\\u0BFF]/.test(reply)) return reply;
+
+    console.warn('[Tamil Comedy] Non-Tamil response. Retrying.');
+
+    result = await skCentralBrainReply({
+      message: prompt +
+        '\\n\\nமுக்கியம்: முந்தைய பதில் தமிழில் இல்லை. இப்போது இயல்பான தமிழில் மட்டும் மூன்று புதிய நகைச்சுவைகள் எழுதுங்கள்.',
+      category: 'Tamil Comedy Writing',
+      source: aiSource
+    });
+
+    reply = String(result?.reply || '').trim();
+
+    if (/[\\u0B80-\\u0BFF]/.test(reply)) return reply;
+
+  } catch (error) {
+    console.error('[Tamil Comedy]', error.message);
+  }
+
+  return [
+    '😂 தமிழ் காமெடி',
+    '',
+    '1. நண்பன்: ஏன் தினமும் அலாரம் வைக்கிற?',
+    'நான்: காலையில் எழுந்திருக்கத்தான்!',
+    'நண்பன்: அப்போ அலாரத்தை ஏன் அணைத்துவிட்டுத் தூங்குற?',
+    '',
+    '2. அம்மா: போனை கீழே வை, படிக்கப் போ!',
+    'மகன்: சரிம்மா... போனை மேசை மேல வைக்கிறேன்!',
+    '',
+    '3. நண்பன்: உன் சேமிப்பு எப்படி இருக்கு?',
+    'நான்: ரொம்ப நல்லா இருக்கு... பணம் வந்ததும் செலவாகாமல் இருக்கவே மாட்டேங்குது!'
+  ].join('\\n');
+}
+
+app.get('/api/memes/tamil', async (req, res) => {
+  try {
+    const count = Math.min(10, Math.max(1, Number(req.query.count) || 8));
+    const memes = await skFetchTamilMemes(count);
+    res.set('Cache-Control', 'no-store');
+    return res.json({
+      ok: true,
+      engine: 'SK MEME ENGINE V1',
+      provider: 'Reddit TamilMemes feed',
+      total: memes.length,
+      memes
+    });
+  } catch (error) {
+    console.error('[SK MEME ENGINE]', error.message);
+    return res.status(502).json({
+      ok: false,
+      engine: 'SK MEME ENGINE V1',
+      error: 'தமிழ் மீம்ஸ் இப்போது கிடைக்கவில்லை. பின்னர் முயற்சிக்கவும்.',
+      memes: []
+    });
+  }
+});
+
+app.post('/api/memes/comedy', async (req, res) => {
+  const topic = String(req.body?.topic || 'புதிய தமிழ் நகைச்சுவை').trim();
+
+  if (topic.length > 400) {
+    return res.status(400).json({
+      ok: false,
+      error: 'தலைப்பு 400 எழுத்துகளுக்குள் இருக்க வேண்டும்.'
+    });
+  }
+
+  try {
+    const reply = await skGenerateTamilComedy(topic, 'website');
+    return res.json({
+      ok: true,
+      engine: 'SK MEME ENGINE V1',
+      category: 'Tamil Writing Comedy',
+      reply
+    });
+  } catch (error) {
+    console.error('[SK Tamil Comedy]', error.message);
+    return res.status(502).json({
+      ok: false,
+      error: 'தமிழ் காமெடி உருவாக்க முடியவில்லை.'
+    });
+  }
+});
+// END SK_MEME_ENGINE_V1
 
 app.get('*',(req,res)=>{const fp=path.join(publicPath,'index.html');if(fs.existsSync(fp))res.sendFile(fp);else res.status(404).send('Not Found');});
 

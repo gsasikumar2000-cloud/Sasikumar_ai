@@ -7,7 +7,7 @@
 <title>SASIKUMAR AI — Meme Head</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,"Noto Sans Tamil",sans-serif;background:linear-gradient(135deg,#fff4d9,#f3e8ff,#e0f7ff);color:#24203a}
+body{margin:0;min-height:100vh;font-family:Arial,"Noto Sans Tamil",sans-serif;background:linear-gradient(135deg,#b8e7ff 0%,#d8c7ff 35%,#c7f4df 68%,#fff0b8 100%);background-attachment:fixed;color:#24203a}
 header{text-align:center;padding:24px 16px 18px}
 .logo{width:112px;height:112px;object-fit:contain;border-radius:24px;background:#fff;box-shadow:0 5px 22px #0002}
 h1{margin:12px 0 6px;font-size:clamp(25px,6vw,38px)}
@@ -23,8 +23,30 @@ input,select,textarea{width:100%;padding:12px;border:1px solid #d7cbe9;border-ra
 button.action{border:0;border-radius:12px;background:#6c3bdb;color:white;padding:12px 16px;font-weight:700;margin:8px 5px 0 0;cursor:pointer}
 button.secondary{background:#168a79}
 #result{white-space:pre-wrap;background:#fff6dc;padding:14px;border-radius:12px;margin-top:14px;min-height:45px}
+.meme-gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:13px;margin-top:16px}
+.meme-item{background:#fff;border-radius:15px;overflow:hidden;box-shadow:0 4px 14px #35205b16}
+.meme-item img{width:100%;height:190px;object-fit:contain;background:#f5f0ff}
+.meme-info{padding:10px;font-size:13px;overflow-wrap:anywhere}
+.meme-info a{font-weight:700}
+.status{font-size:14px;color:#168a79;font-weight:700}
 footer{text-align:center;padding:20px;font-size:14px}
 a{color:#5c32c8}
+
+/* SK_MONDAY_MORNING_MEME_V1 */
+.monday-meme-box{background:linear-gradient(135deg,#fff8df,#e8f7ff);border-radius:20px;padding:18px;margin:14px 0;box-shadow:0 6px 22px #35205b12}
+.monday-meme-preview{display:none;width:100%;max-width:480px;margin:16px auto;border-radius:16px;background:#fff;box-shadow:0 5px 20px #0002}
+.monday-meme-status{font-weight:700;margin-top:12px;overflow-wrap:anywhere}
+
+
+/* SK_TAMIL_MEME_SEARCH_V1 */
+.tamil-search-box{background:linear-gradient(135deg,#e8f7ff,#fff1df,#f3e8ff);border-radius:20px;padding:18px;margin:14px 0;box-shadow:0 6px 22px #35205b12}
+.tamil-search-buttons{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.tamil-search-buttons button{border:0;border-radius:20px;padding:10px 14px;background:#fff;color:#49318b;font-weight:700;cursor:pointer}
+.tamil-search-frame{width:100%;height:520px;border:1px solid #ded2f0;border-radius:14px;background:#fff;margin-top:14px}
+.tamil-search-actions{display:flex;flex-wrap:wrap;gap:8px}
+.tamil-search-note{font-size:13px;color:#594d70}
+/* END SK_TAMIL_MEME_SEARCH_V1 */
+
 </style>
 </head>
 <body>
@@ -64,7 +86,75 @@ a{color:#5c32c8}
 <button class="action" id="make">✨ Caption உருவாக்கு</button>
 <button class="action secondary" id="share">📲 Share</button>
 <div id="result" aria-live="polite">உங்கள் மீம் யோசனையை இங்கே உருவாக்கலாம்.</div>
-<p>குறிப்பு: இந்தப் பக்கம் caption உருவாக்க உதவுகிறது; படம் தானாக உருவாக்கப்படாது.</p>
+<p>🤖 AI தமிழ் காமெடி + Live Meme Gallery — SASIKUMAR AI.</p>
+</section>
+
+
+
+<!-- SK_TAMIL_MEME_SEARCH_V1 -->
+<section class="tamil-search-box">
+  <h2>🔎 தமிழ் Meme Search</h2>
+  <p>உங்களுக்குப் பிடித்த நடிகர், காமெடி அல்லது திரைப்பட Meme படங்களைத் தேடுங்கள்!</p>
+
+  <label for="tamilMemeSearchInput">Meme பெயர் / Keyword</label>
+  <input id="tamilMemeSearchInput" type="search"
+         placeholder="உதாரணம்: Vadivelu, Rajini, Santhanam..."
+         value="Vadivelu">
+
+  <div class="tamil-search-buttons">
+    <button type="button" data-meme-query="Vadivelu">😂 Vadivelu</button>
+    <button type="button" data-meme-query="Rajini">⭐ Rajini</button>
+    <button type="button" data-meme-query="Santhanam">🤣 Santhanam</button>
+    <button type="button" data-meme-query="Leo Vijay">🔥 Leo</button>
+    <button type="button" data-meme-query="Cheems">🐶 Cheems</button>
+    <button type="button" data-meme-query="Jailer">🎬 Jailer</button>
+  </div>
+
+  <div class="tamil-search-actions">
+    <button class="action" type="button" id="searchTamilMemes">🔎 Search Memes</button>
+    <button class="action secondary" type="button" id="shareTamilMemeSearch">📲 WhatsApp Share</button>
+    <a class="action" id="openTamilMemeSearch"
+       href="https://searchmemes.in/search?q=Vadivelu"
+       target="_blank" rel="noopener noreferrer"
+       style="display:inline-block;text-decoration:none">🌐 Open Search</a>
+  </div>
+
+  <p class="tamil-search-note" id="tamilMemeSearchStatus" aria-live="polite">
+    தேடத் தயாராக உள்ளது.
+  </p>
+
+  <iframe class="tamil-search-frame" id="tamilMemeSearchFrame"
+          title="Tamil Meme Search Results"
+          loading="lazy"
+          referrerpolicy="strict-origin-when-cross-origin"
+          src="https://searchmemes.in/search?q=Vadivelu"></iframe>
+
+  <p class="tamil-search-note">
+    குறிப்பு: வெளிப்புற இணையதளம் iframe-ஐ அனுமதிக்காவிட்டால்
+    மேலே உள்ள Open Search பொத்தானைப் பயன்படுத்துங்கள்.
+  </p>
+</section>
+<!-- END SK_TAMIL_MEME_SEARCH_V1 -->
+
+<!-- SK_MONDAY_MORNING_MEME_V1 -->
+<section class="monday-meme-box">
+<h2>🐱 Monday Morning Cat Meme</h2>
+<p>☕ Coffee Mug-க்குள் தூங்கும் பூனை Meme உருவாக்குங்கள்!</p>
+<p><strong>Top:</strong> Monday Morning...</p>
+<p><strong>Bottom:</strong> நீங்கள் இன்னும் விழித்திருக்கிறீர்களா? ☕😴</p>
+<button class="action" id="generateMondayMeme">🐱 Generate Cat Meme</button>
+<button class="action secondary" id="shareMondayMeme">📲 Share Image</button>
+<div id="mondayMemeStatus" class="monday-meme-status" aria-live="polite">Meme உருவாக்கத் தயாராக உள்ளது.</div>
+<img id="mondayMemePreview" class="monday-meme-preview" alt="Monday Morning sleepy cat coffee meme">
+</section>
+
+<!-- SK_MEME_HUB_PHASE2 -->
+<section class="intro">
+<h2>🔥 Live Tamil Meme Gallery</h2>
+<p>புதிய தமிழ் மீம்ஸ் படங்களைப் பாருங்கள், நண்பர்களுடன் பகிருங்கள்.</p>
+<button class="action" id="loadMemes">🔄 புதிய மீம்ஸ்</button>
+<div id="memeStatus" class="status" aria-live="polite">மீம்ஸ் ஏற்றத் தயாராக உள்ளது.</div>
+<div id="memeGallery" class="meme-gallery"></div>
 </section>
 </main>
 <footer>
@@ -80,11 +170,25 @@ document.querySelectorAll('.card').forEach(btn=>btn.addEventListener('click',()=
  category.value=btn.dataset.name;
  document.querySelector('.maker').scrollIntoView({behavior:'smooth'});
 }));
-document.getElementById('make').addEventListener('click',()=>{
- const topic=idea.value.trim();
- if(!topic){result.textContent='முதலில் உங்கள் மீம் யோசனையை எழுதுங்கள்.';return;}
- result.textContent='😂 SASIKUMAR AI — MEME HEAD\\nவகை: '+category.value+
- '\\n\\n'+topic+'\\n\\nஇதுதான் நம்ம லெவல்! 😂';
+document.getElementById('make').addEventListener('click',async()=>{
+ const topic=idea.value.trim() || category.value;
+ result.textContent='⏳ SASIKUMAR AI புதிய தமிழ் காமெடி உருவாக்குகிறது...';
+ const button=document.getElementById('make');
+ button.disabled=true;
+ try {
+   const response=await fetch('/api/memes/comedy',{
+     method:'POST',
+     headers:{'Content-Type':'application/json'},
+     body:JSON.stringify({topic:category.value+' — '+topic})
+   });
+   const data=await response.json();
+   if(!response.ok || !data.ok) throw new Error(data.error || 'Comedy API unavailable');
+   result.textContent='😂 SASIKUMAR AI — AI TAMIL COMEDY\\nவகை: '+category.value+'\\n\\n'+data.reply;
+ } catch(error) {
+   result.textContent='⚠️ இப்போது AI காமெடி கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.\\n'+error.message;
+ } finally {
+   button.disabled=false;
+ }
 });
 document.getElementById('share').addEventListener('click',async()=>{
  const text=result.textContent+'\\n\\nSASIKUMAR AI Meme Hub: '+location.href;
@@ -92,6 +196,191 @@ document.getElementById('share').addEventListener('click',async()=>{
  else if(navigator.clipboard){try{await navigator.clipboard.writeText(text);alert('Caption copied!');}catch(e){alert(text);}}
  else alert(text);
 });
+
+// SK_MEME_HUB_PHASE2
+const memeGallery=document.getElementById('memeGallery');
+const memeStatus=document.getElementById('memeStatus');
+
+async function loadTamilMemes(){
+  memeStatus.textContent='⏳ தமிழ் மீம்ஸ் ஏற்றப்படுகிறது...';
+  const button=document.getElementById('loadMemes');
+  button.disabled=true;
+  try{
+    const response=await fetch('/api/memes/tamil?count=8');
+    const data=await response.json();
+    if(!response.ok || !data.ok) throw new Error(data.error || 'Meme feed unavailable');
+
+    memeGallery.replaceChildren();
+
+    for(const meme of data.memes || []){
+      if(!/^https:\/\/i\.redd\.it\//i.test(meme.image || '')) continue;
+
+      const card=document.createElement('article');
+      card.className='meme-item';
+
+      const img=document.createElement('img');
+      img.src=meme.image;
+      img.alt=meme.title || 'Tamil Meme';
+      img.loading='lazy';
+      img.referrerPolicy='no-referrer';
+
+      const info=document.createElement('div');
+      info.className='meme-info';
+
+      const title=document.createElement('p');
+      title.textContent=meme.title || 'Tamil Meme';
+
+      const author=document.createElement('p');
+      author.textContent='👤 '+(meme.author || 'Reddit')+' · ⬆️ '+(meme.upvotes || 0);
+
+      const link=document.createElement('a');
+      link.href=/^https:\/\/www\.reddit\.com\//i.test(meme.sourceUrl || '')
+        ? meme.sourceUrl : 'https://www.reddit.com/r/TamilMemes/';
+      link.target='_blank';
+      link.rel='noopener noreferrer';
+      link.textContent='Source பார்க்க';
+
+      info.append(title,author,link);
+      card.append(img,info);
+      memeGallery.append(card);
+    }
+
+    memeStatus.textContent='✅ '+memeGallery.children.length+' தமிழ் மீம்ஸ் கிடைத்துள்ளன.';
+    if(!memeGallery.children.length) memeStatus.textContent='இப்போது படங்கள் கிடைக்கவில்லை.';
+  }catch(error){
+    memeStatus.textContent='⚠️ மீம்ஸ் ஏற்ற முடியவில்லை. மீண்டும் முயற்சிக்கவும்.';
+  }finally{
+    button.disabled=false;
+  }
+}
+
+document.getElementById('loadMemes').addEventListener('click',loadTamilMemes);
+loadTamilMemes();
+
+// SK_MONDAY_MORNING_MEME_V1
+let mondayMemeImageUrl = '';
+
+document.getElementById('generateMondayMeme').addEventListener('click', async () => {
+  const button = document.getElementById('generateMondayMeme');
+  const status = document.getElementById('mondayMemeStatus');
+  const preview = document.getElementById('mondayMemePreview');
+
+  button.disabled = true;
+  status.textContent = '⏳ AI தூங்கும் பூனை Meme உருவாக்குகிறது...';
+  preview.style.display = 'none';
+
+  try {
+    const prompt = 'Create a hilarious photorealistic Monday morning meme image: a very sleepy cute fluffy cat stuck comfortably inside a large coffee mug, sleepy eyes, cozy morning kitchen, warm coffee steam, funny expressive face, professional high quality meme photography, portrait 4:5 composition. Leave clean empty space at the top and bottom for captions. Absolutely no text, no letters, no watermark.';
+
+    const response = await fetch('/api/ai/image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
+    });
+
+    const data = await response.json();
+    if (!response.ok || !data.ok || !data.imageUrl) {
+      throw new Error(data.error || 'Image generation failed.');
+    }
+
+    mondayMemeImageUrl = data.imageUrl;
+    preview.src = mondayMemeImageUrl;
+    preview.style.display = 'block';
+    status.textContent = '✅ Monday Morning Cat Meme உருவாகிவிட்டது!';
+  } catch (error) {
+    status.textContent = '⚠️ ' + error.message;
+  } finally {
+    button.disabled = false;
+  }
+});
+
+document.getElementById('shareMondayMeme').addEventListener('click', async () => {
+  const status = document.getElementById('mondayMemeStatus');
+
+  if (!mondayMemeImageUrl) {
+    status.textContent = 'முதலில் Generate Cat Meme அழுத்துங்கள்.';
+    return;
+  }
+
+  try {
+    const response = await fetch(mondayMemeImageUrl);
+    const blob = await response.blob();
+    const file = new File([blob], 'sasikumar-monday-meme.png', { type: blob.type || 'image/png' });
+
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({
+        title: 'Monday Morning Cat Meme',
+        text: '😂 SASIKUMAR AI STUDIO',
+        files: [file]
+      });
+    } else {
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'sasikumar-monday-meme.png';
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(link.href), 30000);
+      status.textContent = '✅ Meme படம் தயார். Share செய்யலாம்.';
+    }
+  } catch (error) {
+    status.textContent = '⚠️ Share செய்ய முடியவில்லை: ' + error.message;
+  }
+});
+// END SK_MONDAY_MORNING_MEME_V1
+
+// END SK_MEME_HUB_PHASE2
+
+
+// SK_TAMIL_MEME_SEARCH_V1
+(() => {
+  const input = document.getElementById('tamilMemeSearchInput');
+  const frame = document.getElementById('tamilMemeSearchFrame');
+  const openLink = document.getElementById('openTamilMemeSearch');
+  const status = document.getElementById('tamilMemeSearchStatus');
+
+  if (!input || !frame || !openLink || !status) return;
+
+  function searchTamilMemes(value) {
+    const query = value.trim();
+    if (!query) {
+      status.textContent = '⚠️ தேடுவதற்கு ஒரு பெயரை உள்ளிடுங்கள்.';
+      input.focus();
+      return;
+    }
+
+    const url = 'https://searchmemes.in/search?q=' + encodeURIComponent(query);
+    frame.src = url;
+    openLink.href = url;
+    status.textContent = '🔎 "' + query + '" தேடப்படுகிறது...';
+
+    frame.onload = () => {
+      status.textContent = '✅ தேடல் பக்கம் திறக்கப்பட்டது. படங்கள் தெரியவில்லை என்றால் Open Search அழுத்துங்கள்.';
+    };
+  }
+
+  document.getElementById('searchTamilMemes')
+    .addEventListener('click', () => searchTamilMemes(input.value));
+
+  input.addEventListener('keydown', event => {
+    if (event.key === 'Enter') searchTamilMemes(input.value);
+  });
+
+  document.querySelectorAll('[data-meme-query]').forEach(button => {
+    button.addEventListener('click', () => {
+      input.value = button.dataset.memeQuery;
+      searchTamilMemes(input.value);
+    });
+  });
+
+  document.getElementById('shareTamilMemeSearch')
+    .addEventListener('click', () => {
+      const query = input.value.trim() || 'Tamil Memes';
+      const url = 'https://searchmemes.in/search?q=' + encodeURIComponent(query);
+      const message = '😂 ' + query + ' Memes\n' + url + '\n\nSASIKUMAR AI Meme Hub';
+      window.open('https://wa.me/?text=' + encodeURIComponent(message), '_blank', 'noopener');
+    });
+})();
+// END SK_TAMIL_MEME_SEARCH_V1
+
 </script>
 </body>
 </html>
