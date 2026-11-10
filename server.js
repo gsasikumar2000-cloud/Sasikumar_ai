@@ -4855,6 +4855,67 @@ if (youtubeSelectedVideo) {
           let imageBytes = null;
           let imageMime = 'image/jpeg';
 
+          // SK_CELEBRITY_MATCHED_MEME_IMAGE_V1
+          const celebrityRules = [
+            { name: 'Vijay Sethupathi', pattern: /\bvijay\s+sethupathi\b|விஜய்\s*சேதுபதி/i, search: 'Vijay Sethupathi' },
+            { name: 'Sivakarthikeyan', pattern: /\bsivakarthikeyan\b|சிவகார்த்திகேயன்/i, search: 'Sivakarthikeyan' },
+            { name: 'Vadivelu', pattern: /\bvadivelu\b|வடிவேலு/i, search: 'Vadivelu' },
+            { name: 'Rajinikanth', pattern: /\b(rajinikanth|rajini)\b|ரஜினிகாந்த்|ரஜினி/i, search: 'Rajinikanth' },
+            { name: 'Kamal Haasan', pattern: /\bkamal(\s+haasan)?\b|கமல்ஹாசன்|கமல்/i, search: 'Kamal Haasan' },
+            { name: 'Ajith', pattern: /\b(ajith|ajith kumar)\b|அஜித்/i, search: 'Ajith' },
+            { name: 'Suriya', pattern: /\bsuriya\b|சூர்யா/i, search: 'Suriya' },
+            { name: 'Dhanush', pattern: /\bdhanush\b|தனுஷ்/i, search: 'Dhanush' },
+            { name: 'Vijay', pattern: /\b(vijay|joseph vijay|thalapathy)\b|விஜய்/i, search: 'Vijay' }
+          ];
+
+          const celebrity = celebrityRules.find(item =>
+            item.pattern.test(memeSubject)
+          );
+
+          const isCelebrityMeme = Boolean(celebrity);
+
+          // Celebrity requests: search for the matching person first.
+          // Never use unrelated JustMeme trending templates for celebrities.
+          if (celebrity) {
+            try {
+              const isPoliticalVijay =
+                celebrity.name === 'Vijay' &&
+                /\b(cm|chief minister|politician|political)\b|முதல்வர்|அரசியல்/i.test(memeSubject);
+
+              const searchQuery = isPoliticalVijay
+                ? 'Vijay CM chief minister'
+                : celebrity.search;
+
+              const realImage = await skSearchRealImage(searchQuery);
+              const realMatch =
+                /^data:(image\/(?:jpeg|png));base64,([A-Za-z0-9+/=\r\n]+)$/i.exec(
+                  String(realImage?.dataUri || '')
+                );
+
+              if (realMatch) {
+                const candidateBytes = Buffer.from(
+                  realMatch[2].replace(/\s/g, ''),
+                  'base64'
+                );
+
+                if (candidateBytes.length > 0 &&
+                    candidateBytes.length <= 15 * 1024 * 1024) {
+                  imageBytes = candidateBytes;
+                  imageMime = realMatch[1].toLowerCase();
+                  console.log('[WA CELEBRITY MEME] Matching image found:', celebrity.name);
+                }
+              }
+
+              if (!imageBytes) {
+                console.log('[WA CELEBRITY MEME] No matching real image; AI fallback:', celebrity.name);
+              }
+            } catch (celebrityError) {
+              console.error('[WA CELEBRITY MEME SEARCH]', celebrityError.message);
+            }
+          }
+
+          // General memes only: use JustMeme templates and trending fallback.
+          if (!isCelebrityMeme) {
           // FREE JUSTMEME API - NO KEY
           try {
             const apiUrl =
@@ -4912,6 +4973,9 @@ if (youtubeSelectedVideo) {
             }
           } catch (error) {
             console.error('[WA JUSTMEME]', error.message);
+          }
+
+
           }
 
           // Existing AI image fallback
@@ -6899,6 +6963,7 @@ async function skSearchRealImage(query) {
   // SK_JOSEPH_VIJAY_EXACT_SEARCH_V1
   const isJosephVijaySearch =
     !isVijayCmSearch &&
+    !/\bvijay\s+sethupathi\b|விஜய்\s+சேதுபதி/i.test(text) &&
     /\b(vijay|joseph vijay|thalapathy vijay)\b|விஜய்/i.test(text) &&
     !/\b(cm|chief minister|politician|political)\b|முதல்வர்|அரசியல்/i.test(text);
   // Keep additional subjects such as elephant in Vijay searches.
@@ -6916,7 +6981,8 @@ async function skSearchRealImage(query) {
 
   // SK_NAMED_TAMIL_ACTOR_EXACT_SEARCH_V1
   const isNamedActorSearch =
-    /\b(rajinikanth|rajini|kamal haasan|kamal|ajith kumar|ajith|suriya|dhanush|sivakarthikeyan|vijay sethupathi)\b/i.test(text);
+    /\b(rajinikanth|rajini|kamal haasan|kamal|ajith kumar|ajith|suriya|dhanush|sivakarthikeyan|vijay sethupathi|vadivelu)\b/i.test(text) ||
+    /வடிவேலு/.test(text);
 
   // Preserve additional subjects when canonicalizing actor names.
   if (/\brajini\b/i.test(queryText)) {
@@ -7119,10 +7185,24 @@ async function skSearchRealImage(query) {
   const data = await response.json();
   const pages = Object.values(data.query?.pages || {});
 
-  // SK_WIKIMEDIA_HD_IMAGE_PRIORITY_V1
+  // SK_WIKIMEDIA_ACTOR_IDENTITY_FIRST_V2
   pages.sort((a, b) => {
+    const titleA = String(a.title || '').toLowerCase();
+    const titleB = String(b.title || '').toLowerCase();
+
+    const score = title => {
+      if (!personTokens.length) return 0;
+      return personTokens.reduce(
+        (total, token) => total + (title.includes(token) ? 10 : 0), 0
+      );
+    };
+
+    const identityDifference = score(titleB) - score(titleA);
+    if (identityDifference !== 0) return identityDifference;
+
     const ai = a.imageinfo?.[0] || {};
     const bi = b.imageinfo?.[0] || {};
+
     return (Number(bi.width || 0) * Number(bi.height || 0)) -
            (Number(ai.width || 0) * Number(ai.height || 0));
   });
