@@ -4852,18 +4852,141 @@ if (youtubeSelectedVideo) {
             'Use expressive visual storytelling, funny facial expressions, vibrant colourful composition, portrait 4:5 format. ' +
             'No text, no letters, no captions, no watermark.';
 
-          const generated = await skGenerateImage(prompt);
-          const match = /^data:(image\/[a-zA-Z0-9.+-]+);base64,([A-Za-z0-9+/=\r\n]+)$/.exec(String(generated || ''));
+          let imageBytes = null;
+          let imageMime = 'image/jpeg';
 
-          if (!match) throw new Error('AI Meme image generation failed.');
+          // FREE JUSTMEME API - NO KEY
+          try {
+            const apiUrl =
+              'https://justmeme.wtf/api/v1/templates/search?q=' +
+              encodeURIComponent(memeSubject.slice(0, 60));
 
-          const imageBytes = Buffer.from(match[2].replace(/\s/g, ''), 'base64');
-          if (!imageBytes.length) throw new Error('Generated meme is empty.');
+            const response = await fetch(apiUrl, {
+              signal: AbortSignal.timeout(12000)
+            });
+
+            if (!response.ok) throw new Error('Template API failed');
+
+            const data = await response.json();
+            let templates = Array.isArray(data.templates)
+              ? data.templates : [];
+
+            if (!templates.length) {
+              const trending = await fetch(
+                'https://justmeme.wtf/api/v1/trending',
+                { signal: AbortSignal.timeout(12000) }
+              );
+
+              if (trending.ok) {
+                const result = await trending.json();
+                templates = Array.isArray(result.templates)
+                  ? result.templates : [];
+              }
+            }
+
+            const template = templates.length
+              ? templates[Math.floor(Math.random() * templates.length)]
+              : null;
+
+            if (template && template.url) {
+              const downloaded = await fetch(template.url, {
+                signal: AbortSignal.timeout(20000)
+              });
+
+              const mime = downloaded.headers.get('content-type') || '';
+
+              if (!downloaded.ok || !mime.startsWith('image/')) {
+                throw new Error('Invalid meme template image');
+              }
+
+              const bytes = Buffer.from(await downloaded.arrayBuffer());
+
+              if (!bytes.length || bytes.length > 15 * 1024 * 1024) {
+                throw new Error('Invalid template size');
+              }
+
+              imageBytes = bytes;
+              imageMime = mime.split(';')[0];
+
+              console.log('[WA JUSTMEME] Template downloaded:', template.name);
+            }
+          } catch (error) {
+            console.error('[WA JUSTMEME]', error.message);
+          }
+
+          // Existing AI image fallback
+          if (!imageBytes) {
+            const generated = await skGenerateImage(prompt);
+            const match = /^data:(image\/[a-zA-Z0-9.+-]+);base64,([A-Za-z0-9+/=\r\n]+)$/.exec(String(generated || ''));
+
+            if (!match) throw new Error('AI Meme generation failed');
+
+            imageBytes = Buffer.from(match[2].replace(/\s/g, ''), 'base64');
+            imageMime = match[1];
+
+            console.log('[WA AI MEME] Existing fallback used.');
+          }
+
+          if (!imageBytes.length) throw new Error('Empty meme image');
+
+          let memeOutputBytes = imageBytes;
+          let memeOutputMime = imageMime;
+
+          try {
+            const punchlineResult = await skCentralBrainReply({
+              message: 'இந்த தலைப்பை வைத்து ஒரே ஒரு புதிய, சிரிப்பான, குடும்பத்துடன் பகிரக்கூடிய தமிழ் மீம் punchline எழுதுங்கள். அதிகபட்சம் இரண்டு வரிகள். விளக்கம் வேண்டாம். தலைப்பு: ' + memeSubject.slice(0, 180),
+              category: 'Tamil Meme Punchline',
+              source: 'meme'
+            });
+
+            let punchline = String(
+              (punchlineResult && (punchlineResult.reply || punchlineResult.answer)) || ''
+            ).replace(/```[\s\S]*?```/g, '')
+              .replace(/^(பஞ்ச் லைன்|Punchline)\s*[:：-]\s*/i, '')
+              .split(/\r?\n/).map(line => line.trim()).find(Boolean) || '';
+
+            punchline = punchline.replace(/^["'“”]+|["'“”]+$/g, '').slice(0, 160);
+            if (!punchline || punchlineResult.ok === false) {
+              punchline = 'இந்த விஷயத்திலும் ஒரு காமெடி இருக்கு!';
+            }
+
+            const fsPromises = await import('node:fs/promises');
+            const pathModule = await import('node:path');
+            const osModule = await import('node:os');
+            const childProcess = await import('node:child_process');
+            const utilModule = await import('node:util');
+            const execFileAsync = utilModule.promisify(childProcess.execFile);
+
+            await fsPromises.mkdir(osModule.tmpdir(), { recursive: true });
+            const tempDir = await fsPromises.mkdtemp(
+              pathModule.join(osModule.tmpdir(), 'sk-wa-meme-')
+            );
+
+            try {
+              const inputPath = pathModule.join(tempDir, 'input-image');
+              const outputPath = pathModule.join(tempDir, 'meme-caption.png');
+              const scriptPath = pathModule.join(process.cwd(), 'ai-meme-caption.py');
+
+              await fsPromises.writeFile(inputPath, imageBytes);
+              await execFileAsync('python3', [
+                scriptPath, inputPath, punchline, outputPath
+              ], { timeout: 30000, maxBuffer: 1024 * 1024 });
+
+              memeOutputBytes = await fsPromises.readFile(outputPath);
+              memeOutputMime = 'image/png';
+              console.log('[WA AI MEME] Tamil punchline and branding added.');
+            } finally {
+              await fsPromises.rm(tempDir, { recursive: true, force: true });
+            }
+          } catch (overlayError) {
+            console.error('[WA AI MEME OVERLAY]', overlayError.message);
+            console.log('[WA AI MEME] Sending original image as fallback.');
+          }
 
           await skWhatsAppSendImageBuffer(
             from,
-            imageBytes,
-            match[1],
+            memeOutputBytes,
+            memeOutputMime,
             '😂 ' + memeSubject.slice(0, 300) + ' MEME\n\n🤖 SASIKUMAR AI STUDIO'
           );
 
