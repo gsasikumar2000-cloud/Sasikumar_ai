@@ -4481,13 +4481,13 @@ if (mp3PlayRequested || mp3Navigation) {
     }
    } else if (
     !/\b(?:youtube|videos?|shorts?|trailer|livestream)\b/i.test(trimmed) &&
-    /\b(?:songs?|music|audio|tracks?|albums?|melody)\b|பாடல்|இசை|ஆடியோ/i.test(trimmed)
+    /\b(?:mp3|songs?|music|audio|tracks?|albums?|melody)\b|பாடல்|இசை|ஆடியோ/i.test(trimmed)
   ) {
     // SK_WHATSAPP_OPENVERSE_MP3_SEARCH_V1
     mp3SearchRequested = true;
 
     const query = trimmed.replace(
-      /^(?:please\s+)?(?:search\s+)?(?:songs?|music|audio|tracks?|albums?|melody)?\s*[:\-]?\s*/i,
+      /^(?:please\s+)?(?:search\s+)?(?:mp3|songs?|music|audio|tracks?|albums?|melody)?\s*[:\-]?\s*/i,
       ''
     ).trim() || 'instrumental music';
 
