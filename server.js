@@ -4978,7 +4978,12 @@ if (youtubeSelectedVideo) {
 
           }
 
-          // Existing AI image fallback
+          // Celebrity safety: never substitute an unverified AI face.
+          if (!imageBytes && isCelebrityMeme) {
+            throw new Error('Verified celebrity image not found: ' + celebrity.name);
+          }
+
+          // AI fallback is only for general memes.
           if (!imageBytes) {
             const generated = await skGenerateImage(prompt);
             const match = /^data:(image\/[a-zA-Z0-9.+-]+);base64,([A-Za-z0-9+/=\r\n]+)$/.exec(String(generated || ''));
@@ -6960,10 +6965,14 @@ async function skSearchRealImage(query) {
   // Keep the user's complete query. Do not replace multi-subject searches
   // with a single canonical subject.
 
-  // SK_JOSEPH_VIJAY_EXACT_SEARCH_V1
+  // SK_VIJAY_SETHUPATHI_EXACT_SEARCH_V1
+  const isVijaySethupathiSearch =
+    /\bvijay\s+sethupathi\b|விஜய்\s*சேதுபதி/i.test(text);
+
+  // SK_JOSEPH_VIJAY_EXACT_SEARCH_V2
   const isJosephVijaySearch =
     !isVijayCmSearch &&
-    !/\bvijay\s+sethupathi\b|விஜய்\s+சேதுபதி/i.test(text) &&
+    !isVijaySethupathiSearch &&
     /\b(vijay|joseph vijay|thalapathy vijay)\b|விஜய்/i.test(text) &&
     !/\b(cm|chief minister|politician|political)\b|முதல்வர்|அரசியல்/i.test(text);
   // Keep additional subjects such as elephant in Vijay searches.
@@ -7134,6 +7143,14 @@ async function skSearchRealImage(query) {
   const matchesPersonMetadata = value => {
     if (!isPersonSearch || isActorCategorySearch || isVijayCmSearch) return true;
     const subject = String(value || '').toLowerCase();
+    if (isVijaySethupathiSearch) {
+      const hasExactIdentity =
+        /\bvijay\s+sethupathi\b|விஜய்\s*சேதுபதி/i.test(subject);
+      const hasActorContext =
+        /\b(actor|film star|movie star|film actor|cinema actor|entertainer)\b/i.test(subject) ||
+        /நடிகர்|திரைப்பட நடிகர்/.test(subject);
+      return hasExactIdentity && hasActorContext;
+    }
     if (isJosephVijaySearch) {
       const hasVijayName = /\bvijay\b|விஜய்/i.test(subject);
       const hasVijayActorContext =
@@ -7241,7 +7258,11 @@ async function skSearchRealImage(query) {
       /\b(actress|film actress|movie star|Indian actress|Tamil actress)\b/i.test(description) ||
       /நடிகை|திரைப்பட நடிகை/.test(description);
 
-    if (isJosephVijaySearch) {
+    if (isVijaySethupathiSearch) {
+      const hasExactIdentity =
+        /\bvijay\s+sethupathi\b|விஜய்\s*சேதுபதி/i.test(description);
+      if (!hasExactIdentity || !hasActorContext) continue;
+    } else if (isJosephVijaySearch) {
       const hasExactVijayIdentity =
         /\bjoseph\s+vijay\b|\bthalapathy\s+vijay\b/i.test(description);
       if (!hasExactVijayIdentity || !hasActorContext) continue;
@@ -7502,7 +7523,15 @@ async function skSearchRealImage(query) {
         if (!matchesRequestedSubject(imageSubject)) continue;
 
         // Strict named-person validation: source/domain alone is not identity evidence.
-        if (isJosephVijaySearch) {
+        if (isVijaySethupathiSearch) {
+          const hasExactIdentity =
+            /\bvijay\s+sethupathi\b|விஜய்\s*சேதுபதி/i.test(identityText);
+          const hasActorContext =
+            /\b(actor|film star|movie star|film actor|cinema actor|entertainer)\b/i.test(identityText) ||
+            /நடிகர்|திரைப்பட நடிகர்/.test(identityText);
+
+          if (!hasExactIdentity || !hasActorContext) continue;
+        } else if (isJosephVijaySearch) {
           const hasExactVijayIdentity =
             /\bjoseph\s+vijay\b|\bthalapathy\s+vijay\b/i.test(identityText);
           const hasActorContext =
