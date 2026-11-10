@@ -2095,6 +2095,7 @@ async function getTamilBreakingNews(category = 'tamil-nadu', topic = '') {
 const SK_LAST_BOT_REPLIES = new Map();
 const SK_WA_PROCESSED_MESSAGES = new Map();
 const SK_WA_YOUTUBE_SESSIONS = new Map();
+const SK_WA_MP3_SESSIONS = new Map();
 
 
 function skRememberLastReply(key, message) {
@@ -3194,6 +3195,80 @@ async function skWhatsAppSendVoiceBuffer(to, oggBuffer) {
 }
 // END SK_WHATSAPP_GEMINI_TTS_V1
 
+// SK_WHATSAPP_MP3_PLAYER_V1
+async function skWhatsAppSendMp3Buffer(to, mp3Buffer) {
+  if (!WA_TOKEN || !WA_PHONE_ID) {
+    throw new Error('WhatsApp credentials unavailable.');
+  }
+
+  if (!Buffer.isBuffer(mp3Buffer) ||
+      !mp3Buffer.length ||
+      mp3Buffer.length > 16 * 1024 * 1024) {
+    throw new Error('Invalid MP3 or file exceeds 16 MB.');
+  }
+
+  const hasId3 = mp3Buffer.subarray(0, 3).toString('ascii') === 'ID3';
+  const hasMpegFrame =
+    mp3Buffer[0] === 0xff && (mp3Buffer[1] & 0xe0) === 0xe0;
+
+  if (!hasId3 && !hasMpegFrame) {
+    throw new Error('Invalid MP3 file signature.');
+  }
+
+  const form = new FormData();
+  form.append('messaging_product', 'whatsapp');
+  form.append(
+    'file',
+    new Blob([mp3Buffer], { type: 'audio/mpeg' }),
+    'song.mp3'
+  );
+
+  const upload = await fetch(
+    `https://graph.facebook.com/v20.0/${WA_PHONE_ID}/media`,
+    {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${WA_TOKEN}` },
+      body: form,
+      signal: AbortSignal.timeout(30000)
+    }
+  );
+
+  const uploaded = await upload.json().catch(() => ({}));
+
+  if (!upload.ok || !uploaded.id) {
+    throw new Error(uploaded?.error?.message || 'MP3 upload failed.');
+  }
+
+  const sent = await fetch(
+    `https://graph.facebook.com/v20.0/${WA_PHONE_ID}/messages`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${WA_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        to: String(to),
+        type: 'audio',
+        audio: { id: uploaded.id }
+      }),
+      signal: AbortSignal.timeout(30000)
+    }
+  );
+
+  const data = await sent.json().catch(() => ({}));
+
+  if (!sent.ok) {
+    throw new Error(data?.error?.message || 'MP3 send failed.');
+  }
+
+  console.log('[WA MP3 PLAYER] Sent:', data.messages?.[0]?.id || 'OK');
+  return true;
+}
+// END SK_WHATSAPP_MP3_PLAYER_V1
+
+
 // SK_WHATSAPP_AUDIO_TEXT_ANALYSIS_V1
 async function skWhatsAppAnalyzeAudio(mediaId, caption = '') {
   const apiKey = process.env.GROQ_API_KEY;
@@ -4179,6 +4254,13 @@ let waFmSearchRequested = false;
 let waFmStation = null;
 const youtubeNavigation = /^yt_(?:next|prev)$/.test(waButtonId);
 const youtubePlayRequested = /^yt_play_\d+$/.test(waButtonId);
+const mp3PlayMatch = waButtonId.match(/^mp3_play_(\d+)$/);
+const mp3PlayRequested = Boolean(mp3PlayMatch);
+const mp3Navigation = /^mp3_(?:next|prev)$/.test(waButtonId);
+let mp3SelectedTrack = null;
+let mp3Tracks = [];
+let mp3SearchRequested = false;
+
 let autoPosterForContent = false;
 
 // SK_WHATSAPP_PAGESPEED_V1
@@ -4189,7 +4271,42 @@ const waUrlOnly = /^https?:\/\/\S+$/i.test(trimmed);
 const mapsMatch = trimmed.match(/^(?:maps?|வரைபடம்|மேப்)\s*[:\-]?\s*(.*)$/i);
 const pinMatch = trimmed.match(/^(?:pin(?:\s*code)?|pincode|பின்கோடு|அஞ்சல்\s*குறியீடு|area|ஊர்)\s*[:\-]?\s*(.+)$/i);
 
-if (youtubePlayRequested) {
+
+if (mp3PlayRequested || mp3Navigation) {
+  mp3SearchRequested = true;
+
+  const session = SK_WA_MP3_SESSIONS.get(String(from));
+
+  if (!session || Date.now() - session.updatedAt > 30 * 60 * 1000) {
+    reply = '⌛ MP3 பட்டியல் காலாவதியாகிவிட்டது. புதிய பாடலைத் தேடுங்கள்.';
+  } else {
+    if (!Array.isArray(session.tracks) || !session.tracks.length) {
+      reply = '⚠️ பாடல்கள் கிடைக்கவில்லை.';
+    } else {
+      if (mp3PlayRequested) {
+        session.index = Number(mp3PlayMatch[1]);
+        session.index = Math.max(
+          0,
+          Math.min(session.index, session.tracks.length - 1)
+        );
+      } else if (waButtonId === 'mp3_next') {
+        session.index = (session.index + 1) % session.tracks.length;
+      } else {
+        session.index =
+          (session.index - 1 + session.tracks.length) %
+          session.tracks.length;
+      }
+
+      session.updatedAt = Date.now();
+      mp3Tracks = session.tracks;
+      mp3SelectedTrack = session.tracks[session.index] || null;
+
+      reply = mp3SelectedTrack
+        ? '🎵 ' + String(mp3SelectedTrack.title || 'MP3 Song')
+        : '⚠️ பாடல் கிடைக்கவில்லை.';
+    }
+  }
+} else if (youtubePlayRequested) {
   youtubeSearchRequested = true;
 
   const session = SK_WA_YOUTUBE_SESSIONS.get(String(from));
@@ -4362,7 +4479,76 @@ if (youtubePlayRequested) {
         '⚠️ FM தேடல் தற்போது கிடைக்கவில்லை. சிறிது நேரம் கழித்து முயற்சிக்கவும்.\n\n' +
         'FM Hub: https://sasikumar-ai-9wdq.onrender.com/audio-video-hub.html';
     }
-  } else if (/(?:youtube|pixabay|\bvideos?\b|\bshorts?\b|\blivestream\b|\bstream\b|\bsongs?\b|\bmusic\b|\baudio\b|\btracks?\b|\balbums?\b|\bmelody\b|\bscenes?\b|\btrailer\b|பாடல்|இசை|ஆடியோ|வீடியோ|காட்சிகள்|நேரலை|லைவ்)/i.test(trimmed)) {
+   } else if (
+    !/\b(?:youtube|videos?|shorts?|trailer|livestream)\b/i.test(trimmed) &&
+    /\b(?:songs?|music|audio|tracks?|albums?|melody)\b|பாடல்|இசை|ஆடியோ/i.test(trimmed)
+  ) {
+    // SK_WHATSAPP_OPENVERSE_MP3_SEARCH_V1
+    mp3SearchRequested = true;
+
+    const query = trimmed.replace(
+      /^(?:please\s+)?(?:search\s+)?(?:songs?|music|audio|tracks?|albums?|melody)?\s*[:\-]?\s*/i,
+      ''
+    ).trim() || 'instrumental music';
+
+    try {
+      const params = new URLSearchParams({
+        q: query.slice(0, 120),
+        license: 'cc0,by',
+        page_size: '20'
+      });
+
+      const response = await fetch(
+        'https://api.openverse.org/v1/audio/?' + params.toString(),
+        { signal: AbortSignal.timeout(15000) }
+      );
+
+      if (!response.ok) {
+        throw new Error('Openverse HTTP ' + response.status);
+      }
+
+      const data = await response.json();
+
+      mp3Tracks = (Array.isArray(data.results) ? data.results : [])
+        .filter(track =>
+          track.url &&
+          /^https:\/\//i.test(track.url) &&
+          ['cc0', 'by'].includes(String(track.license || '').toLowerCase())
+        )
+        .slice(0, 8)
+        .map(track => ({
+          title: String(track.title || 'Untitled audio').slice(0, 180),
+          creator: String(track.creator || 'Unknown creator').slice(0, 100),
+          license: String(track.license || '').toUpperCase(),
+          licenseUrl: track.license_url || '',
+          pageUrl: track.foreign_landing_url || '',
+          url: track.url
+        }));
+
+      if (mp3Tracks.length) {
+        SK_WA_MP3_SESSIONS.set(String(from), {
+          tracks: mp3Tracks,
+          index: 0,
+          updatedAt: Date.now()
+        });
+
+        while (SK_WA_MP3_SESSIONS.size > 500) {
+          SK_WA_MP3_SESSIONS.delete(
+            SK_WA_MP3_SESSIONS.keys().next().value
+          );
+        }
+
+        reply = '🎵 SASIKUMAR AI — AD-FREE MP3 SEARCH\n\n' +
+          'கிடைத்த பாடல்கள்: ' + mp3Tracks.length +
+          '\n👇 பட்டியலில் பாடலைத் தேர்வு செய்யுங்கள்.';
+      } else {
+        reply = '🎵 இந்தத் தேடலில் அனுமதிக்கப்பட்ட audio பாடல்கள் கிடைக்கவில்லை. வேறு பெயரில் முயற்சிக்கவும்.';
+      }
+    } catch (error) {
+      console.warn('[WA Openverse MP3 search]', error.message);
+      reply = '⚠️ MP3 தேடல் தற்போது கிடைக்கவில்லை. சிறிது நேரம் கழித்து முயற்சிக்கவும்.';
+    }
+} else if (/(?:youtube|pixabay|\bvideos?\b|\bshorts?\b|\blivestream\b|\bstream\b|\bsongs?\b|\bmusic\b|\baudio\b|\btracks?\b|\balbums?\b|\bmelody\b|\bscenes?\b|\btrailer\b|பாடல்|இசை|ஆடியோ|வீடியோ|காட்சிகள்|நேரலை|லைவ்)/i.test(trimmed)) {
     // SK_WHATSAPP_YOUTUBE_GALLERY_V2
     youtubeSearchRequested = true;
 
@@ -4600,7 +4786,112 @@ const waTamilMemeRequested = /tamil\s*meme|தமிழ்\s*மீம்|தம
 const waMemeRequested = /\bmeme(s)?\b|மீம்|மீம்ஸ்/i.test(trimmed);
 const waMondayMemeRequested = /\b(monday\s*(morning\s*)?(cat\s*)?meme|cat\s*coffee\s*meme|monday\s*morning\s*cat)\b/i.test(trimmed);
 
-if (youtubeSelectedVideo) {
+
+if (mp3SearchRequested) {
+  if (mp3SelectedTrack) {
+    try {
+      const track = mp3SelectedTrack;
+
+      const audioResponse = await fetch(track.url, {
+        signal: AbortSignal.timeout(25000),
+        headers: { 'User-Agent': 'SASIKUMAR-AI/1.0' }
+      });
+
+      if (!audioResponse.ok) {
+        throw new Error('Audio download HTTP ' + audioResponse.status);
+      }
+
+      const contentType = String(
+        audioResponse.headers.get('content-type') || ''
+      ).split(';')[0].toLowerCase();
+
+      const contentLength = Number(
+        audioResponse.headers.get('content-length') || 0
+      );
+
+      if (
+        contentLength > 16 * 1024 * 1024 ||
+        (contentType && !['audio/mpeg', 'audio/mp3',
+          'application/octet-stream'].includes(contentType))
+      ) {
+        throw new Error('Unsupported audio format or file size.');
+      }
+
+      const audioBuffer = Buffer.from(await audioResponse.arrayBuffer());
+
+      await skWhatsAppSendMp3Buffer(from, audioBuffer);
+
+      await sendWA({
+        type: 'text',
+        text: {
+          body:
+            '🎵 ' + String(track.title || 'MP3 Song') +
+            '\n🎤 Artist: ' + String(track.creator || 'Unknown') +
+            '\n📜 License: ' + String(track.license || 'Unknown') +
+            (track.licenseUrl ? '\n🔗 License: ' + track.licenseUrl : '') +
+            (track.pageUrl ? '\n🌐 Source: ' + track.pageUrl : '') +
+            '\n\n⏮️ Previous: mp3_prev\n⏭️ Next: mp3_next'
+        }
+      });
+
+    } catch (mp3Error) {
+      console.warn('[WA MP3 PLAYER ERROR]', mp3Error.message);
+
+      await sendWA({
+        type: 'text',
+        text: {
+          body: '⚠️ இந்தப் பாடலை MP3 ஆக அனுப்ப முடியவில்லை. வேறு பாடலைத் தேர்வு செய்யுங்கள்.'
+        }
+      });
+    }
+
+  } else if (mp3Tracks.length) {
+    const rows = mp3Tracks.slice(0, 8).map((track, index) => ({
+      id: 'mp3_play_' + index,
+      title: String(track.title || 'MP3 Song').slice(0, 24),
+      description: (
+        String(track.creator || 'Unknown artist') +
+        ' • ' + String(track.license || '').toUpperCase()
+      ).slice(0, 72)
+    }));
+
+    rows.push({
+      id: 'mp3_prev',
+      title: '⏮️ Previous',
+      description: 'முந்தைய பாடலை இயக்க'
+    });
+
+    rows.push({
+      id: 'mp3_next',
+      title: '⏭️ Next',
+      description: 'அடுத்த பாடலை இயக்க'
+    });
+
+    await sendWA({
+      type: 'interactive',
+      interactive: {
+        type: 'list',
+        body: {
+          text: answerText
+        },
+        action: {
+          button: 'Select Song',
+          sections: [{
+            title: 'Available MP3 Songs',
+            rows
+          }]
+        }
+      }
+    });
+
+  } else {
+    await sendWA({
+      type: 'text',
+      text: { body: answerText }
+    });
+  }
+
+} else if (youtubeSelectedVideo) {
         if (youtubeSelectedVideo.provider === 'Pixabay' &&
             youtubeSelectedVideo.mp4Url) {
           try {
@@ -4683,7 +4974,9 @@ if (youtubeSelectedVideo) {
 }
 
 
-      if (waFmSearchRequested) {
+      if (mp3SearchRequested) {
+        // MP3 list/audio was already sent by the media output branch.
+      } else if (waFmSearchRequested) {
         if (waFmStation) {
           const fmUrl =
             'https://sasikumar-ai-9wdq.onrender.com/audio-video-hub.html?fmstation=' +
