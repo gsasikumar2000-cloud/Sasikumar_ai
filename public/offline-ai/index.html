@@ -84,7 +84,7 @@ input[type=file]{display:none}
 </head>
 <body>
 <header>
- <img class="logo" src="/sasikumar-ai-logo.png" alt="SASIKUMAR AI Logo">
+ <img class="logo" src="/offline-ai/sasikumar-ai-logo.png" alt="SASIKUMAR AI Logo">
  <h1>SASIKUMAR OFFLINE AI</h1>
  <p>தமிழ் & English · Local AI Studio</p>
 </header>
@@ -259,7 +259,7 @@ document.getElementById('chat').addEventListener('submit',async e=>{
    body:JSON.stringify({
     model:modelSelect.value,
     messages:history,
-    max_tokens:220,
+    max_tokens:128,
     temperature:0.3
    })
   });
