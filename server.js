@@ -7126,6 +7126,41 @@ app.post('/api/executive-ai', async (req, res) => {
   let executiveMessage = message;
   let liveSearchProvider = '';
 
+  // GOLD ACCURACY: supply verified local API data for gold/loan questions.
+  const isExecutiveGoldQuery =
+    /(gold|bullion|jewell?ery|gold loan|22k|24k|18k|916|999|தங்கம்|நகை|தங்கக் கடன்|நகைக் கடன்|அடகு)/i.test(message);
+
+  if (isExecutiveGoldQuery) {
+    try {
+      const gold = await skGetLiveGoldRates();
+      if (gold?.ok && gold?.rates &&
+          Number.isFinite(Number(gold.rates['24K'])) &&
+          Number.isFinite(Number(gold.rates['22K']))) {
+        const money = value => Number(value).toLocaleString('en-IN', {
+          maximumFractionDigits: 2
+        });
+        executiveMessage +=
+          '\\n\\nSASIKUMAR AI GOLD API DATA (REFERENCE ONLY):' +
+          '\\n24K price: ₹' + money(gold.rates['24K']) + ' per gram' +
+          '\\n22K price: ₹' + money(gold.rates['22K']) + ' per gram' +
+          '\\n20K price: ₹' + money(gold.rates['20K']) + ' per gram' +
+          '\\n18K price: ₹' + money(gold.rates['18K']) + ' per gram' +
+          '\\nSource: ' + String(gold.source || 'Not provided') +
+          '\\nUpdated at: ' + String(gold.updatedAt || 'Not provided') +
+          '\\nFallback used: ' + String(Boolean(gold.fallbackUsed)) +
+          '\\nCached response: ' + String(Boolean(gold.cached)) +
+          '\\nIMPORTANT PRICE PRIORITY: Use these API 24K and 22K values for the current reference-price calculation. Do not replace them with prices from web search snippets, old articles or videos. State the API update time and source. If the API data is unavailable, do not invent a current price. These are not confirmed IBJA rates or a bank gold-loan valuation. Do not call them an official lending price. For loan estimates, state the assumed eligible value and LTV separately; actual lender valuation and applicable RBI rules may differ. Never invent a current USD/INR rate.';
+      } else {
+        executiveMessage +=
+          '\\n\\nGOLD API STATUS: Live gold data is unavailable or incomplete. Do not invent current gold prices. Ask the user to retry or provide a verified rate.';
+      }
+    } catch (goldError) {
+      console.warn('[Executive AI Gold API]', goldError.message);
+      executiveMessage +=
+        '\\n\\nGOLD API STATUS: Live gold data fetch failed. Do not invent current gold prices.';
+    }
+  }
+
   try {
     const needsLiveSearch =
       /(latest|current|today|now|breaking|news|update|price|rate|market|gold|silver|bullion|stock|share|forex|currency|exchange rate|interest rate|bank rate|rbi|budget|election|weather|forecast|sports|score|match|job vacancy|recruitment|2026|இன்று|தற்போதைய|சமீபத்திய|நடப்பு|செய்தி|விலை|தங்கம்|வெள்ளி|சந்தை|பங்கு|வட்டி|வானிலை|விளையாட்டு|வேலைவாய்ப்பு|தேர்தல்)/i.test(message);
@@ -7139,9 +7174,9 @@ app.post('/api/executive-ai', async (req, res) => {
           '\nDetails: ' + x.content.slice(0, 900)
         ).join('\n\n');
 
-        executiveMessage = message +
+        executiveMessage +=
           '\n\nLIVE WEB SEARCH REFERENCES:\n' + refs +
-          '\nUse relevant references, cite their URLs, and do not invent facts.';
+          '\nUse relevant references for current rules and background. For current gold prices, the SASIKUMAR AI GOLD API DATA supplied above is the primary price source. Ignore older or conflicting web prices. Never present an old search price as today’s price.';
       }
     }
 
