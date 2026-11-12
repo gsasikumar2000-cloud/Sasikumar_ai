@@ -6931,6 +6931,168 @@ app.get('/api/adobe/config', (req, res) => {
   });
 });
 
+
+// SK_EXECUTIVE_AI_V1
+const skExecutiveSystemPrompt = [
+  'You are SASIKUMAR EXECUTIVE AI, a multilingual A-to-Z knowledge and business assistant.',
+  'Help with business planning, accounting concepts, income, expenses, profit and loss, pricing, marketing, sales, customer service, agriculture business, technology, education, science, coding and general knowledge.',
+  'Answer in the selected language or automatically match the user language. Support Tamil, Tanglish, English, Hindi, Telugu, Malayalam, Kannada and other languages.',
+  'Give accurate, practical, clear answers. Use formulas and show calculation steps for financial arithmetic. Never invent current facts, market prices, laws, tax rates or official information.',
+  'For business decisions, explain assumptions, risks and practical next steps. Do not claim to be a licensed financial, legal or tax professional.',
+  'Fast answers should be concise. Smart answers may be more detailed. Never pretend to have searched the live web if no live search was performed.',
+  'Do not claim actions were completed unless they actually were.'
+].join(' ');
+
+async function skExecutiveCloudflare(message, language) {
+  const account = process.env.CLOUDFLARE_ACCOUNT_ID;
+  const token = process.env.CLOUDFLARE_API_TOKEN;
+  if (!account || !token) return null;
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 8000);
+
+  try {
+    const response = await fetch(
+      'https://api.cloudflare.com/client/v4/accounts/' +
+      account + '/ai/run/@cf/zai-org/glm-4.7-flash',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          messages: [
+            { role: 'system', content: skExecutiveSystemPrompt + ' Selected language: ' + language },
+            { role: 'user', content: message }
+          ]
+        }),
+        signal: controller.signal
+      }
+    );
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || data.success === false) return null;
+
+    const reply =
+      data.result?.choices?.[0]?.message?.content ||
+      data.result?.response ||
+      data.result?.output_text || '';
+
+    return typeof reply === 'string' && reply.trim() ? reply.trim() : null;
+  } catch (error) {
+    console.warn('[Executive AI Cloudflare]', error.message);
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+app.post('/api/executive-ai', async (req, res) => {
+  res.set('Cache-Control', 'no-store');
+
+  const message = String(req.body?.message || '').trim();
+  const mode = req.body?.mode === 'smart' ? 'smart' : 'fast';
+  const language = String(req.body?.language || 'Auto').slice(0, 40);
+
+  if (!message) {
+    return res.status(400).json({ ok: false, reply: 'Please enter your question.' });
+  }
+  if (message.length > 6000) {
+    return res.status(413).json({ ok: false, reply: 'Please shorten your question to 6000 characters.' });
+  }
+
+  const startedAt = Date.now();
+
+  try {
+    let reply = null;
+    let engine = '';
+
+    // GROQ FIRST: Fast and Smart modes
+    const apiKey = process.env.GROQ_API_KEY;
+
+    if (apiKey) {
+      const controller = new AbortController();
+      const timer = setTimeout(
+        () => controller.abort(),
+        mode === 'smart' ? 18000 : 12000
+      );
+
+      try {
+        const upstream = await fetch(
+          'https://api.groq.com/openai/v1/chat/completions',
+          {
+            method: 'POST',
+            headers: {
+              Authorization: 'Bearer ' + apiKey,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              model: 'openai/gpt-oss-20b',
+              reasoning_effort: mode === 'smart' ? 'medium' : 'low',
+              messages: [
+                {
+                  role: 'system',
+                  content: skExecutiveSystemPrompt +
+                    ' Selected language: ' + language
+                },
+                { role: 'user', content: message }
+              ],
+              temperature: 0.4,
+              max_completion_tokens: mode === 'smart' ? 1400 : 700
+            }),
+            signal: controller.signal
+          }
+        );
+
+        const data = await upstream.json().catch(() => ({}));
+
+        if (upstream.ok) {
+          reply = data.choices?.[0]?.message?.content?.trim() || null;
+          if (reply) engine = 'Groq Executive AI';
+        } else {
+          console.warn('[Executive AI Groq]', upstream.status,
+            data.error?.message || 'Provider request failed');
+        }
+      } catch (error) {
+        console.warn('[Executive AI Groq]', error.message);
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+
+    if (!reply) {
+      reply = await skExecutiveCloudflare(message, language);
+      if (reply) engine = 'Cloudflare GLM Flash';
+    }
+
+    if (!reply) {
+      return res.status(503).json({
+        ok: false,
+        reply: 'AI service is temporarily unavailable. Please try again.',
+        elapsedMs: Date.now() - startedAt
+      });
+    }
+
+    return res.json({
+      ok: true,
+      reply,
+      answer: reply,
+      mode,
+      language,
+      engine,
+      elapsedMs: Date.now() - startedAt
+    });
+  } catch (error) {
+    console.error('[Executive AI]', error.message);
+    return res.status(502).json({
+      ok: false,
+      reply: 'Executive AI connection error. Please try again.'
+    });
+  }
+});
+// END SK_EXECUTIVE_AI_V1
+
 app.use(express.static(publicPath));
 
 // SK_JOB_REGISTRATION_API_V1
