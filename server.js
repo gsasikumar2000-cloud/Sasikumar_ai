@@ -4226,6 +4226,10 @@ if (msg.type === 'document' && msg.document?.id) {
 // END SK_WHATSAPP_DOCUMENT_HANDLER_V2
 
 const from=msg.from;
+const waSenderDigits = String(from || '').replace(/\D/g, '');
+const isSathaExecutiveUser =
+  waSenderDigits === '919894440400' ||
+  waSenderDigits === '9894440400';
     const waButtonId = String(
   msg.interactive?.button_reply?.id ||
   msg.interactive?.list_reply?.id ||
@@ -4728,6 +4732,44 @@ if (mp3PlayRequested || mp3Navigation) {
     reply = '🔮 SASIKUMAR AI — தமிழ் ஜோதிடம் & ராசி பலன்கள்\n\n' +
       '12 ராசிகளின் தகவல்கள் மற்றும் ஆன்மீகத் தகவல்களைப் பார்க்கவும்.\n\n' +
       '🌐 ஜோதிடப் பக்கம்: https://sasikumar-ai-9wdq.onrender.com/spiritual-astrology.html';
+  } else if (isSathaExecutiveUser && trimmed) {
+    autoPosterForContent = false;
+    try {
+      const executiveResponse = await fetch(
+        `http://127.0.0.1:${PORT}/api/executive-ai`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: trimmed,
+            mode: 'smart',
+            language: 'Tamil'
+          }),
+          signal: AbortSignal.timeout(35000)
+        }
+      );
+
+      const executiveData = await executiveResponse.json().catch(() => ({}));
+
+      if (executiveResponse.ok && executiveData.ok && executiveData.reply) {
+        reply = executiveData.reply;
+        console.log('[WA Satha Executive AI] SUCCESS', {
+          sender: waSenderDigits,
+          engine: executiveData.engine || 'unknown'
+        });
+      } else {
+        throw new Error(executiveData.reply || 'Executive AI unavailable');
+      }
+    } catch (executiveError) {
+      console.error('[WA Satha Executive AI]', executiveError.message);
+      const fallback = await skCentralBrainReply({
+        message: trimmed,
+        category: 'WhatsApp General AI',
+        source: 'whatsapp',
+        mode: 'normal'
+      });
+      reply = fallback.reply;
+    }
   } else if (/\bfriendly\b|நண்பா|நண்பரே/i.test(trimmed)) {
     autoPosterForContent = false;
     const brainResult = await skCentralBrainReply({
@@ -7039,13 +7081,19 @@ app.post('/api/executive-ai', async (req, res) => {
                 { role: 'user', content: message }
               ],
               temperature: 0.4,
-              max_completion_tokens: mode === 'smart' ? 1400 : 700
+              max_completion_tokens: mode === 'smart' ? 3000 : 1200
             }),
             signal: controller.signal
           }
         );
 
         const data = await upstream.json().catch(() => ({}));
+        console.log('[Executive AI Groq diagnostic]', {
+          finish_reason: data.choices?.[0]?.finish_reason,
+          completion_tokens: data.usage?.completion_tokens,
+          prompt_tokens: data.usage?.prompt_tokens,
+          total_tokens: data.usage?.total_tokens
+        });
 
         if (upstream.ok) {
           reply = data.choices?.[0]?.message?.content?.trim() || null;
