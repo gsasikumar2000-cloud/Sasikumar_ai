@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI TV - Movies & OTT</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#eff6ff;color:#172554;font-family:Arial,sans-serif}
+header{padding:18px 12px;text-align:center;background:linear-gradient(120deg,#dbeafe,#fce7f3,#dcfce7)}
+h1{font-size:22px;margin:5px}
+header p{font-size:12px;margin:7px}
+main{max-width:720px;margin:14px auto;padding:12px}
+.search{display:flex;gap:7px}
+input{min-width:0;flex:1;padding:13px;border:1px solid #93c5fd;border-radius:10px;font-size:15px}
+button{border:0;border-radius:10px;padding:12px 16px;background:#2563eb;color:white;font-weight:bold}
+#status{font-size:13px;text-align:center;margin:15px}
+.card{background:white;border-radius:13px;padding:13px;margin:12px 0;box-shadow:0 2px 10px #00000012}
+.result{display:flex;gap:12px;align-items:center}
+.result button{margin-left:auto}
+.poster{width:75px;height:105px;object-fit:cover;border-radius:8px;background:#dbeafe}
+h2{font-size:17px;margin:5px 0}
+small{color:#64748b}
+.source{border-top:1px solid #e2e8f0;padding:10px 0;font-size:13px}
+.source a{color:#2563eb;font-weight:bold}
+.tag{display:inline-block;background:#dbeafe;padding:4px 7px;border-radius:6px;margin:3px;font-size:11px}
+footer{text-align:center;padding:20px;font-size:11px;color:#64748b}
+a{overflow-wrap:anywhere}
+
+#tamil-tv-section .tv-grid {
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+ gap:10px;
+}
+#tamil-tv-section .tv-item {
+ background:#fff;
+ border:1px solid #bfdbfe;
+ border-radius:12px;
+ padding:13px;
+ text-align:center;
+}
+#tamil-tv-section .tv-item a {
+ display:inline-block;
+ margin-top:9px;
+ color:#2563eb;
+ font-weight:bold;
+}
+
+#tamilLivePlayer{background:#fff;padding:12px;border-radius:14px;margin:14px 0}
+#tamilLiveFrame{width:100%;aspect-ratio:16/9;border:0;border-radius:10px;background:#dbeafe}
+.live-btn{display:block;width:100%;margin-top:9px;background:#16a34a}
+
+</style>
+</head>
+<body>
+<header>
+<div style="font-size:30px">📺</div>
+<h1>SASIKUMAR AI TV</h1>
+<p>🎬 Movies • TV Shows • Indian OTT Search</p>
+</header>
+<main>
+<div class="search">
+<input id="query" placeholder="Enter movie or series name..." autocomplete="off">
+<button onclick="searchMovies()">SEARCH</button>
+</div>
+<div id="status">Search your favourite movie or TV series.</div>
+<div id="results"></div>
+<div id="details"></div>
+
+<div class="card" style="text-align:center;background:linear-gradient(120deg,#dbeafe,#fce7f3,#dcfce7)">
+  <div style="font-size:38px">📡</div>
+  <h2>SASIKUMAR JIO TV</h2>
+  <p>தமிழ் மற்றும் பல மொழிகளில் Live TV</p>
+  <a href="https://www.jiotv.com/" target="_blank" rel="noopener noreferrer">
+    <button type="button">▶ OPEN OFFICIAL JIOTV</button>
+  </a>
+  <p><small>Jio account and eligible access may be required.</small></p>
+</div>
+
+
+<div class="card" id="tamil-tv-section">
+ <h2>📺 TAMIL LIVE TV</h2>
+ <p>தமிழ் தொலைக்காட்சி சேனல்கள்</p>
+
+<div class="card" id="tamilLivePlayer" style="display:none">
+ <h2 id="liveTitle">🔴 TAMIL LIVE TV</h2>
+ <iframe id="tamilLiveFrame"
+  src="about:blank"
+  title="Tamil Live TV"
+  allow="autoplay; encrypted-media; picture-in-picture"
+  allowfullscreen></iframe>
+ <p><a id="liveFallback" href="https://www.youtube.com/" target="_blank" rel="noopener">▶ Open official YouTube Live</a></p>
+ <p><small>Live availability and embedding depend on the broadcaster.</small></p>
+ <button onclick="closeTamilLive()">CLOSE PLAYER</button>
+</div>
+
+ <input id="tamilTvSearch" placeholder="Search Tamil channels..."
+  oninput="filterTamilTV()" style="width:100%;margin-bottom:12px">
+ <div class="tv-grid" id="tamilTvGrid">
+ <div class="tv-item" data-search="sun tv entertainment tamil sun nxt">
+  📺<br><b>Sun TV</b>
+  <br><small>Entertainment • Sun NXT</small>
+  <br><a href="https://www.sunnxt.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+
+ <div class="tv-item" data-search="vijay tv entertainment tamil jiohotstar">
+  📺<br><b>Vijay TV</b>
+  <br><small>Entertainment • JioHotstar</small>
+  <br><a href="https://www.jiohotstar.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+
+ <div class="tv-item" data-search="zee tamil entertainment tamil zee5">
+  📺<br><b>Zee Tamil</b>
+  <br><small>Entertainment • ZEE5</small>
+  <br><a href="https://www.zee5.com/ta/live-tv/lang/tamil-channels" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+
+ <div class="tv-item" data-search="colors tamil entertainment tamil jiohotstar">
+  📺<br><b>Colors Tamil</b>
+  <br><small>Entertainment • JioHotstar</small>
+  <br><a href="https://www.jiohotstar.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+
+ <div class="tv-item" data-search="kalaignar tv entertainment tamil official channel">
+  📺<br><b>Kalaignar TV</b>
+  <br><small>Entertainment • Official channel</small>
+  <br><a href="https://www.jiotv.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+
+ <div class="tv-item" data-search="jaya tv entertainment tamil official channel">
+  📺<br><b>Jaya TV</b>
+  <br><small>Entertainment • Official channel</small>
+  <br><a href="https://www.jiotv.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+
+ <div class="tv-item" data-search="raj tv entertainment tamil official channel">
+  📺<br><b>Raj TV</b>
+  <br><small>Entertainment • Official channel</small>
+  <br><a href="https://www.jiotv.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+
+ <div class="tv-item" data-search="polimer tv entertainment tamil official channel">
+  📺<br><b>Polimer TV</b>
+  <br><small>Entertainment • Official channel</small>
+  <br><a href="https://www.jiotv.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+
+ <div class="tv-item" data-search="makkal tv entertainment tamil official channel">
+  📺<br><b>Makkal TV</b>
+  <br><small>Entertainment • Official channel</small>
+  <br><a href="https://www.jiotv.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+
+ <div class="tv-item" data-search="vendhar tv entertainment tamil official channel">
+  📺<br><b>Vendhar TV</b>
+  <br><small>Entertainment • Official channel</small>
+  <br><a href="https://www.jiotv.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+
+ <div class="tv-item" data-search="puthuyugam tv entertainment tamil official channel">
+  📺<br><b>Puthuyugam TV</b>
+  <br><small>Entertainment • Official channel</small>
+  <br><a href="https://www.jiotv.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+
+ <div class="tv-item" data-search="dd tamil entertainment tamil official channel">
+  📺<br><b>DD Tamil</b>
+  <br><small>Entertainment • Official channel</small>
+  <br><a href="https://www.jiotv.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+
+ <div class="tv-item" data-search="ktv movies tamil sun nxt">
+  📺<br><b>KTV</b>
+  <br><small>Movies • Sun NXT</small>
+  <br><a href="https://www.sunnxt.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+
+ <div class="tv-item" data-search="zee thirai movies tamil zee5">
+  📺<br><b>Zee Thirai</b>
+  <br><small>Movies • ZEE5</small>
+  <br><a href="https://www.zee5.com/ta/live-tv/lang/tamil-channels" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+
+ <div class="tv-item" data-search="adithya tv comedy tamil sun nxt">
+  📺<br><b>Adithya TV</b>
+  <br><small>Comedy • Sun NXT</small>
+  <br><a href="https://www.sunnxt.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+
+ <div class="tv-item" data-search="chutti tv kids tamil sun nxt">
+  📺<br><b>Chutti TV</b>
+  <br><small>Kids • Sun NXT</small>
+  <br><a href="https://www.sunnxt.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+
+ <div class="tv-item" data-search="sun music music tamil sun nxt">
+  📺<br><b>Sun Music</b>
+  <br><small>Music • Sun NXT</small>
+  <br><a href="https://www.sunnxt.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+
+ <div class="tv-item" data-search="jaya max music tamil official channel">
+  📺<br><b>Jaya Max</b>
+  <br><small>Music • Official channel</small>
+  <br><a href="https://www.jiotv.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+
+ <div class="tv-item" data-search="isaiaruvi music tamil official channel">
+  📺<br><b>Isaiaruvi</b>
+  <br><small>Music • Official channel</small>
+  <br><a href="https://www.jiotv.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+
+ <div class="tv-item" data-search="thanthi tv news tamil official channel">
+  📺<br><b>Thanthi TV</b><br><button class="live-btn" onclick="playTamilLive('Thanthi TV','UC-JFyL0zDFOsPMpuWu39rPA','https://www.youtube.com/@thanthitv/live')">▶ PLAY ON WEBSITE</button>
+  <br><small>News • Official channel</small>
+  <br><a href="https://www.jiotv.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+
+ <div class="tv-item" data-search="puthiya thalaimurai news tamil official channel">
+  📺<br><b>Puthiya Thalaimurai</b><br><button class="live-btn" onclick="playTamilLive('Puthiya Thalaimurai','UCmyKnNRH0wH-r8I-ceP-dsg','https://www.youtube.com/@puthiyathalaimuraitv/live')">▶ PLAY ON WEBSITE</button>
+  <br><small>News • Official channel</small>
+  <br><a href="https://www.jiotv.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+
+ <div class="tv-item" data-search="news 7 tamil news tamil official channel">
+  📺<br><b>News 7 Tamil</b>
+  <br><small>News • Official channel</small>
+  <br><a href="https://www.jiotv.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+
+ <div class="tv-item" data-search="news18 tamil nadu news tamil official channel">
+  📺<br><b>News18 Tamil Nadu</b>
+  <br><small>News • Official channel</small>
+  <br><a href="https://www.jiotv.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+
+ <div class="tv-item" data-search="polimer news news tamil official channel">
+  📺<br><b>Polimer News</b><br><button class="live-btn" onclick="playTamilLive('Polimer News','UC8Z-VjXBtDJTvq6aqkIskPg','https://www.youtube.com/@polimernews/live')">▶ PLAY ON WEBSITE</button>
+  <br><small>News • Official channel</small>
+  <br><a href="https://www.jiotv.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+
+ <div class="tv-item" data-search="sun news news tamil official channel">
+  📺<br><b>Sun News</b>
+  <br><small>News • Official channel</small>
+  <br><a href="https://www.jiotv.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+
+ <div class="tv-item" data-search="sathiyam tv news tamil official channel">
+  📺<br><b>Sathiyam TV</b>
+  <br><small>News • Official channel</small>
+  <br><a href="https://www.jiotv.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+
+ <div class="tv-item" data-search="news tamil 24x7 news tamil official channel">
+  📺<br><b>News Tamil 24x7</b>
+  <br><small>News • Official channel</small>
+  <br><a href="https://www.jiotv.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+
+ <div class="tv-item" data-search="raj news tamil news tamil official channel">
+  📺<br><b>Raj News Tamil</b>
+  <br><small>News • Official channel</small>
+  <br><a href="https://www.jiotv.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+
+ <div class="tv-item" data-search="jaya plus news tamil official channel">
+  📺<br><b>Jaya Plus</b>
+  <br><small>News • Official channel</small>
+  <br><a href="https://www.jiotv.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+
+ <div class="tv-item" data-search="tamil devotional devotional tamil official channel">
+  📺<br><b>Tamil Devotional</b>
+  <br><small>Devotional • Official channel</small>
+  <br><a href="https://www.jiotv.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+
+ <div class="tv-item" data-search="tamil spiritual tv devotional tamil official channel">
+  📺<br><b>Tamil Spiritual TV</b>
+  <br><small>Devotional • Official channel</small>
+  <br><a href="https://www.jiotv.com/" target="_blank" rel="noopener">OPEN OFFICIAL PLATFORM ↗</a>
+ </div>
+ </div>
+ <p><small>Official streaming platforms. Subscription or eligible account may be required.</small></p>
+</div>
+\n</main>
+<footer>🤖 SASIKUMAR AI STUDIO • Powered by Watchmode</footer>
+<script>
+const $=id=>document.getElementById(id);
+function safe(v){
+ return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+$('query').addEventListener('keydown',e=>{if(e.key==='Enter')searchMovies()});
+
+async function searchMovies(){
+ const q=$('query').value.trim();
+ if(!q){$('status').textContent='Please enter a movie or series name.';return}
+ $('status').textContent='🔎 Searching movies and series...';
+ $('results').innerHTML='';
+ $('details').innerHTML='';
+ try{
+  const r=await fetch('/api/tv/watchmode/search?q='+encodeURIComponent(q));
+  const data=await r.json();
+  if(!r.ok||!data.success)throw new Error(data.error||'Search failed');
+  const items=data.results||[];
+  if(!items.length){$('status').textContent='No results found.';return}
+  $('status').textContent='✅ Found '+items.length+' results';
+  $('results').innerHTML=items.map(item=>`
+   <div class="card result">
+    <div style="font-size:32px">🎬</div>
+    <div style="flex:1">
+     <b>${safe(item.name)}</b><br>
+     <small>${safe(item.type||'Title')} • ${safe(item.year||'Year unavailable')}</small>
+    </div>
+    <button onclick="showDetails(${Number(item.id)})">VIEW</button>
+   </div>`).join('');
+ }catch(e){$('status').textContent='⚠️ '+e.message}
+}
+
+async function showDetails(id){
+ $('details').innerHTML='<div class="card">Loading movie details and OTT platforms...</div>';
+ try{
+  const [dr,sr]=await Promise.all([
+   fetch('/api/tv/watchmode/details/'+id),
+   fetch('/api/tv/watchmode/sources/'+id)
+  ]);
+  const dd=await dr.json();
+  const sd=await sr.json();
+  if(!dr.ok||!dd.success)throw new Error(dd.error||'Details unavailable');
+  const d=dd.details||dd.result||{};
+  const sources=sd.sources||[];
+  const poster=d.poster||d.poster_url||'';
+  const title=d.title||d.name||'Movie details';
+  $('details').innerHTML=`
+   <div class="card">
+    <h2>🎬 ${safe(title)}</h2>
+    <div class="result">
+     ${poster?`<img class="poster" src="${safe(poster)}" alt="Movie poster" onerror="this.style.display='none'">`:'<div class="poster"></div>'}
+     <div>
+      <b>${safe(d.year||'')}</b><br>
+      <small>${safe(d.genre_names||d.genres||'')}</small><br>
+      <small>${safe(d.runtime_minutes?d.runtime_minutes+' minutes':d.runtime||'')}</small><br>
+      <small>⭐ ${safe(d.user_rating||d.rating||'Rating unavailable')}</small>
+     </div>
+    </div>
+    <p style="font-size:13px;line-height:1.5">${safe(d.plot_overview||d.plot||'No description available.')}</p>
+    ${d.trailer?`<a href="${safe(d.trailer)}" target="_blank" rel="noopener">▶ Watch Trailer</a>`:''}
+   </div>
+   <div class="card">
+    <h2>📺 India OTT Availability</h2>
+    ${sources.length?sources.map(s=>`
+     <div class="source">
+      <b>${safe(s.name||s.source_name||'Streaming platform')}</b>
+      <span class="tag">${safe(s.type||'Available')}</span>
+      <span class="tag">${safe(s.format||'')}</span>
+      ${s.price?`<span class="tag">₹${safe(s.price)}</span>`:''}
+      ${s.web_url&&/^https?:\/\//i.test(s.web_url)?`<br><a href="${safe(s.web_url)}" target="_blank" rel="noopener">Open platform ↗</a>`:''}
+     </div>`).join(''):'<p style="font-size:13px">No OTT listings found for India.</p>'}
+    <small>Availability and prices may change. Please verify with the platform.</small>
+   </div>`;
+  $('details').scrollIntoView({behavior:'smooth'});
+ }catch(e){$('details').innerHTML='<div class="card">⚠️ '+safe(e.message)+'</div>'}
+}
+
+
+function playTamilLive(name, channelId, liveUrl){
+ const box=document.getElementById('tamilLivePlayer');
+ const frame=document.getElementById('tamilLiveFrame');
+ document.getElementById('liveTitle').textContent='🔴 '+name+' LIVE';
+ document.getElementById('liveFallback').textContent=
+   'Live stream loading... If unavailable, the broadcaster may restrict website playback.';
+ box.style.display='block';
+ box.scrollIntoView({behavior:'smooth'});
+ frame.src='https://www.youtube.com/embed/live_stream?channel='
+   +encodeURIComponent(channelId)+'&autoplay=1&mute=1&playsinline=1';
+}
+function playOfficialSite(name, url){
+ const box=document.getElementById('tamilLivePlayer');
+ const frame=document.getElementById('tamilLiveFrame');
+ document.getElementById('liveTitle').textContent='🔴 '+name+' LIVE';
+ frame.src=url;
+ box.style.display='block';
+ box.scrollIntoView({behavior:'smooth'});
+}
+
+function closeTamilLive(){
+ document.getElementById('tamilLiveFrame').src='about:blank';
+ document.getElementById('tamilLivePlayer').style.display='none';
+}
+
+function filterTamilTV(){
+ const q=document.getElementById('tamilTvSearch').value.toLowerCase();
+ document.querySelectorAll('#tamilTvGrid .tv-item').forEach(item=>{
+  item.style.display=item.dataset.search.includes(q)?'block':'none';
+ });
+}
+</script>
+</body>
+</html>

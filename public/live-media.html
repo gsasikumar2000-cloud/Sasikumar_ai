@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#7c3aed">
-<title>😊 Live Media Hub — SASIKUMAR AI</title>
+<title>SASIKUMAR AI — Live Media Hub</title>
+<script src="https://download.agora.io/sdk/release/AgoraRTC_N-4.24.8.js"></script>
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;color:#172554;background:linear-gradient(140deg,#eff6ff,#f5f3ff,#ecfeff)}
@@ -22,23 +23,53 @@ input{width:100%;padding:13px;border:1px solid #cbd5e1;border-radius:11px;font-s
 .actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:9px}
 .blue{background:#2563eb;color:#fff}.purple{background:#7c3aed;color:#fff}.red{background:#dc2626;color:#fff}.green{background:#059669;color:#fff}
 video{width:100%;max-height:440px;margin-top:12px;background:#111;border-radius:12px}
+#localVideo,#remoteVideo{width:100%;min-height:180px;background:#0f172a;border-radius:14px;overflow:hidden;margin-top:10px}
+#liveStatus{padding:12px;border-radius:10px;background:#eff6ff;color:#1e40af;overflow-wrap:anywhere}
+#shareBox{display:none}
 footer{text-align:center;padding:20px;color:#64748b;font-size:13px}
 @media(max-width:430px){.grid{grid-template-columns:1fr}.panel{padding:13px}}
 </style>
 </head>
 <body>
 <header>
-  <div style="font-size:42px">😊 🔴 LIVE</div>
-  <h1>SASIKUMAR AI — Live Media Hub</h1>
-  <p>🖼️ Images • 🎬 Videos • ▶️ YouTube — ஒரே பக்கம்</p>
+<div style="font-size:42px">😊 🔴 LIVE</div>
+<h1>SASIKUMAR AI — Live Media Hub</h1>
+<p>📹 Camera Live • 🖼️ Images • 🎬 Videos • ▶️ YouTube</p>
 </header>
 <main>
 <nav>
-  <a href="#images">🖼️ Live Images</a>
-  <a href="#videos">🎬 Live Videos</a>
-  <a href="#youtube">▶️ YouTube</a>
-  <a href="/">🏠 Home</a>
+<a href="#agoraLive">🔴 Camera Live</a>
+<a href="#images">🖼️ Live Images</a>
+<a href="#videos">🎬 Live Videos</a>
+<a href="#youtube">▶️ YouTube</a>
+<a href="/">🏠 Home</a>
 </nav>
+
+<section class="panel" id="agoraLive">
+<h2>🔴 SASIKUMAR AI — Camera Live</h2>
+<p>உங்கள் Camera மற்றும் Microphone மூலம் நேரலையில் பேசுங்கள். Live Link-ஐ நண்பர்களுடன் பகிருங்கள்.</p>
+<div id="liveStatus" role="status">Live தொடங்கத் தயாராக உள்ளது.</div>
+<div id="localArea" hidden>
+<h3>📹 உங்கள் Camera</h3>
+<div id="localVideo"></div>
+</div>
+<div id="remoteArea" hidden>
+<h3>👀 நேரலை ஒளிபரப்பு</h3>
+<div id="remoteVideo"></div>
+</div>
+<div class="actions" id="hostActions">
+<button class="btn green" id="startLiveBtn" onclick="startLive()">📹 Start Live</button>
+<button class="btn red" id="endLiveBtn" onclick="endLive()" hidden>🔴 End Live</button>
+</div>
+<div id="shareBox">
+<p>🔗 உங்கள் Live Link:</p>
+<input id="shareUrl" readonly>
+<div class="actions">
+<button class="btn purple" onclick="copyShare()">📋 Copy Link</button>
+<button class="btn blue" onclick="shareLive()">📤 Share</button>
+</div>
+</div>
+</section>
 
 <section class="panel" id="images">
 <h2>🖼️ Live Images</h2>
@@ -81,7 +112,114 @@ footer{text-align:center;padding:20px;color:#64748b;font-size:13px}
 </section>
 <footer>SASIKUMAR AI • Live Media Hub</footer>
 </main>
+
 <script>
+let liveClient=null,localTracks=[],activeShareId=null,isHost=false,liveBusy=false;
+
+const statusBox=()=>document.getElementById('liveStatus');
+function setLiveStatus(message){statusBox().textContent=message}
+async function api(url,options={}){
+ const response=await fetch(url,{credentials:'same-origin',cache:'no-store',...options,
+  headers:{'Content-Type':'application/json',...(options.headers||{})}});
+ const data=await response.json().catch(()=>({error:'Invalid server response'}));
+ if(!response.ok)throw new Error(data.error||'Request failed');
+ return data;
+}
+function showShare(url){
+ document.getElementById('shareBox').style.display='block';
+ document.getElementById('shareUrl').value=url;
+}
+async function startLive(){
+ if(liveBusy)return;
+ liveBusy=true;
+ const button=document.getElementById('startLiveBtn');
+ button.disabled=true;
+ try{
+  if(!window.AgoraRTC)throw new Error('Agora SDK ஏற்றப்படவில்லை. Internet connection சரிபார்க்கவும்.');
+  if(!navigator.mediaDevices?.getUserMedia)throw new Error('Camera பயன்படுத்த HTTPS தேவை.');
+  setLiveStatus('Live உருவாக்கப்படுகிறது…');
+  const data=await api('/api/agora/live/start',{method:'POST',body:'{}'});
+  activeShareId=data.shareId;isHost=true;
+  liveClient=AgoraRTC.createClient({mode:'live',codec:'vp8'});
+  await liveClient.setClientRole('host');
+  await liveClient.join(data.appId,data.channelName,data.token,data.uid);
+  localTracks=await AgoraRTC.createMicrophoneAndCameraTracks();
+  localTracks[1].play('localVideo');
+  await liveClient.publish(localTracks);
+  document.getElementById('localArea').hidden=false;
+  document.getElementById('endLiveBtn').hidden=false;
+  showShare(data.shareUrl);
+  setLiveStatus('🔴 நீங்கள் நேரலையில் இருக்கிறீர்கள்! நண்பர்களுடன் Link பகிருங்கள்.');
+  history.replaceState({},'',location.pathname+'?live='+encodeURIComponent(data.shareId));
+ }catch(error){
+  setLiveStatus('Live தொடங்க முடியவில்லை: '+error.message);
+  await cleanupClient();
+  if(activeShareId){
+   try{await api('/api/agora/live/'+encodeURIComponent(activeShareId)+'/end',{method:'POST',body:'{}'})}catch(e){}
+  }
+  activeShareId=null;isHost=false;
+ }finally{
+  liveBusy=false;button.disabled=false;
+ }
+}
+async function cleanupClient(){
+ for(const track of localTracks){try{track.stop();track.close()}catch(e){}}
+ localTracks=[];
+ if(liveClient){try{await liveClient.leave()}catch(e){}}
+ liveClient=null;
+ document.getElementById('localArea').hidden=true;
+ document.getElementById('remoteArea').hidden=true;
+ document.getElementById('localVideo').innerHTML='';
+ document.getElementById('remoteVideo').innerHTML='';
+}
+async function endLive(){
+ if(!isHost||!activeShareId)return;
+ if(!confirm('உங்கள் நேரலையை முடிக்க வேண்டுமா?'))return;
+ const id=activeShareId;
+ try{
+  await api('/api/agora/live/'+encodeURIComponent(id)+'/end',{method:'POST',body:'{}'});
+  setLiveStatus('நேரலை முடிக்கப்பட்டது.');
+  await cleanupClient();
+  activeShareId=null;isHost=false;
+  document.getElementById('endLiveBtn').hidden=true;
+  document.getElementById('shareBox').style.display='none';
+  history.replaceState({},'',location.pathname);
+ }catch(error){setLiveStatus('Live முடிக்க முடியவில்லை: '+error.message)}
+}
+async function copyShare(){
+ const input=document.getElementById('shareUrl');
+ try{await navigator.clipboard.writeText(input.value);setLiveStatus('Live Link Copy செய்யப்பட்டது.')}
+ catch(e){input.select();document.execCommand('copy');setLiveStatus('Live Link Copy செய்யப்பட்டது.')}
+}
+async function shareLive(){
+ const url=document.getElementById('shareUrl').value;
+ if(navigator.share){try{await navigator.share({title:'SASIKUMAR AI Live',url})}catch(e){}}
+ else await copyShare();
+}
+async function joinViewer(shareId){
+ try{
+  if(!window.AgoraRTC)throw new Error('Agora SDK ஏற்றப்படவில்லை.');
+  setLiveStatus('நேரலை சரிபார்க்கப்படுகிறது…');
+  const info=await api('/api/agora/live/'+encodeURIComponent(shareId));
+  if(info.live.status!=='active')throw new Error('இந்த நேரலை முடிந்துவிட்டது.');
+  const data=await api('/api/agora/live/'+encodeURIComponent(shareId)+'/token',{method:'POST',body:'{}'});
+  liveClient=AgoraRTC.createClient({mode:'live',codec:'vp8'});
+  await liveClient.setClientRole('audience',{level:2});
+  liveClient.on('user-published',async(user,mediaType)=>{
+   try{
+    await liveClient.subscribe(user,mediaType);
+    if(mediaType==='video'){
+     document.getElementById('remoteArea').hidden=false;
+     user.videoTrack.play('remoteVideo');
+    }
+    if(mediaType==='audio')user.audioTrack.play();
+   }catch(error){setLiveStatus('Stream பெறுவதில் சிக்கல்: '+error.message)}
+  });
+  liveClient.on('user-unpublished',()=>{});
+  await liveClient.join(data.appId,data.channelName,data.token,data.uid);
+  setLiveStatus('👀 '+info.live.host_username+' அவர்களின் நேரலையைப் பார்க்கிறீர்கள்.');
+ }catch(error){setLiveStatus('நேரலையைத் திறக்க முடியவில்லை: '+error.message)}
+}
 function searchImages(){
  const q=document.getElementById('imageQuery').value.trim();
  if(!q){document.getElementById('imageQuery').focus();return}
@@ -99,18 +237,22 @@ function openLiveUrl(){
  const raw=document.getElementById('liveUrl').value.trim();
  const status=document.getElementById('videoStatus');
  if(!raw){status.textContent='முதலில் செல்லுபடியாகும் URL உள்ளிடவும்.';return}
- let u;
- try{u=new URL(raw)}catch(e){status.textContent='சரியான முழு URL கொடுக்கவும்.';return}
+ let u;try{u=new URL(raw)}catch(e){status.textContent='சரியான முழு URL கொடுக்கவும்.';return}
  if(!['https:','http:'].includes(u.protocol)){status.textContent='HTTP/HTTPS URL மட்டும் பயன்படுத்தவும்.';return}
  if(/youtube\.com|youtu\.be|youtube-nocookie\.com/i.test(u.hostname)){
-   window.open(u.href,'_blank','noopener,noreferrer');
-   status.textContent='YouTube வீடியோ புதிய tab-ல் திறக்கப்பட்டது.';
-   return;
+  window.open(u.href,'_blank','noopener,noreferrer');
+  status.textContent='YouTube வீடியோ புதிய tab-ல் திறக்கப்பட்டது.';
+  return;
  }
  const player=document.getElementById('mediaPlayer');
  player.src=u.href;player.hidden=false;player.load();
  player.play().catch(()=>{status.textContent='வீடியோ தயார். Play அழுத்தவும் அல்லது URL-ஐ சரிபார்க்கவும்.'});
  status.textContent='வீடியோ ஏற்றப்படுகிறது…';
+}
+const sharedLive=new URLSearchParams(location.search).get('live');
+if(sharedLive){
+ document.getElementById('hostActions').hidden=true;
+ joinViewer(sharedLive);
 }
 </script>
 </body>

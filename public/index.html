@@ -174,6 +174,13 @@ section[style*="background:#f0fdf4"] > div[style*="display:grid"] {
 <div style="background:#16a34a;color:#fff;padding:3px 7px;border-radius:5px;font-size:9px;margin-top:5px;display:inline-block">🟢 SHOP NOW</div>
 </a>
 <!-- SK_GOOGLE_LIVE_SEARCH_CARD_V1 -->
+<!-- SASIKUMAR_AI_TV_CARD_V1 -->
+<a href="/tv.html" class="card" style="background:linear-gradient(135deg,#dbeafe,#fce7f3);box-sizing:border-box">
+<div style="background:#1d4ed8;color:#fff;padding:4px 6px;border-radius:5px;font-size:10px;font-weight:800">📺 SASIKUMAR AI TV</div>
+<div style="color:#1e3a8a;font-size:9px;margin-top:4px">🎬 Movies • TV Shows</div>
+<div style="color:#1e3a8a;font-size:9px;margin-top:3px">🔎 Movie & Series Search</div>
+<div style="background:#7c3aed;color:#fff;padding:3px 6px;border-radius:5px;font-size:8px;margin-top:4px;display:inline-block">▶️ OPEN TV & MOVIES</div>
+</a>
 <a href="/google-search.html" class="card" style="background:linear-gradient(135deg,#dbeafe,#ccfbf1);box-sizing:border-box">
 <div style="background:#2563eb;color:#fff;padding:4px 6px;border-radius:5px;font-size:10px;font-weight:800">🔎 GOOGLE LIVE SEARCH</div>
 <div style="color:#1e293b;font-size:9px;margin-top:4px">Google Web Search</div>
@@ -565,7 +572,6 @@ updateLive();
 
       message.style.color = '#15803d';
       if (mode === 'signup') {
-        message.textContent = (data.message || 'Account created.') + ' Please login.';
         pass.value = '';
         setMode('login');
         history.replaceState(null, '', '/?skAuth=login');
