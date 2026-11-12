@@ -4387,7 +4387,7 @@ if (mp3PlayRequested || mp3Navigation) {
       : 'Hey friend! 😊❤️ How are you today? How can I help?';
   } else if (/^EMI\b/i.test(trimmed) && getWhatsAppEMIReply(trimmed)) {
     reply = getWhatsAppEMIReply(trimmed);
-  } else if (/gold\s*loan|தங்கக்\s*கடன்|நகைக்\s*கடன்/i.test(trimmed)) {
+  } else if (!isSathaExecutiveUser && /gold\s*loan|தங்கக்\s*கடன்|நகைக்\s*கடன்/i.test(trimmed)) {
     reply = `🟡 GOLD LOAN SUPPORT
 தங்கத்தின் நிகர எடை (கிராம்), தூய்மை (18K/20K/22K/24K) ஆகியவற்றை அனுப்புங்கள்.
 கடன் மதிப்பீடு கடன் வழங்குநரின் விதிமுறைகள் மற்றும் நகைச் சோதனையைப் பொறுத்தது.
