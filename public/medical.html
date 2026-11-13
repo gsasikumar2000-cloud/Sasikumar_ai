@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#dbeafe">
+<title>SASIKUMAR AI - Medical AI</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  background:linear-gradient(135deg,#dff4ff 0%,#eef2ff 50%,#fceeff 100%);
+  color:#172033;
+}
+header{text-align:center;padding:24px 14px;background:linear-gradient(120deg,#bfdbfe,#bbf7d0,#fef3c7)}
+.logo{font-size:42px}
+h1{font-size:25px;margin:5px}
+h2{font-size:19px}
+main{max-width:780px;margin:auto;padding:14px}
+.panel{background:white;border-radius:18px;padding:17px;margin:13px 0;box-shadow:0 3px 14px #00000010}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.mode{border:2px solid #dbeafe;border-radius:15px;padding:14px 9px;background:#f8fbff;color:#172033;text-align:center;min-height:112px;cursor:pointer}
+.mode.active{border-color:#16a34a;background:#dcfce7}
+.mode .emoji{font-size:30px;display:block;margin-bottom:7px}
+.mode b{font-size:15px}
+.mode small{display:block;margin-top:5px;color:#475569;line-height:1.4}
+button{border:0;border-radius:11px;padding:12px 16px;margin:5px;background:#15803d;color:white;font-weight:bold;font-size:15px;cursor:pointer}
+button:disabled{opacity:.6}
+.lang button{background:#dbeafe;color:#172033}
+textarea{width:100%;min-height:125px;padding:13px;border:1px solid #bfdbfe;border-radius:12px;font-size:16px;resize:vertical}
+#answer{white-space:pre-wrap;line-height:1.75;overflow-wrap:anywhere}
+.note{background:#fff7d6;padding:13px;border-radius:12px;font-size:14px}
+.small{font-size:13px;color:#475569;line-height:1.6}
+#status{font-weight:bold}
+#send{width:100%;margin:12px 0 4px;background:#15803d}
+.upload-tools{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.tool-label{display:inline-block;padding:12px 15px;border-radius:11px;color:#172033;font-weight:bold;cursor:pointer}
+.camera-tool{background:#bfdbfe}
+.gallery-tool{background:#bbf7d0}
+#imagePreview{display:none;max-width:100%;max-height:260px;object-fit:contain;border-radius:12px;margin:10px 0;border:2px solid #bfdbfe}
+#copyAnswer{background:#2563eb}
+#clearImage{background:#64748b}
+
+a{color:#166534;font-weight:bold}
+@media(max-width:360px){.mode{padding:10px 5px}.mode b{font-size:13px}}
+</style>
+</head>
+<body>
+<header>
+<div class="logo"><img src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI Brand Logo" style="width:82px;height:82px;object-fit:contain;border-radius:18px"></div>
+<h1>SASIKUMAR AI</h1>
+<h2>Medical AI / மருத்துவ உதவி</h2>
+<p>Doctor AI • Symptom Checker • Medicine Information</p>
+</header>
+
+<main>
+<section class="panel">
+<h2>மருத்துவப் பிரிவைத் தேர்வு செய்யுங்கள்</h2>
+<p class="small">உங்களுக்குத் தேவையான மருத்துவ உதவிப் பிரிவைத் தேர்ந்தெடுத்து கேள்வியை எழுதுங்கள்.</p>
+
+<div class="cards">
+<button class="mode active" type="button" data-mode="doctor">
+<span class="emoji">🩺</span>
+<b>Doctor AI</b>
+<small>பொது மருத்துவக் கேள்விகள்</small>
+</button>
+
+<button class="mode" type="button" data-mode="symptom">
+<span class="emoji">🔍</span>
+<b>Symptom Checker</b>
+<small>அறிகுறிகளைப் புரிந்துகொள்ள</small>
+</button>
+
+<button class="mode" type="button" data-mode="medicine">
+<span class="emoji">💊</span>
+<b>Medicine Information</b>
+<small>மருந்து பாதுகாப்புத் தகவல்கள்</small>
+</button>
+
+<button class="mode" type="button" data-mode="all">
+<span class="emoji">🤖</span>
+<b>All-in-One Medical AI</b>
+<small>ஒருங்கிணைந்த மருத்துவ உதவி</small>
+</button>
+</div>
+</section>
+
+<section class="panel">
+<div class="lang">
+<button type="button" id="tamil">தமிழ்</button>
+<button type="button" id="english">English</button>
+</div>
+
+<h2 id="heading">🩺 Doctor AI</h2>
+<p id="hint" class="small">உங்கள் பொதுவான மருத்துவக் கேள்வியை எழுதுங்கள்.</p>
+
+<textarea id="question" maxlength="6000"
+placeholder="உங்கள் கேள்வியை இங்கே எழுதுங்கள்..."></textarea>
+
+<div class="upload-tools">
+  <label class="tool-label camera-tool" for="medicalCamera">📷 Camera</label>
+  <input id="medicalCamera" type="file" accept="image/jpeg,image/png,image/webp" capture="environment" hidden>
+
+  <label class="tool-label gallery-tool" for="medicalGallery">🖼️ Photo / Lab Report</label>
+  <input id="medicalGallery" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+
+  <button id="clearImage" type="button" hidden>படத்தை நீக்கு</button>
+</div>
+
+<img id="imagePreview" alt="Medical image preview">
+<p class="small">JPG, PNG, WebP • அதிகபட்சம் 10 MB</p>
+
+<button id="send" type="button">கேள்வி அனுப்பு / Ask Medical AI</button>
+<p id="status" class="small" aria-live="polite"></p>
+
+<div id="answer" aria-live="polite"></div>
+<button id="copyAnswer" type="button">📋 Copy Answer</button>
+</section>
+
+<section class="panel">
+<h2>🌿 கூடுதல் மருத்துவப் பிரிவுகள்</h2>
+<p>🧪 ஆய்வகப் பரிசோதனைகள் / Lab Tests</p>
+<p>🥗 உணவு மற்றும் ஊட்டச்சத்து / Nutrition</p>
+<p>🌿 சித்தா, ஆயுர்வேதம், யுனானி</p>
+<p>🚑 முதலுதவி / First Aid</p>
+<p>🩺 நீரிழிவு, ரத்த அழுத்தம் மற்றும் பொதுவான உடல்நலக் கல்வி</p>
+</section>
+
+<section class="panel note">
+<b>⚠️ முக்கிய மருத்துவப் பாதுகாப்பு</b>
+<p>இந்த AI பொதுவான கல்வித் தகவல்களை மட்டுமே வழங்கும். மருத்துவரின் பரிசோதனை, நோயறிதல் அல்லது மருந்துச் சீட்டுக்கு மாற்றாகாது.</p>
+<p>மருந்தைத் தொடங்குவது, நிறுத்துவது அல்லது அளவை மாற்றுவது குறித்து மருத்துவர் அல்லது மருந்தாளரிடம் ஆலோசிக்கவும்.</p>
+<p>நெஞ்சுவலி, கடுமையான மூச்சுத்திணறல், மயக்கம், பக்கவாத அறிகுறிகள் அல்லது கடுமையான இரத்தப்போக்கு இருந்தால் உடனடியாக அவசர உதவி பெறுங்கள். இந்தியாவில் 112 அல்லது ஆம்புலன்ஸ் 108.</p>
+</section>
+
+<p><a href="/">← SASIKUMAR AI Home</a></p>
+</main>
+
+<script>
+let language = 'auto';
+let currentMode = 'doctor';
+
+const question = document.getElementById('question');
+const statusBox = document.getElementById('status');
+const answer = document.getElementById('answer');
+const heading = document.getElementById('heading');
+const hint = document.getElementById('hint');
+const send = document.getElementById('send');
+const cameraInput = document.getElementById('medicalCamera');
+const galleryInput = document.getElementById('medicalGallery');
+const imagePreview = document.getElementById('imagePreview');
+const clearImage = document.getElementById('clearImage');
+const copyAnswer = document.getElementById('copyAnswer');
+
+let selectedImageFile = null;
+
+function selectMedicalImage(file) {
+  if (!file) return;
+
+  if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+    statusBox.textContent = 'JPG, PNG அல்லது WebP படத்தை மட்டும் தேர்ந்தெடுக்கவும்.';
+    return;
+  }
+
+  if (file.size > 10 * 1024 * 1024) {
+    statusBox.textContent = 'படம் 10 MB-ஐ விட அதிகமாக உள்ளது. சிறிய படத்தைத் தேர்ந்தெடுக்கவும்.';
+    return;
+  }
+
+  selectedImageFile = file;
+  imagePreview.src = URL.createObjectURL(file);
+  imagePreview.style.display = 'block';
+  clearImage.hidden = false;
+  statusBox.textContent = 'படம் தேர்ந்தெடுக்கப்பட்டது. இப்போது கேள்வியை அனுப்பலாம்.';
+}
+
+cameraInput.addEventListener('change', () => {
+  selectMedicalImage(cameraInput.files[0]);
+});
+
+galleryInput.addEventListener('change', () => {
+  selectMedicalImage(galleryInput.files[0]);
+});
+
+clearImage.addEventListener('click', () => {
+  selectedImageFile = null;
+  cameraInput.value = '';
+  galleryInput.value = '';
+  imagePreview.removeAttribute('src');
+  imagePreview.style.display = 'none';
+  clearImage.hidden = true;
+  statusBox.textContent = 'படம் நீக்கப்பட்டது.';
+});
+
+function fileToDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ''));
+    reader.onerror = () => reject(new Error('படத்தைப் படிக்க முடியவில்லை.'));
+    reader.readAsDataURL(file);
+  });
+}
+
+copyAnswer.addEventListener('click', async () => {
+  const text = answer.textContent.trim();
+  if (!text) {
+    statusBox.textContent = 'Copy செய்ய பதில் இல்லை.';
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    statusBox.textContent = 'பதில் Copy செய்யப்பட்டது.';
+  } catch (error) {
+    const range = document.createRange();
+    range.selectNodeContents(answer);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    statusBox.textContent = 'பதிலைத் தேர்ந்தெடுத்துள்ளோம். Copy செய்யுங்கள்.';
+  }
+});
+
+const modes = {
+  doctor: {
+    ta: '🩺 Doctor AI',
+    en: '🩺 Doctor AI',
+    hintTa: 'உங்கள் பொதுவான மருத்துவக் கேள்வியை எழுதுங்கள்.',
+    hintEn: 'Enter your general health question.',
+    placeholderTa: 'உங்கள் கேள்வியை இங்கே எழுதுங்கள்...',
+    placeholderEn: 'Type your health question here...',
+    sample: 'பொதுவான மருத்துவத் தகவல்களை விளக்குங்கள்.'
+  },
+  symptom: {
+    ta: '🔍 Symptom Checker',
+    en: '🔍 Symptom Checker',
+    hintTa: 'உங்கள் அறிகுறிகள், எப்போது தொடங்கின, அவற்றின் தீவிரம் ஆகியவற்றை எழுதுங்கள்.',
+    hintEn: 'Describe your symptoms, when they started and how severe they are.',
+    placeholderTa: 'உதாரணம்: இரண்டு நாட்களாக இருமல் மற்றும் தொண்டை வலி உள்ளது...',
+    placeholderEn: 'Example: I have had a cough and sore throat for two days...',
+    sample: 'எனக்கு தலைவலி மற்றும் சோர்வு உள்ளது. பொதுவான காரணங்கள் மற்றும் எச்சரிக்கை அறிகுறிகளை விளக்குங்கள்.'
+  },
+  medicine: {
+    ta: '💊 Medicine Information',
+    en: '💊 Medicine Information',
+    hintTa: 'மருந்து லேபிள், காலாவதி தேதி, சேமிப்பு மற்றும் பாதுகாப்பு எச்சரிக்கைகள் பற்றி கேளுங்கள்.',
+    hintEn: 'Ask about product labels, expiry dates, storage and safety warnings.',
+    placeholderTa: 'எந்தப் பாதுகாப்புத் தகவலைத் தெரிந்துகொள்ள விரும்புகிறீர்கள்?',
+    placeholderEn: 'What safety information would you like to understand?',
+    sample: 'Explain how to read a product label, including expiry date, storage instructions, warnings and possible interactions. Do not recommend a specific product.'
+  },
+  all: {
+    ta: '🤖 All-in-One Medical AI',
+    en: '🤖 All-in-One Medical AI',
+    hintTa: 'உங்கள் உடல்நலம் தொடர்பான கேள்வியை விரிவாக எழுதுங்கள்.',
+    hintEn: 'Enter your health question for general medical information.',
+    placeholderTa: 'உங்கள் கேள்வியை இங்கே எழுதுங்கள்...',
+    placeholderEn: 'Enter your question here...',
+    sample: 'பொதுவான உடல்நலம், அறிகுறிகள், தடுப்பு மற்றும் மருத்துவரை அணுக வேண்டிய நேரம் பற்றி விளக்குங்கள்.'
+  }
+};
+
+function updateMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('[data-mode]').forEach(button => {
+    button.classList.toggle('active', button.dataset.mode === mode);
+  });
+
+  const item = modes[mode];
+  heading.textContent = language === 'english' ? item.en : item.ta;
+  hint.textContent = language === 'english' ? item.hintEn : item.hintTa;
+  question.placeholder = language === 'english' ? item.placeholderEn : item.placeholderTa;
+  question.value = '';
+  answer.textContent = '';
+  statusBox.textContent = '';
+}
+
+document.querySelectorAll('[data-mode]').forEach(button => {
+  button.addEventListener('click', () => updateMode(button.dataset.mode));
+});
+
+document.getElementById('tamil').onclick = () => {
+  language = 'tamil';
+  updateMode(currentMode);
+};
+
+document.getElementById('english').onclick = () => {
+  language = 'english';
+  updateMode(currentMode);
+};
+
+send.onclick = async () => {
+  let message = question.value.trim();
+
+  if (!message && !selectedImageFile) {
+    statusBox.textContent = 'கேள்வியை எழுதுங்கள் அல்லது ஒரு படத்தைத் தேர்ந்தெடுங்கள்.';
+    question.focus();
+    return;
+  }
+
+  send.disabled = true;
+  send.textContent = 'பதில் தயாராகிறது...';
+  statusBox.textContent = 'Medical AI ஆய்வு செய்கிறது...';
+  answer.textContent = '';
+
+  try {
+    let attachment = null;
+
+    if (selectedImageFile) {
+      if (!message) {
+        message = language === 'english'
+          ? 'Please carefully analyze this medical image or lab report. Explain only readable information.'
+          : 'இந்த மருத்துவப் படம் அல்லது Lab Report-ஐ கவனமாக ஆய்வு செய்து, தெளிவாகப் படிக்கக்கூடிய தகவல்களை மட்டும் தமிழில் விளக்குங்கள்.';
+      }
+
+      attachment = {
+        name: selectedImageFile.name,
+        data: await fileToDataURL(selectedImageFile)
+      };
+    }
+
+    const response = await fetch('/api/medical/ask', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        message,
+        language,
+        medicalMode: currentMode,
+        attachment
+      })
+    });
+
+    const data = await response.json();
+    answer.textContent = data.reply || 'பதில் கிடைக்கவில்லை.';
+    statusBox.textContent = response.ok
+      ? 'பதில் கிடைத்தது.'
+      : 'சேவை பதில்: ' + response.status;
+  } catch (error) {
+    statusBox.textContent = error.message || 'இணைப்பில் பிழை. மீண்டும் முயற்சிக்கவும்.';
+  } finally {
+    send.disabled = false;
+    send.textContent = 'கேள்வி அனுப்பு / Ask Medical AI';
+  }
+};
+</script>
+</body>
+</html>

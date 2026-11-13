@@ -1104,7 +1104,12 @@ async function getCloudflareAIReply(message, category = 'General AI') {
                 'You are SASIKUMAR AI, a helpful multilingual assistant. ' +
                 'Reply in the user language, including Tamil, English or Tanglish. ' +
                 'Be accurate, concise and transparent about uncertainty. ' +
-                'The requested category is: ' + String(category).slice(0, 100)
+                // SK_CLOUDFLARE_MEDICAL_INSTRUCTIONS_V1
+'The requested category is: ' + String(category).slice(0, 100) +
+                (String(category).toLowerCase().includes('medical') || skIsMedicalQuery(message)
+                  ? '\\n\\n' + skMedicalInstructions()
+                  : '')
+                // END SK_CLOUDFLARE_MEDICAL_INSTRUCTIONS_V1
             },
             {
               role: 'user',
@@ -1153,10 +1158,35 @@ async function getCloudflareAIReply(message, category = 'General AI') {
   }
 }
 
+
+// SK_MEDICAL_CORE_V1
+function skIsMedicalQuery(value = '') {
+  const q = String(value || '').toLowerCase();
+  return /doctor|medical|medicine|medication|symptom|fever|cough|cold|headache|pain|diabetes|blood pressure|pregnan|first aid|lab test|blood test|tablet|capsule|hospital|emergency|siddha|ayurveda|unani|herbal|சித்தா|ஆயுர்வேதம்|யுனானி|மருத்துவம்|மருத்துவர்|மருந்து|மாத்திரை|காய்ச்சல்|இருமல்|தலைவலி|வலி|நீரிழிவு|சர்க்கரை|ரத்த அழுத்தம்|இரத்த அழுத்தம்|கர்ப்பம்|முதலுதவி/.test(q);
+}
+function skMedicalInstructions() {
+  return [
+    'MEDICAL SAFETY: Give general educational information in the user language.',
+    'Do not diagnose with certainty, prescribe treatment, or invent medicine dosages.',
+    'Do not proactively recommend a specific medicine or drug name for a symptom.',
+    'If the user asks about a specific medicine, explain general information, important cautions and possible interactions; advise checking with a qualified doctor or pharmacist before use.',
+    'Never recommend starting, stopping, changing or combining medicines without qualified medical advice.',
+    'For children, pregnancy, breastfeeding, elderly people and people with chronic diseases, advise professional medical assessment before medicine use.',
+    'For fever and common symptoms, prioritize rest, hydration, monitoring and appropriate medical assessment; do not give unsupported temperature thresholds or fixed treatment durations.',
+    'Explain Siddha, Ayurveda, Unani and herbal practices respectfully; do not claim unproven cures and mention possible interactions with modern medicines.',
+    'For chest pain, severe breathing difficulty, stroke signs, unconsciousness, severe bleeding or poisoning, advise immediate emergency care. In India call 112 or ambulance 108.',
+    'Ask relevant follow-up questions when age, symptom duration or severity is important. Never delay emergency care to ask questions.',
+    'Do not replace professional diagnosis or emergency care.'
+  ].join('\\n');
+}
+// END SK_MEDICAL_CORE_V1
+
 app.post('/api/chat', async (req, res) => {
   try {
     const message = String(req.body?.message || '').trim();
     const category = String(req.body?.category || 'General AI').slice(0, 100);
+    const medicalMode = category.toLowerCase().includes('medical') || skIsMedicalQuery(message);
+    const safeChatReply = (value) => medicalMode ? skMedicalFilterReply(value) : value;
     const attachment = req.body?.attachment;
 
     if (!message && !attachment) {
@@ -1164,6 +1194,11 @@ app.post('/api/chat', async (req, res) => {
         reply: 'தயவுசெய்து உங்கள் கேள்வியை உள்ளிடுங்கள்.',
         answer: 'தயவுசெய்து உங்கள் கேள்வியை உள்ளிடுங்கள்.'
       });
+    }
+
+    if (medicalMode && skMedicalDoseRequest(message)) {
+      const safeReply = 'மருந்தின் பெயர் அல்லது அளவை உங்கள் வயது, உடல் எடை, உடல்நிலை மற்றும் மருத்துவ வரலாறு தெரியாமல் பரிந்துரைப்பது பாதுகாப்பானதல்ல. தகுதியான மருத்துவர் அல்லது மருந்தாளரிடம் ஆலோசனை பெறுங்கள். ஏற்கெனவே பரிந்துரைக்கப்பட்ட மருந்தை நீங்களாக நிறுத்தவோ மாற்றவோ வேண்டாம். கடுமையான அறிகுறிகள் இருந்தால் உடனடியாக மருத்துவ உதவி பெறுங்கள்.';
+      return res.json({ reply: safeReply, answer: safeReply, api: 'Medical Safety Guard' });
     }
 
     const apiKey = process.env.GROQ_API_KEY;
@@ -1377,7 +1412,7 @@ app.post('/api/chat', async (req, res) => {
                   'For current information that you cannot verify, be transparent. ' +
                   'For agriculture questions, give cautious practical guidance and recommend local agricultural officers when needed. Do not diagnose crop diseases with certainty from limited symptoms or images. Ask for crop, growth stage, location, symptoms, and recent weather or irrigation details when relevant. Do not invent pesticide or fungicide names, doses, mixtures, or application schedules. Recommend chemicals only when the crop, pest or disease, product label, and locally approved guidance support their use. Never suggest off-label use or mixing chemicals without authoritative guidance. Prioritize field observation, soil testing, integrated pest management, and official agricultural extension advice. State uncertainty clearly and recommend a local agricultural officer or KVK when diagnosis is unclear. ' +
                   'For Indian agriculture questions, KVK means Krishi Vigyan Kendra, not Kerala Village Kendra. Recommend the relevant state agriculture department or a relevant local KVK. Do not invent the names or locations of agricultural offices. Never invent KVK names, addresses, phone numbers, or contact details. Never show placeholder phone numbers such as xxxx. Recommend a specific KVK only when its name and contact information are verified from an official source. Do not promise to provide verified contact details unless an official source can actually be checked. If verification is unavailable, clearly say that the details cannot be verified in this response and direct the user to the state agriculture department or an official KVK directory. Ask for the district when needed, but never imply that the district alone verifies contact details. When asking for a PIN, use the term postal PIN code. Otherwise, ask for the users district or recommend contacting the state agriculture department without guessing office details. ' +
-                  'The requested service category is: ' + category + '.'
+                  'The requested service category is: ' + category + '.' + (category.toLowerCase().includes('medical') || skIsMedicalQuery(userMessage) ? '\n\n' + skMedicalInstructions() : '')
               },
               {
                 role: 'user',
@@ -1395,8 +1430,8 @@ app.post('/api/chat', async (req, res) => {
         const fallbackReply = await getCloudflareAIReply(userMessage, category);
         if (fallbackReply) {
           return res.json({
-            reply: fallbackReply,
-            answer: fallbackReply,
+            reply: safeChatReply(fallbackReply),
+            answer: safeChatReply(fallbackReply),
             api: 'Cloudflare Workers AI (fallback)'
           });
         }
@@ -1413,8 +1448,8 @@ app.post('/api/chat', async (req, res) => {
         const fallbackReply = await getCloudflareAIReply(userMessage, category);
         if (fallbackReply) {
           return res.json({
-            reply: fallbackReply,
-            answer: fallbackReply,
+            reply: safeChatReply(fallbackReply),
+            answer: safeChatReply(fallbackReply),
             api: 'Cloudflare Workers AI (fallback)'
           });
         }
@@ -1446,8 +1481,8 @@ app.post('/api/chat', async (req, res) => {
         const fallbackReply = await getCloudflareAIReply(userMessage, category);
         if (fallbackReply) {
           return res.json({
-            reply: fallbackReply,
-            answer: fallbackReply,
+            reply: safeChatReply(fallbackReply),
+            answer: safeChatReply(fallbackReply),
             api: 'Cloudflare Workers AI (fallback)'
           });
         }
@@ -1464,7 +1499,7 @@ app.post('/api/chat', async (req, res) => {
           .map((item, i) => `${i + 1}. ${item.title}\n${item.url}`)
           .join('\n')
       : '';
-    const finalReply = reply + sourceFooter;
+    const finalReply = safeChatReply(reply) + sourceFooter;
     return res.json({
       reply: finalReply,
       answer: finalReply,
@@ -4732,6 +4767,12 @@ if (mp3PlayRequested || mp3Navigation) {
     reply = '🔮 SASIKUMAR AI — தமிழ் ஜோதிடம் & ராசி பலன்கள்\n\n' +
       '12 ராசிகளின் தகவல்கள் மற்றும் ஆன்மீகத் தகவல்களைப் பார்க்கவும்.\n\n' +
       '🌐 ஜோதிடப் பக்கம்: https://sasikumar-ai-9wdq.onrender.com/spiritual-astrology.html';
+  } else if (skIsMedicalQuery(trimmed)) {
+    autoPosterForContent = false;
+    const medicalResult = await skCentralBrainReply({
+      message: trimmed, category: 'Medical', source: 'whatsapp'
+    });
+    reply = medicalResult.reply;
   } else if (isSathaExecutiveUser && trimmed) {
     autoPosterForContent = false;
     try {
@@ -6034,7 +6075,7 @@ function skIsFreshNewsDate(value, now = Date.now()) {
           ? 1
           : Number(match[1]);
 
-        const unit = match[2].toLowerCase();
+        const unit = match[2].toLowerCase().replace(/s$/, '');
         const factors = {
           second: 1000, seconds: 1000, sec: 1000, secs: 1000, s: 1000,
           minute: 60000, minutes: 60000, min: 60000, mins: 60000, m: 60000,
@@ -7562,8 +7603,7 @@ async function skSearchRealImage(query) {
   if (!text) return null;
 
   // SK_MOTHER_MARY_EXACT_SEARCH_V2
-  const isMotherMarySearch =
-    /\b(?:mother mary|mery mary|mary|virgin mary|our lady|velankanni|arokia matha|madonna)\b|அன்னை மரியா|அன்னை மேரி|மேரி மாதா|வேளாங்கண்ணி மாதா|ஆரோக்கிய மாதா/i.test(text);
+  const isMotherMarySearch = /\b(?:mother mary|mery mary|mary|virgin mary|our lady|velankanni|arokia matha|madonna|matha mery|matha mary|mata mary|matha meri)\b|அன்னை மரியா|அன்னை மேரி|மேரி மாதா|வேளாங்கண்ணி மாதா|ஆரோக்கிய மாதா/i.test(text);
 
   const isMaryWithChildSearch =
     /\b(?:mary|mery|mother mary|virgin mary|madonna|our lady)\b.*\b(?:child|baby|infant|jesus)\b|\b(?:baby jesus|infant jesus|madonna and child|madonna with child)\b|மேரி.*குழந்தை|மாதா.*குழந்தை|குழந்தை.*இயேசு/i.test(text);
@@ -7576,6 +7616,7 @@ async function skSearchRealImage(query) {
     { re: /சிவன்|ஈசன்|\b(?:sivan|shiva)\b/i, terms: ['shiva'] },
     { re: /பெருமாள்|விஷ்ணு|வெங்கடேச|\b(?:perumal|vishnu|venkateswara)\b/i, terms: ['vishnu', 'venkateswara'] },
     { re: /வேளாங்கண்ணி மாதா|ஆரோக்கிய மாதா|அன்னை மரியா|அன்னை மேரி|மேரி மாதா|\b(?:mother mary|mery mary|mary|virgin mary|our lady|velankanni|arokia matha|madonna)\b/i, terms: ['virgin mary', 'mother mary', 'our lady', 'velankanni', 'arokia matha', 'madonna'] },
+    { re: /\b(?:matha mery|matha mary|mata mary|matha meri)\b/i, terms: ['virgin mary', 'mother mary', 'madonna'] },
     { re: /இயேசு|ஏசு|\b(?:jesus|christ)\b/i, terms: ['jesus christ', 'jesus'] },
     { re: /புத்தர்|\bbuddha\b/i, terms: ['buddha'] }
   ];
@@ -7659,10 +7700,10 @@ async function skSearchRealImage(query) {
   // SK_WHATSAPP_REAL_IMAGE_GALLERY_V1
   const galleryResults = [];
   const seenImageUrls = new Set();
-  const MAX_GALLERY_IMAGES = 16;
+  const MAX_GALLERY_IMAGES = 1;
 
   // SK_IMAGE_DOWNLOAD_STREAM_5MB_JPEG_PNG_V1
-  const readImageResponseLimited = async (response, maxBytes = 5 * 1024 * 1024) => {
+  const readImageResponseLimited = async (response, maxBytes = 12 * 1024 * 1024) => {
     const mime = (response.headers.get('content-type') || '')
       .split(';')[0].trim().toLowerCase();
 
@@ -7717,6 +7758,23 @@ async function skSearchRealImage(query) {
 
     if (!validJpeg && !validPng) return null;
 
+    // SK_IMAGE_REAL_HD_DIMENSION_CHECK_V1
+    try {
+      const decodedImage = await Jimp.read(bytes);
+      const width = Number(decodedImage.bitmap?.width || 0);
+      const height = Number(decodedImage.bitmap?.height || 0);
+
+      if (!width || !height ||
+          Math.max(width, height) < 1200 ||
+          width * height < 1400000) {
+        console.log('[Image HD] Skipped low-resolution image:', width, height);
+        return null;
+      }
+    } catch (err) {
+      console.warn('[Image HD validation]', err.message);
+      return null;
+    }
+
     return { mime, bytes };
   };
 
@@ -7750,9 +7808,11 @@ async function skSearchRealImage(query) {
   const matchesRequestedSubject = value => {
     const subject = String(value || '').toLowerCase();
 
-    if (isMotherMarySearch &&
-        !/mother mary|virgin mary|blessed virgin|our lady|mother of jesus|immaculate conception|velankanni|arokia matha|madonna|அன்னை மரியா|அன்னை மேரி|மேரி மாதா|வேளாங்கண்ணி|ஆரோக்கிய மாதா/i.test(subject)) {
-      return false;
+    if (isMotherMarySearch) {
+      const hasExactMaryIdentity =
+        /mother mary|virgin mary|blessed virgin|mother of jesus|immaculate conception|madonna|our lady of good health|அன்னை மரியா|அன்னை மேரி|மேரி மாதா|ஆரோக்கிய மாதா/i.test(subject);
+
+      if (!hasExactMaryIdentity) return false;
     }
 
     if (isMaryWithChildSearch) {
@@ -7896,7 +7956,7 @@ async function skSearchRealImage(query) {
     const imageHeight = Number(info.height || 0);
 
     if (imageWidth && imageHeight &&
-        imageWidth * imageHeight < 480000) {
+        imageWidth * imageHeight < 1400000) {
       continue;
     }
 
@@ -7906,6 +7966,16 @@ async function skSearchRealImage(query) {
       metadata.ObjectName?.value || '',
       metadata.ImageDescription?.value || ''
     ].join(' ').replace(/<[^>]*>/g, ' ').toLowerCase();
+
+    if (isMotherMarySearch) {
+      const exactMaryIdentity =
+        /mother mary|virgin mary|blessed virgin|madonna|mother of jesus|immaculate conception|velankanni|arokia matha|அன்னை மரியா|அன்னை மேரி|மேரி மாதா|வேளாங்கண்ணி மாதா|ஆரோக்கிய மாதா/i.test(description);
+
+      const unrelatedScene =
+        /temple festival|temple procession|gopuram|crowd gathering|chariot festival|திருவிழா|கோவில் கூட்டம்|கோபுரம்/i.test(description);
+
+      if (!exactMaryIdentity || unrelatedScene) continue;
+    }
 
     if (!matchesRequestedSubject(description)) continue;
 
@@ -7964,6 +8034,25 @@ async function skSearchRealImage(query) {
     if (!downloadedImage) continue;
     const { mime, bytes } = downloadedImage;
 
+    // SK_MARY_WITH_CHILD_AI_VISION_CHECK_V1
+    if (isMaryWithChildSearch) {
+      try {
+        const visionAnswer = await skAnalyzeImageBuffer(
+          bytes,
+          mime,
+          'Inspect the actual image, ignoring its filename and metadata. Are BOTH the Virgin Mary and baby/infant Jesus visibly present together in this image? Reply with exactly YES or NO. If either person is absent, unclear, or uncertain, reply NO.'
+        );
+
+        if (!/^\s*YES\b/i.test(visionAnswer)) {
+          console.log('[Mary Vision] Rejected: Mary with Child Jesus not visually confirmed.');
+          continue;
+        }
+      } catch (err) {
+        console.warn('[Mary Vision] Verification failed; rejecting image:', err.message);
+        continue;
+      }
+    }
+
     const artist = String(metadata.Artist?.value || 'Unknown').replace(/<[^>]*>/g, '').trim();
     const license = String(metadata.LicenseShortName?.value || 'License not specified').replace(/<[^>]*>/g, '').trim();
     const source = info.descriptionurl || info.url || '';
@@ -8014,7 +8103,7 @@ async function skSearchRealImage(query) {
 
   // SK_VIJAY_STRICT_PROVIDER_BLOCK_V1
   // Joseph Vijay: use only Wikimedia results with explicit identity metadata.
-  if (isJosephVijaySearch || isNamedActorSearch) {
+  if (isJosephVijaySearch || isNamedActorSearch || isMotherMarySearch) {
     console.log('[WhatsApp image] Strict named-person search: skipping Pexels, Pixabay and Unsplash.');
   } else {
     // SK_WHATSAPP_PEXELS_FALLBACK_V1
@@ -8131,7 +8220,7 @@ async function skSearchRealImage(query) {
         const imageSubject = [item.alt_description, item.description, item.user?.name].filter(Boolean).join(' ');
         if (!matchesRequestedSubject(imageSubject) || !matchesPersonMetadata(imageSubject)) continue;
         const found = await downloadSearchImage(
-          item.urls?.regular,
+          item.urls?.raw || item.urls?.full || item.urls?.regular,
           '📷 Unsplash: ' + (item.alt_description || queryText) +
           '\n👤 ' + (item.user?.name || 'Unsplash contributor') +
           '\n🔗 ' + (item.links?.html || 'https://unsplash.com/')
@@ -8154,7 +8243,7 @@ async function skSearchRealImage(query) {
   // Runs after Wikimedia and stock providers; keeps strict subject validation.
   const serpApiKey = process.env.SERPAPI_API_KEY;
 
-  if (serpApiKey && galleryResults.length < MAX_GALLERY_IMAGES) {
+  if (serpApiKey && galleryResults.length < MAX_GALLERY_IMAGES && !isMotherMarySearch) {
     try {
       const serpUrl = new URL('https://serpapi.com/search.json');
       serpUrl.searchParams.set('engine', 'google_images');
@@ -11170,16 +11259,203 @@ app.post('/api/memes/comedy', async (req, res) => {
 });
 // END SK_MEME_ENGINE_V1
 
+
+// SK_MEDICAL_API_V1
+app.post('/api/medical/ask', async (req, res) => {
+  try {
+    const message = String(req.body?.message || '').trim().slice(0, 6000);
+    if (!message) {
+      return res.status(400).json({ok:false, reply:'மருத்துவக் கேள்வியை எழுதுங்கள்.'});
+    }
+
+    // SK_MEDICAL_API_DOSAGE_GUARD_V1
+    const asksMedicineDose = /மாத்திரை|மருந்தின் பெயர்|மருந்து அளவு|என்ன மருந்து|எவ்வளவு மருந்து|எத்தனை முறை|அளவு சொல்லுங்கள்|dose|dosage|how much medicine|which tablet|which medicine|mg|milligram/i.test(message);
+
+    if (asksMedicineDose) {
+      return res.json({
+        ok: true,
+        reply: 'மருந்தின் பெயர் அல்லது அளவை உங்கள் வயது, உடல் எடை, உடல்நிலை மற்றும் மருத்துவ வரலாறு தெரியாமல் பரிந்துரைப்பது பாதுகாப்பானதல்ல. தயவுசெய்து தகுதியான மருத்துவர் அல்லது மருந்தாளரிடம் ஆலோசனை பெறுங்கள். ஏற்கெனவே பரிந்துரைக்கப்பட்ட மருந்தை நீங்களாக நிறுத்தவோ அளவை மாற்றவோ வேண்டாம். கடுமையான அறிகுறிகள் இருந்தால் உடனடியாக மருத்துவ உதவி பெறுங்கள்.'
+      });
+    }
+    // END SK_MEDICAL_API_DOSAGE_GUARD_V1
+    // SK_MEDICAL_IMAGE_VISION_V1
+    const attachment = req.body?.attachment;
+    const imageData = typeof attachment?.data === 'string'
+      ? attachment.data
+      : '';
+
+    let medicalReply = '';
+    let medicalOk = true;
+    let medicalStatus = 200;
+
+    if (imageData) {
+      if (imageData.length > 14 * 1024 * 1024) {
+        return res.status(413).json({
+          ok: false,
+          reply: 'படம் மிகவும் பெரியது. 10 MB-க்குள் உள்ள படத்தைத் தேர்ந்தெடுக்கவும்.'
+        });
+      }
+
+      if (!/^data:image\/(jpeg|png|webp);base64,/i.test(imageData)) {
+        return res.status(400).json({
+          ok: false,
+          reply: 'JPG, PNG அல்லது WebP படத்தைத் தேர்ந்தெடுக்கவும்.'
+        });
+      }
+
+      const apiKey = process.env.GROQ_API_KEY;
+      if (!apiKey) {
+        return res.status(503).json({
+          ok: false,
+          reply: 'Medical Image AI சேவை தற்போது அமைக்கப்படவில்லை.'
+        });
+      }
+
+      const imagePrompt = message ||
+        'இந்த மருத்துவப் படத்தை அல்லது Lab Report-ஐ தமிழில் விளக்கவும்.';
+
+      const visionResponse = await fetch(
+        'https://api.groq.com/openai/v1/chat/completions',
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + apiKey,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: 'qwen/qwen3.8-27b',
+            messages: [
+              {
+                role: 'system',
+                content:
+                  'You are SASIKUMAR AI Medical Image Assistant. ' +
+                  skMedicalInstructions() +
+                  '\nAnalyze only visible image information. ' +
+                  'For lab reports, explain visible test names, values, units and reference ranges carefully. ' +
+                  'Never invent unreadable values or reference ranges. ' +
+                  'Explain that abnormal results alone do not confirm a diagnosis. ' +
+                  'Do not prescribe medicines or doses. ' +
+                  'Mention when the user should consult a qualified doctor. ' +
+                  'Answer in the language requested by the user. Keep the answer focused and clear.'
+              },
+              {
+                role: 'user',
+                content: [
+                  { type: 'text', text: imagePrompt },
+                  { type: 'image_url', image_url: { url: imageData } }
+                ]
+              }
+            ],
+            temperature: 0.2,
+            max_completion_tokens: 900
+          }),
+          signal: AbortSignal.timeout(60000)
+        }
+      );
+
+      const visionResult = await visionResponse.json().catch(() => ({}));
+
+      if (!visionResponse.ok) {
+        console.error('[Medical Vision]', visionResponse.status,
+          visionResult?.error?.message || 'Vision request failed');
+        return res.status(502).json({
+          ok: false,
+          reply: 'படத்தை ஆய்வு செய்ய முடியவில்லை. சிறிய தெளிவான படத்துடன் மீண்டும் முயற்சிக்கவும்.'
+        });
+      }
+
+      medicalReply = String(
+        visionResult?.choices?.[0]?.message?.content || ''
+      ).trim();
+
+      if (!medicalReply) {
+        return res.status(502).json({
+          ok: false,
+          reply: 'படத்திலிருந்து பதில் கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.'
+        });
+      }
+    } else {
+      const result = await skCentralBrainReply({
+        message,
+        category: 'Medical',
+        source: 'medical-web'
+      });
+
+      medicalReply = String(result.reply || 'மன்னிக்கவும். பதில் கிடைக்கவில்லை.');
+      medicalOk = result.ok;
+      medicalStatus = result.status || 200;
+    }
+    // END SK_MEDICAL_IMAGE_VISION_V1
+
+    // Block AI-generated medicine names with numeric dosage instructions.
+    const medicineDosePattern = /(பாராசெட்டமால்|பாராசெடமால்|பாராசிட்டமால்|paracetamol|acetaminophen|ibuprofen|இபுபுரோஃபன்|aspirin|amoxicillin|antibiotic)[\\s\\S]{0,100}\\d+\\s*(mg|மி\\.?கி|ml|மில்லி)/i;
+    const reverseDosePattern = /\\d+\\s*(mg|மி\\.?கி|ml|மில்லி)[\\s\\S]{0,100}(பாராசெட்டமால்|பாராசெடமால்|paracetamol|ibuprofen|இபுபுரோஃபன்|aspirin|amoxicillin)/i;
+
+    const safeMedicalReply =
+      medicineDosePattern.test(medicalReply) || reverseDosePattern.test(medicalReply)
+        ? 'மருந்தின் பெயர் அல்லது அளவை இங்கு பாதுகாப்பாக உறுதிப்படுத்த முடியாது. உங்கள் வயது, உடல்நிலை மற்றும் பிற மருந்துகளைப் பொறுத்து சரியான ஆலோசனை மாறும். மருத்துவர் அல்லது மருந்தாளரிடம் ஆலோசனை பெறுங்கள்.'
+        : medicalReply;
+
+    return res.status(medicalStatus).json({
+      ok: medicalOk,
+      reply: safeMedicalReply
+    });
+  } catch (error) {
+    console.error('[Medical API]', error.message);
+    return res.status(500).json({
+      ok:false,
+      reply:'தற்காலிகப் பிழை. மீண்டும் முயற்சிக்கவும்.'
+    });
+  }
+});
+// END SK_MEDICAL_API_V1
+
 app.get('*',(req,res)=>{const fp=path.join(publicPath,'index.html');if(fs.existsSync(fp))res.sendFile(fp);else res.status(404).send('Not Found');});
 
 
 // SK_CENTRAL_BRAIN_V2_1
 // Shared internal gateway for Website, WhatsApp and Telegram.
+// SK_CENTRAL_MEDICAL_SAFETY_V1
+function skMedicalDoseRequest(value = '') {
+  const q = String(value || '').toLowerCase();
+
+  const medicineAsk =
+    /மாத்திரை|மருந்து|மருந்தின் பெயர்|எந்த மருந்து|எந்த மாத்திரை|என்ன மாத்திரை|எதை எடுத்துக்கொள்ள|எதை சாப்பிட|எவ்வளவு மருந்து|எத்தனை முறை|அளவு சொல்லுங்கள்|dose|dosage|which tablet|which medicine|what medicine|how much medicine|medicine for|tablet for/i.test(q);
+
+  const doseUnit =
+    /\b\d+(?:\.\d+)?\s*(?:mg|milligrams?|ml|mcg|grams?|g)\b|மி\.?\s*கி|மிக்ரா|மில்லி|மைக்ரோகிராம்|கிராம்/i.test(q);
+
+  return medicineAsk || doseUnit;
+}
+function skMedicalFilterReply(value = '') {
+  const reply = String(value || '');
+
+  const drug = '(?:paracetamol|acetaminophen|ibuprofen|aspirin|amoxicillin|cetirizine|பாராசெட்டமால்|பாராசெடமால்|பாராசிட்டமால்|இபுபுரோஃபன்)';
+  const unit = '(?:mg|மி\\\\.?கி|மிக்ரா|ml|மில்லி|mcg|மைக்ரோகிராம்|grams?|கிராம்)';
+  const number = '\\\\d+(?:\\\\.\\\\d+)?';
+
+  const hasDrugDose = new RegExp(
+    drug + '[\\\\s\\\\S]{0,120}' + number + '\\\\s*' + unit +
+    '|' + number + '\\\\s*' + unit + '[\\\\s\\\\S]{0,120}' + drug,
+    'i'
+  ).test(reply);
+
+  if (hasDrugDose) {
+    return 'மருந்தின் பெயர் அல்லது அளவை இங்கு பாதுகாப்பாக உறுதிப்படுத்த முடியாது. உங்கள் வயது, உடல்நிலை, உடல் எடை மற்றும் பிற மருந்துகளைப் பொறுத்து ஆலோசனை மாறும். தகுதியான மருத்துவர் அல்லது மருந்தாளரிடம் ஆலோசனை பெறுங்கள். ஏற்கெனவே பரிந்துரைக்கப்பட்ட மருந்தை நீங்களாக நிறுத்தவோ மாற்றவோ வேண்டாம்.';
+  }
+
+  return reply;
+}
+// END SK_CENTRAL_MEDICAL_SAFETY_V1
+
 async function skCentralBrainReply(options = {}) {
   const message = String(options.message || '').trim();
   const category = String(options.category || 'General AI').slice(0, 100);
   const source = String(options.source || 'unknown').slice(0, 30);
   const includeGuidance = options.guidance === true;
+  const medicalMode = category.toLowerCase().includes('medical') || skIsMedicalQuery(message);
+  const effectiveCategory = medicalMode ? 'Medical' : category;
+  const medicalContext = medicalMode ? skMedicalInstructions() : '';
 
   if (!message) {
     return {
@@ -11194,6 +11470,19 @@ async function skCentralBrainReply(options = {}) {
       ok: false,
       status: 413,
       reply: 'கேள்வி மிகவும் நீளமாக உள்ளது. சுருக்கமாக அனுப்புங்கள்.'
+    };
+  }
+
+  // Block explicit medicine/dosage requests across all Medical channels.
+  if (medicalMode && skMedicalDoseRequest(message)) {
+    const safeReply = 'மருந்தின் பெயர் அல்லது அளவை உங்கள் வயது, உடல் எடை, உடல்நிலை மற்றும் மருத்துவ வரலாறு தெரியாமல் பரிந்துரைப்பது பாதுகாப்பானதல்ல. தகுதியான மருத்துவர் அல்லது மருந்தாளரிடம் ஆலோசனை பெறுங்கள். ஏற்கெனவே பரிந்துரைக்கப்பட்ட மருந்தை நீங்களாக நிறுத்தவோ அளவை மாற்றவோ வேண்டாம். கடுமையான அறிகுறிகள் இருந்தால் உடனடியாக மருத்துவ உதவி பெறுங்கள்.';
+    return {
+      ok: true,
+      status: 200,
+      reply: safeReply,
+      answer: safeReply,
+      api: 'SASIKUMAR AI Central Brain V2.2',
+      engine: 'Medical Safety Guard'
     };
   }
 
@@ -11217,8 +11506,11 @@ async function skCentralBrainReply(options = {}) {
   if (source === 'whatsapp') {
     const reply = await getWhatsAppAIReply(
       message,
-      options.mode === 'friendly' ? 'friendly' : 'normal'
+      options.mode === 'friendly' ? 'friendly' : 'normal',
+      medicalContext
     );
+
+    const safeReply = medicalMode ? skMedicalFilterReply(reply) : reply;
 
     const failedReplies = [
       'மன்னிக்கவும் நண்பா 😊 AI சேவை இப்போது கிடைக்கவில்லை. சிறிது நேரம் கழித்து முயற்சிக்கவும்.',
@@ -11227,17 +11519,149 @@ async function skCentralBrainReply(options = {}) {
       'மன்னிக்கவும் நண்பா 😊 AI இணைப்பில் தற்காலிகப் பிழை. மீண்டும் முயற்சிக்கவும்.'
     ];
 
-    const aiFailed = failedReplies.includes(String(reply || '').trim());
+    const aiFailed = failedReplies.includes(String(safeReply || '').trim());
 
     return {
       ok: !aiFailed,
       status: aiFailed ? 503 : 200,
-      reply,
-      answer: reply,
+      reply: safeReply,
+      answer: safeReply,
       api: 'SASIKUMAR AI Central Brain V2.2',
       engine: 'Existing WhatsApp AI: Groq, Live Search and Cloudflare fallback'
     };
   }
+
+
+  // SK_MEDICAL_ASHA_VAIDYA_PROVIDER_V1
+  // ASHA primary -> VAIDYA fallback -> existing Groq/Cloudflare fallback.
+  if (medicalMode) {
+    const medicalQuestion = [
+      medicalContext,
+      '',
+      'Patient question:',
+      message
+    ].join('\n');
+
+    // Primary provider: ASHA
+    if (process.env.ASHA_API_KEY) {
+      try {
+        const response = await fetch(
+          'https://api.askasha.org/a2a/v1/message:send',
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${process.env.ASHA_API_KEY}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              agent_id: 'asha',
+              message: {
+                role: 'user',
+                parts: [{ text: medicalQuestion }]
+              },
+              metadata: { audience: 'patient' }
+            }),
+            signal: AbortSignal.timeout(45000)
+          }
+        );
+
+        const data = await response.json().catch(() => ({}));
+        const task = data.task || {};
+        const ashaReply = (task.artifacts || [])
+          .flatMap(item => item.parts || [])
+          .filter(part => typeof part.text === 'string')
+          .map(part => part.text.trim())
+          .filter(Boolean)
+          .join('\n\n');
+
+        if (
+          response.ok &&
+          task.status?.state === 'COMPLETED' &&
+          ashaReply
+        ) {
+          const safeReply = skMedicalFilterReply(ashaReply);
+          return {
+            ok: true,
+            status: 200,
+            reply: safeReply,
+            answer: safeReply,
+            api: 'ASHA Medical AI',
+            engine: 'ASHA Primary'
+          };
+        }
+
+        console.warn(
+          '[Medical ASHA] API response not completed:',
+          response.status,
+          task.status?.state || 'NO_TASK'
+        );
+      } catch (error) {
+        console.warn('[Medical ASHA] Request failed:', error.message);
+      }
+    }
+
+    // Secondary provider: VAIDYA
+    if (process.env.VAIDYA_API_KEY) {
+      try {
+        const response = await fetch(
+          'https://api.vaidya.ai/vaidya/chat/completions',
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${process.env.VAIDYA_API_KEY}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              model: 'Vaidya-v2',
+              messages: [
+                {
+                  role: 'system',
+                  content: medicalContext
+                },
+                {
+                  role: 'user',
+                  content: message
+                }
+              ],
+              temperature: 0.2
+            }),
+            signal: AbortSignal.timeout(45000)
+          }
+        );
+
+        const data = await response.json().catch(() => ({}));
+        let vaidyaReply = String(
+          data.choices?.[0]?.message?.content || ''
+        );
+
+        // Never expose the model's internal reasoning.
+        vaidyaReply = vaidyaReply
+          .replace(/<think>[\s\S]*?(?:<\/think>|$)/gi, '')
+          .replace(/<\/?think>/gi, '')
+          .trim();
+
+        if (response.ok && vaidyaReply) {
+          const safeReply = skMedicalFilterReply(vaidyaReply);
+          return {
+            ok: true,
+            status: 200,
+            reply: safeReply,
+            answer: safeReply,
+            api: 'VAIDYA Medical AI',
+            engine: 'VAIDYA Fallback'
+          };
+        }
+
+        console.warn(
+          '[Medical VAIDYA] API response failed:',
+          response.status
+        );
+      } catch (error) {
+        console.warn('[Medical VAIDYA] Request failed:', error.message);
+      }
+    }
+  }
+  // END SK_MEDICAL_ASHA_VAIDYA_PROVIDER_V1
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 120000);
@@ -11248,7 +11672,7 @@ async function skCentralBrainReply(options = {}) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         message: requestMessage,
-        category
+        category: effectiveCategory
       }),
       signal: controller.signal
     });
@@ -11256,12 +11680,13 @@ async function skCentralBrainReply(options = {}) {
     const result = await upstream.json().catch(() => ({}));
     const reply = result.reply || result.answer ||
       'மன்னிக்கவும். AI பதில் கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.';
+    const safeReply = medicalMode ? skMedicalFilterReply(reply) : reply;
 
     return {
       ok: upstream.ok,
       status: upstream.status,
-      reply,
-      answer: result.answer || reply,
+      reply: safeReply,
+      answer: safeReply,
       api: 'SASIKUMAR AI Central Brain V2.2',
       engine: result.api || 'Existing AI Chat Engine'
     };
