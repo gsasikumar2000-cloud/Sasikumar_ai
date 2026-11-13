@@ -42,8 +42,20 @@ textarea{width:100%;min-height:125px;padding:13px;border:1px solid #bfdbfe;borde
 #copyAnswer{background:#2563eb}
 #clearImage{background:#64748b}
 
-a{color:#166534;font-weight:bold}
+
+.voice-tools{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+#voiceInput{background:#2563eb}
+#speakAnswer{background:#0d9488}
+#stopVoice{background:#64748b}
+.voice-note{font-size:13px;color:#475569;margin:5px 0}
+
 @media(max-width:360px){.mode{padding:10px 5px}.mode b{font-size:13px}}
+
+.medical-search-tools{margin:10px 0}
+#medicalWebSearch{background:#2563eb;width:auto;padding:10px 16px}
+#medicalSearchResults{margin:10px 0;padding:12px;border-radius:12px;background:#eff6ff;color:#172033;overflow-wrap:anywhere}
+.medical-search-item{padding:9px 0;border-bottom:1px solid #cbd5e1}
+.medical-search-item a{color:#1d4ed8;font-weight:bold}
 </style>
 </head>
 <body>
@@ -95,8 +107,19 @@ a{color:#166534;font-weight:bold}
 <h2 id="heading">🩺 Doctor AI</h2>
 <p id="hint" class="small">உங்கள் பொதுவான மருத்துவக் கேள்வியை எழுதுங்கள்.</p>
 
+
+<div class="voice-tools">
+  <button id="voiceInput" type="button">🎤 பேசுங்கள் / Voice Input</button>
+  <button id="speakAnswer" type="button">🔊 பதிலைக் கேளுங்கள் / Voice Output</button>
+  <button id="stopVoice" type="button">⏹️ Stop Voice</button>
+</div>
+<p class="voice-note">தமிழ் அல்லது English-ல் பேசலாம். Voice வசதி உங்கள் Browser ஆதரவைப் பொறுத்தது.</p>
 <textarea id="question" maxlength="6000"
 placeholder="உங்கள் கேள்வியை இங்கே எழுதுங்கள்..."></textarea>
+<div class="medical-search-tools">
+<button id="medicalWebSearch" type="button">🌐 Web Search</button>
+</div>
+<div id="medicalSearchResults" hidden aria-live="polite"></div>
 
 <div class="upload-tools">
   <label class="tool-label camera-tool" for="medicalCamera">📷 Camera</label>
@@ -288,6 +311,177 @@ document.getElementById('tamil').onclick = () => {
 document.getElementById('english').onclick = () => {
   language = 'english';
   updateMode(currentMode);
+};
+
+
+const voiceInput = document.getElementById('voiceInput');
+const speakAnswer = document.getElementById('speakAnswer');
+const stopVoice = document.getElementById('stopVoice');
+
+let recognition = null;
+let voiceListening = false;
+
+function medicalVoiceLanguage() {
+  return language === 'english' ? 'en-IN' : 'ta-IN';
+}
+
+voiceInput.onclick = () => {
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    statusBox.textContent =
+      'இந்த Browser-ல் Voice Input ஆதரவு இல்லை. Chrome பயன்படுத்துங்கள்.';
+    return;
+  }
+
+  if (voiceListening && recognition) {
+    recognition.stop();
+    return;
+  }
+
+  recognition = new SpeechRecognition();
+  recognition.lang = medicalVoiceLanguage();
+  recognition.continuous = false;
+  recognition.interimResults = false;
+
+  recognition.onstart = () => {
+    voiceListening = true;
+    voiceInput.textContent = '🎙️ கேட்கிறது...';
+    statusBox.textContent = 'உங்கள் கேள்வியைப் பேசுங்கள்...';
+  };
+
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    question.value = question.value.trim()
+      ? question.value.trim() + ' ' + transcript
+      : transcript;
+    statusBox.textContent = 'குரல் கேள்வி Text-ஆக சேர்க்கப்பட்டது.';
+  };
+
+  recognition.onerror = (event) => {
+    statusBox.textContent = 'Voice Input பிழை: ' + event.error;
+  };
+
+  recognition.onend = () => {
+    voiceListening = false;
+    voiceInput.textContent = '🎤 பேசுங்கள் / Voice Input';
+  };
+
+  try {
+    recognition.start();
+  } catch (error) {
+    statusBox.textContent = 'மீண்டும் மைக் அழுத்தி முயற்சிக்கவும்.';
+  }
+};
+
+speakAnswer.onclick = () => {
+  if (!('speechSynthesis' in window)) {
+    statusBox.textContent = 'இந்த Browser-ல் Voice Output ஆதரவு இல்லை.';
+    return;
+  }
+
+  const text = answer.textContent.trim();
+  if (!text) {
+    statusBox.textContent = 'முதலில் Medical AI பதிலைப் பெறுங்கள்.';
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = medicalVoiceLanguage();
+  utterance.rate = 0.9;
+  utterance.pitch = 1;
+
+  utterance.onstart = () => {
+    statusBox.textContent = 'AI பதில் குரலில் ஒலிக்கிறது...';
+  };
+  utterance.onend = () => {
+    statusBox.textContent = 'Voice Output முடிந்தது.';
+  };
+  utterance.onerror = () => {
+    statusBox.textContent = 'Voice Output இயக்க முடியவில்லை.';
+  };
+
+  window.speechSynthesis.speak(utterance);
+};
+
+stopVoice.onclick = () => {
+  if (recognition && voiceListening) recognition.stop();
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  statusBox.textContent = 'Voice நிறுத்தப்பட்டது.';
+};
+
+const medicalWebSearch = document.getElementById('medicalWebSearch');
+const medicalSearchResults = document.getElementById('medicalSearchResults');
+
+medicalWebSearch.onclick = async () => {
+  const query = question.value.trim();
+
+  if (!query) {
+    statusBox.textContent = 'முதலில் தேட வேண்டிய கேள்வியை எழுதுங்கள்.';
+    question.focus();
+    return;
+  }
+
+  medicalWebSearch.disabled = true;
+  medicalWebSearch.textContent = '🔎 Searching...';
+  medicalSearchResults.hidden = false;
+  medicalSearchResults.textContent = 'இணையத்தில் தேடுகிறது...';
+
+  try {
+    const response = await fetch('/api/global-search?q=' + encodeURIComponent(query));
+    const data = await response.json();
+
+    if (!response.ok) throw new Error(data.error || 'Search failed');
+
+    medicalSearchResults.replaceChildren();
+
+    const heading = document.createElement('b');
+    heading.textContent = '🌐 Web Search Results';
+    medicalSearchResults.appendChild(heading);
+
+    const results = Array.isArray(data.results) ? data.results : [];
+
+    if (!results.length) {
+      const empty = document.createElement('p');
+      empty.textContent = 'தேடல் முடிவுகள் கிடைக்கவில்லை.';
+      medicalSearchResults.appendChild(empty);
+    }
+
+    results.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'medical-search-item';
+
+      const link = document.createElement('a');
+      try {
+        const url = new URL(item.url);
+        if (!['http:', 'https:'].includes(url.protocol)) return;
+        link.href = url.href;
+      } catch {
+        return;
+      }
+
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.textContent = item.title || 'Search result';
+
+      const snippet = document.createElement('p');
+      snippet.textContent = item.content || '';
+
+      card.append(link, snippet);
+      medicalSearchResults.appendChild(card);
+    });
+
+    statusBox.textContent = 'Web Search முடிந்தது.';
+  } catch (error) {
+    medicalSearchResults.textContent = 'Web Search பிழை. மீண்டும் முயற்சிக்கவும்.';
+    statusBox.textContent = error.message;
+  } finally {
+    medicalWebSearch.disabled = false;
+    medicalWebSearch.textContent = '🌐 Web Search';
+  }
 };
 
 send.onclick = async () => {
