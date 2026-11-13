@@ -5510,16 +5510,16 @@ if (mp3SearchRequested) {
 
               if (found?.timedOut) {
                 imageSearchTimedOut = true;
-                console.warn('[WhatsApp image] Real image search timed out after 120 seconds.');
+                console.warn('[WhatsApp image] Real image search timed out after 45 seconds.');
               }
 
-              if (!found || !found.images?.length) {
+              if (!found?.dataUri) {
                 galleryImages = null;
-                console.log('[WhatsApp image] No real image found; AI fallback disabled for real-photo search.');
+                console.log('[WhatsApp image] No verified real image found; AI fallback disabled for real-photo search.');
                 generated = null;
               } else {
-                galleryImages = found.images || [found];
-                generated = galleryImages[0]?.dataUri || null;
+                galleryImages = null;
+                generated = found.dataUri;
                 imageAttribution = found.attribution || '';
               }
             } else {
@@ -7563,7 +7563,10 @@ async function skSearchRealImage(query) {
 
   // SK_MOTHER_MARY_EXACT_SEARCH_V2
   const isMotherMarySearch =
-    /\b(?:mother mary|virgin mary|our lady|velankanni|arokia matha)\b|அன்னை மரியா|அன்னை மேரி|மேரி மாதா|வேளாங்கண்ணி மாதா|ஆரோக்கிய மாதா/i.test(text);
+    /\b(?:mother mary|mery mary|mary|virgin mary|our lady|velankanni|arokia matha|madonna)\b|அன்னை மரியா|அன்னை மேரி|மேரி மாதா|வேளாங்கண்ணி மாதா|ஆரோக்கிய மாதா/i.test(text);
+
+  const isMaryWithChildSearch =
+    /\b(?:mary|mery|mother mary|virgin mary|madonna|our lady)\b.*\b(?:child|baby|infant|jesus)\b|\b(?:baby jesus|infant jesus|madonna and child|madonna with child)\b|மேரி.*குழந்தை|மாதா.*குழந்தை|குழந்தை.*இயேசு/i.test(text);
 
   const deityRules = [
     { re: /விநாயகர்|வினாயகர்|பிள்ளையார்|கணபதி|\b(?:vinayagar|vinayaka|ganesha|ganesh|ganapati|ganapathy|pillaiyar)\b/i, terms: ['ganesha', 'vinayaka', 'ganapati', 'ganapathy', 'ganesh', 'vinayagar', 'pillaiyar', 'பிள்ளையார்', 'விநாயகர்', 'வினாயகர்', 'கணபதி'] },
@@ -7572,15 +7575,17 @@ async function skSearchRealImage(query) {
     { re: /கிருஷ்ணர்|கண்ணன்|\bkrishna\b/i, terms: ['krishna'] },
     { re: /சிவன்|ஈசன்|\b(?:sivan|shiva)\b/i, terms: ['shiva'] },
     { re: /பெருமாள்|விஷ்ணு|வெங்கடேச|\b(?:perumal|vishnu|venkateswara)\b/i, terms: ['vishnu', 'venkateswara'] },
-    { re: /வேளாங்கண்ணி மாதா|ஆரோக்கிய மாதா|அன்னை மரியா|அன்னை மேரி|மேரி மாதா|\b(?:mother mary|virgin mary|our lady|velankanni|arokia matha)\b/i, terms: ['virgin mary', 'mother mary', 'our lady', 'velankanni', 'arokia matha'] },
+    { re: /வேளாங்கண்ணி மாதா|ஆரோக்கிய மாதா|அன்னை மரியா|அன்னை மேரி|மேரி மாதா|\b(?:mother mary|mery mary|mary|virgin mary|our lady|velankanni|arokia matha|madonna)\b/i, terms: ['virgin mary', 'mother mary', 'our lady', 'velankanni', 'arokia matha', 'madonna'] },
     { re: /இயேசு|ஏசு|\b(?:jesus|christ)\b/i, terms: ['jesus christ', 'jesus'] },
     { re: /புத்தர்|\bbuddha\b/i, terms: ['buddha'] }
   ];
   const rule = deityRules.find(item => item.re.test(text));
   let queryText = rule
-    ? (isMotherMarySearch && /velankanni|arokia matha|வேளாங்கண்ணி|ஆரோக்கிய/i.test(text)
-        ? 'Our Lady of Good Health Velankanni'
-        : (isMotherMarySearch ? 'Virgin Mary Mother Mary' : rule.terms[0]))
+    ? (isMaryWithChildSearch
+        ? 'Madonna and Child Baby Jesus Virgin Mary'
+        : (isMotherMarySearch && /velankanni|arokia matha|வேளாங்கண்ணி|ஆரோக்கிய/i.test(text)
+            ? 'Our Lady of Good Health Velankanni'
+            : (isMotherMarySearch ? 'Virgin Mary Mother Mary' : rule.terms[0])))
     : text
     .replace(/\b(real|original|photo|photograph|image|picture|send|show|please|pic|pics|photos|images|find|search|want|give|me|of|the)\b/gi, '')
     .replace(/படம்|புகைப்படம்|அனுப்பு|காட்டு|வேண்டும்|தயவு செய்து|கொடு|தேடு/g, '')
@@ -7616,19 +7621,24 @@ async function skSearchRealImage(query) {
 
 
 
-  // SK_ACTOR_CATEGORY_QUERY_V1
-  const isActorCategorySearch =
-    /\b(actor|actors|actress|actresses|celebrity|celebrities|film star|movie star|tamil actor|indian actor)\b/i.test(text) ||
+  // SK_ACTOR_NAME_AND_CATEGORY_ROUTING_V2
+  const hasActorContextWord =
+    /\b(actor|actors|actress|actresses|celebrity|celebrities|film star|movie star|female actor|film actress|tamil actor|indian actor)\b/i.test(text) ||
     /நடிகர்|நடிகர்கள்|நடிகை|நடிகைகள்|திரைப்பட நட்சத்திரம்|சினிமா நட்சத்திரம்/.test(text);
 
+  const actorNameText = text
+    .replace(/\b(real|original|photo|photograph|image|picture|send|show|please|pic|pics|photos|images|find|search|want|give|me|of|the|actor|actors|actress|actresses|celebrity|celebrities|film|movie|star|stars|tamil|indian|female)\b/gi, ' ')
+    .replace(/படம்|புகைப்படம்|அனுப்பு|காட்டு|வேண்டும்|தயவு செய்து|கொடு|தேடு|நடிகர்|நடிகர்கள்|நடிகை|நடிகைகள்|தமிழ்|இந்திய|திரைப்பட|நட்சத்திரம்|சினிமா/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const isNamedActorSearch = hasActorContextWord && actorNameText.length > 0;
+  const isActorCategorySearch = hasActorContextWord && !isNamedActorSearch;
   const isActressCategorySearch =
     /\b(actress|actresses|female actor|film actress)\b/i.test(text) ||
     /நடிகை|நடிகைகள்/.test(text);
 
-  // SK_NAMED_TAMIL_ACTOR_EXACT_SEARCH_V1
-  const isNamedActorSearch =
-    /\b(rajinikanth|rajini|kamal haasan|kamal|ajith kumar|ajith|suriya|dhanush|sivakarthikeyan|vijay sethupathi|vadivelu)\b/i.test(text) ||
-    /வடிவேலு/.test(text);
+  if (isNamedActorSearch) queryText = actorNameText;
 
   // Preserve additional subjects when canonicalizing actor names.
   if (/\brajini\b/i.test(queryText)) {
@@ -7741,8 +7751,16 @@ async function skSearchRealImage(query) {
     const subject = String(value || '').toLowerCase();
 
     if (isMotherMarySearch &&
-        !/mother mary|virgin mary|blessed virgin|our lady|mother of jesus|immaculate conception|velankanni|arokia matha|அன்னை மரியா|அன்னை மேரி|மேரி மாதா|வேளாங்கண்ணி|ஆரோக்கிய மாதா/i.test(subject)) {
+        !/mother mary|virgin mary|blessed virgin|our lady|mother of jesus|immaculate conception|velankanni|arokia matha|madonna|அன்னை மரியா|அன்னை மேரி|மேரி மாதா|வேளாங்கண்ணி|ஆரோக்கிய மாதா/i.test(subject)) {
       return false;
+    }
+
+    if (isMaryWithChildSearch) {
+      const hasMaryIdentity =
+        /mother mary|virgin mary|blessed virgin|our lady|madonna|mother of jesus|அன்னை மரியா|அன்னை மேரி|மேரி மாதா/i.test(subject);
+      const hasChildJesusContext =
+        /baby jesus|infant jesus|madonna.{0,35}child|virgin mary.{0,35}(baby|infant|child)|mother mary.{0,35}(baby|infant|child)|our lady.{0,35}(baby|infant|child)|குழந்தை இயேசு|மேரி.{0,25}குழந்தை/i.test(subject);
+      if (!hasMaryIdentity || !hasChildJesusContext) return false;
     }
 
     if (isVijayCmSearch &&
@@ -7794,6 +7812,15 @@ async function skSearchRealImage(query) {
         /\b(actor|film star|movie star|film actor|cinema actor|entertainer|thalapathy)\b/i.test(subject) ||
         /நடிகர்|திரைப்பட நடிகர்/.test(subject);
       return hasVijayName && hasVijayActorContext;
+    }
+    if (isNamedActorSearch) {
+      const hasExactName =
+        personTokens.length > 0 &&
+        personTokens.every(token => subject.includes(token));
+      const hasActorContext =
+        /\b(actor|film star|movie star|film actor|cinema actor|entertainer|actress|film actress)\b/i.test(subject) ||
+        /நடிகர்|நடிகை|திரைப்பட நடிகர்|திரைப்பட நடிகை/.test(subject);
+      return hasExactName && hasActorContext;
     }
     return personTokens.length === 0 || personTokens.every(token => subject.includes(token));
   };
@@ -7903,6 +7930,8 @@ async function skSearchRealImage(query) {
       const hasExactVijayIdentity =
         /\bjoseph\s+vijay\b|\bthalapathy\s+vijay\b/i.test(description);
       if (!hasExactVijayIdentity || !hasActorContext) continue;
+    } else if (isNamedActorSearch) {
+      if (!matchesPersonMetadata(description)) continue;
     } else if (isActorCategorySearch) {
       if (isActressCategorySearch ? !hasActressContext : !hasActorContext) {
         continue;
