@@ -5502,7 +5502,7 @@ if (mp3SearchRequested) {
                 new Promise(resolve => {
                   searchTimer = setTimeout(
                     () => resolve({ timedOut: true, images: [] }),
-                    120000
+                    45000
                   );
                 })
               ]);
@@ -5555,7 +5555,7 @@ if (mp3SearchRequested) {
               }
             } else {
             const imagesToSend = wantsCatalogImage && galleryImages?.length
-              ? galleryImages.slice(0, 16)
+              ? galleryImages.slice(0, 1)
               : [{ dataUri: generated }];
 
 
