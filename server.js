@@ -1,6 +1,6 @@
 import 'dotenv/config';
 
-import { randomUUID } from 'node:crypto';
+import { randomUUID, createHmac } from 'node:crypto';
 import { InferenceClient } from '@huggingface/inference';
 import express from 'express';
 import pg from 'pg';
@@ -37,6 +37,96 @@ const jobDbPool = process.env.DATABASE_URL
       idleTimeoutMillis: 30000
     })
   : null;
+
+// SK_CONVERSATION_MEMORY_V1
+let skMemoryTableReady = null;
+
+async function skEnsureMemoryTable() {
+  if (!jobDbPool) return false;
+  if (!skMemoryTableReady) {
+    skMemoryTableReady = jobDbPool.query(`
+      CREATE TABLE IF NOT EXISTS public.sk_conversation_memory (
+        id BIGSERIAL PRIMARY KEY,
+        channel TEXT NOT NULL,
+        user_key TEXT NOT NULL,
+        user_message TEXT NOT NULL,
+        assistant_message TEXT NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+      CREATE INDEX IF NOT EXISTS sk_conversation_memory_lookup
+      ON public.sk_conversation_memory (channel, user_key, id DESC);
+    `).then(() => true).catch(error => {
+      skMemoryTableReady = null;
+      console.error('[Conversation Memory] Table setup failed:', error.message);
+      return false;
+    });
+  }
+  return skMemoryTableReady;
+}
+
+function skMemoryUserKey(channel, rawId) {
+  const value = String(rawId || '').trim();
+  if (!value) return null;
+
+  if (channel === 'whatsapp') {
+    const secret = process.env.CONVERSATION_MEMORY_SECRET;
+    if (!secret || value.length < 8) return null;
+    return createHmac('sha256', secret).update(value).digest('hex');
+  }
+
+  if (channel === 'website') return value.slice(0, 150);
+  return null;
+}
+
+async function skLoadConversationMemory(channel, userKey) {
+  try {
+    if (!userKey || !(await skEnsureMemoryTable())) return '';
+    const result = await jobDbPool.query(
+      `SELECT user_message, assistant_message
+       FROM public.sk_conversation_memory
+       WHERE channel = $1 AND user_key = $2
+       ORDER BY id DESC LIMIT 10`,
+      [channel, userKey]
+    );
+    return result.rows.reverse().map((row, index) =>
+      `Previous turn ${index + 1}:\nUser: ${row.user_message}\nAssistant: ${row.assistant_message}`
+    ).join('\n\n');
+  } catch (error) {
+    console.error('[Conversation Memory] Load failed:', error.message);
+    return '';
+  }
+}
+
+async function skSaveConversationTurn(channel, userKey, userMessage, assistantMessage) {
+  try {
+    if (!userKey || !(await skEnsureMemoryTable())) return;
+    const userText = String(userMessage || '').trim().slice(0, 3000);
+    const assistantText = String(assistantMessage || '').trim().slice(0, 5000);
+    if (!userText || !assistantText) return;
+
+    await jobDbPool.query(
+      `INSERT INTO public.sk_conversation_memory
+       (channel, user_key, user_message, assistant_message)
+       VALUES ($1, $2, $3, $4)`,
+      [channel, userKey, userText, assistantText]
+    );
+
+    await jobDbPool.query(
+      `DELETE FROM public.sk_conversation_memory
+       WHERE channel = $1 AND user_key = $2
+       AND id NOT IN (
+         SELECT id FROM public.sk_conversation_memory
+         WHERE channel = $1 AND user_key = $2
+         ORDER BY id DESC LIMIT 10
+       )`,
+      [channel, userKey]
+    );
+  } catch (error) {
+    console.error('[Conversation Memory] Save failed:', error.message);
+  }
+}
+// END SK_CONVERSATION_MEMORY_V1
+
 
 app.use(express.json({limit:'16mb'}));
 app.use((req,res,next)=>{
@@ -4880,7 +4970,8 @@ if (mp3PlayRequested || mp3Navigation) {
         message: trimmed,
         category: 'WhatsApp General AI',
         source: 'whatsapp',
-        mode: 'normal'
+        mode: 'normal',
+        whatsappUserId: waSenderDigits
       });
       reply = fallback.reply;
     }
@@ -4890,7 +4981,8 @@ if (mp3PlayRequested || mp3Navigation) {
       message: trimmed,
       category: 'WhatsApp Friendly AI',
       source: 'whatsapp',
-      mode: 'friendly'
+      mode: 'friendly',
+      whatsappUserId: waSenderDigits
     });
     reply = brainResult.reply;
   } else {
@@ -4899,7 +4991,8 @@ if (mp3PlayRequested || mp3Navigation) {
       message: trimmed,
       category: 'WhatsApp General AI',
       source: 'whatsapp',
-      mode: 'normal'
+      mode: 'normal',
+      whatsappUserId: waSenderDigits
     });
     reply = brainResult.reply;
   }
@@ -11618,12 +11711,26 @@ async function skCentralBrainReply(options = {}) {
       ].join('\n')
     : message;
 
+  // SK_CONVERSATION_MEMORY_CONTEXT_V1
+  const memoryChannel = source === 'whatsapp' ? 'whatsapp' :
+    source === 'website' ? 'website' : '';
+  const memoryRawId = memoryChannel === 'whatsapp'
+    ? options.whatsappUserId
+    : options.memoryUserId;
+  const memoryUserKey = skMemoryUserKey(memoryChannel, memoryRawId);
+  const conversationMemory = (!medicalMode && memoryUserKey)
+    ? await skLoadConversationMemory(memoryChannel, memoryUserKey)
+    : '';
+  const aiRequestMessage = conversationMemory
+    ? `${conversationMemory}\n\nCurrent user question:\n${requestMessage}`
+    : requestMessage;
+
   // WhatsApp adapter: preserve the existing WhatsApp AI engine.
   if (source === 'whatsapp') {
     const reply = await getWhatsAppAIReply(
       message,
       options.mode === 'friendly' ? 'friendly' : 'normal',
-      medicalContext
+      medicalMode ? medicalContext : conversationMemory
     );
 
     const safeReply = medicalMode ? skMedicalFilterReply(reply) : reply;
@@ -11636,7 +11743,9 @@ async function skCentralBrainReply(options = {}) {
     ];
 
     const aiFailed = failedReplies.includes(String(safeReply || '').trim());
-
+    if (!medicalMode && !aiFailed && memoryUserKey) {
+      await skSaveConversationTurn('whatsapp', memoryUserKey, message, safeReply);
+    }
     return {
       ok: !aiFailed,
       status: aiFailed ? 503 : 200,
@@ -11787,7 +11896,7 @@ async function skCentralBrainReply(options = {}) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        message: requestMessage,
+        message: aiRequestMessage,
         category: effectiveCategory
       }),
       signal: controller.signal
@@ -11797,6 +11906,9 @@ async function skCentralBrainReply(options = {}) {
     const reply = result.reply || result.answer ||
       'மன்னிக்கவும். AI பதில் கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.';
     const safeReply = medicalMode ? skMedicalFilterReply(reply) : reply;
+    if (upstream.ok && !medicalMode && memoryUserKey) {
+      await skSaveConversationTurn('website', memoryUserKey, message, safeReply);
+    }
 
     return {
       ok: upstream.ok,
@@ -11825,13 +11937,14 @@ async function skCentralBrainReply(options = {}) {
 }
 
 // Public User Help & Guidance API.
-app.post('/api/brain/ask', async (req, res) => {
+app.post('/api/brain/ask', auth.optionalAuth, async (req, res) => {
   res.set('Cache-Control', 'no-store');
 
   const result = await skCentralBrainReply({
     message: req.body?.message,
     category: req.body?.category || 'User Help & Guidance',
     source: 'website',
+    memoryUserId: req.authUser?.id,
     guidance: true
   });
 

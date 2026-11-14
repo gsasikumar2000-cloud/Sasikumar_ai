@@ -104,6 +104,32 @@ export function createAuthMiddleware(pool) {
     }
   }
 
+  async function optionalAuth(req, res, next) {
+    try {
+      if (!pool) return next();
+      const token = readCookie(req, 'sk_ai_session');
+      if (!token || !/^[a-f0-9]{64}$/.test(token)) return next();
+
+      const result = await pool.query(
+        `SELECT u.id, u.username, u.role, u.referral_id,
+                u.trial_started_at, u.trial_ends_at,
+                u.unlimited_posting, s.id AS session_id
+         FROM public.auth_sessions s
+         JOIN public.users u ON u.id = s.user_id
+         WHERE s.token_hash = $1
+           AND s.expires_at > NOW()
+         LIMIT 1`,
+        [hashToken(token)]
+      );
+
+      if (result.rows.length) req.authUser = result.rows[0];
+      else clearSessionCookie(res);
+    } catch (error) {
+      console.error('[Optional auth middleware]', error.message);
+    }
+    return next();
+  }
+
   async function requireActiveTrial(req, res, next) {
     return requireAuth(req, res, async () => {
       try {
@@ -147,7 +173,7 @@ export function createAuthMiddleware(pool) {
     });
   }
 
-  return { requireAuth, requireActiveTrial, requireAdmin };
+  return { requireAuth, optionalAuth, requireActiveTrial, requireAdmin };
 }
 
 export function registerAuthRoutes(app, pool, auth) {
