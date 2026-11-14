@@ -792,6 +792,44 @@ body > section {
 
       replyBox.textContent = answer || 'பதில் கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.';
       replyBox.style.display = 'block';
+
+      let voiceButton = document.getElementById('skWelcomeAIVoice');
+      if (!voiceButton) {
+        voiceButton = document.createElement('button');
+        voiceButton.id = 'skWelcomeAIVoice';
+        voiceButton.type = 'button';
+        voiceButton.textContent = '🔊 தமிழ் குரலில் கேட்க';
+        voiceButton.style.cssText = 'display:block;margin-top:12px;padding:10px 16px;border:0;border-radius:12px;background:#dff7e8;color:#14532d;font-weight:bold;';
+        replyBox.insertAdjacentElement('afterend', voiceButton);
+      }
+
+      voiceButton.onclick = async () => {
+        const voiceText = replyBox.textContent.trim().slice(0, 1500);
+        if (!voiceText) return;
+        voiceButton.disabled = true;
+        voiceButton.textContent = '⏳ குரல் தயாராகிறது...';
+        try {
+          const voiceResponse = await fetch('/api/voice/tts', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({text: voiceText})
+          });
+          if (!voiceResponse.ok) throw new Error('Voice HTTP ' + voiceResponse.status);
+          const audioBlob = await voiceResponse.blob();
+          const audioUrl = URL.createObjectURL(audioBlob);
+          const audio = new Audio(audioUrl);
+          audio.onended = () => URL.revokeObjectURL(audioUrl);
+          audio.onerror = () => URL.revokeObjectURL(audioUrl);
+          await audio.play();
+          voiceButton.textContent = '🔊 மீண்டும் கேட்க';
+        } catch (error) {
+          console.error('SASIKUMAR AI voice error:', error);
+          voiceButton.textContent = '⚠️ குரல் கிடைக்கவில்லை — மீண்டும் முயற்சிக்கவும்';
+        } finally {
+          voiceButton.disabled = false;
+        }
+      };
+
       status.textContent = response.ok
         ? '✅ பதில் கிடைத்தது'
         : '⚠️ ' + (data.error || 'சேவையிலிருந்து பிழை பதில் வந்தது');
@@ -809,6 +847,8 @@ body > section {
     status.textContent = '';
     replyBox.textContent = '';
     replyBox.style.display = 'none';
+    const voiceButton = document.getElementById('skWelcomeAIVoice');
+    if (voiceButton) voiceButton.remove();
     input.focus();
   });
 })();

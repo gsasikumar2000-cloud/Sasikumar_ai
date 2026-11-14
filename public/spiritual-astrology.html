@@ -769,6 +769,47 @@ document.getElementById("skMarriageCheck")?.addEventListener("click",()=>{
 
 /* SK_ASTROLOGY_AI_CHAT_V1 */
 (()=>{
+
+async function skSpeakPageAnswer(elementId) {
+  const el = document.getElementById(elementId);
+  const text = el ? el.textContent.trim() : "";
+  if (!text) return;
+
+  if (window.skPageVoiceAudio) {
+    window.skPageVoiceAudio.pause();
+    window.skPageVoiceAudio = null;
+  }
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+
+  try {
+    const response = await fetch("/api/voice/tts", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({text: text.slice(0, 1500)})
+    });
+    if (!response.ok) throw new Error("TTS " + response.status);
+
+    const blob = await response.blob();
+    if (!blob.size) throw new Error("Empty audio");
+    const url = URL.createObjectURL(blob);
+    const audio = new Audio(url);
+    window.skPageVoiceAudio = audio;
+    audio.onended = () => {
+      URL.revokeObjectURL(url);
+      if (window.skPageVoiceAudio === audio) window.skPageVoiceAudio = null;
+    };
+    await audio.play();
+    return;
+  } catch (error) {
+    console.warn("ElevenLabs unavailable; using browser voice", error);
+  }
+
+  if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) return;
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = /[\u0B80-\u0BFF]/.test(text) ? "ta-IN" : "en-IN";
+  window.speechSynthesis.speak(utterance);
+}
+
   const input=document.getElementById("skAstroAiInput");
   const send=document.getElementById("skAstroAiSend");
   const output=document.getElementById("skAstroAiReply");
@@ -811,6 +852,15 @@ document.getElementById("skMarriageCheck")?.addEventListener("click",()=>{
         throw new Error("AI பதில் காலியாக உள்ளது.");
       }
       output.textContent=answer;
+      const voiceButton = document.createElement("button");
+      voiceButton.id = "skVoice_skAstroAiReply";
+      voiceButton.type = "button";
+      voiceButton.textContent = "🔊 கேளுங்கள் / Listen";
+      voiceButton.style.cssText = "margin:10px 6px;padding:10px 14px;border:0;border-radius:9px;cursor:pointer;";
+      voiceButton.onclick = () => skSpeakPageAnswer("skAstroAiReply");
+      const voiceHost = document.getElementById("skAstroAiReply");
+      if (voiceHost && voiceHost.parentNode) voiceHost.parentNode.insertBefore(voiceButton, voiceHost.nextSibling);
+
     }catch(error){
       output.textContent=
         "AI பதிலைப் பெற முடியவில்லை. இணைய இணைப்பைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.\n"+

@@ -195,38 +195,63 @@ const agriStatus = document.getElementById('agriVoiceStatus');
 
 let agriVoiceVolume = 0.8;
 let agriLastReply = '';
+let agriVoiceAudio = null;
 
 function updateAgriVolume() {
   agriStatus.textContent =
     '🔊 பேச்சு ஒலி: ' + Math.round(agriVoiceVolume * 100) + '%';
 }
 
-function speakAgriReply(text) {
-  if (!('speechSynthesis' in window)) {
-    agriStatus.textContent = 'இந்த browser குரல் வெளியீட்டை ஆதரிக்கவில்லை.';
-    return;
-  }
-
+async function speakAgriReply(text) {
   if (!text || !text.trim()) {
     agriStatus.textContent = 'முதலில் AI பதிலைப் பெறுங்கள்.';
     return;
   }
 
-  window.speechSynthesis.cancel();
+  if (agriVoiceAudio) {
+    agriVoiceAudio.pause();
+    agriVoiceAudio = null;
+  }
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
 
+  try {
+    agriStatus.textContent = 'ElevenLabs குரல் தயாராகிறது...';
+    const response = await fetch('/api/voice/tts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: text.slice(0, 1500) })
+    });
+    if (!response.ok) throw new Error('ElevenLabs TTS ' + response.status);
+
+    const audioBlob = await response.blob();
+    if (!audioBlob.size) throw new Error('Empty audio');
+
+    const audioUrl = URL.createObjectURL(audioBlob);
+    agriVoiceAudio = new Audio(audioUrl);
+    agriVoiceAudio.volume = agriVoiceVolume;
+    agriVoiceAudio.onended = () => {
+      URL.revokeObjectURL(audioUrl);
+      agriVoiceAudio = null;
+      agriStatus.textContent = '✅ ElevenLabs குரல் முடிந்தது';
+    };
+    await agriVoiceAudio.play();
+    agriStatus.textContent = '🔊 ElevenLabs AI குரல் ஒலிக்கிறது...';
+    return;
+  } catch (error) {
+    console.warn('ElevenLabs voice unavailable; using browser voice:', error);
+    agriStatus.textContent = 'Browser Voice மாற்று வசதி இயங்குகிறது...';
+  }
+
+  if (!('speechSynthesis' in window)) {
+    agriStatus.textContent = 'குரல் வெளியீட்டை இந்த browser ஆதரிக்கவில்லை.';
+    return;
+  }
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = /[\u0B80-\u0BFF]/.test(text) ? 'ta-IN' : 'en-IN';
   utterance.volume = agriVoiceVolume;
-  utterance.onstart = () => {
-    agriStatus.textContent = '🔊 AI பதிலைப் படிக்கிறது...';
-  };
-  utterance.onend = () => {
-    agriStatus.textContent = '✅ குரல் முடிந்தது';
-  };
-  utterance.onerror = () => {
-    agriStatus.textContent = 'குரல் இயக்க முடியவில்லை. Browser ஒலி அமைப்பைச் சரிபார்க்கவும்.';
-  };
-
+  utterance.onstart = () => { agriStatus.textContent = '🔊 Browser குரல் ஒலிக்கிறது...'; };
+  utterance.onend = () => { agriStatus.textContent = '✅ குரல் முடிந்தது'; };
+  utterance.onerror = () => { agriStatus.textContent = 'Browser குரல் பிழை.'; };
   window.speechSynthesis.speak(utterance);
 }
 
@@ -292,6 +317,7 @@ document.getElementById('agriVolDown').addEventListener('click', () => {
 });
 
 document.getElementById('agriStop').addEventListener('click', () => {
+  if (agriVoiceAudio) { agriVoiceAudio.pause(); agriVoiceAudio = null; }
   if ('speechSynthesis' in window) window.speechSynthesis.cancel();
   agriStatus.textContent = '⏹️ குரல் நிறுத்தப்பட்டது';
 });

@@ -323,6 +323,7 @@ let recognition = null;
 let voiceListening = false;
 let speechQueue = [];
 let speechIndex = 0;
+let medicalVoiceAudio = null;
 let voiceError = '';
 
 function medicalVoiceLanguage() {
@@ -485,35 +486,62 @@ function speakNextChunk() {
   window.speechSynthesis.speak(utterance);
 }
 
-// ANDROID CHROME VOICE OUTPUT
-speakAnswer.addEventListener('click', () => {
-  if (!window.speechSynthesis ||
-      !window.SpeechSynthesisUtterance) {
-    statusBox.textContent = 'Chrome Voice Output ஆதரவு இல்லை.';
-    return;
-  }
-
+// ELEVENLABS VOICE OUTPUT WITH CHROME FALLBACK
+speakAnswer.addEventListener('click', async () => {
   const text = answer.textContent.trim();
-
   if (!text) {
     statusBox.textContent = 'முதலில் Medical AI பதிலைப் பெறுங்கள்.';
     return;
   }
 
-  window.speechSynthesis.cancel();
+  if (medicalVoiceAudio) {
+    medicalVoiceAudio.pause();
+    medicalVoiceAudio = null;
+  }
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+
+  try {
+    statusBox.textContent = 'ElevenLabs குரல் தயாராகிறது...';
+    const response = await fetch('/api/voice/tts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: text.slice(0, 1500) })
+    });
+    if (!response.ok) throw new Error('ElevenLabs TTS ' + response.status);
+
+    const audioBlob = await response.blob();
+    if (!audioBlob.size) throw new Error('Empty audio');
+
+    const audioUrl = URL.createObjectURL(audioBlob);
+    medicalVoiceAudio = new Audio(audioUrl);
+    medicalVoiceAudio.onended = () => {
+      URL.revokeObjectURL(audioUrl);
+      medicalVoiceAudio = null;
+      statusBox.textContent = '✅ ElevenLabs குரல் முடிந்தது.';
+    };
+    await medicalVoiceAudio.play();
+    statusBox.textContent = '🔊 ElevenLabs குரல் ஒலிக்கிறது...';
+    return;
+  } catch (error) {
+    console.warn('ElevenLabs voice unavailable; using Chrome voice:', error);
+    statusBox.textContent = 'Chrome Voice மாற்று வசதி இயங்குகிறது...';
+  }
+
+  if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) {
+    statusBox.textContent = 'Chrome Voice Output ஆதரவு இல்லை.';
+    return;
+  }
 
   speechQueue = makeSpeechChunks(text);
   speechIndex = 0;
-
-  statusBox.textContent = 'Voice Output தயாராகிறது...';
-
+  statusBox.textContent = 'Chrome Voice Output தயாராகிறது...';
   window.speechSynthesis.resume();
-
   speakNextChunk();
 });
 
 // STOP BOTH VOICE FUNCTIONS
 stopVoice.addEventListener('click', () => {
+  if (medicalVoiceAudio) { medicalVoiceAudio.pause(); medicalVoiceAudio = null; }
   if (recognition && voiceListening) {
     try {
       recognition.abort();

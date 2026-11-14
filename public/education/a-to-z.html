@@ -132,6 +132,47 @@ a{color:#1459b8}
 </section>
 </main>
 <script>
+
+async function skSpeakPageAnswer(elementId) {
+  const el = document.getElementById(elementId);
+  const text = el ? el.textContent.trim() : "";
+  if (!text) return;
+
+  if (window.skPageVoiceAudio) {
+    window.skPageVoiceAudio.pause();
+    window.skPageVoiceAudio = null;
+  }
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+
+  try {
+    const response = await fetch("/api/voice/tts", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({text: text.slice(0, 1500)})
+    });
+    if (!response.ok) throw new Error("TTS " + response.status);
+
+    const blob = await response.blob();
+    if (!blob.size) throw new Error("Empty audio");
+    const url = URL.createObjectURL(blob);
+    const audio = new Audio(url);
+    window.skPageVoiceAudio = audio;
+    audio.onended = () => {
+      URL.revokeObjectURL(url);
+      if (window.skPageVoiceAudio === audio) window.skPageVoiceAudio = null;
+    };
+    await audio.play();
+    return;
+  } catch (error) {
+    console.warn("ElevenLabs unavailable; using browser voice", error);
+  }
+
+  if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) return;
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = /[\u0B80-\u0BFF]/.test(text) ? "ta-IN" : "en-IN";
+  window.speechSynthesis.speak(utterance);
+}
+
 const question = document.getElementById("question");
 document.querySelectorAll("[data-topic]").forEach(button => {
   button.addEventListener("click", () => {
@@ -176,6 +217,15 @@ document.getElementById("ask").addEventListener("click", async () => {
     if (!response.ok) throw new Error(data.error || "Request failed");
     const result = data.answer || data.reply || data.response || data.text || data.message;
     answer.textContent = typeof result === "string" ? result : JSON.stringify(data, null, 2);
+      const voiceButton = document.createElement("button");
+      voiceButton.id = "skVoice_answer";
+      voiceButton.type = "button";
+      voiceButton.textContent = "🔊 கேளுங்கள் / Listen";
+      voiceButton.style.cssText = "margin:10px 6px;padding:10px 14px;border:0;border-radius:9px;cursor:pointer;";
+      voiceButton.onclick = () => skSpeakPageAnswer("answer");
+      const voiceHost = document.getElementById("answer");
+      if (voiceHost && voiceHost.parentNode) voiceHost.parentNode.insertBefore(voiceButton, voiceHost.nextSibling);
+
   } catch (error) {
     answer.textContent = "Could not get an AI answer. Please try again or use the main SASIKUMAR AI chat. Details: " + error.message;
   } finally {

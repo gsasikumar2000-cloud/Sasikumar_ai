@@ -1344,6 +1344,57 @@ function skMedicalInstructions() {
 }
 // END SK_MEDICAL_CORE_V1
 
+
+// ELEVENLABS TAMIL TEXT TO SPEECH
+app.post('/api/voice/tts', async (req, res) => {
+  try {
+    const apiKey = process.env.ELEVENLABS_API_KEY;
+    if (!apiKey) {
+      return res.status(503).json({ ok: false, error: 'Voice service is not configured.' });
+    }
+
+    const text = String(req.body?.text || '').trim();
+    if (!text) {
+      return res.status(400).json({ ok: false, error: 'தமிழ் உரையை உள்ளிடுங்கள்.' });
+    }
+    if (text.length > 1500) {
+      return res.status(413).json({ ok: false, error: 'உரை 1500 எழுத்துகளுக்குள் இருக்க வேண்டும்.' });
+    }
+
+    const voiceId = process.env.ELEVENLABS_VOICE_ID || 'EXAVITQu4vr4xnSDxMaL';
+    const response = await fetch(
+      `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
+      {
+        method: 'POST',
+        headers: {
+          'xi-api-key': apiKey,
+          'Content-Type': 'application/json',
+          'Accept': 'audio/mpeg'
+        },
+        body: JSON.stringify({
+          text,
+          model_id: 'eleven_multilingual_v2'
+        })
+      }
+    );
+
+    if (!response.ok) {
+      console.error('[ElevenLabs] TTS failed:', response.status);
+      return res.status(502).json({ ok: false, error: 'Voice generation failed.' });
+    }
+
+    const audio = Buffer.from(await response.arrayBuffer());
+    res.set('Content-Type', 'audio/mpeg');
+    res.set('Content-Disposition', 'inline; filename="sasikumar-voice.mp3"');
+    res.set('Cache-Control', 'no-store');
+    return res.send(audio);
+  } catch (error) {
+    console.error('[ElevenLabs] Error:', error.message);
+    return res.status(500).json({ ok: false, error: 'Voice service error.' });
+  }
+});
+// END ELEVENLABS TAMIL TEXT TO SPEECH
+
 app.post('/api/chat', async (req, res) => {
   try {
     const message = String(req.body?.message || '').trim();
@@ -3335,6 +3386,80 @@ async function skGeminiTextToOggOpus(text) {
   }
 }
 
+
+// SK_WHATSAPP_ELEVENLABS_TTS_V1
+async function skElevenLabsTextToOggOpus(text) {
+  const apiKey = process.env.ELEVENLABS_API_KEY;
+  if (!apiKey) throw new Error('ElevenLabs API key unavailable.');
+
+  const voiceId = process.env.ELEVENLABS_VOICE_ID || 'EXAVITQu4vr4xnSDxMaL';
+  const response = await fetch(
+    `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
+    {
+      method: 'POST',
+      headers: {
+        'xi-api-key': apiKey,
+        'Content-Type': 'application/json',
+        'Accept': 'audio/mpeg'
+      },
+      body: JSON.stringify({
+        text: String(text || '').slice(0, 1200),
+        model_id: 'eleven_multilingual_v2'
+      }),
+      signal: AbortSignal.timeout(90000)
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`ElevenLabs TTS failed: HTTP ${response.status}`);
+  }
+
+  const mp3 = Buffer.from(await response.arrayBuffer());
+  if (mp3.length < 100 || mp3.length > 16 * 1024 * 1024) {
+    throw new Error('Invalid ElevenLabs audio size.');
+  }
+
+  const os = await import('node:os');
+  const { execFile } = await import('node:child_process');
+  const { promisify } = await import('node:util');
+  const runFile = promisify(execFile);
+  const tempDir = await fs.promises.mkdtemp(
+    path.join(os.tmpdir(), 'sk-elevenlabs-')
+  );
+
+  try {
+    const inputFile = path.join(tempDir, 'reply.mp3');
+    const outputFile = path.join(tempDir, 'reply.ogg');
+    await fs.promises.writeFile(inputFile, mp3);
+
+    await runFile('ffmpeg', [
+      '-y', '-i', inputFile, '-vn',
+      '-ac', '1', '-ar', '24000',
+      '-c:a', 'libopus', '-b:a', '24k',
+      '-application', 'voip', outputFile
+    ], { timeout: 60000, maxBuffer: 2 * 1024 * 1024 });
+
+    const ogg = await fs.promises.readFile(outputFile);
+    if (!ogg.length || ogg.length > 16 * 1024 * 1024 ||
+        ogg.toString('ascii', 0, 4) !== 'OggS') {
+      throw new Error('Invalid converted OGG audio.');
+    }
+    return ogg;
+  } finally {
+    await fs.promises.rm(tempDir, { recursive: true, force: true });
+  }
+}
+
+async function skWhatsAppTextToOggOpus(text) {
+  try {
+    return await skElevenLabsTextToOggOpus(text);
+  } catch (error) {
+    console.warn('[WA ElevenLabs fallback]', error.message);
+    return await skGeminiTextToOggOpus(text);
+  }
+}
+// END SK_WHATSAPP_ELEVENLABS_TTS_V1
+
 async function skWhatsAppSendVoiceBuffer(to, oggBuffer) {
   if (!WA_TOKEN || !WA_PHONE_ID) {
     throw new Error('WhatsApp credentials unavailable.');
@@ -4196,7 +4321,7 @@ if ((msg.type === 'audio' && msg.audio?.id) ||
     await skWhatsAppSendTextOnly(recipient, answer.text);
 
     try {
-      const voiceBuffer = await skGeminiTextToOggOpus(answer.speechText);
+      const voiceBuffer = await skWhatsAppTextToOggOpus(answer.speechText);
       await skWhatsAppSendVoiceBuffer(recipient, voiceBuffer);
     } catch (voiceError) {
       console.warn('[WA voice output]', voiceError.message);
@@ -5935,6 +6060,27 @@ if (mp3SearchRequested) {
               text: { body: caption }
             });
           }
+          // SK_WHATSAPP_ELEVENLABS_VOICE_REPLY_V1
+          const waVoiceText = String(answerText || '').trim();
+          const skipWaVoice =
+            isWelcome ||
+            waVoiceText.startsWith('📍 GOOGLE MAPS') ||
+            waVoiceText.startsWith('📤 SASIKUMAR AI — SHARE') ||
+            /COMPLETE MENU|All 35 Services|processing\.\.\.|please wait/i.test(waVoiceText);
+
+          if (!skipWaVoice && waVoiceText.length > 2) {
+            try {
+              const voiceBuffer = await skWhatsAppTextToOggOpus(
+                waVoiceText.slice(0, 1200)
+              );
+              await skWhatsAppSendVoiceBuffer(from, voiceBuffer);
+              console.log('[WA VOICE] AI reply voice sent.');
+            } catch (voiceError) {
+              console.warn('[WA VOICE OUTPUT]', voiceError.message);
+            }
+          }
+          // END SK_WHATSAPP_ELEVENLABS_VOICE_REPLY_V1
+
         }
         // END SK_WHATSAPP_AI_IMAGE_REPLY_V1
       }
@@ -10199,6 +10345,43 @@ function skTelegramMenuText() {
   ].join('\n');
 }
 
+async function skTelegramSendVoiceReply(chatId, message) {
+  const text = String(message || '').trim();
+
+  if (
+    !text || text.length < 3 ||
+    text.startsWith('🤖 SASIKUMAR AI — 35 SERVICES') ||
+    text.startsWith('📍 GOOGLE MAPS') ||
+    text.startsWith('📤 SASIKUMAR AI — SHARE') ||
+    /processing\.{2,}|please wait|உருவாக்கப்படுகிறது/i.test(text)
+  ) return;
+
+  try {
+    const audio = await skWhatsAppTextToOggOpus(text.slice(0, 1200));
+    const form = new FormData();
+    form.append('chat_id', String(chatId));
+    form.append('voice', new Blob([audio], { type: 'audio/ogg' }), 'sasikumar-ai-voice.ogg');
+
+    const response = await fetch(
+      `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendVoice`,
+      {
+        method: 'POST',
+        body: form,
+        signal: AbortSignal.timeout(90000)
+      }
+    );
+
+    if (!response.ok) {
+      const details = await response.text();
+      console.warn('[Telegram voice] Failed:', response.status, details.slice(0, 250));
+    } else {
+      console.log('[Telegram voice] AI reply voice sent.');
+    }
+  } catch (error) {
+    console.warn('[Telegram voice output]', error.message);
+  }
+}
+
 async function skTelegramSendMessage(chatId, message) {
   const replyText = String(
     message || 'மன்னிக்கவும், இப்போது பதில் கிடைக்கவில்லை.'
@@ -10257,7 +10440,10 @@ async function skTelegramSendMessage(chatId, message) {
       }
     );
 
-    if (photoResponse.ok) return;
+    if (photoResponse.ok) {
+      await skTelegramSendVoiceReply(chatId, replyText);
+      return;
+    }
 
     const details = await photoResponse.text();
     console.error('[Telegram] sendPhoto failed; using text reply:', photoResponse.status, details.slice(0, 300));
@@ -10281,6 +10467,8 @@ async function skTelegramSendMessage(chatId, message) {
   if (!response.ok) {
     const details = await response.text();
     console.error('[Telegram] sendMessage failed:', response.status, details.slice(0, 500));
+  } else {
+    await skTelegramSendVoiceReply(chatId, replyText);
   }
 }
 
