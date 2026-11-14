@@ -323,23 +323,25 @@ let recognition = null;
 let voiceListening = false;
 let speechQueue = [];
 let speechIndex = 0;
+let voiceError = '';
 
 function medicalVoiceLanguage() {
   return language === 'english' ? 'en-IN' : 'ta-IN';
 }
 
+// ANDROID CHROME VOICE INPUT
 voiceInput.addEventListener('click', () => {
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
 
-  if (!SpeechRecognition) {
-    statusBox.textContent =
-      'Chrome Voice Input ஆதரவு கிடைக்கவில்லை. Chrome update செய்து முயற்சிக்கவும்.';
+  if (!window.isSecureContext) {
+    statusBox.textContent = 'Voice Input-க்கு HTTPS அவசியம்.';
     return;
   }
 
-  if (!navigator.mediaDevices && location.protocol !== 'https:') {
-    statusBox.textContent = 'Microphone-க்கு HTTPS தேவை.';
+  if (!SpeechRecognition) {
+    statusBox.textContent =
+      'Voice Input ஆதரவு இல்லை. Android Chrome update செய்யவும்.';
     return;
   }
 
@@ -349,7 +351,9 @@ voiceInput.addEventListener('click', () => {
   }
 
   try {
+    voiceError = '';
     recognition = new SpeechRecognition();
+
     recognition.lang = medicalVoiceLanguage();
     recognition.continuous = false;
     recognition.interimResults = true;
@@ -358,37 +362,88 @@ voiceInput.addEventListener('click', () => {
     recognition.onstart = () => {
       voiceListening = true;
       voiceInput.textContent = '🎙️ கேட்கிறது...';
-      statusBox.textContent = 'உங்கள் கேள்வியைப் பேசுங்கள்...';
+      statusBox.textContent =
+        language === 'english'
+          ? 'Listening... Speak your question.'
+          : 'உங்கள் கேள்வியைப் பேசுங்கள்...';
     };
 
     recognition.onresult = (event) => {
       let transcript = '';
-      for (let i = event.resultIndex; i < event.results.length; i++) {
+
+      for (let i = 0; i < event.results.length; i++) {
         transcript += event.results[i][0].transcript;
       }
-      if (transcript.trim()) question.value = transcript.trim();
+
+      if (transcript.trim()) {
+        question.value = transcript.trim();
+      }
     };
 
     recognition.onerror = (event) => {
+      voiceError = event.error || 'unknown';
+
+      const messages = {
+        'not-allowed': 'Chrome Microphone permission Allow செய்யவும்.',
+        'service-not-allowed': 'Google Speech service அனுமதி இல்லை.',
+        'audio-capture': 'Microphone கிடைக்கவில்லை.',
+        'no-speech': 'குரல் கேட்கவில்லை. மீண்டும் பேசுங்கள்.',
+        'network': 'Internet அல்லது Google Speech service பிழை.',
+        'aborted': 'Voice Input நிறுத்தப்பட்டது.'
+      };
+
       statusBox.textContent =
-        'Microphone / Voice பிழை: ' + event.error +
-        '. Chrome Microphone permission சரிபார்க்கவும்.';
+        messages[voiceError] ||
+        'Voice Input பிழை: ' + voiceError;
     };
 
     recognition.onend = () => {
       voiceListening = false;
       voiceInput.textContent = '🎤 பேசுங்கள் / Voice Input';
-      if (question.value.trim()) {
-        statusBox.textContent = 'குரல் கேள்வி சேர்க்கப்பட்டது. இப்போது அனுப்பலாம்.';
+
+      if (!voiceError && question.value.trim()) {
+        statusBox.textContent =
+          'குரல் கேள்வி சேர்க்கப்பட்டது. இப்போது அனுப்பலாம்.';
       }
     };
 
     recognition.start();
+
   } catch (error) {
     voiceListening = false;
-    statusBox.textContent = 'Voice தொடங்க முடியவில்லை: ' + error.message;
+    voiceInput.textContent = '🎤 பேசுங்கள் / Voice Input';
+    statusBox.textContent =
+      'Voice தொடங்க முடியவில்லை: ' + error.message;
   }
 });
+
+// SPLIT LONG ANSWERS INTO SAFE SPEECH CHUNKS
+function makeSpeechChunks(text, maxLength = 180) {
+  const words = text.match(/\S+\s*/g) || [text];
+  const chunks = [];
+  let current = '';
+
+  for (const word of words) {
+    if (current && (current + word).length > maxLength) {
+      chunks.push(current.trim());
+      current = '';
+    }
+    current += word;
+  }
+
+  if (current.trim()) chunks.push(current.trim());
+  return chunks;
+}
+
+// SELECT INSTALLED TAMIL / ENGLISH VOICE WHEN AVAILABLE
+function getMedicalVoice(lang) {
+  const voices = window.speechSynthesis.getVoices();
+  const prefix = lang.split('-')[0].toLowerCase();
+
+  return voices.find(v => v.lang.toLowerCase() === lang.toLowerCase()) ||
+         voices.find(v => v.lang.toLowerCase().startsWith(prefix + '-')) ||
+         null;
+}
 
 function speakNextChunk() {
   if (speechIndex >= speechQueue.length) {
@@ -396,12 +451,21 @@ function speakNextChunk() {
     return;
   }
 
+  const lang = medicalVoiceLanguage();
   const utterance = new SpeechSynthesisUtterance(
     speechQueue[speechIndex]
   );
-  utterance.lang = medicalVoiceLanguage();
+
+  utterance.lang = lang;
   utterance.rate = 0.9;
   utterance.pitch = 1;
+
+  const voice = getMedicalVoice(lang);
+  if (voice) utterance.voice = voice;
+
+  utterance.onstart = () => {
+    statusBox.textContent = 'AI பதில் குரலில் ஒலிக்கிறது...';
+  };
 
   utterance.onend = () => {
     speechIndex++;
@@ -409,41 +473,57 @@ function speakNextChunk() {
   };
 
   utterance.onerror = (event) => {
-    statusBox.textContent = 'Voice Output பிழை: ' + event.error;
+    if (event.error === 'canceled' ||
+        event.error === 'interrupted') return;
+
+    speechQueue = [];
+    statusBox.textContent =
+      'Voice Output பிழை: ' + event.error +
+      '. Chrome Text-to-Speech அமைப்பைச் சரிபார்க்கவும்.';
   };
 
   window.speechSynthesis.speak(utterance);
 }
 
+// ANDROID CHROME VOICE OUTPUT
 speakAnswer.addEventListener('click', () => {
-  if (!('speechSynthesis' in window) ||
-      !('SpeechSynthesisUtterance' in window)) {
-    statusBox.textContent = 'Chrome Voice Output ஆதரவு கிடைக்கவில்லை.';
+  if (!window.speechSynthesis ||
+      !window.SpeechSynthesisUtterance) {
+    statusBox.textContent = 'Chrome Voice Output ஆதரவு இல்லை.';
     return;
   }
 
   const text = answer.textContent.trim();
+
   if (!text) {
     statusBox.textContent = 'முதலில் Medical AI பதிலைப் பெறுங்கள்.';
     return;
   }
 
   window.speechSynthesis.cancel();
-  speechQueue = text.match(/[\s\S]{1,200}(?:\s|$)/g) || [text];
+
+  speechQueue = makeSpeechChunks(text);
   speechIndex = 0;
 
-  statusBox.textContent = 'AI பதில் குரலில் ஒலிக்கிறது...';
+  statusBox.textContent = 'Voice Output தயாராகிறது...';
+
   window.speechSynthesis.resume();
+
   speakNextChunk();
 });
 
+// STOP BOTH VOICE FUNCTIONS
 stopVoice.addEventListener('click', () => {
   if (recognition && voiceListening) {
-    try { recognition.abort(); } catch (e) {}
+    try {
+      recognition.abort();
+    } catch (e) {}
   }
 
   voiceListening = false;
-  if ('speechSynthesis' in window) {
+  voiceError = '';
+
+  if (window.speechSynthesis) {
     window.speechSynthesis.cancel();
   }
 
