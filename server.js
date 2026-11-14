@@ -1159,6 +1159,79 @@ async function getCloudflareAIReply(message, category = 'General AI') {
 }
 
 
+
+// SK_OPENROUTER_TEXT_FALLBACK_V1
+async function getSasikumarTextFallbackReply(
+  message,
+  category = 'General AI',
+  customSystemPrompt = ''
+) {
+  const key = process.env.OPENROUTER_API_KEY;
+  const medical = String(category).toLowerCase().includes('medical') ||
+    skIsMedicalQuery(message);
+
+  const systemPrompt = (
+    customSystemPrompt ||
+    'You are SASIKUMAR AI, a helpful multilingual assistant. ' +
+    'Reply in Tamil, English or Tanglish according to the user. ' +
+    'Be accurate, concise and transparent about uncertainty. ' +
+    'For agriculture, avoid unsupported diagnoses, pesticide names, doses ' +
+    'or chemical mixtures. Recommend official agricultural guidance when needed.'
+  ) + (medical ? '\n\n' + skMedicalInstructions() : '');
+
+  if (key) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 25000);
+
+    try {
+      const response = await fetch(
+        'https://openrouter.ai/api/v1/chat/completions',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer ' + key,
+            'Content-Type': 'application/json',
+            'HTTP-Referer': 'https://sasikumar-ai-9wdq.onrender.com',
+            'X-Title': 'SASIKUMAR AI'
+          },
+          body: JSON.stringify({
+            model: process.env.OPENROUTER_MODEL || 'openai/gpt-oss-20b',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: String(message || '').slice(0, 12000) }
+            ],
+            temperature: 0.5,
+            max_tokens: 700
+          }),
+          signal: controller.signal
+        }
+      );
+
+      const data = await response.json().catch(() => ({}));
+      const answer = data?.choices?.[0]?.message?.content;
+
+      if (response.ok && typeof answer === 'string' && answer.trim()) {
+        console.info('[OpenRouter AI] TEXT_FALLBACK_SUCCESS', {
+          model: process.env.OPENROUTER_MODEL || 'openai/gpt-oss-20b'
+        });
+        return answer.replace(/<think>[\s\S]*?<\/think>/gi, '').trim() || null;
+      }
+
+      console.warn('[OpenRouter AI] Fallback unavailable:', response.status);
+    } catch (error) {
+      console.warn('[OpenRouter AI] Request failed:', error.name || 'Error');
+    } finally {
+      clearTimeout(timer);
+    }
+  } else {
+    console.warn('[OpenRouter AI] OPENROUTER_API_KEY missing.');
+  }
+
+  console.info('[AI Fallback] Trying Cloudflare after OpenRouter.');
+  return await getCloudflareAIReply(message, category);
+}
+// END SK_OPENROUTER_TEXT_FALLBACK_V1
+
 // SK_MEDICAL_CORE_V1
 function skIsMedicalQuery(value = '') {
   const q = String(value || '').toLowerCase();
@@ -1200,15 +1273,7 @@ app.post('/api/chat', async (req, res) => {
       const safeReply = 'மருந்தின் பெயர் அல்லது அளவை உங்கள் வயது, உடல் எடை, உடல்நிலை மற்றும் மருத்துவ வரலாறு தெரியாமல் பரிந்துரைப்பது பாதுகாப்பானதல்ல. தகுதியான மருத்துவர் அல்லது மருந்தாளரிடம் ஆலோசனை பெறுங்கள். ஏற்கெனவே பரிந்துரைக்கப்பட்ட மருந்தை நீங்களாக நிறுத்தவோ மாற்றவோ வேண்டாம். கடுமையான அறிகுறிகள் இருந்தால் உடனடியாக மருத்துவ உதவி பெறுங்கள்.';
       return res.json({ reply: safeReply, answer: safeReply, api: 'Medical Safety Guard' });
     }
-
     const apiKey = process.env.GROQ_API_KEY;
-
-    if (!apiKey) {
-      return res.status(503).json({
-        reply: 'AI server configuration error: GROQ_API_KEY is missing.',
-        answer: 'AI server configuration error: GROQ_API_KEY is missing.'
-      });
-    }
 
     let userMessage = message;
     let imageData = '';
@@ -1368,6 +1433,26 @@ app.post('/api/chat', async (req, res) => {
     }
     // END SK_GENERAL_AI_LIVE_SEARCH_V1
 
+    if (!apiKey) {
+      if (imageData) {
+        const errorMessage = 'பட ஆய்வுக்கு தற்போது Groq AI சேவை தேவைப்படுகிறது. பின்னர் முயற்சிக்கவும்.';
+        return res.status(503).json({ reply: errorMessage, answer: errorMessage });
+      }
+
+      const fallbackReply = await getSasikumarTextFallbackReply(userMessage, category);
+      if (fallbackReply) {
+        const finalReply = safeChatReply(fallbackReply);
+        return res.json({
+          reply: finalReply,
+          answer: finalReply,
+          api: 'OpenRouter / Cloudflare fallback'
+        });
+      }
+
+      const errorMessage = 'AI சேவை தற்காலிகமாக கிடைக்கவில்லை. API keys மற்றும் சேவை நிலையைச் சரிபார்க்கவும்.';
+      return res.status(503).json({ reply: errorMessage, answer: errorMessage });
+    }
+
     const requestModel = imageData
       ? 'qwen/qwen3.8-27b'
       : 'openai/gpt-oss-20b';
@@ -1427,7 +1512,7 @@ app.post('/api/chat', async (req, res) => {
       );
     } catch (fetchError) {
       if (!imageData) {
-        const fallbackReply = await getCloudflareAIReply(userMessage, category);
+        const fallbackReply = await getSasikumarTextFallbackReply(userMessage, category);
         if (fallbackReply) {
           return res.json({
             reply: safeChatReply(fallbackReply),
@@ -1445,7 +1530,7 @@ app.post('/api/chat', async (req, res) => {
 
     if (!upstream.ok) {
       if (!imageData) {
-        const fallbackReply = await getCloudflareAIReply(userMessage, category);
+        const fallbackReply = await getSasikumarTextFallbackReply(userMessage, category);
         if (fallbackReply) {
           return res.json({
             reply: safeChatReply(fallbackReply),
@@ -1478,7 +1563,7 @@ app.post('/api/chat', async (req, res) => {
 
     if (!reply) {
       if (!imageData) {
-        const fallbackReply = await getCloudflareAIReply(userMessage, category);
+        const fallbackReply = await getSasikumarTextFallbackReply(userMessage, category);
         if (fallbackReply) {
           return res.json({
             reply: safeChatReply(fallbackReply),
@@ -1657,23 +1742,7 @@ function skIsKavithaiRequest(value = '') {
 async function getWhatsAppAIReply(question, mode = 'normal', context = '') {
   const aiContext = String(context || '').trim();
   const apiKey = process.env.GROQ_API_KEY;
-
-  if (!apiKey) {
-    console.warn('[WhatsApp AI] Groq key missing; trying Cloudflare fallback.');
-    const fallbackReply = await getCloudflareAIReply(
-      aiContext ? aiContext + '\n\nUser question:\n' + question : question,
-      'WhatsApp AI'
-    );
-    if (fallbackReply) {
-      console.info('[WhatsApp AI] CLOUDFLARE_FALLBACK_SUCCESS (Groq key missing)');
-      return fallbackReply;
-    }
-    console.error('[WhatsApp AI] AI_REPLY_FAILED (Groq key missing; Cloudflare unavailable)');
-
-    return 'மன்னிக்கவும் நண்பா 😊 AI சேவை இப்போது கிடைக்கவில்லை. சிறிது நேரம் கழித்து முயற்சிக்கவும்.';
-  }
-
-  let liveSearchResults = [];
+let liveSearchResults = [];
   let liveSearchProvider = '';
 
   // SK_EXTRA_SEARCH_8_CATEGORIES_V1
@@ -1960,6 +2029,19 @@ async function getWhatsAppAIReply(question, mode = 'normal', context = '') {
       '\n\nAnswer the original question using relevant results. Match the user language. Clearly distinguish publication dates from today. Do not invent facts. Include useful source URLs in the reply.';
   }
 
+  if (!apiKey) {
+    console.warn('[WhatsApp AI] Groq key missing; trying secondary providers.');
+    const fallbackReply = await getSasikumarTextFallbackReply(
+      userContent,
+      'WhatsApp AI',
+      systemPrompt
+    );
+    if (fallbackReply) return fallbackReply;
+
+    console.error('[WhatsApp AI] All text providers unavailable.');
+    return 'மன்னிக்கவும் நண்பா 😊 AI சேவை இப்போது கிடைக்கவில்லை. சிறிது நேரம் கழித்து முயற்சிக்கவும்.';
+  }
+
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 20000);
 
@@ -1993,10 +2075,7 @@ async function getWhatsAppAIReply(question, mode = 'normal', context = '') {
         response.status,
         data?.error?.message || 'AI request failed'
       );
-      const fallbackReply = await getCloudflareAIReply(
-        userContent,
-        'WhatsApp AI'
-      );
+      const fallbackReply = await getSasikumarTextFallbackReply(userContent, 'WhatsApp AI', systemPrompt);
       if (fallbackReply) {
         console.info('[WhatsApp AI] CLOUDFLARE_FALLBACK_SUCCESS (Groq HTTP error)');
         return fallbackReply;
@@ -2018,10 +2097,7 @@ async function getWhatsAppAIReply(question, mode = 'normal', context = '') {
     const answer = data?.choices?.[0]?.message?.content?.trim();
 
     if (!answer) {
-      const fallbackReply = await getCloudflareAIReply(
-        userContent,
-        'WhatsApp AI'
-      );
+      const fallbackReply = await getSasikumarTextFallbackReply(userContent, 'WhatsApp AI', systemPrompt);
       if (fallbackReply) {
         console.info('[WhatsApp AI] CLOUDFLARE_FALLBACK_SUCCESS (Groq empty answer)');
         return fallbackReply;
@@ -2036,10 +2112,7 @@ async function getWhatsAppAIReply(question, mode = 'normal', context = '') {
   } catch (error) {
     console.error('[WhatsApp AI] Groq request error:', error.message || error);
 
-    const fallbackReply = await getCloudflareAIReply(
-      userContent,
-      'WhatsApp AI'
-    );
+    const fallbackReply = await getSasikumarTextFallbackReply(userContent, 'WhatsApp AI', systemPrompt);
     if (fallbackReply) {
       console.info('[WhatsApp AI] CLOUDFLARE_FALLBACK_SUCCESS (Groq exception)');
       return fallbackReply;
