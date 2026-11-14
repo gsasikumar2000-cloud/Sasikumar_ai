@@ -5803,13 +5803,14 @@ if (mp3SearchRequested) {
             });
 
             if (!imageSent) {
-              await sendWA({
-                type: 'text',
-                text: {
-                  body: '🤖 SASIKUMAR AI\nபடம் உருவானது; ஆனால் WhatsApp-ல் அனுப்ப முடியவில்லை. சிறிது நேரத்தில் மீண்டும் முயற்சிக்கவும்.'
-                }
-              });
-            }
+  await sendWA({
+    type: 'text',
+    text: {
+      body: caption +
+        '\n\n📷 படம் உருவானது; ஆனால் WhatsApp-ல் அனுப்ப முடியவில்லை. Text பதில் மட்டும் அனுப்பப்பட்டுள்ளது.'
+    }
+  });
+}
 
             if (imageIndex < imagesToSend.length - 1) {
               await new Promise(resolve => setTimeout(resolve, 800));
