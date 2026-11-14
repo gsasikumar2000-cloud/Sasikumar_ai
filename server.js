@@ -5573,10 +5573,7 @@ if (mp3SearchRequested) {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({
-                    content: [
-                      trimmed.substring(0, 100),
-                      String(answerText || '').trim()
-                    ].filter(Boolean).join('\n').substring(0, 500),
+                    content: trimmed.substring(0, 500),
                     theme: 'professional'
                   }),
                   signal: AbortSignal.timeout(120000)
@@ -9068,6 +9065,125 @@ function skGetDeityPosterTitle(input) {
 }
 // END SK_DEITY_POSTER_TITLE_V1
 
+
+// SK_AUTOMATIC_CREATIVE_ENGINE_V1
+function skBuildAutomaticCreativePrompt(content, theme) {
+  const text = String(content || '').trim();
+
+  const rules = [
+    {
+      category: 'devotional',
+      re: /விநாயகர்|வினாயகர்|பிள்ளையார்|முருகன்|கந்தன்|சுப்பிரமணியர்|அம்மன்|மாரியம்மன்|சிவன்|பெருமாள்|விஷ்ணு|கிருஷ்ணர்|கண்ணன்|இராமர்|இயேசு|புத்தர்|ganesha|ganesh|vinayagar|vinayaka|murugan|karthikeya|amman|shiva|vishnu|perumal|krishna|jesus|buddha/i,
+      visual: 'Create respectful, beautiful devotional artwork. The exact deity or spiritual subject named in the request must be the unmistakable central subject. Use traditional appropriate attributes and a luminous temple-inspired setting. Never substitute an unrelated person or deity.'
+    },
+    {
+      category: 'business',
+      re: /business|வணிகம்|கடை|விற்பனை|விளம்பரம்|agency|shop|store|company|offer|sale|promotion|product|service|திறப்பு விழா/i,
+      visual: 'Create a premium commercial advertising visual. Show the exact product, service or business described in the request as the main focus, with a polished modern retail or professional setting. Do not invent brand logos, product labels or claims.'
+    },
+    {
+      category: 'birthday',
+      re: /birthday|பிறந்தநாள்|பிறந்த நாள்|anniversary|திருமண நாள்|வாழ்த்துக்கள்|வாழ்த்துகள்|congratulations|வெற்றி வாழ்த்து/i,
+      visual: 'Create a joyful premium celebration scene with elegant balloons, flowers, confetti and tasteful decorative lighting. Keep the requested person or celebration subject central if one is specified. Do not invent a human face.'
+    },
+    {
+      category: 'agriculture',
+      re: /agriculture|விவசாயம்|விவசாயி|உழவர்|வயல்|நெல்|பயிர்|விதை|உரம்|tractor|farm|farmer|farming|crop|harvest|irrigation/i,
+      visual: 'Create a vivid realistic agricultural scene with healthy crops, green fields, natural sunlight and relevant farming equipment. Show the exact crop or farming subject requested.'
+    },
+    {
+      category: 'education',
+      re: /education|கல்வி|பள்ளி|கல்லூரி|மாணவர்|ஆசிரியர்|படிப்பு|தேர்வு|school|college|student|teacher|exam|tuition|learning/i,
+      visual: 'Create an inspiring modern education visual with books, classroom or campus elements and a confident learning atmosphere. Show only educational elements relevant to the request.'
+    },
+    {
+      category: 'jewellery',
+      re: /jewellery|jewelry|தங்கம்|நகை|வைரம்|வெள்ளி|gold|silver|diamond|ornament|necklace|bangle/i,
+      visual: 'Create a luxurious jewellery showcase with realistic gold or precious-metal ornaments, refined display styling and warm elegant highlights. Match the exact jewellery type requested.'
+    },
+    {
+      category: 'festival',
+      re: /festival|பண்டிகை|தீபாவளி|பொங்கல்|தமிழ் புத்தாண்டு|சித்திரை|கிறிஸ்துமஸ்|ரம்ஜான்|ஈத்|தீபத்திருநாள்|pongal|diwali|christmas|eid|new year/i,
+      visual: 'Create a colourful festive celebration scene with culturally appropriate decorations, flowers, lamps and joyful atmosphere. Match the specific festival named by the user.'
+    }
+  ];
+
+  const found = rules.find(rule => rule.re.test(text));
+  const category = found ? found.category : 'general';
+
+  let visual = found
+    ? found.visual
+    : 'Create a premium creative visual representing the exact subject in the request. Make the requested subject large, clear and unmistakable. Do not add unrelated people, objects or scenes.';
+
+  const requestsHuman = /\b(man|men|woman|women|person|people|human|farmer|farmers|worker|workers|student|students|teacher|teachers|actor|actress|portrait|face|family|couple)\b|விவசாயி|உழவர்|மாணவர்|மாணவி|ஆசிரியர்|மனிதர்|ஆண்|பெண்|குடும்பம்|முகம்/i.test(text);
+  const humanRule = requestsHuman
+    ? 'Include a human only when explicitly requested, and make that person relevant to the exact request. Do not add unrelated people.'
+    : 'STRICT RULE: Do NOT show any human, man, woman, farmer, worker, face, body or human silhouette. Use only the requested objects, products, places, crops, vehicles, animals or devotional subjects.';
+
+  // SK_EXACT_DEITY_VISUAL_V1
+  if (category === 'devotional') {
+    const deityRules = [
+      {
+        name: 'VINAYAGAR',
+        re: /விநாயகர்|வினாயகர்|பிள்ளையார்|ganesha|ganesh|vinayagar|vinayaka/i,
+        visual: 'Show ONLY Lord Vinayagar (Ganesha), unmistakably recognizable with an elephant head, curved trunk, large ears, traditional crown, four arms and modak. Include his mouse vehicle subtly. Do not show Shiva, Amman or any other deity.'
+      },
+      {
+        name: 'MURUGAN',
+        re: /முருகன்|கந்தன்|சுப்பிரமணியர்|வேலவன்|murugan|karthikeya|subramanya/i,
+        visual: 'Show ONLY Lord Murugan, unmistakably recognizable with the divine Vel spear, youthful divine appearance and traditional peacock vehicle. Do not show Vinayagar, Shiva or Amman.'
+      },
+      {
+        name: 'AMMAN',
+        re: /மாரியம்மன்|காளியம்மன்|அம்மன்|துர்கை|காளி|amman|mariamman|durga|kali/i,
+        visual: 'Show ONLY the requested Amman goddess, with traditional divine crown, saree, ornaments and appropriate traditional attributes. Do not show Shiva, Vinayagar or Murugan.'
+      },
+      {
+        name: 'SHIVA',
+        re: /சிவன்|சிவபெருமான்|ஈசன்|மகாதேவன்|shiva|shivan|mahadev/i,
+        visual: 'Show ONLY Lord Shiva, unmistakably recognizable with matted hair, crescent moon, Ganga, third eye, blue throat and trident. Include Nandi subtly. Do not show Vinayagar or Amman.'
+      },
+      {
+        name: 'VISHNU',
+        re: /பெருமாள்|விஷ்ணு|நாராயணன்|vishnu|perumal|narayana/i,
+        visual: 'Show ONLY Lord Vishnu with traditional crown, conch and discus, in a respectful divine setting. Do not show other deities.'
+      },
+      {
+        name: 'KRISHNA',
+        re: /கிருஷ்ணர்|கண்ணன்|krishna|kanha/i,
+        visual: 'Show ONLY Lord Krishna with a flute, peacock feather and traditional divine attire. Do not show other deities.'
+      }
+    ];
+
+    const deity = deityRules.find(rule => rule.re.test(text));
+    if (deity) {
+      visual = deity.visual;
+      console.log('[SK EXACT DEITY]', deity.name);
+    }
+  }
+  // END SK_EXACT_DEITY_VISUAL_V1
+
+  const prompt = [
+    'Create one original premium 4:5 portrait poster background for a 1080x1350 design.',
+    'REQUESTED CONTENT: ' + text,
+    'AUTOMATIC CREATIVE CATEGORY: ' + category,
+    visual,
+    humanRule,
+    'Use bright, cheerful, high-exposure colours, vivid natural details, clean composition and professional lighting.',
+    'Prefer sky blue, turquoise, emerald green, sunny yellow, orange, pink and tasteful gold highlights.',
+    'Avoid black backgrounds, dark muddy colours and excessive shadows.',
+    'Fill the canvas edge to edge. Keep the main subject prominent and visually clear.',
+    'Leave a naturally uncluttered lower-middle area for separately composed poster text.',
+    'Background artwork only: no text, letters, numbers, logos, watermarks, signatures, banners, borders or text boxes.',
+    'Do not invent names, dates, prices, offers, facts or brand identities.',
+    'Visual theme preference: ' + String(theme || 'professional') + '.',
+    'Create a fresh detailed visual, not a blank gradient or generic template.'
+  ].join(' ');
+
+  return { category, prompt };
+}
+// END SK_AUTOMATIC_CREATIVE_ENGINE_V1
+
 /* SK_AI_POSTER_COMPOSER_V1 */
 app.post('/api/ai/poster', async (req, res) => {
   let backgroundAttribution = null;
@@ -9117,230 +9233,156 @@ app.post('/api/ai/poster', async (req, res) => {
 
       await fs.promises.writeFile(tempFile, photoBytes);
     } else {
-      // SK_POSTER_PROVIDER_ROUTER_V1
-      const posterPrompt = [
-        'Generate a fresh, premium quality, highly detailed 4:5 portrait artwork, designed for a 1080x1350 canvas.',
-        'VISUAL THEME: ' + theme + '.',
-        'Create a vivid, realistic and visually rich scene that clearly represents the requested theme.',
-        'Use beautiful natural textures, crisp fine details, realistic depth, balanced composition and professional cinematic lighting.',
-        'Use a brilliant RAINBOW BRIGHT colour palette: vivid sky blue, turquoise, emerald green, sunny yellow, orange, pink, violet and rich purple, with elegant golden highlights.',
-        'Use bright daylight, high exposure, luminous colours, clear details and cheerful natural scenery. Avoid black backgrounds, near-black shadows, dark navy colour dominance and muddy or dull colours.',
-        'The artwork must fill the entire canvas edge to edge. Make the actual subject and scenery large, clear and sharply visible.',
-        'Keep a naturally uncluttered area in the lower-middle region for separately added Tamil text, but do not make it an empty blur or blank gradient.',
-        'BACKGROUND ART ONLY: absolutely no text, letters, Tamil script, English script, numbers, symbols, typography or calligraphy.',
-        'Absolutely no logos, brand names, signatures, watermarks, banners, title areas, text boxes, borders, frames, panels or poster templates.',
-        'Do not imitate an existing poster. Create a genuinely new image with detailed artwork, not a plain gradient, blank background, abstract blur or empty color wash.'
-      ].join(' ');
+      // SK_AUTOMATIC_CREATIVE_ENGINE_V1_ROUTE
+      const creative = skBuildAutomaticCreativePrompt(content, theme);
+      const posterPrompt = creative.prompt;
+      console.log('[SK AUTOMATIC CREATIVE]', creative.category);
 
-      let generated;
+      let bytes = null;
+      let verified = false;
+      let lastVerifyError = '';
 
-      try {
-        generated = await skGenerateImage(posterPrompt);
-      } catch (aiError) {
-        console.warn('[POSTER AI FAILED]', aiError.message);
+      // SK_UNIVERSAL_IMAGE_VERIFY_RETRY_V1
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          const retryInstruction = attempt === 1
+            ? ''
+            : ' IMPORTANT RETRY: The previous image did not clearly match the requested subject. Create a substantially different image that visibly and unmistakably represents the exact requested subject. Do not substitute another subject.';
 
-        const searchQuery = (theme + ' ' + content)
-          .replace(/[^\p{L}\p{N}\s]/gu, ' ')
-          .replace(/\s+/g, ' ')
-          .trim()
-          .slice(0, 120);
+          const generated = await skGenerateImage(
+            posterPrompt + retryInstruction
+          );
 
-        let stockUrl = null;
+          let candidateBytes;
+          let candidateMime = '';
 
-        // SK_DEITY_POSTER_NO_GENERIC_STOCK_V1
-        if (skGetDeityPosterTitle(content)) {
-          const deityImage = await skSearchRealImage(content);
-          if (deityImage?.dataUri) {
-            generated = deityImage.dataUri;
-            backgroundAttribution = {
-              provider: 'Wikimedia Commons',
-              title: 'Deity image search result',
-              artist: '',
-              license: '',
-              sourceUrl: ''
-            };
+          const dataMatch =
+            /^data:(image\/[a-zA-Z0-9.+-]+);base64,([A-Za-z0-9+/]+={0,2})$/.exec(generated);
+
+          if (dataMatch) {
+            candidateMime = dataMatch[1].toLowerCase();
+            candidateBytes = Buffer.from(dataMatch[2], 'base64');
+          } else if (
+            typeof generated === 'string' &&
+            /^https:\/\//i.test(generated)
+          ) {
+            const imageResponse = await fetch(generated, {
+              signal: AbortSignal.timeout(45000)
+            });
+
+            if (!imageResponse.ok) {
+              throw new Error(
+                'Generated image download failed: HTTP ' +
+                imageResponse.status
+              );
+            }
+
+            candidateMime = String(
+              imageResponse.headers.get('content-type') || ''
+            ).split(';')[0].toLowerCase();
+
+            if (!candidateMime.startsWith('image/')) {
+              throw new Error('Provider returned a non-image URL.');
+            }
+
+            candidateBytes = Buffer.from(
+              await imageResponse.arrayBuffer()
+            );
           } else {
+            throw new Error('No valid image returned by AI providers.');
+          }
+
+          if (
+            !candidateBytes.length ||
+            candidateBytes.length > 15 * 1024 * 1024
+          ) {
             throw new Error(
-              'Deity-specific AI image failed and no matching image was found. Generic stock photos are blocked.'
+              'Generated image is empty or exceeds 15 MB.'
             );
           }
-        } else {
 
-        // Unsplash fallback
-        const unsplashKey = process.env.UNSPLASH_ACCESS_KEY;
-
-        if (unsplashKey) {
-          try {
-            const url =
-              'https://api.unsplash.com/search/photos?query=' +
-              encodeURIComponent(searchQuery) +
-              '&orientation=portrait&per_page=10';
-
-            const response = await fetch(url, {
-              headers: {
-                Authorization: 'Client-ID ' + unsplashKey,
-                'Accept-Version': 'v1'
-              },
-              signal: AbortSignal.timeout(20000)
-            });
-
-            if (!response.ok) {
-              throw new Error('Unsplash HTTP ' + response.status);
-            }
-
-            const data = await response.json();
-            stockUrl = data.results?.[0]?.urls?.regular || null;
-
-            if (stockUrl) console.info('[POSTER BACKGROUND] Unsplash');
-          } catch (err) {
-            console.warn('[UNSPLASH FALLBACK]', err.message);
+          // Detect actual image format from image bytes.
+          if (
+            candidateBytes[0] === 0xff &&
+            candidateBytes[1] === 0xd8 &&
+            candidateBytes[2] === 0xff
+          ) {
+            candidateMime = 'image/jpeg';
+          } else if (
+            candidateBytes.subarray(0, 8).equals(
+              Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])
+            )
+          ) {
+            candidateMime = 'image/png';
+          } else if (
+            candidateBytes.subarray(0, 4).toString() === 'RIFF' &&
+            candidateBytes.subarray(8, 12).toString() === 'WEBP'
+          ) {
+            candidateMime = 'image/webp';
+          } else {
+            throw new Error('Unsupported image format for verification.');
           }
-        }
 
-        // Pixabay fallback
-        const pixabayKey = process.env.PIXABAY_API_KEY;
-
-        if (!stockUrl && pixabayKey) {
-          try {
-            const url =
-              'https://pixabay.com/api/?key=' +
-              encodeURIComponent(pixabayKey) +
-              '&q=' + encodeURIComponent(searchQuery) +
-              '&image_type=photo&orientation=vertical&safesearch=true&per_page=10';
-
-            const response = await fetch(url, {
-              signal: AbortSignal.timeout(20000)
-            });
-
-            if (!response.ok) {
-              throw new Error('Pixabay HTTP ' + response.status);
-            }
-
-            const data = await response.json();
-            stockUrl = data.hits?.[0]?.largeImageURL || null;
-
-            if (stockUrl) console.info('[POSTER BACKGROUND] Pixabay');
-          } catch (err) {
-            console.warn('[PIXABAY FALLBACK]', err.message);
-          }
-        }
-
-        // Wikimedia Commons fallback
-        if (!stockUrl) {
-          try {
-            const apiUrl =
-              'https://commons.wikimedia.org/w/api.php?action=query' +
-              '&generator=search&gsrnamespace=6&gsrlimit=10' +
-              '&gsrsearch=' + encodeURIComponent(searchQuery) +
-              '&prop=imageinfo&iiprop=url|extmetadata' +
-              '&iiurlwidth=1600&format=json';
-
-            const response = await fetch(apiUrl, {
-              headers: {
-                'User-Agent': 'SasikumarAI/1.0 PosterMaker'
-              },
-              signal: AbortSignal.timeout(20000)
-            });
-
-            if (!response.ok) {
-              throw new Error('Wikimedia HTTP ' + response.status);
-            }
-
-            const data = await response.json();
-            const pages = Object.values(data.query?.pages || {});
-
-            const page = pages.find(item =>
-              item.imageinfo?.[0]?.thumburl ||
-              item.imageinfo?.[0]?.url
+          if (candidateBytes.length > 8 * 1024 * 1024) {
+            throw new Error(
+              'Image exceeds the 8 MB Vision verification limit.'
             );
-
-            const info = page?.imageinfo?.[0];
-
-            if (info) {
-              stockUrl = info.thumburl || info.url;
-
-              const meta = info.extmetadata || {};
-              const clean = value =>
-                String(value || '').replace(/<[^>]*>/g, '').trim();
-
-              backgroundAttribution = {
-                provider: 'Wikimedia Commons',
-                title: page.title || '',
-                artist: clean(meta.Artist?.value),
-                license: clean(meta.LicenseShortName?.value),
-                sourceUrl:
-                  'https://commons.wikimedia.org/wiki/' +
-                  encodeURIComponent((page.title || '').replace(/ /g, '_'))
-              };
-
-              console.info('[POSTER BACKGROUND] Wikimedia Commons');
-            }
-          } catch (err) {
-            console.warn('[WIKIMEDIA FALLBACK]', err.message);
           }
-        }
 
-        if (!stockUrl) {
-          throw new Error(
-            'AI, Unsplash, Pixabay and Wikimedia failed: ' + aiError.message
+          const visionPrompt = [
+            'Inspect the actual image pixels. Ignore filenames, metadata and the generation prompt.',
+            'The user requested this exact subject or content: "' +
+              content.slice(0, 450) + '".',
+            'Identify the main visible subject in the image.',
+            'Decide whether the main visible subject clearly and meaningfully matches the user request.',
+            'For a named person, do not claim identity without reliable visual evidence; judge only whether the visible image clearly represents the requested subject.',
+            'For greetings, festivals, business, agriculture, education, devotional and other creative topics, accept only imagery clearly relevant to the requested topic.',
+            'Reject unrelated people, wrong deities, wrong objects, generic unrelated scenery, unclear images and uncertain results.',
+            'If the request does not explicitly ask for a human, person, farmer, worker, student, teacher, actor or portrait, reject an image whose main subject is a human or human face.',
+            'For agriculture requests, verify that the requested crops, field, tractor or farming equipment are visibly present; do not accept a random man as an agriculture image.',
+            'Reply with exactly PASS only when the main subject clearly matches the request. Otherwise reply exactly FAIL.'
+          ].join(' ');
+
+          const visionAnswer = await skAnalyzeImageBuffer(
+            candidateBytes,
+            candidateMime,
+            visionPrompt
+          );
+
+          if (!/^\s*PASS\s*$/i.test(visionAnswer)) {
+            throw new Error(
+              'Vision rejected image: ' + String(visionAnswer).slice(0, 250)
+            );
+          }
+
+          bytes = candidateBytes;
+          verified = true;
+
+          console.log(
+            '[SK UNIVERSAL IMAGE VERIFY] PASS on attempt ' + attempt
+          );
+          break;
+        } catch (verifyError) {
+          lastVerifyError = String(
+            verifyError?.message || verifyError
+          );
+
+          console.warn(
+            '[SK UNIVERSAL IMAGE VERIFY] Attempt ' +
+            attempt + '/3 rejected: ' + lastVerifyError
           );
         }
-
-        const imageResponse = await fetch(stockUrl, {
-          signal: AbortSignal.timeout(45000)
-        });
-
-        if (!imageResponse.ok) {
-          throw new Error('Stock image HTTP ' + imageResponse.status);
-        }
-
-        const mime = imageResponse.headers.get('content-type') || '';
-
-        if (!/^image\/(jpeg|png|webp)$/i.test(mime)) {
-          throw new Error('Stock provider returned an unsupported image.');
-        }
-
-        const stockBytes = Buffer.from(await imageResponse.arrayBuffer());
-
-        if (!stockBytes.length || stockBytes.length > 15 * 1024 * 1024) {
-          throw new Error('Stock image is empty or too large.');
-        }
-
-        generated =
-          'data:' + mime.split(';')[0] + ';base64,' +
-          stockBytes.toString('base64');
-        }
-      }
-      let bytes;
-
-      const dataMatch = /^data:(image\/[a-zA-Z0-9.+-]+);base64,([A-Za-z0-9+/]+={0,2})$/.exec(generated);
-
-      if (dataMatch) {
-        bytes = Buffer.from(dataMatch[2], 'base64');
-      } else if (typeof generated === 'string' && /^https:\/\//i.test(generated)) {
-        const imageResponse = await fetch(generated, {
-          signal: AbortSignal.timeout(45000)
-        });
-
-        if (!imageResponse.ok) {
-          throw new Error('Generated image download failed: HTTP ' + imageResponse.status);
-        }
-
-        const mime = imageResponse.headers.get('content-type') || '';
-        if (!mime.startsWith('image/')) {
-          throw new Error('Provider returned a non-image URL.');
-        }
-
-        bytes = Buffer.from(await imageResponse.arrayBuffer());
-      } else {
-        throw new Error('No valid image returned by the AI providers.');
       }
 
-      if (!bytes.length || bytes.length > 15 * 1024 * 1024) {
-        throw new Error('Generated image is empty or exceeds 15 MB.');
+      if (!verified || !bytes) {
+        throw new Error(
+          'Image did not pass subject verification after 3 attempts. ' +
+          lastVerifyError
+        );
       }
 
       await fs.promises.writeFile(tempFile, bytes);
+      // END SK_UNIVERSAL_IMAGE_VERIFY_RETRY_V1
     }
 
     const { execFile } = await import('node:child_process');
