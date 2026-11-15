@@ -1,4 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary';
+import { Readable, Transform } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 
 const FAL_ENDPOINT =
   'https://queue.fal.run/minimax/h3-max-turbo/text-to-video';
@@ -73,14 +75,20 @@ function skSafeFalMediaUrl(value) {
   }
 }
 
-async function skDownloadFalMp4(value) {
+
+async function skDownloadFalMp4ToCloudinary(value, options = {}) {
   if (!skSafeFalMediaUrl(value)) {
     throw new Error('Unsafe video download URL.');
   }
 
+  if (!skCloudinaryReady()) {
+    throw new Error('Cloudinary is not configured.');
+  }
+
+  const signal = AbortSignal.timeout(60000);
   const response = await fetch(value, {
     redirect: 'error',
-    signal: AbortSignal.timeout(60000)
+    signal
   });
 
   if (!response.ok || !response.body) {
@@ -92,42 +100,83 @@ async function skDownloadFalMp4(value) {
     response.headers.get('content-length') || 0
   );
 
-  if (contentLength > maxBytes) {
+  if (Number.isFinite(contentLength) && contentLength > maxBytes) {
+    await response.body.cancel().catch(() => {});
     throw new Error('Generated video exceeds 100 MB.');
   }
 
-  const reader = response.body.getReader();
-  const chunks = [];
   let totalBytes = 0;
+  let headerBytes = 0;
+  const header = Buffer.alloc(12);
 
-  try {
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      totalBytes += value.length;
+  const validator = new Transform({
+    transform(chunk, encoding, callback) {
+      totalBytes += chunk.length;
 
       if (totalBytes > maxBytes) {
-        await reader.cancel();
-        throw new Error('Generated video exceeds 100 MB.');
+        return callback(new Error('Generated video exceeds 100 MB.'));
       }
 
-      chunks.push(Buffer.from(value));
+      if (headerBytes < 12) {
+        const count = Math.min(12 - headerBytes, chunk.length);
+        chunk.copy(header, headerBytes, 0, count);
+        headerBytes += count;
+      }
+
+      callback(null, chunk);
+    },
+
+    flush(callback) {
+      if (
+        headerBytes < 12 ||
+        header.toString('ascii', 4, 8) !== 'ftyp'
+      ) {
+        return callback(new Error('Downloaded file is not a valid MP4.'));
+      }
+
+      callback();
     }
-  } finally {
-    reader.releaseLock();
+  });
+
+  let uploadStream;
+
+  const uploadPromise = new Promise((resolve, reject) => {
+    uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: options.folder || 'sasikumar-ai/generated-videos',
+        resource_type: 'video',
+        ...options.uploadOptions
+      },
+      (error, result) => {
+        if (error) return reject(error);
+
+        if (!result?.secure_url) {
+          return reject(new Error('Cloudinary returned no secure URL.'));
+        }
+
+        resolve(result);
+      }
+    );
+
+    uploadStream.once('error', reject);
+  });
+
+  // Prevent an unhandled rejection if the input stream fails.
+  uploadPromise.catch(() => {});
+
+  try {
+    await pipeline(
+      Readable.fromWeb(response.body),
+      validator,
+      uploadStream,
+      { signal }
+    );
+
+    return await uploadPromise;
+  } catch (error) {
+    uploadStream.destroy(error);
+    throw error;
   }
-
-  const buffer = Buffer.concat(chunks);
-
-  if (
-    buffer.length < 12 ||
-    buffer.toString('ascii', 4, 8) !== 'ftyp'
-  ) {
-    throw new Error('Downloaded file is not a valid MP4.');
-  }
-
-  return buffer;
 }
 // END SK_IMAGE_TO_VIDEO_CLOUDINARY_STORAGE_V1
 
@@ -593,13 +642,10 @@ function skDecodeImageData(value) {
             let storedVideoUrl = videoUrl;
 
             if (job.input_type === 'image') {
-              const mp4Buffer = await skDownloadFalMp4(videoUrl);
-
-              const uploadedVideo = await skCloudinaryUploadBuffer(
-                mp4Buffer,
+              const uploadedVideo = await skDownloadFalMp4ToCloudinary(
+                videoUrl,
                 {
                   folder: 'sasikumar-ai/generated-videos',
-                  resourceType: 'video',
                   uploadOptions: {
                     public_id: job.job_id + '-output',
                     overwrite: true
