@@ -6211,14 +6211,9 @@ app.post('/api/whatsapp/share',(req,res)=>{
 
 // SASIKUMAR AI COMMON WEB SEARCH HELPER
 async function skGlobalWebSearch(query) {
-  const googleUrl =
-    'https://www.google.com/search?q=' + encodeURIComponent(query);
-
+  const googleUrl = 'https://www.google.com/search?q=' + encodeURIComponent(query);
   const googleFallback = () => ({
-    query,
-    provider: 'google',
-    google_url: googleUrl,
-    fallback: true,
+    query, provider: 'google', google_url: googleUrl, fallback: true,
     results: [{
       title: 'Google Search — ' + query,
       url: googleUrl,
@@ -6227,84 +6222,53 @@ async function skGlobalWebSearch(query) {
   });
 
   const normalize = (items) => {
-    const terms = query.toLowerCase()
-      .replace(/[^a-z0-9\s]/g, ' ')
-      .split(/\s+/)
-      .filter(word => word.length > 2);
-
-    const isGoldQuery =
-      /gold|silver|bullion|karat|carat|தங்கம்|வெள்ளி/i.test(query);
-    const isTamilNewsQuery =
-      /tamil.?nadu|tamilnadu|chennai|தமிழ்நாடு|தமிழகம்/i.test(query);
-    const isNewsQuery =
-      /news|latest|today|breaking|செய்தி|இன்று/i.test(query);
+    const terms = query.toLowerCase().replace(/[^a-z0-9\s]/g, ' ')
+      .split(/\s+/).filter(word => word.length > 2);
+    const isGoldQuery = /gold|silver|bullion|karat|carat|தங்கம்|வெள்ளி/i.test(query);
+    const isTamilNewsQuery = /tamil.?nadu|tamilnadu|chennai|தமிழ்நாடு|தமிழகம்/i.test(query);
+    const isNewsQuery = /news|latest|today|breaking|செய்தி|இன்று/i.test(query);
 
     return (Array.isArray(items) ? items : [])
       .map(item => ({
         title: String(item.title || item.name || 'Search result'),
         url: String(item.url || item.link || ''),
-        content: String(
-          item.content || item.snippet || item.text || item.description || ''
-        )
+        content: String(item.content || item.snippet || item.text || item.description || '')
       }))
       .filter(item => /^https?:\/\//i.test(item.url))
       .map(item => {
-        const text =
-          (item.title + ' ' + item.content + ' ' + item.url).toLowerCase();
-
-        let score = terms.reduce(
-          (total, term) => total + (text.includes(term) ? 2 : 0), 0
-        );
-
-        if (isGoldQuery &&
-            /gold|silver|bullion|gold-rate|precious-metal/i.test(text)) {
-          score += 5;
-        }
-        if (isTamilNewsQuery &&
-            /tamil.?nadu|tamilnadu|chennai|dtnext|maalaimalar/i.test(text)) {
-          score += 5;
-        }
-        if (isNewsQuery && /news|latest|breaking|published|updated/i.test(text)) {
-          score += 2;
-        }
-
+        const text = (item.title + ' ' + item.content + ' ' + item.url).toLowerCase();
+        let score = terms.reduce((total, term) => total + (text.includes(term) ? 2 : 0), 0);
+        if (isGoldQuery && /gold|silver|bullion|gold-rate|precious-metal/i.test(text)) score += 5;
+        if (isTamilNewsQuery && /tamil.?nadu|tamilnadu|chennai|dtnext|maalaimalar/i.test(text)) score += 5;
+        if (isNewsQuery && /news|latest|breaking|published|updated/i.test(text)) score += 2;
         return { ...item, _relevanceScore: score };
-      })
-      .sort((a, b) => b._relevanceScore - a._relevanceScore)
-      .slice(0, 10)
-      .map(({ _relevanceScore, ...item }) => item);
+      });
   };
 
-  // Provider 1: Tavily
-  if (process.env.TAVILY_API_KEY) {
+  const combined = [];
+  const providers = [];
+
+  // Providers stay OFF unless the user explicitly enables free-quota-only mode.
+  if (process.env.TAVILY_FREE_QUOTA_ONLY === 'true' && process.env.TAVILY_API_KEY) {
     try {
       const r = await fetch('https://api.tavily.com/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          api_key: process.env.TAVILY_API_KEY,
-          query,
-          search_depth: 'basic',
-          max_results: 10,
-          include_answer: false
+          api_key: process.env.TAVILY_API_KEY, query,
+          search_depth: 'basic', max_results: 10, include_answer: false
         }),
         signal: AbortSignal.timeout(12000)
       });
-
       const d = await r.json().catch(() => ({}));
-      const results = normalize(d.results);
-
-      if (r.ok && results.length) {
-        return { query, provider: 'tavily', google_url: googleUrl, results };
-      }
-      console.error('[Global Search] Tavily unavailable:', r.status);
-    } catch (e) {
-      console.error('[Global Search] Tavily failed:', e.message);
-    }
+      if (r.ok && Array.isArray(d.results) && d.results.length) {
+        combined.push(...normalize(d.results));
+        providers.push('tavily');
+      } else console.error('[Global Search] Tavily unavailable:', r.status);
+    } catch (e) { console.error('[Global Search] Tavily failed:', e.message); }
   }
 
-  // Provider 2: Exa AI
-  if (process.env.EXA_API_KEY) {
+  if (process.env.EXA_FREE_QUOTA_ONLY === 'true' && process.env.EXA_API_KEY) {
     try {
       const r = await fetch('https://api.exa.ai/search', {
         method: 'POST',
@@ -6313,54 +6277,57 @@ async function skGlobalWebSearch(query) {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          query,
-          type: 'auto',
-          numResults: 10,
+          query, type: 'auto', numResults: 10,
           contents: { text: { maxCharacters: 1200 } }
         }),
         signal: AbortSignal.timeout(12000)
       });
-
       const d = await r.json().catch(() => ({}));
-      const results = normalize(d.results);
-
-      if (r.ok && results.length) {
-        return { query, provider: 'exa', google_url: googleUrl, results };
-      }
-      console.error('[Global Search] Exa unavailable:', r.status);
-    } catch (e) {
-      console.error('[Global Search] Exa failed:', e.message);
-    }
+      if (r.ok && Array.isArray(d.results) && d.results.length) {
+        combined.push(...normalize(d.results));
+        providers.push('exa');
+      } else console.error('[Global Search] Exa unavailable:', r.status);
+    } catch (e) { console.error('[Global Search] Exa failed:', e.message); }
   }
 
-  // Provider 3: SerpAPI (web search only)
-  if (process.env.SERPAPI_API_KEY) {
+  if (process.env.SERPAPI_FREE_QUOTA_ONLY === 'true' && process.env.SERPAPI_API_KEY) {
     try {
       const params = new URLSearchParams({
-        engine: 'google',
-        q: query,
-        api_key: process.env.SERPAPI_API_KEY,
-        num: '10'
+        engine: 'google', q: query,
+        api_key: process.env.SERPAPI_API_KEY, num: '10'
       });
-
-      const r = await fetch(
-        'https://serpapi.com/search.json?' + params.toString(),
-        { signal: AbortSignal.timeout(12000) }
-      );
-
+      const r = await fetch('https://serpapi.com/search.json?' + params.toString(), {
+        signal: AbortSignal.timeout(12000)
+      });
       const d = await r.json().catch(() => ({}));
-      const results = normalize(d.organic_results);
-
-      if (r.ok && results.length) {
-        return { query, provider: 'serpapi', google_url: googleUrl, results };
-      }
-      console.error('[Global Search] SerpAPI unavailable:', r.status);
-    } catch (e) {
-      console.error('[Global Search] SerpAPI failed:', e.message);
-    }
+      if (r.ok && Array.isArray(d.organic_results) && d.organic_results.length) {
+        combined.push(...normalize(d.organic_results));
+        providers.push('serpapi');
+      } else console.error('[Global Search] SerpAPI unavailable:', r.status);
+    } catch (e) { console.error('[Global Search] SerpAPI failed:', e.message); }
   }
 
-  return googleFallback();
+  if (!combined.length) return googleFallback();
+
+  const unique = new Map();
+  for (const item of combined) {
+    const key = item.url.replace(/\/$/, '').toLowerCase();
+    const old = unique.get(key);
+    if (!old || item._relevanceScore > old._relevanceScore) unique.set(key, item);
+  }
+
+  const results = [...unique.values()]
+    .sort((a, b) => b._relevanceScore - a._relevanceScore)
+    .slice(0, 10)
+    .map(({ _relevanceScore, ...item }) => item);
+
+  return {
+    query,
+    provider: providers.join('+'),
+    providers,
+    google_url: googleUrl,
+    results
+  };
 }
 
 // Common Web Search API route
@@ -8469,7 +8436,7 @@ async function skSearchRealImage(query) {
     // SK_WHATSAPP_PEXELS_FALLBACK_V1
     const pexelsKey = process.env.PEXELS_API_KEY;
 
-    if (pexelsKey && galleryResults.length < MAX_GALLERY_IMAGES) {
+    if (process.env.PEXELS_FREE_QUOTA_ONLY === 'true' && pexelsKey && galleryResults.length < MAX_GALLERY_IMAGES) {
       try {
         const pexelsUrl = new URL('https://api.pexels.com/v1/search');
         pexelsUrl.searchParams.set('query', queryText);
@@ -8530,7 +8497,7 @@ async function skSearchRealImage(query) {
 
     // Pixabay search
     const pixabayKey = process.env.PIXABAY_API_KEY;
-  if (pixabayKey && galleryResults.length < MAX_GALLERY_IMAGES) {
+  if (process.env.PIXABAY_FREE_QUOTA_ONLY === 'true' && pixabayKey && galleryResults.length < MAX_GALLERY_IMAGES) {
     try {
       const url = 'https://pixabay.com/api/?key=' +
         encodeURIComponent(pixabayKey) +
@@ -8562,7 +8529,7 @@ async function skSearchRealImage(query) {
 
   // Unsplash search
   const unsplashKey = process.env.UNSPLASH_ACCESS_KEY;
-  if (unsplashKey && galleryResults.length < MAX_GALLERY_IMAGES) {
+  if (process.env.UNSPLASH_FREE_QUOTA_ONLY === 'true' && unsplashKey && galleryResults.length < MAX_GALLERY_IMAGES) {
     try {
       const url = 'https://api.unsplash.com/search/photos?query=' +
         encodeURIComponent(queryText) + '&per_page=30';
@@ -8603,7 +8570,7 @@ async function skSearchRealImage(query) {
   // Runs after Wikimedia and stock providers; keeps strict subject validation.
   const serpApiKey = process.env.SERPAPI_API_KEY;
 
-  if (serpApiKey && galleryResults.length < MAX_GALLERY_IMAGES && !isMotherMarySearch) {
+  if (process.env.SERPAPI_FREE_QUOTA_ONLY === 'true' && serpApiKey && galleryResults.length < MAX_GALLERY_IMAGES && !isMotherMarySearch) {
     try {
       const serpUrl = new URL('https://serpapi.com/search.json');
       serpUrl.searchParams.set('engine', 'google_images');
