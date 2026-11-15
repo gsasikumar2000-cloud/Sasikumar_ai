@@ -5091,7 +5091,7 @@ if (mp3PlayRequested || mp3Navigation) {
       message: trimmed, category: 'Medical', source: 'whatsapp'
     });
     reply = medicalResult.reply;
-  } else if (isSathaExecutiveUser && trimmed) {
+  } else if (trimmed && !(/\bfriendly\b|நண்பா|நண்பரே/i.test(trimmed))) {
     autoPosterForContent = false;
     try {
       const executiveResponse = await fetch(
@@ -5102,7 +5102,7 @@ if (mp3PlayRequested || mp3Navigation) {
           body: JSON.stringify({
             message: trimmed,
             mode: 'smart',
-            language: 'Tamil'
+            language: 'Auto'
           }),
           signal: AbortSignal.timeout(35000)
         }
@@ -5112,7 +5112,7 @@ if (mp3PlayRequested || mp3Navigation) {
 
       if (executiveResponse.ok && executiveData.ok && executiveData.reply) {
         reply = executiveData.reply;
-        console.log('[WA Satha Executive AI] SUCCESS', {
+        console.log('[WA Executive AI] SUCCESS', {
           sender: waSenderDigits,
           engine: executiveData.engine || 'unknown'
         });
@@ -5120,7 +5120,7 @@ if (mp3PlayRequested || mp3Navigation) {
         throw new Error(executiveData.reply || 'Executive AI unavailable');
       }
     } catch (executiveError) {
-      console.error('[WA Satha Executive AI]', executiveError.message);
+      console.error('[WA Executive AI]', executiveError.message);
       const fallback = await skCentralBrainReply({
         message: trimmed,
         category: 'WhatsApp General AI',
