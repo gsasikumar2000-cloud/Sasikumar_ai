@@ -1918,8 +1918,38 @@ let liveSearchResults = [];
   const asksForNews =
     /(?:news|headlines|breaking|தமிழ்நாடு செய்திகள்|இந்திய செய்திகள்|உலக செய்திகள்|இன்றைய செய்திகள்|தலைப்புச் செய்திகள்|செய்தி|செய்திகள்)/i.test(query);
 
+
+  // SK_WHATSAPP_COMMON_WEB_SEARCH_V1
+  // Use common search for non-news web queries.
+  // News keeps its date-aware provider chain below.
+  if (needsLiveSearch && searchCategory !== 'IMAGE' && !asksForNews) {
+    try {
+      const commonData = await skGlobalWebSearch(providerQuery);
+
+      if (
+        commonData &&
+        commonData.provider !== 'google' &&
+        Array.isArray(commonData.results)
+      ) {
+        liveSearchResults = commonData.results.slice(0, 10).map(item => ({
+          title: String(item.title || 'Web source').slice(0, 200),
+          url: item.url,
+          content: String(item.content || '').slice(0, 1000),
+          published_date: item.published_date || null
+        }));
+
+        if (liveSearchResults.length) {
+          liveSearchProvider = 'Common Web Search (' +
+            commonData.provider + ')';
+        }
+      }
+    } catch (error) {
+      console.warn('[WhatsApp Common Search]:', error.message);
+    }
+  }
+
   // 1. Try Tavily live web search.
-  if (needsLiveSearch && searchCategory !== 'IMAGE' && process.env.TAVILY_API_KEY) {
+  if (needsLiveSearch && searchCategory !== 'IMAGE' && asksForNews && process.env.TAVILY_API_KEY) {
     try {
       const searchResponse = await fetch(
         'https://api.tavily.com/search',
@@ -2476,7 +2506,7 @@ async function skPincodeReply(query) {
       return '📍 PIN CODE / LOCATION SEARCH\n\nஇந்தத் தேடலுக்கு Post Office விவரம் கிடைக்கவில்லை. வேறு PIN Code அல்லது ஊர் பெயரை முயற்சிக்கவும்.';
     }
 
-    const offices = result.offices.slice(0, 8);
+    const offices = result.offices.slice(0, 10);
     const first = offices[0];
     const lines = offices.map((o, i) =>
       (i + 1) + '. 🏣 ' + (o.Name || 'Post Office') +
@@ -4842,7 +4872,7 @@ if (mp3PlayRequested || mp3Navigation) {
           /^https:\/\//i.test(track.url) &&
           ['cc0', 'by'].includes(String(track.license || '').toLowerCase())
         )
-        .slice(0, 8)
+        .slice(0, 10)
         .map(track => ({
           title: String(track.title || 'Untitled audio').slice(0, 180),
           creator: String(track.creator || 'Unknown creator').slice(0, 100),
@@ -5220,7 +5250,7 @@ if (mp3SearchRequested) {
     }
 
   } else if (mp3Tracks.length) {
-    const rows = mp3Tracks.slice(0, 8).map((track, index) => ({
+    const rows = mp3Tracks.slice(0, 10).map((track, index) => ({
       id: 'mp3_play_' + index,
       title: String(track.title || 'MP3 Song').slice(0, 24),
       description: (
@@ -6178,6 +6208,162 @@ app.post('/api/whatsapp/share',(req,res)=>{
 
 
 // SASIKUMAR AI GLOBAL WEB SEARCH API
+
+// SASIKUMAR AI COMMON WEB SEARCH HELPER
+async function skGlobalWebSearch(query) {
+  const googleUrl =
+    'https://www.google.com/search?q=' + encodeURIComponent(query);
+
+  const googleFallback = () => ({
+    query,
+    provider: 'google',
+    google_url: googleUrl,
+    fallback: true,
+    results: [{
+      title: 'Google Search — ' + query,
+      url: googleUrl,
+      content: 'Open Google to view current search results.'
+    }]
+  });
+
+  const normalize = (items) => {
+    const terms = query.toLowerCase()
+      .replace(/[^a-z0-9\s]/g, ' ')
+      .split(/\s+/)
+      .filter(word => word.length > 2);
+
+    const isGoldQuery =
+      /gold|silver|bullion|karat|carat|தங்கம்|வெள்ளி/i.test(query);
+    const isTamilNewsQuery =
+      /tamil.?nadu|tamilnadu|chennai|தமிழ்நாடு|தமிழகம்/i.test(query);
+    const isNewsQuery =
+      /news|latest|today|breaking|செய்தி|இன்று/i.test(query);
+
+    return (Array.isArray(items) ? items : [])
+      .map(item => ({
+        title: String(item.title || item.name || 'Search result'),
+        url: String(item.url || item.link || ''),
+        content: String(
+          item.content || item.snippet || item.text || item.description || ''
+        )
+      }))
+      .filter(item => /^https?:\/\//i.test(item.url))
+      .map(item => {
+        const text =
+          (item.title + ' ' + item.content + ' ' + item.url).toLowerCase();
+
+        let score = terms.reduce(
+          (total, term) => total + (text.includes(term) ? 2 : 0), 0
+        );
+
+        if (isGoldQuery &&
+            /gold|silver|bullion|gold-rate|precious-metal/i.test(text)) {
+          score += 5;
+        }
+        if (isTamilNewsQuery &&
+            /tamil.?nadu|tamilnadu|chennai|dtnext|maalaimalar/i.test(text)) {
+          score += 5;
+        }
+        if (isNewsQuery && /news|latest|breaking|published|updated/i.test(text)) {
+          score += 2;
+        }
+
+        return { ...item, _relevanceScore: score };
+      })
+      .sort((a, b) => b._relevanceScore - a._relevanceScore)
+      .slice(0, 10)
+      .map(({ _relevanceScore, ...item }) => item);
+  };
+
+  // Provider 1: Tavily
+  if (process.env.TAVILY_API_KEY) {
+    try {
+      const r = await fetch('https://api.tavily.com/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          api_key: process.env.TAVILY_API_KEY,
+          query,
+          search_depth: 'basic',
+          max_results: 10,
+          include_answer: false
+        }),
+        signal: AbortSignal.timeout(12000)
+      });
+
+      const d = await r.json().catch(() => ({}));
+      const results = normalize(d.results);
+
+      if (r.ok && results.length) {
+        return { query, provider: 'tavily', google_url: googleUrl, results };
+      }
+      console.error('[Global Search] Tavily unavailable:', r.status);
+    } catch (e) {
+      console.error('[Global Search] Tavily failed:', e.message);
+    }
+  }
+
+  // Provider 2: Exa AI
+  if (process.env.EXA_API_KEY) {
+    try {
+      const r = await fetch('https://api.exa.ai/search', {
+        method: 'POST',
+        headers: {
+          'x-api-key': process.env.EXA_API_KEY,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          query,
+          type: 'auto',
+          numResults: 10,
+          contents: { text: { maxCharacters: 1200 } }
+        }),
+        signal: AbortSignal.timeout(12000)
+      });
+
+      const d = await r.json().catch(() => ({}));
+      const results = normalize(d.results);
+
+      if (r.ok && results.length) {
+        return { query, provider: 'exa', google_url: googleUrl, results };
+      }
+      console.error('[Global Search] Exa unavailable:', r.status);
+    } catch (e) {
+      console.error('[Global Search] Exa failed:', e.message);
+    }
+  }
+
+  // Provider 3: SerpAPI (web search only)
+  if (process.env.SERPAPI_API_KEY) {
+    try {
+      const params = new URLSearchParams({
+        engine: 'google',
+        q: query,
+        api_key: process.env.SERPAPI_API_KEY,
+        num: '10'
+      });
+
+      const r = await fetch(
+        'https://serpapi.com/search.json?' + params.toString(),
+        { signal: AbortSignal.timeout(12000) }
+      );
+
+      const d = await r.json().catch(() => ({}));
+      const results = normalize(d.organic_results);
+
+      if (r.ok && results.length) {
+        return { query, provider: 'serpapi', google_url: googleUrl, results };
+      }
+      console.error('[Global Search] SerpAPI unavailable:', r.status);
+    } catch (e) {
+      console.error('[Global Search] SerpAPI failed:', e.message);
+    }
+  }
+
+  return googleFallback();
+}
+
+// Common Web Search API route
 app.get('/api/global-search', async (req, res) => {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   res.setHeader('Cache-Control', 'no-store');
@@ -6198,155 +6384,19 @@ app.get('/api/global-search', async (req, res) => {
     });
   }
 
-  const googleUrl =
-    'https://www.google.com/search?q=' + encodeURIComponent(query);
-
-  const googleFallback = () => ({
-    query,
-    provider: 'google',
-    fallback: true,
-    results: [{
-      title: 'Google Search — ' + query,
-      url: googleUrl,
-      content: 'Open Google to view current search results.'
-    }]
-  });
-
-  const normalize = (items) => {
-    const terms = query.toLowerCase()
-      .replace(/[^a-z0-9\s]/g, ' ')
-      .split(/\s+/)
-      .filter(word => word.length > 2);
-
-    const isGoldQuery = /gold|silver|bullion|karat|carat|தங்கம்|வெள்ளி/i.test(query);
-    const isTamilNewsQuery = /tamil.?nadu|tamilnadu|chennai|தமிழ்நாடு|தமிழகம்/i.test(query);
-    const isNewsQuery = /news|latest|today|breaking|செய்தி|இன்று/i.test(query);
-
-    return (Array.isArray(items) ? items : [])
-      .map(item => ({
-        title: String(item.title || item.name || 'Search result'),
-        url: String(item.url || item.link || ''),
-        content: String(
-          item.content || item.snippet || item.text || item.description || ''
-        )
-      }))
-      .filter(item => /^https?:\/\//i.test(item.url))
-      .map(item => {
-        const text = (item.title + ' ' + item.content + ' ' + item.url).toLowerCase();
-        let score = terms.reduce(
-          (total, term) => total + (text.includes(term) ? 2 : 0), 0
-        );
-
-        if (isGoldQuery && /gold|silver|bullion|gold-rate|gold-rate|precious-metal/i.test(text)) {
-          score += 5;
-        }
-
-        if (isTamilNewsQuery && /tamil.?nadu|tamilnadu|chennai|dtnext|maalaimalar/i.test(text)) {
-          score += 5;
-        }
-
-        if (isNewsQuery && /news|latest|breaking|published|updated/i.test(text)) {
-          score += 2;
-        }
-
-        return { ...item, _relevanceScore: score };
-      })
-      .sort((a, b) => b._relevanceScore - a._relevanceScore)
-      .slice(0, 8)
-      .map(({ _relevanceScore, ...item }) => item);
-  };
-
-  // Provider 1: Tavily
-  if (process.env.TAVILY_API_KEY) {
-    try {
-      const r = await fetch('https://api.tavily.com/search', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          api_key: process.env.TAVILY_API_KEY,
-          query,
-          search_depth: 'basic',
-          max_results: 8,
-          include_answer: false
-        }),
-        signal: AbortSignal.timeout(12000)
-      });
-
-      const d = await r.json().catch(() => ({}));
-      const results = normalize(d.results);
-
-      if (r.ok && results.length) {
-        return res.json({ query, provider: 'tavily', results });
-      }
-
-      console.error('[Global Search] Tavily unavailable:', r.status);
-    } catch (e) {
-      console.error('[Global Search] Tavily failed:', e.message);
-    }
+  try {
+    const data = await skGlobalWebSearch(query);
+    return res.json(data);
+  } catch (e) {
+    console.error('[Global Search] Failed:', e.message);
+    return res.status(500).json({
+      error: 'Search temporarily unavailable.',
+      results: []
+    });
   }
-
-  // Provider 2: Exa AI
-  if (process.env.EXA_API_KEY) {
-    try {
-      const r = await fetch('https://api.exa.ai/search', {
-        method: 'POST',
-        headers: {
-          'x-api-key': process.env.EXA_API_KEY,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          query,
-          type: 'auto',
-          numResults: 8,
-          contents: { text: { maxCharacters: 1200 } }
-        }),
-        signal: AbortSignal.timeout(12000)
-      });
-
-      const d = await r.json().catch(() => ({}));
-      const results = normalize(d.results);
-
-      if (r.ok && results.length) {
-        return res.json({ query, provider: 'exa', results });
-      }
-
-      console.error('[Global Search] Exa unavailable:', r.status);
-    } catch (e) {
-      console.error('[Global Search] Exa failed:', e.message);
-    }
-  }
-
-  // Provider 3: SerpAPI
-  if (process.env.SERPAPI_API_KEY) {
-    try {
-      const params = new URLSearchParams({
-        engine: 'google',
-        q: query,
-        api_key: process.env.SERPAPI_API_KEY,
-        num: '8'
-      });
-
-      const r = await fetch(
-        'https://serpapi.com/search.json?' + params.toString(),
-        { signal: AbortSignal.timeout(12000) }
-      );
-
-      const d = await r.json().catch(() => ({}));
-      const results = normalize(d.organic_results);
-
-      if (r.ok && results.length) {
-        return res.json({ query, provider: 'serpapi', results });
-      }
-
-      console.error('[Global Search] SerpAPI unavailable:', r.status);
-    } catch (e) {
-      console.error('[Global Search] SerpAPI failed:', e.message);
-    }
-  }
-
-  return res.json(googleFallback());
 });
 // END SASIKUMAR AI GLOBAL WEB SEARCH API
+
 
 
 
