@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#e0f2fe">
+<title>SASIKUMAR AI - Puzzle Zone</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:14px;font-family:Arial,sans-serif;color:#172554;
+background:linear-gradient(135deg,#eff6ff,#fdf2f8,#ecfdf5,#fff7ed);
+background-size:300% 300%;animation:bgMove 14s ease infinite}
+.header{text-align:center;padding:18px 10px;background:#fff;border-radius:20px;
+box-shadow:0 5px 20px #64748b25;margin-bottom:16px}
+.logo{width:76px;height:76px;object-fit:contain;border-radius:50%;
+animation:spin 6s linear infinite;filter:drop-shadow(0 3px 5px #64748b55)}
+h1{font-size:22px;margin:8px 0;color:#1d4ed8}
+.header p{margin:5px;color:#475569}
+.back{display:inline-block;margin:0 0 14px;padding:10px 15px;
+background:#2563eb;color:white;text-decoration:none;border-radius:10px;font-weight:bold}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.game-card{height:116px;min-width:0;border:2px solid #ffffff;border-radius:16px;
+background:var(--card-bg);color:var(--card-fg);display:flex;align-items:center;
+justify-content:center;flex-direction:column;gap:6px;text-align:center;
+padding:8px;box-shadow:0 4px 12px #64748b22;cursor:pointer;
+animation:float 3.5s ease-in-out infinite}
+.game-card:nth-child(even){animation-delay:.4s}
+.game-card:active{transform:scale(.96)}
+.game-emoji{font-size:27px}
+.game-card strong{font-size:13px}
+.game-card small{font-size:11px}
+#playArea{margin-top:16px;padding:18px;background:#fff;border-radius:16px;
+text-align:center;min-height:75px;box-shadow:0 4px 14px #64748b20}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes float{50%{transform:translateY(-4px)}}
+@keyframes bgMove{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@media(min-width:700px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}.page{max-width:900px;margin:auto}}
+</style>
+</head>
+<body>
+<div class="page">
+<header class="header">
+<img class="logo" src="/assets/sasikumar-ai-logo-60.png" alt="SASIKUMAR AI Logo">
+<h1>🧩 SASIKUMAR AI PUZZLE ZONE</h1>
+<p>தமிழ் + English • Think • Solve • Learn</p>
+<p>🌟 20 Different Brain Challenges</p>
+</header>
+<a class="back" href="/">← Home</a>
+<div class="grid">
+<button class="game-card" style="--card-bg:#DBEAFE;--card-fg:#1D4ED8" onclick="selectPuzzle(0)"><span class="game-emoji">🧠</span><strong>IQ & Logic</strong><small>தர்க்கச் சிந்தனை</small></button>
+<button class="game-card" style="--card-bg:#DCFCE7;--card-fg:#166534" onclick="selectPuzzle(1)"><span class="game-emoji">🔢</span><strong>Number Puzzle</strong><small>எண் புதிர்</small></button>
+<button class="game-card" style="--card-bg:#FCE7F3;--card-fg:#9D174D" onclick="selectPuzzle(2)"><span class="game-emoji">🔤</span><strong>Tamil Word Puzzle</strong><small>தமிழ்ச் சொல் புதிர்</small></button>
+<button class="game-card" style="--card-bg:#FEF3C7;--card-fg:#92400E" onclick="selectPuzzle(3)"><span class="game-emoji">🧩</span><strong>Memory Game</strong><small>நினைவாற்றல் விளையாட்டு</small></button>
+<button class="game-card" style="--card-bg:#EDE9FE;--card-fg:#5B21B6" onclick="selectPuzzle(4)"><span class="game-emoji">🖼️</span><strong>Picture Puzzle</strong><small>படப் புதிர்</small></button>
+<button class="game-card" style="--card-bg:#CFFAFE;--card-fg:#155E75" onclick="selectPuzzle(5)"><span class="game-emoji">🌀</span><strong>Maze Challenge</strong><small>வழி கண்டுபிடி</small></button>
+<button class="game-card" style="--card-bg:#FFEDD5;--card-fg:#9A3412" onclick="selectPuzzle(6)"><span class="game-emoji">🌍</span><strong>GK Quiz</strong><small>பொது அறிவு</small></button>
+<button class="game-card" style="--card-bg:#F3E8FF;--card-fg:#7E22CE" onclick="selectPuzzle(7)"><span class="game-emoji">🕵️</span><strong>Detective Puzzle</strong><small>துப்பறியும் புதிர்</small></button>
+<button class="game-card" style="--card-bg:#D1FAE5;--card-fg:#065F46" onclick="selectPuzzle(8)"><span class="game-emoji">🔍</span><strong>Spot the Difference</strong><small>வேறுபாட்டைக் கண்டுபிடி</small></button>
+<button class="game-card" style="--card-bg:#FFE4E6;--card-fg:#9F1239" onclick="selectPuzzle(9)"><span class="game-emoji">🎯</span><strong>Find Hidden Objects</strong><small>மறைந்த பொருட்களைக் கண்டுபிடி</small></button>
+<button class="game-card" style="--card-bg:#E0E7FF;--card-fg:#3730A3" onclick="selectPuzzle(10)"><span class="game-emoji">🎴</span><strong>Match the Pair</strong><small>சரியான ஜோடியைத் தேர்வு செய்</small></button>
+<button class="game-card" style="--card-bg:#FDE68A;--card-fg:#854D0E" onclick="selectPuzzle(11)"><span class="game-emoji">🔷</span><strong>Pattern Puzzle</strong><small>வடிவப் புதிர்</small></button>
+<button class="game-card" style="--card-bg:#CCFBF1;--card-fg:#115E59" onclick="selectPuzzle(12)"><span class="game-emoji">💡</span><strong>Riddles</strong><small>விடுகதைகள்</small></button>
+<button class="game-card" style="--card-bg:#FCE7F3;--card-fg:#831843" onclick="selectPuzzle(13)"><span class="game-emoji">♟️</span><strong>Chess Puzzle</strong><small>சதுரங்கப் புதிர்</small></button>
+<button class="game-card" style="--card-bg:#E0F2FE;--card-fg:#075985" onclick="selectPuzzle(14)"><span class="game-emoji">🔠</span><strong>Word Search</strong><small>சொல் தேடல்</small></button>
+<button class="game-card" style="--card-bg:#ECFCCB;--card-fg:#3F6212" onclick="selectPuzzle(15)"><span class="game-emoji">⚡</span><strong>Brain Teaser</strong><small>மூளைச் சவால்</small></button>
+<button class="game-card" style="--card-bg:#FAE8FF;--card-fg:#86198F" onclick="selectPuzzle(16)"><span class="game-emoji">🔺</span><strong>Shape Puzzle</strong><small>வடிவப் புதிர்</small></button>
+<button class="game-card" style="--card-bg:#FFEDD5;--card-fg:#7C2D12" onclick="selectPuzzle(17)"><span class="game-emoji">⏱️</span><strong>Speed Challenge</strong><small>வேகச் சவால்</small></button>
+<button class="game-card" style="--card-bg:#DBEAFE;--card-fg:#1E40AF" onclick="selectPuzzle(18)"><span class="game-emoji">🧮</span><strong>Math Challenge</strong><small>கணிதச் சவால்</small></button>
+<button class="game-card" style="--card-bg:#DCFCE7;--card-fg:#14532D" onclick="selectPuzzle(19)"><span class="game-emoji">🧩</span><strong>Jigsaw Puzzle</strong><small>படத் துண்டுகள்</small></button>
+</div>
+<div id="playArea">🎮 ஒரு Puzzle வகையைத் தேர்வு செய்யுங்கள்!</div>
+</div>
+
+<script>
+const puzzleNames = ['IQ & Logic','Number Puzzle','Tamil Word Puzzle','Memory Game','Picture Puzzle','Maze Challenge','GK Quiz','Detective Puzzle','Spot the Difference','Find Hidden Objects','Match the Pair','Pattern Puzzle','Riddles','Chess Puzzle','Word Search','Brain Teaser','Shape Puzzle','Speed Challenge','Math Challenge','Jigsaw Puzzle'];
+const tamilNames = ['தர்க்கச் சிந்தனை','எண் புதிர்','தமிழ்ச் சொல் புதிர்','நினைவாற்றல் விளையாட்டு','படப் புதிர்','வழி கண்டுபிடி','பொது அறிவு','துப்பறியும் புதிர்','வேறுபாட்டைக் கண்டுபிடி','மறைந்த பொருட்களைக் கண்டுபிடி','சரியான ஜோடி','வடிவப் புதிர்','விடுகதை','சதுரங்கப் புதிர்','சொல் தேடல்','மூளைச் சவால்','வடிவப் புதிர்','வேகச் சவால்','கணிதச் சவால்','படத் துண்டுகள்'];
+
+const games = [
+['2, 4, 6, 8, அடுத்து?',['9','10','12'],1,'ஒவ்வொரு முறையும் 2 கூட்டப்படுகிறது.'],
+['12 + 8 × 2 = ?',['40','28','32'],1,'முதலில் பெருக்க வேண்டும்.'],
+['தமிழின் முதல் உயிரெழுத்து?',['அ','ஆ','இ'],0,'அ என்பது முதல் உயிரெழுத்து.'],
+['நினைவாற்றல்: 🍎 🚗 ⭐. இதில் நட்சத்திரம் எது?',['🍎','🚗','⭐'],2,'நட்சத்திரம் ⭐.'],
+['எத்தனை பழங்கள்? 🍎🍌🍇🍊',['3','4','5'],1,'நான்கு பழங்கள் உள்ளன.'],
+['வழி: ⬆️ ➡️ ➡️. அடுத்து எங்கு?',['⬆️','⬅️','➡️'],2,'வலதுபுறம் செல்ல வேண்டும்.'],
+['இந்தியாவின் தலைநகரம்?',['சென்னை','புதுடெல்லி','மும்பை'],1,'புதுடெல்லி இந்தியாவின் தலைநகரம்.'],
+['பறக்க முடியாத பறவை எது?',['கழுகு','பென்குயின்','கிளி'],1,'பென்குயின் பறக்காது.'],
+['வேறுபட்ட எண்ணைக் கண்டுபிடி: 5 5 6 5',['5','6','4'],1,'6 வேறுபட்ட எண்.'],
+['பழம் எது?',['🚗','🍎','🏠'],1,'🍎 ஆப்பிள்.'],
+['சூரியனின் குறியீடு எது?',['🌙','☀️','🌧️'],1,'☀️ சூரியன்.'],
+['🔴 🔵 🔴 🔵 அடுத்து?',['🔴','🟢','🟡'],0,'சிவப்பு, நீலம் என மாறுகிறது.'],
+['பற்கள் உண்டு; கடிக்காது. அது என்ன?',['சீப்பு','நாய்','மீன்'],0,'சீப்புக்கு பற்கள் உண்டு.'],
+['சதுரங்கத்தில் முக்கியமான காய்?',['ராஜா','சிப்பாய்','குதிரை'],0,'ராஜாவைப் பாதுகாப்பது முக்கியம்.'],
+['CAT என்ற சொல்லின் முதல் எழுத்து?',['C','A','T'],0,'C என்பது முதல் எழுத்து.'],
+['ஒரு கிலோ இரும்பு, ஒரு கிலோ பஞ்சு: எது அதிக எடை?',['இரும்பு','பஞ்சு','இரண்டும் சமம்'],2,'இரண்டும் ஒரு கிலோ.'],
+['மூன்று பக்கங்கள் கொண்ட வடிவம்?',['வட்டம்','முக்கோணம்','சதுரம்'],1,'முக்கோணத்திற்கு 3 பக்கங்கள்.'],
+['5 + 4 = ?',['8','9','10'],1,'விடை 9.'],
+['25 - 7 = ?',['18','17','19'],0,'விடை 18.'],
+['படத் துண்டு வரிசை: 🐘 🌳 ☀️. முதல் படம் எது?',['🐘','🌳','☀️'],0,'யானை முதலில் வருகிறது.']
+];
+
+let currentGame = 0;
+let score = 0;
+let answered = false;
+
+function selectPuzzle(i) {
+ currentGame = i;
+ answered = false;
+ const g = games[i];
+ document.getElementById('playArea').innerHTML =
+ `<h2>🎮 ${puzzleNames[i]}</h2>
+ <p>${tamilNames[i]}</p>
+ <h3>${g[0]}</h3>
+ <div id="gameOptions" style="display:grid;gap:9px;margin:15px auto;max-width:420px">
+ ${g[1].map((v,n)=>`<button class="back" style="margin:0;border:0;cursor:pointer" onclick="checkAnswer(${n})">${v}</button>`).join('')}
+ </div>
+ <h3 id="gameResult">உங்கள் பதிலைத் தேர்வு செய்யுங்கள்!</h3>
+ <p>⭐ மதிப்பெண்: <b id="gameScore">${score}</b></p>
+ <button class="back" onclick="selectPuzzle(${i})">🔄 மீண்டும் விளையாடு</button>
+ <button class="back" onclick="nextPuzzle()">➡️ அடுத்த விளையாட்டு</button>`;
+}
+
+function checkAnswer(n) {
+ if (answered) return;
+ answered = true;
+ const g = games[currentGame];
+ const result = document.getElementById('gameResult');
+ if (n === g[2]) {
+   score += 10;
+   result.innerHTML = '🎉 சரியான பதில்! +10 மதிப்பெண்கள்<br>' + g[3];
+ } else {
+   result.innerHTML = '❌ சரியான பதில்: ' + g[1][g[2]] + '<br>' + g[3];
+ }
+ document.getElementById('gameScore').textContent = score;
+}
+
+function nextPuzzle() {
+ selectPuzzle((currentGame + 1) % games.length);
+}
+</script>
+
+</body>
+</html>

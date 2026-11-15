@@ -48,6 +48,13 @@ section[style*="background:#f0fdf4"] > div[style*="display:grid"] {
 }
 </style>
 
+<style>
+.skPuzzleHomeCard{height:100px;min-height:100px;box-sizing:border-box;border:0;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;text-align:center;animation:skPuzzleFloat 3s ease-in-out infinite;cursor:pointer;background:linear-gradient(135deg,#dbeafe,#fce7f3,#fef3c7);text-decoration:none}
+.skPuzzleTitle{background:#2563eb;color:white;padding:4px;border-radius:5px;font-size:10px;font-weight:bold}
+.skPuzzleDesc,.skPuzzleTamil{color:#1e293b;font-size:9px}
+.skPuzzleOpen{background:#9333ea;color:white;padding:4px;border-radius:5px;font-size:9px}
+@keyframes skPuzzleFloat{50%{transform:translateY(-3px)}}
+</style>
 </head>
 <body>
 <div class="top">
@@ -197,6 +204,15 @@ section[style*="background:#f0fdf4"] > div[style*="display:grid"] {
 <div style="color:#1e293b;font-size:9px;margin-top:3px">🖼️ Image Search</div>
 <div style="background:#059669;color:#fff;padding:3px 6px;border-radius:5px;font-size:8px;margin-top:4px;display:inline-block">🟢 SEARCH NOW</div>
 </a>
+
+<!-- SK_PUZZLE_AI_CARD_V1 -->
+<a href="/puzzle-ai.html" class="card skPuzzleHomeCard">
+<div class="skPuzzleTitle">🧩 PUZZLE AI CHALLENGE</div>
+<div class="skPuzzleDesc">20 Brain Games • IQ • Sudoku</div>
+<div class="skPuzzleTamil">தமிழ் புதிர்கள் • தினசரி சவால்</div>
+<div class="skPuzzleOpen">⭐ PLAY NOW</div>
+</a>
+<!-- END SK_PUZZLE_AI_CARD_V1 -->
 
 </div>
 <div style="text-align:center;margin:12px 0;font-size:10px;color:#16a34a;font-weight:700" id="status">✅ Live Changing - <span id="time"></span></div>
@@ -638,6 +654,7 @@ updateLive();
   });
 })();
 </script>
+
 
 
 
