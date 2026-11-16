@@ -6229,7 +6229,8 @@ async function skGlobalWebSearch(query) {
       .map(item => ({
         title: String(item.title || item.name || 'Search result'),
         url: String(item.url || item.link || ''),
-        content: String(item.content || item.snippet || item.text || item.description || '')
+        content: String(item.content || item.snippet || item.text || item.description || ''),
+        publishedAt: String(item.published_date || item.publishedDate || item.published_at || item.date || item.published || item.created_at || '')
       }))
       .filter(item => /^https?:\/\//i.test(item.url))
       .map(item => {
@@ -6367,8 +6368,21 @@ async function skGlobalWebSearch(query) {
   }
 
 
+  const freshnessRequested = /latest|today|current|recent|breaking|news|இன்று|இன்றைய|சமீபத்திய|நடப்பு|தற்போதைய|செய்தி/i.test(query);
+  const now = Date.now();
+  const freshCutoff = now - (48 * 60 * 60 * 1000);
+
+  const freshCombined = freshnessRequested
+    ? combined.filter(item => {
+        const published = Date.parse(String(item.publishedAt || ''));
+        return Number.isFinite(published) &&
+          published >= freshCutoff &&
+          published <= now + (24 * 60 * 60 * 1000);
+      })
+    : combined;
+
   const unique = new Map();
-  for (const item of combined) {
+  for (const item of freshCombined) {
     const key = item.url.replace(/\/$/, '').toLowerCase();
     const old = unique.get(key);
     if (!old || item._relevanceScore > old._relevanceScore) unique.set(key, item);
@@ -7414,6 +7428,18 @@ const skExecutiveSystemPrompt = [
 ].join(' ');
 
 async function skExecutiveLiveSearch(query) {
+  const freshnessRequested = /latest|today|current|recent|breaking|news|இன்று|இன்றைய|சமீபத்திய|நடப்பு|தற்போதைய|செய்தி/i.test(query);
+  const now = Date.now();
+  const freshCutoff = now - (48 * 60 * 60 * 1000);
+
+  const isFresh = item => {
+    if (!freshnessRequested) return true;
+    const published = Date.parse(String(item.publishedAt || ''));
+    return Number.isFinite(published) &&
+      published >= freshCutoff &&
+      published <= now + (24 * 60 * 60 * 1000);
+  };
+
   const providers = [];
 
   if (process.env.TAVILY_FREE_QUOTA_ONLY === 'true' && process.env.TAVILY_API_KEY) {
@@ -7475,9 +7501,10 @@ async function skExecutiveLiveSearch(query) {
         .map(x => ({
           title: String(x.title || x.name || 'Search result'),
           url: String(x.url || x.link || ''),
-          content: String(x.content || x.snippet || x.text || x.description || '')
+          content: String(x.content || x.snippet || x.text || x.description || ''),
+          publishedAt: String(x.published_date || x.publishedDate || x.published_at || x.date || x.published || x.created_at || '')
         }))
-        .filter(x => /^https?:\/\//i.test(x.url))
+        .filter(x => /^https?:\/\//i.test(x.url) && isFresh(x))
         .slice(0, 6);
 
       if (results.length) return { provider: found.provider, results };
@@ -7608,6 +7635,7 @@ app.post('/api/executive-ai', async (req, res) => {
         liveSearchProvider = found.provider;
         const refs = found.results.map((x, i) =>
           (i + 1) + '. ' + x.title + '\nURL: ' + x.url +
+          '\nPublished: ' + (x.publishedAt || 'Date unavailable') +
           '\nDetails: ' + x.content.slice(0, 900)
         ).join('\n\n');
 
