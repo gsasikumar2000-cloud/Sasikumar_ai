@@ -2675,6 +2675,15 @@ function skIsImageQualityRequest(caption = '') {
   );
 }
 
+function skIsImageVerificationRequest(caption = '') {
+  const text = String(caption || '').trim();
+
+  return (
+    /\b(?:verify|verification|fake\s*image|real\s*image|ai\s*image|ai[- ]?generated|deepfake|authenticity|manipulated\s*image)\b/i.test(text) ||
+    /உண்மையான\s*படமா|போலி\s*படம்|போலியான\s*படம்|AI\s*படமா|AI\s*உருவாக்கியதா|மாற்றப்பட்ட\s*படமா|படத்தை\s*சரிபாரி/i.test(text)
+  );
+}
+
 async function skCheckImageQuality(buffer, mime, caption = '') {
   if (
     !Buffer.isBuffer(buffer) ||
@@ -4391,6 +4400,16 @@ if (msg.type === 'image' && msg.image?.id) {
       );
       const poem = await skGenerateKavithai(details);
       await skWhatsAppSendTextOnly(mediaSender, poem);
+      return;
+    }
+
+    if (skIsImageVerificationRequest(imageCaption)) {
+      const report = await skBuildImageDetailsReport(
+        original.buffer,
+        original.mime,
+        imageCaption
+      );
+      await skWhatsAppSendTextOnly(mediaSender, report);
       return;
     }
 
