@@ -2233,7 +2233,7 @@ let liveSearchResults = [];
             { role: 'user', content: userContent.slice(0, 9000) }
           ],
           temperature: 0.5,
-          max_completion_tokens: 350
+          max_completion_tokens: 1200
         }),
         signal: controller.signal
       }
@@ -5155,6 +5155,31 @@ if (mp3PlayRequested || mp3Navigation) {
 }
 if(WA_TOKEN && WA_PHONE_ID){
       const sendWA=async(payload)=>{
+
+        // Split long WhatsApp text replies into safe sequential messages.
+        const bodyText = payload?.type === 'text'
+          ? String(payload?.text?.body || '')
+          : '';
+        if (bodyText.length > 3500) {
+          let remaining = bodyText;
+          const chunks = [];
+          while (remaining.length > 3500) {
+            let cut = remaining.lastIndexOf('\n', 3500);
+            if (cut < 1800) cut = remaining.lastIndexOf(' ', 3500);
+            if (cut < 1800) cut = 3500;
+            chunks.push(remaining.slice(0, cut).trim());
+            remaining = remaining.slice(cut).trim();
+          }
+          if (remaining) chunks.push(remaining);
+          for (const chunk of chunks) {
+            const ok = await sendWA({
+              ...payload,
+              text: { ...payload.text, body: chunk }
+            });
+            if (!ok) return false;
+          }
+          return true;
+        }
         const r=await fetch(
           `https://graph.facebook.com/v20.0/${WA_PHONE_ID}/messages`,
           {
