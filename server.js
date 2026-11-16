@@ -12,6 +12,8 @@ import { registerGovernmentLive, getGovernmentReply } from './government-live.js
 import { registerMartRoutes } from './mart-routes-v2.js';
 import path from 'path';
 import fs from 'fs';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import {
   Jimp,
   loadFont,
@@ -23,6 +25,7 @@ import { fileURLToPath } from 'url';
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { Unzip, UnzipInflate, UnzipPassThrough } from 'fflate';
 import ExcelJS from 'exceljs';
+const execFileAsync = promisify(execFile);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
@@ -5257,7 +5260,7 @@ if (mp3SearchRequested) {
       const track = mp3SelectedTrack;
 
       const audioResponse = await fetch(track.url, {
-        signal: AbortSignal.timeout(25000),
+        signal: AbortSignal.timeout(90000),
         headers: { 'User-Agent': 'SASIKUMAR-AI/1.0' }
       });
 
@@ -5273,15 +5276,71 @@ if (mp3SearchRequested) {
         audioResponse.headers.get('content-length') || 0
       );
 
-      if (
-        contentLength > 16 * 1024 * 1024 ||
-        (contentType && !['audio/mpeg', 'audio/mp3',
-          'application/octet-stream'].includes(contentType))
-      ) {
-        throw new Error('Unsupported audio format or file size.');
+      if (contentLength > 100 * 1024 * 1024) {
+        throw new Error('Source audio exceeds 100 MB.');
       }
 
-      const audioBuffer = Buffer.from(await audioResponse.arrayBuffer());
+      const sourceBuffer = Buffer.from(await audioResponse.arrayBuffer());
+
+      if (!sourceBuffer.length || sourceBuffer.length > 100 * 1024 * 1024) {
+        throw new Error('Invalid source audio or file exceeds 100 MB.');
+      }
+
+      const isWav =
+        sourceBuffer.length > 12 &&
+        sourceBuffer.toString('ascii', 0, 4) === 'RIFF' &&
+        sourceBuffer.toString('ascii', 8, 12) === 'WAVE';
+
+      const hasId3 =
+        sourceBuffer.subarray(0, 3).toString('ascii') === 'ID3';
+
+      const hasMpegFrame =
+        sourceBuffer.length > 1 &&
+        sourceBuffer[0] === 0xff &&
+        (sourceBuffer[1] & 0xe0) === 0xe0;
+
+      const isMp3 = hasId3 || hasMpegFrame;
+
+      if (!isWav && !isMp3) {
+        throw new Error('Unsupported audio format.');
+      }
+
+      let audioBuffer;
+
+      if (isWav) {
+        const tempDir = fs.mkdtempSync(
+          path.join(__dirname, '.wa-mp3-')
+        );
+
+        try {
+          const inputPath = path.join(tempDir, 'input.wav');
+          const outputPath = path.join(tempDir, 'output.mp3');
+
+          fs.writeFileSync(inputPath, sourceBuffer);
+
+          await execFileAsync('ffmpeg', [
+            '-y',
+            '-i', inputPath,
+            '-vn',
+            '-c:a', 'libmp3lame',
+            '-b:a', '64k',
+            outputPath
+          ], {
+            timeout: 120000,
+            maxBuffer: 1024 * 1024
+          });
+
+          audioBuffer = fs.readFileSync(outputPath);
+        } finally {
+          fs.rmSync(tempDir, { recursive: true, force: true });
+        }
+      } else {
+        audioBuffer = sourceBuffer;
+      }
+
+      if (!audioBuffer.length || audioBuffer.length > 16 * 1024 * 1024) {
+        throw new Error('Converted MP3 exceeds WhatsApp 16 MB limit.');
+      }
 
       await skWhatsAppSendMp3Buffer(from, audioBuffer);
 
