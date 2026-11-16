@@ -1928,7 +1928,6 @@ let liveSearchResults = [];
 
       if (
         commonData &&
-        commonData.provider !== 'google' &&
         Array.isArray(commonData.results)
       ) {
         liveSearchResults = commonData.results.slice(0, 10).map(item => ({
@@ -6216,11 +6215,7 @@ async function skGlobalWebSearch(query) {
   const googleUrl = 'https://www.google.com/search?q=' + encodeURIComponent(query);
   const googleFallback = () => ({
     query, provider: 'google', google_url: googleUrl, fallback: true,
-    results: [{
-      title: 'Google Search — ' + query,
-      url: googleUrl,
-      content: 'Open Google to view current search results.'
-    }]
+    results: []
   });
 
   const normalize = (items) => {
@@ -6309,7 +6304,68 @@ async function skGlobalWebSearch(query) {
     } catch (e) { console.error('[Global Search] SerpAPI failed:', e.message); }
   }
 
-  if (!combined.length) return googleFallback();
+
+  // SK_FREE_GOOGLE_HTML_FALLBACK_V1
+  if (!combined.length) {
+    try {
+      const r = await fetch(googleUrl, {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 Chrome/120.0 Mobile Safari/537.36",
+          "Accept-Language": "en-IN,en;q=0.9,ta;q=0.8"
+        },
+        signal: AbortSignal.timeout(10000)
+      });
+
+      if (r.ok) {
+        const html = await r.text();
+        const anchors = /<a\b[^>]*href=(["'])(.*?)\1[^>]*>([\s\S]*?<h3\b[\s\S]*?<\/h3>[\s\S]*?)<\/a>/gi;
+        let match;
+
+        while ((match = anchors.exec(html)) !== null && combined.length < 8) {
+          let href = match[2].replace(/&amp;/g, "&");
+          const heading = match[3].match(/<h3\b[^>]*>([\s\S]*?)<\/h3>/i);
+          if (!heading) continue;
+
+          const title = heading[1]
+            .replace(/<[^>]*>/g, " ")
+            .replace(/&amp;/g, "&")
+            .replace(/&quot;/g, '"')
+            .replace(/&#39;/g, "'")
+            .replace(/&lt;/g, "<")
+            .replace(/&gt;/g, ">")
+            .replace(/\s+/g, " ")
+            .trim();
+
+          try {
+            const parsed = new URL(href, googleUrl);
+            if (parsed.hostname.includes("google.") && parsed.pathname === "/url") {
+              href = parsed.searchParams.get("q") || parsed.searchParams.get("url") || "";
+            } else {
+              href = parsed.href;
+            }
+          } catch {
+            continue;
+          }
+
+          if (!title || !/^https?:\/\//i.test(href)) continue;
+          if (/google\.com|google\.co\.in|webcache|translate\.google/i.test(href)) continue;
+
+          combined.push({
+            title: title.slice(0, 200),
+            url: href,
+            content: ""
+          });
+        }
+      }
+    } catch (e) {
+      console.warn("[Global Search] Google HTML fallback:", e.message);
+    }
+
+    if (!combined.length) return googleFallback();
+
+    providers.push("google-html");
+  }
+
 
   const unique = new Map();
   for (const item of combined) {
