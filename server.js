@@ -5056,7 +5056,7 @@ if (mp3PlayRequested || mp3Navigation) {
     reply = await getTamilBreakingNews(newsCategory);
   } else if (/^(?:(?:tamil(?:\s+nadu)?)\s+)?(?:breaking\s+)?news$/i.test(trimmed) || /தமிழ்.*செய்தி|முக்கியச் செய்திகள்/i.test(trimmed)) {
     reply = await getTamilBreakingNews('tamil-nadu');
-  } else if (/^(.{2,60})\s+(?:breaking\s+)?news$/i.test(trimmed)) {
+  } else if (!/^SEARCH\s+GENERAL\s*[:：-]/i.test(trimmed) && /^(.{2,60})\s+(?:breaking\s+)?news$/i.test(trimmed)) {
     const newsTopic = trimmed.match(/^(.{2,60})\s+(?:breaking\s+)?news$/i)[1].trim();
     reply = await getTamilBreakingNews('topic', newsTopic);
   } else if (/^(?:kavithai|poem|poetry|கவிதை|கவிதைகள்)\s*[:：\-]/i.test(trimmed)) {
@@ -7548,7 +7548,7 @@ async function skExecutiveCloudflare(message, language) {
 app.post('/api/executive-ai', async (req, res) => {
   res.set('Cache-Control', 'no-store');
 
-  const message = String(req.body?.message || '').trim();
+  const message = String(req.body?.message || '').trim().replace(/^SEARCH\s+GENERAL\s*[:：-]\s*/i, '').trim();
   const mode = req.body?.mode === 'smart' ? 'smart' : 'fast';
   const language = String(req.body?.language || 'Auto').slice(0, 40);
 
