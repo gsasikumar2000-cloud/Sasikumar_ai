@@ -4866,44 +4866,67 @@ if (mp3PlayRequested || mp3Navigation) {
     // SK_WHATSAPP_OPENVERSE_MP3_SEARCH_V1
     mp3SearchRequested = true;
 
-    const query = trimmed.replace(
-      /^(?:please\s+)?(?:search\s+)?(?:mp3|songs?|music|audio|tracks?|albums?|melody)?\s*[:\-]?\s*/i,
-      ''
-    ).trim() || 'instrumental music';
+    const query = trimmed
+      .replace(/\\b(?:please|search|find|mp3|audio|tracks?|albums?|melody)\\b/gi, ' ')
+      .replace(/பாடல்கள்?|இசை|ஆடியோ/gi, ' ')
+      .replace(/\\s+/g, ' ')
+      .trim() || 'Tamil songs';
 
     try {
-      const params = new URLSearchParams({
-        q: query.slice(0, 120),
-        license: 'cc0,by',
-        page_size: '20'
-      });
+      const found = [];
+      const seen = new Set();
 
-      const response = await fetch(
-        'https://api.openverse.org/v1/audio/?' + params.toString(),
-        { signal: AbortSignal.timeout(15000) }
-      );
+      for (let page = 1; page <= 3; page++) {
+        const params = new URLSearchParams({
+          q: query.slice(0, 120),
+          category: 'music',
+          license: 'cc0,by,by-sa',
+          page_size: '20',
+          page: String(page)
+        });
 
-      if (!response.ok) {
-        throw new Error('Openverse HTTP ' + response.status);
+        const response = await fetch(
+          'https://api.openverse.org/v1/audio/?' + params.toString(),
+          {
+            headers: { 'User-Agent': 'SASIKUMAR-AI/1.0 (audio search)' },
+            signal: AbortSignal.timeout(15000)
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error('Openverse HTTP ' + response.status);
+        }
+
+        const data = await response.json();
+
+        for (const track of (Array.isArray(data.results) ? data.results : [])) {
+          const type = String(track.filetype || '').toLowerCase();
+          const license = String(track.license || '').toLowerCase();
+          const title = String(track.title || '');
+
+          if (
+            !track.url ||
+            !/^https:\/\//i.test(track.url) ||
+            !['mp3', 'wav', 'ogg', 'ogx'].includes(type) ||
+            !['cc0', 'by', 'by-sa'].includes(license) ||
+            /\\b(bird|robin|barbet|kite|wildlife|sanctuary|species|animal)\\b/i.test(title) ||
+            seen.has(track.url)
+          ) continue;
+
+          seen.add(track.url);
+          found.push(track);
+        }
       }
 
-      const data = await response.json();
-
-      mp3Tracks = (Array.isArray(data.results) ? data.results : [])
-        .filter(track =>
-          track.url &&
-          /^https:\/\//i.test(track.url) &&
-          ['cc0', 'by'].includes(String(track.license || '').toLowerCase())
-        )
-        .slice(0, 10)
-        .map(track => ({
-          title: String(track.title || 'Untitled audio').slice(0, 180),
-          creator: String(track.creator || 'Unknown creator').slice(0, 100),
-          license: String(track.license || '').toUpperCase(),
-          licenseUrl: track.license_url || '',
-          pageUrl: track.foreign_landing_url || '',
-          url: track.url
-        }));
+      mp3Tracks = found.slice(0, 10).map(track => ({
+        title: String(track.title || 'Untitled audio').slice(0, 180),
+        creator: String(track.creator || 'Unknown creator').slice(0, 100),
+        license: String(track.license || '').toUpperCase(),
+        licenseUrl: track.license_url || '',
+        pageUrl: track.foreign_landing_url || '',
+        filetype: String(track.filetype || '').toLowerCase(),
+        url: track.url
+      }));
 
       if (mp3Tracks.length) {
         SK_WA_MP3_SESSIONS.set(String(from), {
@@ -5291,6 +5314,10 @@ if (mp3SearchRequested) {
         sourceBuffer.toString('ascii', 0, 4) === 'RIFF' &&
         sourceBuffer.toString('ascii', 8, 12) === 'WAVE';
 
+      const isOgg =
+        sourceBuffer.length > 4 &&
+        sourceBuffer.toString('ascii', 0, 4) === 'OggS';
+
       const hasId3 =
         sourceBuffer.subarray(0, 3).toString('ascii') === 'ID3';
 
@@ -5301,19 +5328,19 @@ if (mp3SearchRequested) {
 
       const isMp3 = hasId3 || hasMpegFrame;
 
-      if (!isWav && !isMp3) {
+      if (!isWav && !isOgg && !isMp3) {
         throw new Error('Unsupported audio format.');
       }
 
       let audioBuffer;
 
-      if (isWav) {
+      if (!isMp3) {
         const tempDir = fs.mkdtempSync(
           path.join(__dirname, '.wa-mp3-')
         );
 
         try {
-          const inputPath = path.join(tempDir, 'input.wav');
+          const inputPath = path.join(tempDir, 'input.audio');
           const outputPath = path.join(tempDir, 'output.mp3');
 
           fs.writeFileSync(inputPath, sourceBuffer);
