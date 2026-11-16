@@ -7486,6 +7486,17 @@ async function skExecutiveLiveSearch(query) {
     }
   }
 
+  try {
+    const common = await skGlobalWebSearch(query);
+    if (common && Array.isArray(common.results) && common.results.length) {
+      return {
+        provider: 'common+' + String(common.provider || 'google'),
+        results: common.results.slice(0, 6)
+      };
+    }
+  } catch (e) {
+    console.warn('[Executive AI Common Search]', e.message);
+  }
   return null;
 }
 
