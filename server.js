@@ -1949,7 +1949,7 @@ let liveSearchResults = [];
   }
 
   // 1. Try Tavily live web search.
-  if (needsLiveSearch && searchCategory !== 'IMAGE' && asksForNews && process.env.TAVILY_API_KEY) {
+  if (needsLiveSearch && searchCategory !== 'IMAGE' && asksForNews && process.env.TAVILY_FREE_QUOTA_ONLY === 'true' && process.env.TAVILY_API_KEY) {
     try {
       const searchResponse = await fetch(
         'https://api.tavily.com/search',
@@ -2003,6 +2003,7 @@ let liveSearchResults = [];
   if (
     needsLiveSearch && searchCategory !== 'IMAGE' &&
     liveSearchResults.length === 0 &&
+    process.env.FIRECRAWL_FREE_QUOTA_ONLY === 'true' &&
     process.env.FIRECRAWL_API_KEY
   ) {
     try {
@@ -2065,6 +2066,7 @@ let liveSearchResults = [];
     searchCategory !== 'IMAGE' &&
     asksForNews &&
     liveSearchResults.length === 0 &&
+    process.env.NEWSDATA_FREE_QUOTA_ONLY === 'true' &&
     process.env.NEWSDATA_API_KEY
   ) {
     try {
@@ -2118,7 +2120,7 @@ let liveSearchResults = [];
   if (asksForNews) liveSearchResults = skFilterFreshNewsResults(liveSearchResults, query);
 // SK_WHATSAPP_SERPAPI_FALLBACK_V1
   // Try SerpAPI only when earlier live-search providers return no results.
-  if (needsLiveSearch && liveSearchResults.length === 0 && process.env.SERPAPI_API_KEY) {
+  if (false && needsLiveSearch && liveSearchResults.length === 0 && process.env.SERPAPI_API_KEY) {
     try {
       const params = new URLSearchParams({
         engine: searchCategory === 'IMAGE' ? 'google_images' : 'google',
@@ -6290,7 +6292,7 @@ async function skGlobalWebSearch(query) {
     } catch (e) { console.error('[Global Search] Exa failed:', e.message); }
   }
 
-  if (process.env.SERPAPI_FREE_QUOTA_ONLY === 'true' && process.env.SERPAPI_API_KEY) {
+  if (false && process.env.SERPAPI_FREE_QUOTA_ONLY === 'true' && process.env.SERPAPI_API_KEY) {
     try {
       const params = new URLSearchParams({
         engine: 'google', q: query,
@@ -7358,7 +7360,7 @@ const skExecutiveSystemPrompt = [
 async function skExecutiveLiveSearch(query) {
   const providers = [];
 
-  if (process.env.TAVILY_API_KEY) {
+  if (process.env.TAVILY_FREE_QUOTA_ONLY === 'true' && process.env.TAVILY_API_KEY) {
     providers.push(async () => {
       const r = await fetch('https://api.tavily.com/search', {
         method: 'POST',
@@ -7376,7 +7378,7 @@ async function skExecutiveLiveSearch(query) {
     });
   }
 
-  if (process.env.EXA_API_KEY) {
+  if (process.env.EXA_FREE_QUOTA_ONLY === 'true' && process.env.EXA_API_KEY) {
     providers.push(async () => {
       const r = await fetch('https://api.exa.ai/search', {
         method: 'POST',
@@ -7395,7 +7397,7 @@ async function skExecutiveLiveSearch(query) {
     });
   }
 
-  if (process.env.SERPAPI_API_KEY) {
+  if (false && process.env.SERPAPI_API_KEY) {
     providers.push(async () => {
       const params = new URLSearchParams({
         engine: 'google', q: query,
@@ -8570,7 +8572,7 @@ async function skSearchRealImage(query) {
   // Runs after Wikimedia and stock providers; keeps strict subject validation.
   const serpApiKey = process.env.SERPAPI_API_KEY;
 
-  if (process.env.SERPAPI_FREE_QUOTA_ONLY === 'true' && serpApiKey && galleryResults.length < MAX_GALLERY_IMAGES && !isMotherMarySearch) {
+  if (false && process.env.SERPAPI_FREE_QUOTA_ONLY === 'true' && serpApiKey && galleryResults.length < MAX_GALLERY_IMAGES && !isMotherMarySearch) {
     try {
       const serpUrl = new URL('https://serpapi.com/search.json');
       serpUrl.searchParams.set('engine', 'google_images');
@@ -8690,6 +8692,62 @@ async function skSearchRealImage(query) {
       }
     : null;
 }
+
+
+// SK_WEBSITE_IMAGE_SEARCH_API_V1
+app.get('/api/image-search', async (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  res.set('Content-Type', 'application/json; charset=utf-8');
+
+  const query = String(req.query.q || '').trim();
+
+  if (!query) {
+    return res.status(400).json({
+      ok: false,
+      error: 'Please enter an image search query.'
+    });
+  }
+
+  if (query.length > 150) {
+    return res.status(400).json({
+      ok: false,
+      error: 'Image search query is too long.'
+    });
+  }
+
+  try {
+    const found = await skSearchRealImage(query);
+
+    if (!found?.dataUri) {
+      return res.status(404).json({
+        ok: false,
+        query,
+        error: 'Exact matching image not found.',
+        images: []
+      });
+    }
+
+    return res.json({
+      ok: true,
+      query,
+      image: {
+        dataUri: found.dataUri,
+        attribution: found.attribution || '',
+        imageUrl: found.imageUrl || '',
+        sourceUrl: found.sourceUrl || ''
+      },
+      total: 1
+    });
+  } catch (error) {
+    console.error('[Website Image Search]', error.message);
+
+    return res.status(500).json({
+      ok: false,
+      error: 'Image search temporarily unavailable.'
+    });
+  }
+});
+// END SK_WEBSITE_IMAGE_SEARCH_API_V1
 
 async function skGenerateImage(prompt) {
   // SK_FAST_IMAGE_PROVIDER_ROUTER_V2
