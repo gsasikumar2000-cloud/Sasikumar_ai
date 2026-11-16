@@ -4925,12 +4925,15 @@ if (mp3PlayRequested || mp3Navigation) {
       console.warn('[WA Openverse MP3 search]', error.message);
       reply = '⚠️ MP3 தேடல் தற்போது கிடைக்கவில்லை. சிறிது நேரம் கழித்து முயற்சிக்கவும்.';
     }
-} else if (/(?:youtube|pixabay|\bvideos?\b|\bshorts?\b|\blivestream\b|\bstream\b|\bsongs?\b|\bmusic\b|\baudio\b|\btracks?\b|\balbums?\b|\bmelody\b|\bscenes?\b|\btrailer\b|பாடல்|இசை|ஆடியோ|வீடியோ|காட்சிகள்|நேரலை|லைவ்)/i.test(trimmed)) {
+} else if (/(?:youtube|pixabay|\bvideos?\b|\bshorts?\b|\blivestream\b|\bstream\b|\bsongs?\b|\bmusic\b|\baudio\b|\btracks?\b|\balbums?\b|\bmelody\b|\bscenes?\b|\btrailer\b|\bcomedy\b|\bfunny\b|\bjokes?\b|பாடல்|இசை|ஆடியோ|வீடியோ|காட்சிகள்|நேரலை|லைவ்|காமெடி|நகைச்சுவை|ஜோக்)/i.test(trimmed)) {
     // SK_WHATSAPP_YOUTUBE_GALLERY_V2
     youtubeSearchRequested = true;
 
     const isLiveVideo = /\b(live|livestream|streaming)\b|நேரலை|லைவ்/i.test(trimmed);
     const isShortsVideo = /\bshorts?\b/i.test(trimmed);
+    const isMovieSceneVideo = /\bmovie\s+scenes?\b|\bscenes?\b|திரைப்படக் காட்சிகள்|படக் காட்சிகள்/i.test(trimmed);
+    const isMovieTrailerVideo = /\bmovie\s+trailers?\b|\btrailers?\b|டிரெய்லர்/i.test(trimmed);
+    const isComedyVideo = /\bcomedy\b|\bfunny\b|\bjokes?\b|காமெடி|நகைச்சுவை|ஜோக்/i.test(trimmed);
     const isSongSearch = /\b(songs?|music|audio|tracks?|albums?|melody)\b|பாடல்|இசை|ஆடியோ/i.test(trimmed);
     youtubeIsSongSearch = isSongSearch;
 
@@ -4939,9 +4942,19 @@ if (mp3PlayRequested || mp3Navigation) {
       ''
     ).trim() || (isLiveVideo ? 'Tamil live' : isSongSearch ? 'Tamil songs' : 'Tamil videos');
 
-    const searchQuery = isShortsVideo
-      ? (query + ' shorts').slice(0, 150)
-      : query.slice(0, 150);
+    const tamilCategory = isComedyVideo ? 'Tamil comedy'
+      : isMovieSceneVideo ? 'Tamil movie scenes'
+      : isMovieTrailerVideo ? 'Tamil movie trailers'
+      : isShortsVideo ? 'Tamil short videos'
+      : isSongSearch ? 'Tamil songs'
+      : isLiveVideo ? 'Tamil live'
+      : 'Tamil videos';
+
+    const categoryOnly = /^(?:comedy|funny|jokes?|movie|scene|scenes|trailer|trailers|short|shorts|video|videos|song|songs|music)?$/i.test(query);
+    const searchQuery = (
+      categoryOnly || !query ? tamilCategory
+      : (/tamil/i.test(query) ? query : tamilCategory + ' ' + query)
+    ).slice(0, 150);
 
     const searches = await Promise.allSettled([
       skYouTubeRequest('search', {
@@ -5056,9 +5069,11 @@ if (mp3PlayRequested || mp3Navigation) {
       youtubeHasNext = false;
 
       reply = isSongSearch
-        ? '🎵 SASIKUMAR AI — SONG GALLERY'
-        : '🎬 SASIKUMAR AI — Video ' +
-          (isLiveVideo ? 'LIVE' : isShortsVideo ? 'SHORTS' : 'VIDEO') +
+        ? '🎵 SASIKUMAR AI — TAMIL SONG GALLERY'
+        : '🎬 SASIKUMAR AI — ' +
+          (isComedyVideo ? 'COMEDY' : isMovieSceneVideo ? 'MOVIE SCENE' :
+           isMovieTrailerVideo ? 'MOVIE TRAILER' : isShortsVideo ? 'SHORT' :
+           isLiveVideo ? 'LIVE' : 'VIDEO') +
           ' GALLERY';
     } else {
       reply = '🔎 இந்தத் தேடலுக்கு தற்போது வீடியோக்கள் கிடைக்கவில்லை. வேறு வார்த்தைகளில் முயற்சிக்கவும்.';
@@ -5393,15 +5408,17 @@ if (mp3SearchRequested) {
               mime,
               (youtubeIsSongSearch ? '🎵 SONG ' : '🎬 VIDEO ') + (i + 1) + '/5\\n' +
                 '[' + video.provider + '] ' +
-                String(video.title || 'Video').slice(0, 700)
+                String(video.title || 'Video').slice(0, 650) +
+                '\n🔗 Original: ' + String(video.watchUrl || video.pageUrl || '')
             );
 
             if (video.provider === 'Pixabay' && video.mp4Url) {
               await skWhatsAppSendVideoUrl(
                 from,
                 video.mp4Url,
-                '🎬 ' + String(video.title || 'Pixabay Video').slice(0, 800) +
-                  '\\n📷 Pixabay'
+                '🎬 ' + String(video.title || 'Pixabay Video').slice(0, 700) +
+                  '\n📷 Pixabay' +
+                  '\n🔗 Original: ' + String(video.pageUrl || '')
               );
             }
 
