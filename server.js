@@ -5213,6 +5213,84 @@ if (mp3PlayRequested || mp3Navigation) {
     reply = brainResult.reply;
   }
 }
+
+// SK_WHATSAPP_OPENVERSE_YOUTUBE_FALLBACK_V1
+if (mp3SearchRequested && !mp3Tracks.length &&
+    !mp3SelectedTrack && !mp3PlayRequested && !mp3Navigation) {
+  const fallbackQuery = trimmed
+    .replace(/\b(?:please|search|find|mp3|audio|tracks?|albums?|melody|songs?|music)\b/gi, ' ')
+    .replace(/பாடல்கள்?|இசை|ஆடியோ/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const youtubeQuery = (
+    /\btamil\b/i.test(fallbackQuery)
+      ? fallbackQuery
+      : 'Tamil songs ' + fallbackQuery
+  ).slice(0, 150);
+
+  try {
+    const fallbackData = await skYouTubeRequest('search', {
+      part: 'snippet',
+      type: 'video',
+      q: youtubeQuery,
+      maxResults: 5,
+      order: 'relevance',
+      videoCategoryId: '10'
+    });
+
+    youtubeVideos = (fallbackData.items || [])
+      .filter(x => x.id?.videoId)
+      .map(x => ({
+        provider: 'YouTube',
+        videoId: x.id.videoId,
+        watchUrl: 'https://www.youtube.com/watch?v=' + x.id.videoId,
+        pageUrl: 'https://www.youtube.com/watch?v=' + x.id.videoId,
+        title: x.snippet?.title || 'YouTube Song',
+        channel: 'YouTube • ' + (x.snippet?.channelTitle || 'YouTube'),
+        thumbnail:
+          x.snippet?.thumbnails?.high?.url ||
+          x.snippet?.thumbnails?.medium?.url ||
+          x.snippet?.thumbnails?.default?.url || ''
+      }))
+      .filter(x => x.thumbnail)
+      .slice(0, 5);
+
+    if (youtubeVideos.length) {
+      SK_WA_YOUTUBE_SESSIONS.set(String(from), {
+        videos: youtubeVideos,
+        isSongSearch: true,
+        page: 0,
+        updatedAt: Date.now()
+      });
+
+      while (SK_WA_YOUTUBE_SESSIONS.size > 500) {
+        SK_WA_YOUTUBE_SESSIONS.delete(
+          SK_WA_YOUTUBE_SESSIONS.keys().next().value
+        );
+      }
+
+      youtubeSearchRequested = true;
+      youtubeIsSongSearch = true;
+      mp3SearchRequested = false;
+
+      reply = '🎵 SASIKUMAR AI — YOUTUBE SONG GALLERY\n\n' +
+        'Openverse-ல் இலவச MP3 கிடைக்கவில்லை. ' +
+        'YouTube-ல் கிடைத்த பாடல்கள் கீழே உள்ளன.';
+      console.log('[WA MP3 FALLBACK] YouTube results:', youtubeVideos.length);
+    } else {
+      reply = '🎵 இலவசமாக அனுமதிக்கப்பட்ட MP3 கிடைக்கவில்லை.\n\n' +
+        'YouTube தேடல்: https://www.youtube.com/results?search_query=' +
+        encodeURIComponent(youtubeQuery);
+    }
+  } catch (fallbackError) {
+    console.warn('[WA MP3 YouTube fallback]', fallbackError.message);
+    reply = '⚠️ பாடல் தேடல் தற்போது கிடைக்கவில்லை.\n\n' +
+      'YouTube தேடல்: https://www.youtube.com/results?search_query=' +
+      encodeURIComponent(youtubeQuery);
+  }
+}
+
 if(WA_TOKEN && WA_PHONE_ID){
       const sendWA=async(payload)=>{
 
