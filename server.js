@@ -3081,7 +3081,7 @@ async function skAnalyzeImageBuffer(buffer, mime, caption = '') {
 
 
 // SK_AUTO_IMAGE_DETAILS_REPORT_V1
-async function skBuildImageDetailsReport(buffer, mime, caption = '') {
+async function skBuildImageDetailsReport(buffer, mime, caption = '', ocrText = '') {
   const quality = await skCheckImageQuality(buffer, mime, caption);
 
   const prompt = [
@@ -3095,6 +3095,7 @@ async function skBuildImageDetailsReport(buffer, mime, caption = '') {
     '7. AI உருவாக்கிய படமாக இருக்கக்கூடிய காட்சி அறிகுறிகள் இருந்தால் கூறவும்.',
     '8. படம் உண்மையானதா அல்லது AI உருவாக்கியதா என்பதை உறுதியாகக் கூறாதீர்கள்; ஆதாரம் இல்லையெனில் தீர்மானிக்க முடியாது என்று கூறவும்.',
     'படத்தில் தெரியாத தகவல்களை ஊகித்துச் சொல்லாதீர்கள்.',
+    ocrText ? 'Tesseract OCR (tam+eng) கண்டறிந்த எழுத்துகள்; படத்துடன் ஒப்பிட்டு சரிபார்க்கவும்:\n' + String(ocrText).slice(0, 8000) : '',
     'பயனர் கேள்வி: ' + String(caption || 'படத்தை விளக்கவும்').slice(0, 400)
   ].join('\n');
 
@@ -3179,7 +3180,26 @@ async function skWhatsAppAnalyzeImage(mediaId, caption = '', mimeFallback = '') 
     throw new Error('Image download is empty.');
   }
 
-  return skBuildImageDetailsReport(buffer, mime, caption);
+  let ocrText = '';
+  try {
+    ocrText = await skTesseractImageText(buffer, mime);
+  } catch (error) {
+    console.warn('[WhatsApp local image OCR]', error.message);
+  }
+
+  if (!ocrText) {
+    try {
+      ocrText = await skOcrSpaceText(
+        buffer,
+        mime || 'application/octet-stream',
+        'whatsapp-image'
+      );
+    } catch (error) {
+      console.warn('[WhatsApp OCR.space fallback]', error.message);
+    }
+  }
+
+  return skBuildImageDetailsReport(buffer, mime, caption, ocrText);
 }
 
 
@@ -3863,10 +3883,174 @@ const SK_ZIP_MAX_FILES = 20;
 const SK_ZIP_MAX_FILE_BYTES = 1024 * 1024;
 const SK_ZIP_MAX_TOTAL_BYTES = 5 * 1024 * 1024;
 
+
+
+// SK_OCR_SPACE_FALLBACK_V1
+async function skOcrSpaceText(input, mime = 'application/octet-stream', filename = 'document') {
+  const apiKey = String(process.env.OCR_SPACE_API_KEY || '').trim();
+  const data = Buffer.from(input || []);
+
+  if (!apiKey || !data.length || data.length > 1024 * 1024) return '';
+
+  const form = new FormData();
+  form.append('file', new Blob([data], { type: mime }), filename);
+  form.append('language', 'auto');
+  form.append('OCREngine', '3');
+  form.append('isOverlayRequired', 'false');
+
+  const response = await fetch('https://api.ocr.space/parse/image', {
+    method: 'POST',
+    headers: { apikey: apiKey },
+    body: form,
+    signal: AbortSignal.timeout(30000)
+  });
+
+  if (!response.ok) {
+    throw new Error(`OCR.space HTTP ${response.status}`);
+  }
+
+  const result = await response.json();
+
+  if (result.IsErroredOnProcessing) {
+    throw new Error('OCR.space processing failed.');
+  }
+
+  return (Array.isArray(result.ParsedResults)
+    ? result.ParsedResults.map(x => x.ParsedText || '').join('\n')
+    : '').trim().slice(0, 24000);
+}
+// END SK_OCR_SPACE_FALLBACK_V1
+
+// SK_LOCAL_TESSERACT_OCR_V1
+async function skTesseractImageText(input, mime = '') {
+  const data = Buffer.from(input || []);
+  if (!data.length || data.length > 8 * 1024 * 1024) return '';
+
+  const type = String(mime).split(';')[0].trim().toLowerCase();
+  const extensions = {
+    'image/jpeg': '.jpg',
+    'image/jpg': '.jpg',
+    'image/png': '.png',
+    'image/webp': '.webp',
+    'image/tiff': '.tif',
+    'image/bmp': '.bmp'
+  };
+  const ext = extensions[type];
+  if (!ext) return '';
+
+  const dir = await fs.promises.mkdtemp('/tmp/sk-image-ocr-');
+  try {
+    const inputPath = path.join(dir, 'image' + ext);
+    await fs.promises.writeFile(inputPath, data);
+    const result = await execFileAsync(
+      'tesseract',
+      [inputPath, 'stdout', '-l', 'tam+eng', '--psm', '6'],
+      { timeout: 20000, maxBuffer: 1024 * 1024 }
+    );
+    return String(result.stdout || '').trim().slice(0, 12000);
+  } finally {
+    await fs.promises.rm(dir, { recursive: true, force: true });
+  }
+}
+
+async function skTesseractPdfText(input) {
+  const data = Buffer.from(input || []);
+  if (!data.length || data.length > SK_PDF_MAX_BYTES) return '';
+
+  const dir = await fs.promises.mkdtemp('/tmp/sk-pdf-ocr-');
+  try {
+    const pdfPath = path.join(dir, 'document.pdf');
+    const prefix = path.join(dir, 'page');
+    await fs.promises.writeFile(pdfPath, data);
+
+    await execFileAsync(
+      'pdftoppm',
+      ['-f', '1', '-l', '5', '-r', '130', '-png', pdfPath, prefix],
+      { timeout: 45000, maxBuffer: 1024 * 1024 }
+    );
+
+    const names = (await fs.promises.readdir(dir))
+      .filter(name => /^page-\d+\.png$/i.test(name))
+      .sort((a, b) => Number(a.match(/\d+/)[0]) - Number(b.match(/\d+/)[0]))
+      .slice(0, 5);
+
+    const output = [];
+    for (const name of names) {
+      const result = await execFileAsync(
+        'tesseract',
+        [path.join(dir, name), 'stdout', '-l', 'tam+eng', '--psm', '6'],
+        { timeout: 20000, maxBuffer: 1024 * 1024 }
+      );
+      const text = String(result.stdout || '').trim();
+      if (text) output.push(`[OCR ${name}]\n${text}`);
+    }
+    return output.join('\n\n').slice(0, 24000);
+  } finally {
+    await fs.promises.rm(dir, { recursive: true, force: true });
+  }
+}
+// END SK_LOCAL_TESSERACT_OCR_V1
+
+// SK_GROQ_VISION_PDF_OCR_V1
+async function skGroqVisionPdfText(input) {
+  const data = Buffer.from(input || []);
+  if (!data.length || data.length > SK_PDF_MAX_BYTES) return '';
+
+  const dir = await fs.promises.mkdtemp('/tmp/sk-groq-pdf-');
+  try {
+    const pdfPath = path.join(dir, 'document.pdf');
+    const prefix = path.join(dir, 'page');
+    await fs.promises.writeFile(pdfPath, data);
+
+    await execFileAsync(
+      'pdftoppm',
+      ['-f', '1', '-l', '3', '-r', '120', '-png', pdfPath, prefix],
+      { timeout: 45000, maxBuffer: 1024 * 1024 }
+    );
+
+    const names = (await fs.promises.readdir(dir))
+      .filter(name => /^page-\d+\.png$/i.test(name))
+      .sort((a, b) => Number(a.match(/\d+/)[0]) - Number(b.match(/\d+/)[0]))
+      .slice(0, 3);
+
+    const output = [];
+    for (const name of names) {
+      const imagePath = path.join(dir, name);
+      const imageBuffer = await fs.promises.readFile(imagePath);
+
+      if (!imageBuffer.length || imageBuffer.length > 8 * 1024 * 1024) {
+        continue;
+      }
+
+      const pageNo = Number(name.match(/\d+/)[0]);
+      const text = await skAnalyzeImageBuffer(
+        imageBuffer,
+        'image/png',
+        [
+          'இந்த PDF பக்கத்தில் தெரியும் எழுத்துகளை மட்டும் OCR செய்து எடுக்கவும்.',
+          'தமிழ் மற்றும் ஆங்கில எழுத்துகளை அப்படியே வாசிக்கவும்.',
+          'படங்கள் அல்லது காட்சிகளை விவரிக்க வேண்டாம்.',
+          'தெளிவில்லாத எழுத்துகளை ஊகித்து எழுத வேண்டாம்.',
+          'வாசிக்கக்கூடிய உரை இல்லையெனில் NO_READABLE_TEXT என்று மட்டும் பதிலளிக்கவும்.'
+        ].join(' ')
+      );
+
+      if (text && !text.includes('NO_READABLE_TEXT')) {
+        output.push(`[Groq Vision PDF Page ${pageNo}]\n${text}`);
+      }
+    }
+
+    return output.join('\n\n').slice(0, 18000);
+  } finally {
+    await fs.promises.rm(dir, { recursive: true, force: true });
+  }
+}
+// END SK_GROQ_VISION_PDF_OCR_V1
+
 async function skExtractPdfText(input) {
   const data = Buffer.from(input || []);
   if (!data.length || data.length > SK_PDF_MAX_BYTES) {
-    throw new Error('PDF size is invalid or exceeds 5 MB.');
+    throw new Error('PDF size is invalid or exceeds 8 MB.');
   }
   if (data.subarray(0, 5).toString() !== '%PDF-') {
     throw new Error('Invalid PDF file.');
@@ -3878,9 +4062,9 @@ async function skExtractPdfText(input) {
     isEvalSupported: false
   });
 
-  let doc;
+  let result = '';
   try {
-    doc = await task.promise;
+    const doc = await task.promise;
     const pages = Math.min(Number(doc.numPages) || 0, 15);
     const output = [];
 
@@ -3894,12 +4078,130 @@ async function skExtractPdfText(input) {
       if (line) output.push(`[Page ${pageNo}]\n${line}`);
       if (output.join('\n').length > 30000) break;
     }
-
-    const result = output.join('\n\n').slice(0, 30000);
-    return result || 'இந்த PDF-ல் வாசிக்கக்கூடிய text கிடைக்கவில்லை. இது scanned PDF ஆக இருக்கலாம்.';
+    result = output.join('\n\n').slice(0, 30000);
   } finally {
     await task.destroy().catch(() => {});
   }
+
+  // Scanned PDF fallback: OCR only when selectable text is absent or very short.
+  if (result.trim().length < 80) {
+    let ocr = '';
+
+    try {
+      ocr = await skTesseractPdfText(data);
+    } catch (error) {
+      console.warn('[Local PDF OCR]', error.message);
+    }
+
+    if (!ocr) {
+      try {
+        ocr = await skOcrSpaceText(
+          data,
+          'application/pdf',
+          'scanned-document.pdf'
+        );
+      } catch (error) {
+        console.warn('[PDF OCR.space fallback]', error.message);
+      }
+    }
+
+    // Final fallback: Groq Vision OCR for the first three scanned pages.
+    if (!ocr) {
+      try {
+        ocr = await skGroqVisionPdfText(data);
+      } catch (error) {
+        console.warn('[Groq Vision PDF OCR fallback]', error.message);
+      }
+    }
+
+    if (ocr) {
+      return (result
+        ? result + '\n\n--- Scanned page OCR ---\n' + ocr
+        : ocr).slice(0, 30000);
+    }
+  }
+
+  return result || 'இந்த PDF-ல் வாசிக்கக்கூடிய text கிடைக்கவில்லை. OCR கிடைக்கவில்லை அல்லது PDF scanned ஆக இருக்கலாம்.';
+}
+
+async function skExtractDocxText(input) {
+  const archive = Buffer.from(input || []);
+  if (!archive.length || archive.length > 8 * 1024 * 1024) {
+    throw new Error('DOCX file is empty or exceeds 8 MB.');
+  }
+
+  let xmlBuffer = null;
+  let failure = null;
+  let fileCount = 0;
+
+  const unzip = new Unzip(file => {
+    fileCount++;
+    if (fileCount > 200) {
+      failure = new Error('DOCX contains too many ZIP entries.');
+      return;
+    }
+
+    if (file.name !== 'word/document.xml') return;
+
+    const expected = Number(file.originalSize);
+    if (!Number.isFinite(expected) || expected < 0 || expected > 2 * 1024 * 1024) {
+      failure = new Error('DOCX document XML exceeds 2 MB.');
+      return;
+    }
+
+    const chunks = [];
+    let received = 0;
+    file.ondata = (err, chunk, final) => {
+      if (err) {
+        failure = err;
+        return;
+      }
+      received += chunk?.length || 0;
+      if (received > 2 * 1024 * 1024) {
+        failure = new Error('DOCX document XML extraction limit exceeded.');
+        file.terminate();
+        return;
+      }
+      if (chunk?.length) chunks.push(Buffer.from(chunk));
+      if (final) xmlBuffer = Buffer.concat(chunks, received);
+    };
+    file.start();
+  });
+
+  unzip.register(UnzipInflate);
+  unzip.register(UnzipPassThrough);
+  unzip.push(new Uint8Array(archive), true);
+
+  if (failure) throw failure;
+  if (!xmlBuffer) throw new Error('DOCX main document content not found.');
+
+  let xml = xmlBuffer.toString('utf8');
+  xml = xml
+    .replace(/<w:tab\b[^>]*\/>/g, '\t')
+    .replace(/<w:br\b[^>]*\/>/g, '\n')
+    .replace(/<\/w:p>/g, '\n')
+    .replace(/<[^>]*>/g, '');
+
+  xml = xml.replace(/&(#x[0-9a-f]+|#\d+|amp|lt|gt|quot|apos);/gi, (match, entity) => {
+    const key = entity.toLowerCase();
+    if (key === 'amp') return '&';
+    if (key === 'lt') return '<';
+    if (key === 'gt') return '>';
+    if (key === 'quot') return '"';
+    if (key === 'apos') return "'";
+    try {
+      const code = key.startsWith('#x')
+        ? parseInt(key.slice(2), 16)
+        : parseInt(key.slice(1), 10);
+      return Number.isInteger(code) && code >= 0 && code <= 0x10ffff
+        ? String.fromCodePoint(code)
+        : '';
+    } catch {
+      return '';
+    }
+  });
+
+  return xml.replace(/\r/g, '').replace(/\n{3,}/g, '\n\n').trim().slice(0, 24000);
 }
 
 function skZipSafeName(name) {
@@ -3917,7 +4219,7 @@ function skZipSafeName(name) {
     return false;
   }
 
-  return /\.(txt|md|csv|json|html|css|js|mjs|cjs|ts|tsx|jsx|py|php|sql|xml|ya?ml|pdf)$/i.test(base);
+  return /\.(txt|md|csv|json|html|css|js|mjs|cjs|ts|tsx|jsx|py|php|sql|xml|ya?ml|pdf|docx)$/i.test(base);
 }
 
 async function skExtractZipText(input) {
@@ -4005,6 +4307,8 @@ async function skExtractZipText(input) {
 
     if (ext === 'pdf') {
       content = await skExtractPdfText(item.data);
+    } else if (ext === 'docx') {
+      content = await skExtractDocxText(item.data);
     } else {
       content = item.data.toString('utf8')
         .replace(/\u0000/g, '')
@@ -4089,6 +4393,7 @@ async function skWhatsAppAnalyzeDocument(mediaId, fileName, caption = '', mimeTy
     'application/zip': 'zip',
     'application/x-zip-compressed': 'zip',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
     'text/csv': 'csv',
     'application/csv': 'csv',
     'text/plain': 'txt',
@@ -4108,7 +4413,7 @@ async function skWhatsAppAnalyzeDocument(mediaId, fileName, caption = '', mimeTy
   const ext = nameExt || mimeExtensions[normalizedMime] || '';
 
   const supported = new Set([
-    'pdf', 'zip', 'xlsx', 'csv', 'txt', 'md',
+    'pdf', 'zip', 'xlsx', 'docx', 'csv', 'txt', 'md',
     'json', 'html', 'css', 'js', 'mjs', 'cjs',
     'ts', 'tsx', 'jsx', 'py', 'php', 'sql',
     'xml', 'yaml', 'yml', 'svg'
@@ -4190,6 +4495,8 @@ async function skWhatsAppAnalyzeDocument(mediaId, fileName, caption = '', mimeTy
     extracted = await skExtractZipText(buffer);
   } else if (ext === 'xlsx') {
     extracted = await skExtractExcelText(buffer);
+  } else if (ext === 'docx') {
+    extracted = await skExtractDocxText(buffer);
   } else if (ext === 'csv' || ext === 'txt' || ext === 'md' ||
              ['json','html','css','js','mjs','cjs','ts','tsx',
               'jsx','py','php','sql','xml','yaml','yml','svg'].includes(ext)) {

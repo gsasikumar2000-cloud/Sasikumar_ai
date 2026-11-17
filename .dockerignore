@@ -1,0 +1,12 @@
+node_modules
+.git
+.env
+.envx
+.env.*
+*.env
+*.before*
+*.bak
+*backup*
+nohup.out
+.DS_Store
+*.log
