@@ -83,12 +83,74 @@ footer{text-align:center;font-size:11px;color:#475569;padding:15px}
 <button onclick="setLang('en')">English</button>
 </div>
 
+
+<div class="panel" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center">
+<button type="button" onclick="goHome()">↩ Return Page</button>
+<button type="button" onclick="copyWeather()">📋 Copy</button>
+<button type="button" onclick="shareWeather()">📤 Share</button>
+</div>
 <footer>Weather data: Open-Meteo • Forecast தகவல் மட்டுமே; அதிகாரப்பூர்வ பேரிடர் எச்சரிக்கை அல்ல.</footer>
 </div>
 
 <script>
 let lang='ta';
 let lastData=null;
+
+
+function goHome(){
+  window.location.href='/';
+}
+
+function weatherReport(){
+  if(!lastData) return 'Weather information is not available yet.';
+  const {loc,data}=lastData;
+  const c=data.current,d=data.daily;
+  const lines=[
+    '🌦️ SASIKUMAR AI WEATHER',
+    '📍 '+loc.name+(loc.admin1?', '+loc.admin1:''),
+    '🌡️ Temperature: '+c.temperature_2m+'°C',
+    '🌡️ Feels like: '+c.apparent_temperature+'°C',
+    '💧 Humidity: '+c.relative_humidity_2m+'%',
+    '💨 Wind: '+c.wind_speed_10m+' km/h',
+    '🌧️ Rain: '+c.precipitation+' mm',
+    '📅 7-Day Forecast'
+  ];
+  d.time.forEach((date,i)=>{
+    lines.push(date+': '+d.temperature_2m_max[i]+'° / '+d.temperature_2m_min[i]+'° | Rain '+(d.precipitation_probability_max[i]??'--')+'%');
+  });
+  lines.push('Weather data: Open-Meteo');
+  return lines.join('\n');
+}
+
+async function copyWeather(){
+  const report=weatherReport();
+  try{
+    await navigator.clipboard.writeText(report);
+    document.getElementById('status').textContent='✅ Weather report copied!';
+  }catch(e){
+    const box=document.createElement('textarea');
+    box.value=report;
+    document.body.appendChild(box);
+    box.select();
+    const ok=document.execCommand('copy');
+    box.remove();
+    document.getElementById('status').textContent=ok?'✅ Weather report copied!':'⚠️ Copy failed';
+  }
+}
+
+async function shareWeather(){
+  const text=weatherReport();
+  if(navigator.share){
+    try{
+      await navigator.share({title:'SASIKUMAR AI Weather',text});
+    }catch(e){
+      if(e.name!=='AbortError') document.getElementById('status').textContent='⚠️ Share failed';
+    }
+  }else{
+    await copyWeather();
+    document.getElementById('status').textContent='📋 Sharing unavailable. Report copied; paste it into WhatsApp or Telegram.';
+  }
+}
 
 function weatherText(code){
 const ta={0:'தெளிவான வானம் ☀️',1:'பெரும்பாலும் தெளிவு 🌤️',2:'ஓரளவு மேகம் ⛅',3:'மேகமூட்டம் ☁️',45:'பனிமூட்டம் 🌫️',48:'பனிமூட்டம் 🌫️',51:'லேசான தூறல் 🌦️',53:'தூறல் 🌦️',55:'அதிக தூறல் 🌧️',61:'லேசான மழை 🌧️',63:'மிதமான மழை 🌧️',65:'கனமழை ⛈️',71:'பனி 🌨️',80:'மழைச் சாரல் 🌦️',81:'மழை 🌧️',82:'பலத்த மழை ⛈️',95:'இடியுடன் மழை ⛈️',96:'ஆலங்கட்டி மழை ⛈️',99:'கடுமையான இடியுடன் மழை ⛈️'};
