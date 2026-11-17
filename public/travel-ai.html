@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0ea5e9">
+<title>SASIKUMAR AI - Travel Planner</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:14px;font-family:Arial,sans-serif;color:#172554;background:linear-gradient(135deg,#dbeafe,#cffafe,#dcfce7);min-height:100vh}
+.wrap{max-width:650px;margin:auto}
+.header{padding:18px;border-radius:20px;background:linear-gradient(120deg,#0284c7,#0d9488);color:white;text-align:center;box-shadow:0 6px 20px #64748b33}
+.header img{width:55px;height:55px;object-fit:contain}
+.header h2{margin:7px 0;font-size:22px}
+.header p{margin:5px;font-size:13px}
+.panel{background:#fff;border:1px solid #bae6fd;border-radius:17px;padding:16px;margin-top:14px;box-shadow:0 4px 15px #64748b22}
+label{display:block;font-size:13px;font-weight:700;margin:10px 0 5px;color:#164e63}
+input,select,textarea{width:100%;padding:12px;border:1px solid #7dd3fc;border-radius:10px;font-size:15px;background:#f8fafc;color:#172554}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{border:0;border-radius:11px;padding:13px 15px;font-size:15px;font-weight:800;cursor:pointer}
+.primary{width:100%;margin-top:15px;background:linear-gradient(90deg,#0284c7,#059669);color:white}
+.share{background:#16a34a;color:white;margin-top:12px;width:100%}
+.small{font-size:12px;color:#475569;line-height:1.5}
+#status{font-size:13px;color:#0369a1;font-weight:700;margin-top:12px}
+#answer{white-space:pre-wrap;line-height:1.65;font-size:14px;color:#1e293b;overflow-wrap:anywhere}
+.result{padding:10px;border:1px solid #bae6fd;border-radius:10px;margin:8px 0;background:#f0f9ff}
+.result a{color:#0369a1;font-weight:700;overflow-wrap:anywhere}
+h3{color:#075985;margin:8px 0}
+@media(max-width:420px){body{padding:9px}.grid{gap:7px}.panel{padding:12px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <div class="header">
+  <img src="/assets/sasikumar-ai-logo-60.png" alt="Sasikumar AI">
+  <h2>✈️ SASIKUMAR AI TRAVEL</h2>
+  <p>Smart Travel Planner • புத்திசாலி பயணத் திட்டம்</p>
+  <p>Places • Route • Budget • Stay • Safety</p>
+ </div>
+
+ <div class="panel">
+  <h3>🌍 Plan Your Journey / பயணத்தைத் திட்டமிடுங்கள்</h3>
+  <label for="lang">Language / மொழி</label>
+  <select id="lang">
+   <option value="Tamil">தமிழ்</option>
+   <option value="English">English</option>
+  </select>
+
+  <div class="grid">
+   <div><label for="from">📍 From / புறப்படும் இடம்</label><input id="from" placeholder="Chennai" required></div>
+   <div><label for="to">🏁 To / செல்லும் இடம்</label><input id="to" placeholder="Madurai" required></div>
+  </div>
+  <div class="grid">
+   <div><label for="date">📅 Travel Date</label><input id="date" type="date"></div>
+   <div><label for="people">👨‍👩‍👧 Travellers</label><input id="people" type="number" min="1" max="50" value="1"></div>
+  </div>
+  <label for="budget">💰 Total Budget (₹) / மொத்த பட்ஜெட்</label>
+  <input id="budget" type="number" min="0" placeholder="Example: 10000">
+  <label for="extra">⭐ Preferences / கூடுதல் விருப்பங்கள்</label>
+  <textarea id="extra" rows="2" placeholder="Family trip, temples, food, beaches..."></textarea>
+  <button class="primary" id="plan">✈️ CREATE MY TRAVEL PLAN</button>
+  <div id="status" role="status"></div>
+ </div>
+
+ <div class="panel" id="output" hidden>
+  <h3>🤖 Your Travel Plan</h3>
+  <div id="answer"></div>
+  <button class="share" id="share">🟢 SHARE PLAN ON WHATSAPP</button>
+ </div>
+
+ <div class="panel" id="searchPanel" hidden>
+  <h3>🌐 Web Search Results</h3>
+  <div id="results"></div>
+  <p class="small" id="provider"></p>
+ </div>
+ <p class="small" style="text-align:center;margin:16px">
+  SASIKUMAR AI • Travel estimates are indicative. Confirm transport schedules,
+  ticket prices and accommodation directly before booking.
+ </p>
+</div>
+
+<script>
+(function(){
+ const $ = id => document.getElementById(id);
+ let lastPlan = "";
+
+ const dateInput = $("date");
+ const today = new Date();
+ dateInput.min = new Date(today.getTime()-today.getTimezoneOffset()*60000)
+   .toISOString().slice(0,10);
+
+ function addResult(item){
+   const box = document.createElement("div");
+   box.className = "result";
+   const a = document.createElement("a");
+   a.href = item.url;
+   a.target = "_blank";
+   a.rel = "noopener noreferrer";
+   a.textContent = item.title || "Search result";
+   const p = document.createElement("p");
+   p.className = "small";
+   p.textContent = item.content || "";
+   box.append(a,p);
+   $("results").appendChild(box);
+ }
+
+ $("plan").addEventListener("click", async function(){
+   const from = $("from").value.trim();
+   const to = $("to").value.trim();
+   if(!from || !to){
+     $("status").textContent = "Please enter From and To locations.";
+     return;
+   }
+
+   const people = Math.max(1,Math.min(50,Number($("people").value)||1));
+   const lang = $("lang").value;
+   const date = $("date").value || "Not specified";
+   const budget = $("budget").value.trim() || "Not specified";
+   const extra = $("extra").value.trim();
+
+   const query = `travel from ${from} to ${to} ${date} tourist places route transport`;
+   const button = $("plan");
+   button.disabled = true;
+   button.textContent = "⏳ PLEASE WAIT...";
+   $("status").textContent = "🌐 Searching travel information...";
+   $("output").hidden = false;
+   $("searchPanel").hidden = true;
+   $("answer").textContent = "🤖 Preparing your travel plan...";
+
+   let searchData = {results:[],provider:"unavailable"};
+   try{
+     const sr = await fetch("/api/global-search?q="+encodeURIComponent(query));
+     searchData = await sr.json();
+     if(!sr.ok) throw new Error(searchData.error || "Search unavailable");
+   }catch(err){
+     $("status").textContent = "⚠️ Web search unavailable. Asking AI with available information.";
+   }
+
+   const results = Array.isArray(searchData.results) ? searchData.results : [];
+   $("results").replaceChildren();
+   results.slice(0,8).forEach(addResult);
+   $("provider").textContent = "Search provider: " + (searchData.provider || "Not available");
+   $("searchPanel").hidden = false;
+
+   const context = results.slice(0,8).map((r,i)=>({
+     title:r.title, url:r.url, content:(r.content||"").slice(0,700)
+   }));
+
+   const message =
+`Act as SASIKUMAR AI Travel Planner.
+Create a useful, practical travel plan in ${lang}.
+Starting place: ${from}
+Destination: ${to}
+Travel date: ${date}
+Travellers: ${people}
+Total budget in INR: ${budget}
+Preferences: ${extra || "General sightseeing"}
+
+Use these web search results as reference:
+${JSON.stringify(context)}
+
+Provide:
+1. Day-wise itinerary and places to visit.
+2. Route and transport options.
+3. Approximate travel time.
+4. Estimated expenses in INR with clear breakdown.
+5. Accommodation area/type suggestions.
+6. Local transport and food guidance.
+7. Family and personal safety tips.
+8. Useful booking/checking links when available.
+
+Be honest. Clearly label estimates. Do not invent live ticket prices,
+hotel availability, schedules or confirmed bookings. If search results
+are empty, say so and distinguish general knowledge from verified details.
+Answer in ${lang}.`;
+
+   try{
+     $("status").textContent = "🤖 AI is preparing your itinerary...";
+     const response = await fetch("/api/chat",{
+       method:"POST",
+       headers:{"Content-Type":"application/json"},
+       body:JSON.stringify({message,category:"Travel AI"})
+     });
+     const data = await response.json();
+     if(!response.ok) throw new Error(data.error || "AI request failed");
+     lastPlan = data.reply || data.answer || "No AI response received.";
+     $("answer").textContent = lastPlan;
+     $("status").textContent = "✅ Travel plan ready";
+   }catch(err){
+     lastPlan = "AI response unavailable: " + err.message +
+       "\n\nSearch results are shown below if available.";
+     $("answer").textContent = lastPlan;
+     $("status").textContent = "⚠️ AI connection issue";
+   }finally{
+     button.disabled = false;
+     button.textContent = "✈️ CREATE MY TRAVEL PLAN";
+   }
+ });
+
+ $("share").addEventListener("click",function(){
+   const text = "✈️ SASIKUMAR AI TRAVEL PLAN\n\n" +
+     $("from").value + " → " + $("to").value + "\n\n" + lastPlan;
+   window.open("https://wa.me/?text="+encodeURIComponent(text),"_blank","noopener");
+ });
+})();
+</script>
+</body>
+</html>
