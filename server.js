@@ -1915,7 +1915,11 @@ let liveSearchResults = [];
     isTamilNaduQuery ? 'Tamil Nadu Chennai district local news' : ''
   ].filter(Boolean).join(' ');
 
+  const isTravelQuery =
+    /(?:travel|travelling|trip|tour|tourism|tourist|itinerary|sightseeing|vacation|holiday|route|road trip|bus to|train to|flight to|hotel|resort|homestay|places to visit|tourist places|travel budget|சுற்றுலா|பயணம்|பயணத் திட்டம்|பயண திட்டம்|வழித்தடம்|பேருந்து|ரயில் பயணம்|விமான பயணம்|தங்கும் இடம்|விடுதி|சுற்றிப் பார்க்க|பார்க்க வேண்டிய இடங்கள்)/i.test(query);
+
   const needsLiveSearch = (explicitSearch && query.length > 0) ||
+    isTravelQuery ||
     /(?:latest|current|today|now|recent|live|news|headlines|breaking|weather|gold|silver|price|rate|stock|market|business|election|movie|movies|film|films|cinema|release|releases|upcoming|box office|திரைப்படம்|திரைப்படங்கள்|படம்|படங்கள்|வெளியீடு|வெளியீட்டுத் தேதி|நடிகர்|நடிகைகள்|இன்றைய|தற்போதைய|சமீபத்திய|விலை|செய்தி|செய்திகள்|வானிலை|தங்கம்|வெள்ளி|பங்கு|சந்தை)/i.test(query);
 
   const asksForNews =
@@ -2176,6 +2180,18 @@ let liveSearchResults = [];
   let userContent = aiContext
     ? aiContext + '\n\nUser question:\n' + query
     : query;
+
+  if (isTravelQuery) {
+    userContent +=
+      '\n\nTRAVEL AI INSTRUCTIONS: Act as a practical travel planner. ' +
+      'Give a useful itinerary, route options, approximate travel time and budget, ' +
+      'attractions, accommodation guidance, local transport and safety tips when relevant. ' +
+      'Ask for missing essential details such as starting place, destination, travel dates, ' +
+      'number of travellers and budget only when needed. Match Tamil, English or Tanglish. ' +
+      'Use live search results for current details and cite useful source URLs. ' +
+      'Clearly label estimates; never invent hotel availability, ticket prices, schedules or bookings.';
+  }
+
   // SK_EXTRA_SEARCH_CATEGORY_AI_INSTRUCTIONS_V1
   const categoryInstructions = {
     GENERAL: 'Provide relevant general web search results.',
@@ -4349,7 +4365,10 @@ app.post('/api/whatsapp/webhook',async(req,res)=>{
 
     console.log('[WA webhook] Incoming message', JSON.stringify({
       type: msg.type,
-      senderLast4: String(msg.from || '').slice(-4)
+      senderLast4: String(msg.from || '').slice(-4),
+      documentFilename: msg.document?.filename || null,
+      documentMimeType: msg.document?.mime_type || null,
+      documentMediaIdPresent: Boolean(msg.document?.id)
     }));
 
 
