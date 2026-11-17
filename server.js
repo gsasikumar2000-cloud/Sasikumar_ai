@@ -5163,7 +5163,13 @@ if (mp3PlayRequested || mp3Navigation) {
           body: JSON.stringify({
             message: trimmed,
             mode: 'smart',
-            language: 'Auto'
+            language: 'Auto',
+            source: 'whatsapp',
+            whatsappUserId: waSenderDigits,
+            whatsappMemoryProof: process.env.CONVERSATION_MEMORY_SECRET
+              ? createHmac('sha256', process.env.CONVERSATION_MEMORY_SECRET)
+                  .update('whatsapp:' + waSenderDigits).digest('hex')
+              : ''
           }),
           signal: AbortSignal.timeout(35000)
         }
@@ -7817,8 +7823,32 @@ app.post('/api/executive-ai', async (req, res) => {
     return res.status(413).json({ ok: false, reply: 'Please shorten your question to 6000 characters.' });
   }
 
+  // SK_EXECUTIVE_WHATSAPP_MEMORY_V1
+  const executiveSource = String(req.body?.source || '');
+  const executiveWhatsAppUserId = String(req.body?.whatsappUserId || '');
+  const suppliedMemoryProof = String(req.body?.whatsappMemoryProof || '');
+  const expectedMemoryProof =
+    process.env.CONVERSATION_MEMORY_SECRET && executiveWhatsAppUserId
+      ? createHmac('sha256', process.env.CONVERSATION_MEMORY_SECRET)
+          .update('whatsapp:' + executiveWhatsAppUserId).digest('hex')
+      : '';
+  const verifiedWhatsAppMemory =
+    executiveSource === 'whatsapp' &&
+    !!expectedMemoryProof &&
+    suppliedMemoryProof === expectedMemoryProof;
+  const executiveMemoryKey = verifiedWhatsAppMemory
+    ? skMemoryUserKey('whatsapp', executiveWhatsAppUserId)
+    : null;
+  const executiveConversationMemory = executiveMemoryKey
+    ? await skLoadConversationMemory('whatsapp', executiveMemoryKey)
+    : '';
+
   const startedAt = Date.now();
-  let executiveMessage = message;
+  let executiveMessage = executiveConversationMemory
+    ? 'PREVIOUS WHATSAPP CONVERSATION:\n' +
+      executiveConversationMemory.slice(-12000) +
+      '\n\nCURRENT USER QUESTION:\n' + message
+    : message;
   let liveSearchProvider = '';
 
   // GOLD ACCURACY: supply verified local API data for gold/loan questions.
@@ -7949,6 +7979,12 @@ app.post('/api/executive-ai', async (req, res) => {
         reply: 'AI service is temporarily unavailable. Please try again.',
         elapsedMs: Date.now() - startedAt
       });
+    }
+
+    if (executiveMemoryKey && !skIsMedicalQuery(message)) {
+      await skSaveConversationTurn(
+        'whatsapp', executiveMemoryKey, message, reply
+      );
     }
 
     return res.json({
