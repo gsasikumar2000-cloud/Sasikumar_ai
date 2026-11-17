@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI - Weather AI</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:14px;font-family:Arial,sans-serif;color:#172554;background:linear-gradient(135deg,#dbeafe,#e0f2fe,#dcfce7,#fef3c7);min-height:100vh}
+.wrap{max-width:650px;margin:auto}
+header{text-align:center;padding:15px 8px}
+.logo{width:62px;height:62px;object-fit:contain}
+h1{font-size:23px;margin:7px 0;color:#075985}
+.sub{font-size:13px;color:#334155}
+.panel{background:#fff;border-radius:17px;padding:15px;margin:12px 0;box-shadow:0 4px 14px #64748b22}
+.search{display:flex;gap:8px}
+input{width:100%;min-width:0;padding:13px;border:2px solid #bae6fd;border-radius:10px;font-size:16px}
+button{border:0;border-radius:10px;padding:11px 15px;background:#0284c7;color:white;font-weight:bold;font-size:14px}
+button:disabled{opacity:.6}
+.current{text-align:center;background:linear-gradient(135deg,#38bdf8,#60a5fa,#818cf8);color:white}
+.temp{font-size:55px;font-weight:800;margin:8px}
+.desc{font-size:19px;font-weight:bold}
+.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.metric{background:#f0f9ff;border-radius:12px;padding:13px;text-align:center}
+.metric b{display:block;font-size:19px;margin-top:5px;color:#075985}
+.forecast{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.day{background:#f0fdf4;border-radius:11px;padding:11px;text-align:center;font-size:13px}
+.day b{display:block;margin:5px;color:#166534}
+h2{font-size:17px;color:#075985;margin:4px 0 12px}
+#status{font-size:13px;color:#475569;text-align:center;padding:8px}
+#advice{line-height:1.7;font-size:14px}
+footer{text-align:center;font-size:11px;color:#475569;padding:15px}
+@media(min-width:500px){.forecast{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<img class="logo" src="/assets/sasikumar-ai-logo-60.png" onerror="this.style.display='none'">
+<h1>🌦️ SASIKUMAR AI WEATHER</h1>
+<div class="sub">வானிலை தகவல்கள் • Weather Forecast • விவசாய ஆலோசனை</div>
+</header>
+
+<div class="panel">
+<div class="search">
+<input id="city" value="Chennai" placeholder="நகரத்தின் பெயர் / Enter city">
+<button id="searchBtn" onclick="loadWeather()">SEARCH</button>
+</div>
+<div id="status">நகரத்தைத் தேட Search அழுத்தவும்</div>
+</div>
+
+<div class="panel current">
+<div id="place">🌍 Weather</div>
+<div class="temp" id="temp">--°</div>
+<div class="desc" id="description">வானிலை விவரம்</div>
+<div id="feels">Feels like --°</div>
+</div>
+
+<div class="panel">
+<h2>📊 இன்றைய வானிலை / Today</h2>
+<div class="metrics">
+<div class="metric">💧 ஈரப்பதம் <b id="humidity">--</b></div>
+<div class="metric">💨 காற்றின் வேகம் <b id="wind">--</b></div>
+<div class="metric">🌧️ மழை அளவு <b id="rain">--</b></div>
+<div class="metric">🌡️ உணரும் வெப்பம் <b id="feels2">--</b></div>
+</div>
+</div>
+
+<div class="panel">
+<h2>📅 7 நாள் வானிலை / 7-Day Forecast</h2>
+<div class="forecast" id="forecast">
+<div class="day">வானிலைத் தகவல் காத்திருக்கிறது...</div>
+</div>
+</div>
+
+<div class="panel">
+<h2>🌾 விவசாய வானிலை ஆலோசனை</h2>
+<div id="advice">வானிலைத் தகவல் கிடைத்ததும் ஆலோசனை காட்டப்படும்.</div>
+</div>
+
+<div class="panel" style="text-align:center">
+<button onclick="setLang('ta')">தமிழ்</button>
+<button onclick="setLang('en')">English</button>
+</div>
+
+<footer>Weather data: Open-Meteo • Forecast தகவல் மட்டுமே; அதிகாரப்பூர்வ பேரிடர் எச்சரிக்கை அல்ல.</footer>
+</div>
+
+<script>
+let lang='ta';
+let lastData=null;
+
+function weatherText(code){
+const ta={0:'தெளிவான வானம் ☀️',1:'பெரும்பாலும் தெளிவு 🌤️',2:'ஓரளவு மேகம் ⛅',3:'மேகமூட்டம் ☁️',45:'பனிமூட்டம் 🌫️',48:'பனிமூட்டம் 🌫️',51:'லேசான தூறல் 🌦️',53:'தூறல் 🌦️',55:'அதிக தூறல் 🌧️',61:'லேசான மழை 🌧️',63:'மிதமான மழை 🌧️',65:'கனமழை ⛈️',71:'பனி 🌨️',80:'மழைச் சாரல் 🌦️',81:'மழை 🌧️',82:'பலத்த மழை ⛈️',95:'இடியுடன் மழை ⛈️',96:'ஆலங்கட்டி மழை ⛈️',99:'கடுமையான இடியுடன் மழை ⛈️'};
+const en={0:'Clear sky ☀️',1:'Mainly clear 🌤️',2:'Partly cloudy ⛅',3:'Overcast ☁️',45:'Fog 🌫️',48:'Fog 🌫️',51:'Light drizzle 🌦️',53:'Drizzle 🌦️',55:'Heavy drizzle 🌧️',61:'Light rain 🌧️',63:'Moderate rain 🌧️',65:'Heavy rain ⛈️',71:'Snow 🌨️',80:'Rain showers 🌦️',81:'Rain showers 🌧️',82:'Heavy showers ⛈️',95:'Thunderstorm ⛈️',96:'Hail ⛈️',99:'Severe thunderstorm ⛈️'};
+return (lang==='ta'?ta:en)[code]||'வானிலை / Weather';
+}
+
+function setLang(value){
+lang=value;
+if(lastData) showWeather(lastData);
+}
+
+async function loadWeather(){
+const city=document.getElementById('city').value.trim();
+if(!city){document.getElementById('status').textContent='நகரத்தின் பெயரை உள்ளிடுங்கள்';return}
+const btn=document.getElementById('searchBtn');
+btn.disabled=true;
+document.getElementById('status').textContent='வானிலைத் தகவல் தேடப்படுகிறது...';
+try{
+const geo=await fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(city)+'&count=1&language=en&format=json');
+if(!geo.ok)throw Error('Location search failed');
+const gd=await geo.json();
+if(!gd.results||!gd.results.length)throw Error('நகரம் கிடைக்கவில்லை. வேறு பெயரை முயற்சிக்கவும்.');
+const loc=gd.results[0];
+const url='https://api.open-meteo.com/v1/forecast?latitude='+loc.latitude+'&longitude='+loc.longitude+'&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,showers,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=7';
+const response=await fetch(url);
+if(!response.ok)throw Error('Weather service unavailable');
+const data=await response.json();
+lastData={loc,data};
+showWeather(lastData);
+document.getElementById('status').textContent='✅ Weather updated successfully';
+}catch(e){
+document.getElementById('status').textContent='⚠️ '+e.message;
+}finally{btn.disabled=false}
+}
+
+function showWeather(result){
+const {loc,data}=result;
+const c=data.current,d=data.daily;
+document.getElementById('place').textContent='📍 '+loc.name+(loc.admin1?', '+loc.admin1:'');
+document.getElementById('temp').textContent=Math.round(c.temperature_2m)+'°C';
+document.getElementById('description').textContent=weatherText(c.weather_code);
+document.getElementById('feels').textContent=(lang==='ta'?'உணரும் வெப்பம்: ':'Feels like: ')+Math.round(c.apparent_temperature)+'°C';
+document.getElementById('humidity').textContent=c.relative_humidity_2m+'%';
+document.getElementById('wind').textContent=c.wind_speed_10m+' km/h';
+document.getElementById('rain').textContent=c.precipitation+' mm';
+document.getElementById('feels2').textContent=Math.round(c.apparent_temperature)+'°C';
+
+document.getElementById('forecast').innerHTML=d.time.map((date,i)=>{
+const day=new Date(date+'T12:00:00').toLocaleDateString(lang==='ta'?'ta-IN':'en-IN',{weekday:'short',day:'numeric',month:'short'});
+return '<div class="day">'+day+'<b>'+weatherText(d.weather_code[i])+'</b><strong>'+Math.round(d.temperature_2m_max[i])+'° / '+Math.round(d.temperature_2m_min[i])+'°</strong><div>🌧️ '+(d.precipitation_probability_max[i]??'--')+'%</div></div>';
+}).join('');
+
+const max=d.temperature_2m_max[0];
+const chance=d.precipitation_probability_max[0]??0;
+let advice;
+if(chance>=60) advice=lang==='ta'?'🌧️ மழை வாய்ப்பு அதிகம். பாசனம் மற்றும் உரமிடுதலைத் திட்டமிட்டு, அறுவடைப் பொருட்களைப் பாதுகாப்பாக வையுங்கள்.':'🌧️ High rain chance. Plan irrigation and fertilizer work carefully and protect harvested produce.';
+else if(max>=36) advice=lang==='ta'?'☀️ வெப்பம் அதிகமாக இருக்கலாம். பயிர்களின் ஈரப்பதத்தைக் கண்காணித்து, தேவைக்கேற்ப காலை அல்லது மாலை பாசனம் செய்யுங்கள்.':'☀️ Hot conditions possible. Monitor soil moisture and irrigate in the cooler morning or evening.';
+else advice=lang==='ta'?'🌱 வானிலையைத் தொடர்ந்து கவனியுங்கள். மண் ஈரப்பதம் மற்றும் பயிரின் நிலைக்கு ஏற்ப பாசனம், தெளிப்பு பணிகளைத் திட்டமிடுங்கள்.':'🌱 Keep monitoring the weather. Plan irrigation and spraying according to soil moisture and crop condition.';
+document.getElementById('advice').textContent=advice;
+}
+loadWeather();
+</script>
+</body>
+</html>
