@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#7c3aed">
+<title>SASIKUMAR AI - Brand Logo Maker</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#fff7ed,#f3e8ff,#d1fae5);color:#172554;min-height:100vh}
+header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:linear-gradient(110deg,#6d28d9,#9333ea,#db2777);color:white}
+header img{width:42px;height:42px;object-fit:contain}
+header strong{font-size:16px}
+header small{display:block;font-size:11px;margin-top:3px}
+.wrap{max-width:650px;margin:auto;padding:18px 14px}
+.card{background:rgba(255,255,255,.94);border:1px solid #e9d5ff;border-radius:20px;padding:20px;box-shadow:0 8px 28px #6b21a822}
+h1{text-align:center;font-size:25px;margin:5px 0 8px;color:#6d28d9}
+.intro{text-align:center;color:#475569;line-height:1.5}
+label{display:block;font-weight:700;margin:14px 0 6px}
+input,select,textarea{width:100%;padding:13px;border:1px solid #c4b5fd;border-radius:11px;background:#fff;color:#172554;font-size:16px}
+textarea{min-height:85px;resize:vertical}
+button{width:100%;padding:14px;margin-top:13px;border:0;border-radius:12px;font-size:16px;font-weight:800;cursor:pointer}
+.generate{background:linear-gradient(90deg,#7c3aed,#db2777);color:#fff}
+.back{background:#e0e7ff;color:#3730a3}
+#status{margin-top:14px;padding:12px;border-radius:10px;background:#f3e8ff;color:#4c1d95;white-space:pre-wrap}
+#result{margin-top:16px;padding:10px;min-height:100px;text-align:center;background:#f8fafc;border:1px dashed #a78bfa;border-radius:14px}
+#result img{display:block;width:100%;height:auto;object-fit:contain;border-radius:10px}
+#download{display:none;text-decoration:none;text-align:center;background:#059669;color:white;padding:13px;border-radius:11px;margin-top:12px;font-weight:bold}
+.note{font-size:12px;color:#64748b;text-align:center;line-height:1.5}
+</style>
+</head>
+<body>
+<header>
+<img src="/assets/sasikumar-ai-logo.png" alt="SASIKUMAR AI">
+<div><strong>SASIKUMAR AI</strong><small>Smart Digital Services</small></div>
+</header>
+<div class="wrap">
+<div class="card">
+<h1>🎨 Brand Logo Maker</h1>
+<p class="intro">உங்கள் கடை, நிறுவனம் அல்லது வணிகத்திற்கான தனித்துவமான Logo உருவாக்குங்கள்.</p>
+
+<label for="brand">🏷️ Brand / Business Name *</label>
+<input id="brand" maxlength="70" placeholder="உதாரணம்: Vinayaga Agencies">
+
+<label for="type">🏪 Business Type</label>
+<select id="type">
+<option>Shop / Retail</option>
+<option>Gold Jewellery</option>
+<option>Grocery / Supermarket</option>
+<option>Hotel / Restaurant</option>
+<option>Agriculture</option>
+<option>Technology / IT</option>
+<option>Education</option>
+<option>Beauty / Fashion</option>
+<option>Medical / Healthcare</option>
+<option>Other Business</option>
+</select>
+
+<label for="style">✨ Logo Style</label>
+<select id="style">
+<option value="Modern minimal vector logo">Modern Minimal</option>
+<option value="Luxury premium elegant logo">Luxury Premium</option>
+<option value="3D professional emblem logo">3D Emblem</option>
+<option value="Creative colorful mascot logo">Creative Mascot</option>
+<option value="Classic professional typography logo">Classic Professional</option>
+<option value="Indian traditional inspired modern logo">Traditional Indian</option>
+</select>
+
+<label for="colors">🎨 Preferred Colors</label>
+<select id="colors">
+<option value="purple and gold">Purple & Gold</option>
+<option value="blue and silver">Blue & Silver</option>
+<option value="green and gold">Green & Gold</option>
+<option value="black and gold">Black & Gold</option>
+<option value="orange and dark blue">Orange & Blue</option>
+<option value="bright colors chosen by the designer">AI Choose Colors</option>
+</select>
+
+<label for="tagline">📝 Tagline (Optional)</label>
+<input id="tagline" maxlength="100" placeholder="உங்கள் நிறுவனத்தின் வாசகம்">
+
+<label for="details">💡 Additional Details (Optional)</label>
+<textarea id="details" maxlength="500" placeholder="Logo-வில் இருக்க வேண்டிய சின்னம், வடிவம் அல்லது கூடுதல் விவரம்"></textarea>
+
+<button class="generate" id="generateBtn" type="button" onclick="generateLogo()">✨ Generate Brand Logo</button>
+<div id="status" role="status" aria-live="polite">உங்கள் Brand விவரங்களை நிரப்பி Generate அழுத்துங்கள்.</div>
+<div id="result">உங்கள் Logo இங்கே தோன்றும்</div>
+<a id="download" href="#" download="sasikumar-brand-logo.png">⬇️ Download Logo</a>
+<button class="back" type="button" onclick="location.href='/'">⬅️ Back to SASIKUMAR AI</button>
+<p class="note">AI உருவாக்கும் படத்தில் Brand பெயரின் எழுத்து துல்லியம் மாறக்கூடும். தேவையெனில் பின்னர் திருத்திக்கொள்ளலாம்.</p>
+</div>
+</div>
+
+<script>
+async function generateLogo(){
+  const brand = document.getElementById('brand').value.trim();
+  const type = document.getElementById('type').value;
+  const style = document.getElementById('style').value;
+  const colors = document.getElementById('colors').value;
+  const tagline = document.getElementById('tagline').value.trim();
+  const details = document.getElementById('details').value.trim();
+  const status = document.getElementById('status');
+  const result = document.getElementById('result');
+  const download = document.getElementById('download');
+  const btn = document.getElementById('generateBtn');
+
+  if(!brand){
+    status.textContent = '⚠️ முதலில் Brand / Business Name உள்ளிடுங்கள்.';
+    document.getElementById('brand').focus();
+    return;
+  }
+
+  const prompt = `Create a professional high-quality brand identity logo for the business named "${brand}". Business category: ${type}. Style: ${style}. Color palette: ${colors}. Tagline: "${tagline || 'No tagline'}". Additional direction: ${details || 'Use your creative judgment'}. Design requirements: create one original clean memorable logo, strong recognizable symbol and balanced typography, centered composition, crisp vector-like edges, polished professional branding, suitable for shop signs, visiting cards, social media and packaging. Show the brand name exactly as supplied. No mockup, no watermark, no extra unrelated words, no collage.`;
+
+  btn.disabled = true;
+  btn.textContent = '⏳ Creating Logo...';
+  status.textContent = '🎨 AI Logo உருவாக்கப்படுகிறது. சிறிது நேரம் காத்திருக்கவும்...';
+  result.textContent = 'Please wait...';
+  download.style.display = 'none';
+
+  try{
+    const response = await fetch('/api/ai/image',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({prompt})
+    });
+    const data = await response.json();
+
+    if(!response.ok || !data.ok || !data.imageUrl){
+      throw new Error(data.error || 'Logo generation failed.');
+    }
+
+    const img = document.createElement('img');
+    img.src = data.imageUrl;
+    img.alt = brand + ' brand logo';
+    result.replaceChildren(img);
+
+    download.href = data.imageUrl;
+    download.style.display = 'block';
+    status.textContent = '✅ Logo உருவாக்கப்பட்டது! கீழே Download அழுத்தி சேமிக்கலாம்.';
+  }catch(error){
+    result.textContent = 'Logo உருவாக்க முடியவில்லை.';
+    status.textContent = '❌ ' + (error.message || 'Please try again.');
+  }finally{
+    btn.disabled = false;
+    btn.textContent = '✨ Generate Brand Logo';
+  }
+}
+</script>
+</body>
+</html>
