@@ -4080,13 +4080,32 @@ async function skExtractExcelText(input) {
 }
 
 // SK_WHATSAPP_DOCUMENT_ANALYSIS_V1
-async function skWhatsAppAnalyzeDocument(mediaId, fileName, caption = '') {
+async function skWhatsAppAnalyzeDocument(mediaId, fileName, caption = '', mimeType = '') {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) throw new Error('AI service unavailable.');
 
+  const mimeExtensions = {
+    'application/pdf': 'pdf',
+    'application/zip': 'zip',
+    'application/x-zip-compressed': 'zip',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
+    'text/csv': 'csv',
+    'application/csv': 'csv',
+    'text/plain': 'txt',
+    'application/json': 'json',
+    'text/html': 'html',
+    'text/xml': 'xml',
+    'application/xml': 'xml',
+    'image/svg+xml': 'svg'
+  };
+
   const safeName = String(fileName || 'document')
     .split(/[\\/]/).pop().slice(0, 150);
-  const ext = safeName.toLowerCase().split('.').pop();
+  const nameExt = safeName.toLowerCase().includes('.')
+    ? safeName.toLowerCase().split('.').pop()
+    : '';
+  const normalizedMime = String(mimeType || '').split(';')[0].trim().toLowerCase();
+  const ext = nameExt || mimeExtensions[normalizedMime] || '';
 
   const supported = new Set([
     'pdf', 'zip', 'xlsx', 'csv', 'txt', 'md',
@@ -4600,7 +4619,8 @@ if (msg.type === 'document' && msg.document?.id) {
       answer = await skWhatsAppAnalyzeDocument(
         document.id,
         fileName,
-        caption
+        caption,
+        document.mime_type || ''
       );
     }
 
