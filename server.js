@@ -1486,7 +1486,11 @@ app.post('/api/chat', async (req, res) => {
     let liveSearchResults = [];
     let liveSearchProvider = '';
     const originalSearchQuestion = userMessage;
-    const needsLiveSearch = !imageData && /(?:latest|current|today|now|recent|live|news|weather|gold|silver|price|rate|stock|market|business|election|இன்றைய|தற்போதைய|சமீபத்திய|விலை|செய்தி|வானிலை|தங்கம்|வெள்ளி|பங்கு|சந்தை)/i.test(userMessage);
+    const isCbiBankingQuery =
+      /central\s+bank\s+of\s+india/i.test(originalSearchQuestion) ||
+      (/\bcbi\b/i.test(originalSearchQuestion) &&
+       /bank|banking|gold|loan|account|deposit|interest|வங்கி|கடன்|தங்கம்/i.test(originalSearchQuestion));
+    const needsLiveSearch = !imageData && (isCbiBankingQuery || /(?:latest|current|today|now|recent|live|news|weather|gold|silver|price|rate|stock|market|business|election|இன்றைய|தற்போதைய|சமீபத்திய|விலை|செய்தி|வானிலை|தங்கம்|வெள்ளி|பங்கு|சந்தை)/i.test(userMessage));
 
     if (needsLiveSearch && process.env.TAVILY_API_KEY) {
       try {
@@ -1496,9 +1500,11 @@ app.post('/api/chat', async (req, res) => {
           body: JSON.stringify({
             api_key: process.env.TAVILY_API_KEY,
             query: (
-              skIsTamilNaduNewsQuery(originalSearchQuestion)
-                ? originalSearchQuestion + ' Tamil Nadu Chennai district local news'
-                : originalSearchQuestion
+              isCbiBankingQuery
+                ? 'site:centralbank.bank.in ' + originalSearchQuestion
+                : (skIsTamilNaduNewsQuery(originalSearchQuestion)
+                    ? originalSearchQuestion + ' Tamil Nadu Chennai district local news'
+                    : originalSearchQuestion)
             ).slice(0, 1000),
             search_depth: 'basic',
             max_results: 5,
@@ -1510,7 +1516,9 @@ app.post('/api/chat', async (req, res) => {
         if (searchResponse.ok) {
           const searchData = await searchResponse.json();
           liveSearchResults = (Array.isArray(searchData.results) ? searchData.results : [])
-            .filter(item => item && typeof item.url === 'string' && /^https?:\/\//i.test(item.url))
+            .filter(item => item && typeof item.url === 'string' &&
+              /^https?:\/\//i.test(item.url) &&
+              (!isCbiBankingQuery || /^https?:\/\/(?:www\.)?centralbank\.bank\.in(?:\/|$)/i.test(item.url)))
             .slice(0, 5)
             .map(item => ({
               title: String(item.title || 'Web source').slice(0, 200),
@@ -1639,6 +1647,7 @@ app.post('/api/chat', async (req, res) => {
                   'Respond in the language used by the user, including Tamil, English, or Tanglish. ' +
                   'Keep answers concise: normally 3-5 short lines. Answer the exact question directly, using simple language. Use bullets only when useful. Avoid long introductions, repeating the question, and unnecessary explanations. Give more detail only when the user asks for it or safety requires it. ' + 'Give clear, accurate and useful answers. ' +
                   'For Central Bank of India (CBI) banking questions, provide comprehensive guidance on savings, current, salary and pension accounts; FD and RD; gold, home, vehicle, personal, education and pension loans; Kisan Credit Card, crop loans and agriculture finance; MSME, Mudra and business loans; corporate banking, trade finance and NRI services; UPI, IMPS, NEFT, RTGS, cards, ATM, mobile and internet banking; lockers, cheque services, KYC, nomination, pension, insurance and investment distribution where officially offered. Explain purpose, general eligibility, common documents, application steps, repayment or maturity, benefits and limitations. Do not confuse Central Bank of India with RBI. Verify current rates, fees, eligibility and product availability only from https://www.centralbank.bank.in/ or https://centralbank.bank.in/. Never invent current figures. State the date checked and source link when verified. Never claim to represent the bank, approve loans or access customer accounts. Never ask for OTP, PIN, CVV, passwords or full card details. ' +
+                  (isCbiBankingQuery ? 'For Central Bank of India questions, use only official centralbank.bank.in search results. Ignore Instagram, Facebook, other banks and third-party company profiles as proof of bank rules. If no official result is available, clearly say current details could not be verified. Never guess interest rates, LTV, eligibility, fees or repayment terms. ' : '') +
                   'For current information that you cannot verify, be transparent. ' +
                   'For agriculture questions, give cautious practical guidance and recommend local agricultural officers when needed. Do not diagnose crop diseases with certainty from limited symptoms or images. Ask for crop, growth stage, location, symptoms, and recent weather or irrigation details when relevant. Do not invent pesticide or fungicide names, doses, mixtures, or application schedules. Recommend chemicals only when the crop, pest or disease, product label, and locally approved guidance support their use. Never suggest off-label use or mixing chemicals without authoritative guidance. Prioritize field observation, soil testing, integrated pest management, and official agricultural extension advice. State uncertainty clearly and recommend a local agricultural officer or KVK when diagnosis is unclear. ' +
                   'For Indian agriculture questions, KVK means Krishi Vigyan Kendra, not Kerala Village Kendra. Recommend the relevant state agriculture department or a relevant local KVK. Do not invent the names or locations of agricultural offices. Never invent KVK names, addresses, phone numbers, or contact details. Never show placeholder phone numbers such as xxxx. Recommend a specific KVK only when its name and contact information are verified from an official source. Do not promise to provide verified contact details unless an official source can actually be checked. If verification is unavailable, clearly say that the details cannot be verified in this response and direct the user to the state agriculture department or an official KVK directory. Ask for the district when needed, but never imply that the district alone verifies contact details. When asking for a PIN, use the term postal PIN code. Otherwise, ask for the users district or recommend contacting the state agriculture department without guessing office details. ' +
@@ -1650,7 +1659,7 @@ app.post('/api/chat', async (req, res) => {
               }
             ],
             temperature: 0.7,
-            max_completion_tokens: 700
+            max_completion_tokens: isCbiBankingQuery ? 1400 : 700
           }),
           signal: controller.signal
         }
