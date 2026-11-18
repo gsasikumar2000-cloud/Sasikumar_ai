@@ -2400,7 +2400,6 @@ const SK_WA_YOUTUBE_SESSIONS = new Map();
 const SK_WA_MP3_SESSIONS = new Map();
 // SK_WHATSAPP_VOICE_CHANGER_V1
 const SK_WA_VOICE_CHANGE_SESSIONS = new Map();
-const SK_WA_VOICE_CHANGE_MODES = new Map();
 
 
 function skRememberLastReply(key, message) {
@@ -4819,15 +4818,7 @@ if ((msg.type === 'audio' && msg.audio?.id) ||
   const wantsAnalysis =
     /^(?:analyze|analysis|பகுப்பாய்வு)$/i.test(audioCaption);
 
-  const voiceModeExpiry = SK_WA_VOICE_CHANGE_MODES.get(recipient) || 0;
-  const wantsVoiceChange =
-    voiceModeExpiry > Date.now() && !wantsAnalysis;
-
-  if (voiceModeExpiry && voiceModeExpiry <= Date.now()) {
-    SK_WA_VOICE_CHANGE_MODES.delete(recipient);
-  }
-
-  if (wantsAnalysis || !wantsVoiceChange) {
+  if (wantsAnalysis) {
     try {
       const answer = await skWhatsAppAnalyzeAudio(audio.id, audioCaption);
       await skWhatsAppSendTextOnly(recipient, answer.text);
@@ -4847,8 +4838,6 @@ if ((msg.type === 'audio' && msg.audio?.id) ||
     }
     return;
   }
-
-  SK_WA_VOICE_CHANGE_MODES.delete(recipient);
 
   try {
     const sourceBuffer = await skWhatsAppDownloadVoiceChangeBuffer(audio.id);
@@ -5137,17 +5126,6 @@ const waButtonTitle = String(
 ).trim();
 const trimmed=String(msg.text?.body || msg.image?.caption || waButtonTitle || '').trim();
     const lower=trimmed.toLowerCase();
-
-// SK_WHATSAPP_VOICE_CHANGE_COMMAND_V1
-if (/^(?:voice\s*change|voice\s*changer)$/i.test(trimmed)) {
-  SK_WA_VOICE_CHANGE_MODES.set(String(from || ''), Date.now() + 5 * 60 * 1000);
-
-  await skWhatsAppSendTextOnly(
-    String(from || ''),
-    '🎙️ Voice Changer mode ON.\n\nஇப்போது உங்கள் voice note அனுப்புங்கள்.\nஅடுத்து 1 முதல் 6 வரை effect தேர்வு செய்யலாம்.\n⏳ 5 நிமிடத்திற்குள் Audio அனுப்பவும்.'
-  );
-  return;
-}
 
 // SK_WHATSAPP_VOICE_CHANGER_V1 — pending sender selection
 const voiceSessionKey = String(from || '');
