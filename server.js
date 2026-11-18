@@ -1486,7 +1486,7 @@ app.post('/api/chat', async (req, res) => {
     let liveSearchResults = [];
     let liveSearchProvider = '';
     const originalSearchQuestion = userMessage;
-    const needsLiveSearch = category !== 'Travel AI' && !imageData && /(?:latest|current|today|now|recent|live|news|weather|gold|silver|price|rate|stock|market|business|election|இன்றைய|தற்போதைய|சமீபத்திய|விலை|செய்தி|வானிலை|தங்கம்|வெள்ளி|பங்கு|சந்தை)/i.test(userMessage);
+    const needsLiveSearch = !imageData && /(?:latest|current|today|now|recent|live|news|weather|gold|silver|price|rate|stock|market|business|election|இன்றைய|தற்போதைய|சமீபத்திய|விலை|செய்தி|வானிலை|தங்கம்|வெள்ளி|பங்கு|சந்தை)/i.test(userMessage);
 
     if (needsLiveSearch && process.env.TAVILY_API_KEY) {
       try {
@@ -1723,14 +1723,11 @@ app.post('/api/chat', async (req, res) => {
       });
     }
 
-    // SK_TRAVEL_AI_HIDE_DUPLICATE_SOURCES_V1
-    const sourceFooter = category === 'Travel AI'
-      ? ''
-      : liveSearchResults.length
-        ? '\n\n🌐 Live Search Sources:\n' + liveSearchResults
-            .map((item, i) => `${i + 1}. ${item.title}\n${item.url}`)
-            .join('\n')
-        : '';
+    const sourceFooter = liveSearchResults.length
+      ? '\n\n🌐 Live Search Sources:\n' + liveSearchResults
+          .map((item, i) => `${i + 1}. ${item.title}\n${item.url}`)
+          .join('\n')
+      : '';
     const finalReply = safeChatReply(reply) + sourceFooter;
     return res.json({
       reply: finalReply,
@@ -2398,8 +2395,6 @@ const SK_LAST_BOT_REPLIES = new Map();
 const SK_WA_PROCESSED_MESSAGES = new Map();
 const SK_WA_YOUTUBE_SESSIONS = new Map();
 const SK_WA_MP3_SESSIONS = new Map();
-// SK_WHATSAPP_VOICE_CHANGER_V1
-const SK_WA_VOICE_CHANGE_SESSIONS = new Map();
 
 
 function skRememberLastReply(key, message) {
@@ -3676,112 +3671,6 @@ async function skWhatsAppSendMp3Buffer(to, mp3Buffer) {
 // END SK_WHATSAPP_MP3_PLAYER_V1
 
 
-
-// SK_WHATSAPP_VOICE_CHANGER_V1
-async function skWhatsAppDownloadVoiceChangeBuffer(mediaId) {
-  if (!WA_TOKEN || !mediaId) {
-    throw new Error('WhatsApp audio credentials or media ID missing.');
-  }
-
-  const metaRes = await fetch(
-    `https://graph.facebook.com/v20.0/${encodeURIComponent(mediaId)}`,
-    {
-      headers: { Authorization: `Bearer ${WA_TOKEN}` },
-      signal: AbortSignal.timeout(20000)
-    }
-  );
-
-  const meta = await metaRes.json().catch(() => ({}));
-  if (!metaRes.ok || !meta.url) {
-    throw new Error(meta?.error?.message || 'WhatsApp audio download URL unavailable.');
-  }
-
-  const mime = String(meta.mime_type || '')
-    .split(';')[0].trim().toLowerCase();
-
-  if (!/^audio\/(mpeg|mp4|ogg|wav|webm|aac|amr|3gpp|x-wav)$/.test(mime)) {
-    throw new Error('Unsupported WhatsApp audio format: ' + mime);
-  }
-
-  const fileRes = await fetch(meta.url, {
-    headers: { Authorization: `Bearer ${WA_TOKEN}` },
-    signal: AbortSignal.timeout(30000)
-  });
-
-  if (!fileRes.ok) {
-    throw new Error('WhatsApp audio download failed.');
-  }
-
-  const declaredSize = Number(fileRes.headers.get('content-length') || 0);
-  if (declaredSize > 10 * 1024 * 1024) {
-    throw new Error('Audio is larger than the 10 MB limit.');
-  }
-
-  const buffer = Buffer.from(await fileRes.arrayBuffer());
-
-  if (!buffer.length || buffer.length > 10 * 1024 * 1024) {
-    throw new Error('Audio is empty or larger than the 10 MB limit.');
-  }
-
-  return buffer;
-}
-
-async function skWhatsAppApplyVoiceEffect(sourceBuffer, effectNumber) {
-  const filters = {
-    1: 'asetrate=24000*0.84,aresample=24000,atempo=1.190476,lowpass=f=3200',
-    2: 'asetrate=24000*1.19,aresample=24000,atempo=0.840336,highpass=f=120',
-    3: 'aecho=0.8:0.88:60:0.4,highpass=f=180,lowpass=f=3200',
-    4: 'asetrate=24000*1.35,aresample=24000,atempo=0.740741,highpass=f=450,lowpass=f=5000',
-    5: 'asetrate=24000*1.25,aresample=24000,atempo=0.8,highpass=f=700,lowpass=f=5500',
-    6: 'asetrate=24000*0.72,aresample=24000,atempo=1.388889,lowpass=f=1600,aecho=0.7:0.6:40:0.2'
-  };
-
-  const filter = filters[Number(effectNumber)];
-  if (!Buffer.isBuffer(sourceBuffer) || !sourceBuffer.length || !filter) {
-    throw new Error('Invalid audio or voice effect selection.');
-  }
-
-  const tempDir = fs.mkdtempSync(path.join(__dirname, '.wa-voice-'));
-
-  try {
-    const inputPath = path.join(tempDir, 'input.audio');
-    const outputPath = path.join(tempDir, 'output.ogg');
-
-    fs.writeFileSync(inputPath, sourceBuffer);
-
-    await execFileAsync('ffmpeg', [
-      '-y',
-      '-i', inputPath,
-      '-vn',
-      '-af', filter,
-      '-ac', '1',
-      '-ar', '24000',
-      '-c:a', 'libopus',
-      '-b:a', '32k',
-      '-application', 'voip',
-      outputPath
-    ], {
-      timeout: 90000,
-      maxBuffer: 2 * 1024 * 1024
-    });
-
-    const output = fs.readFileSync(outputPath);
-
-    if (
-      !output.length ||
-      output.length > 12 * 1024 * 1024 ||
-      output.subarray(0, 4).toString() !== 'OggS'
-    ) {
-      throw new Error('FFmpeg produced an invalid OGG audio file.');
-    }
-
-    return output;
-  } finally {
-    fs.rmSync(tempDir, { recursive: true, force: true });
-  }
-}
-// END SK_WHATSAPP_VOICE_CHANGER_V1
-
 // SK_WHATSAPP_AUDIO_TEXT_ANALYSIS_V1
 async function skWhatsAppAnalyzeAudio(mediaId, caption = '') {
   const apiKey = process.env.GROQ_API_KEY;
@@ -4812,77 +4701,26 @@ app.post('/api/whatsapp/webhook',async(req,res)=>{
 if ((msg.type === 'audio' && msg.audio?.id) ||
     (msg.type === 'voice' && msg.voice?.id)) {
   const audio = msg.audio || msg.voice;
-  const recipient = String(msg.from || '');
-  const audioCaption = String(audio.caption || '').trim();
-
-  const wantsAnalysis =
-    /^(?:analyze|analysis|பகுப்பாய்வு)$/i.test(audioCaption);
-
-  if (wantsAnalysis) {
-    try {
-      const answer = await skWhatsAppAnalyzeAudio(audio.id, audioCaption);
-      await skWhatsAppSendTextOnly(recipient, answer.text);
-
-      try {
-        const voiceBuffer = await skWhatsAppTextToOggOpus(answer.speechText);
-        await skWhatsAppSendVoiceBuffer(recipient, voiceBuffer);
-      } catch (voiceError) {
-        console.warn('[WA voice output]', voiceError.message);
-      }
-    } catch (err) {
-      console.error('[WA audio analysis]', err.message);
-      await skWhatsAppSendTextOnly(
-        recipient,
-        'மன்னிக்கவும். இந்த Audio-வை இப்போது புரிந்துகொள்ள முடியவில்லை. மீண்டும் அனுப்புங்கள்.'
-      );
-    }
-    return;
-  }
-
   try {
-    const sourceBuffer = await skWhatsAppDownloadVoiceChangeBuffer(audio.id);
-    const now = Date.now();
-
-    for (const [key, session] of SK_WA_VOICE_CHANGE_SESSIONS) {
-      if (!session || session.expiresAt <= now) {
-        SK_WA_VOICE_CHANGE_SESSIONS.delete(key);
-      }
-    }
-
-    SK_WA_VOICE_CHANGE_SESSIONS.delete(recipient);
-
-    while (SK_WA_VOICE_CHANGE_SESSIONS.size >= 50) {
-      const oldestKey = SK_WA_VOICE_CHANGE_SESSIONS.keys().next().value;
-      SK_WA_VOICE_CHANGE_SESSIONS.delete(oldestKey);
-    }
-
-    SK_WA_VOICE_CHANGE_SESSIONS.set(recipient, {
-      buffer: sourceBuffer,
-      expiresAt: now + 5 * 60 * 1000
-    });
-
-    await skWhatsAppSendTextOnly(
-      recipient,
-      '🎙️ SASIKUMAR AI — Voice Changer\n\n' +
-      'உங்கள் Audio கிடைத்துவிட்டது. எந்த Voice வேண்டும்?\n\n' +
-      '1️⃣ Deep Male\n' +
-      '2️⃣ Female Style\n' +
-      '3️⃣ Robot\n' +
-      '4️⃣ Dog Style\n' +
-      '5️⃣ Cat Style\n' +
-      '6️⃣ Lion Style\n\n' +
-      '1 முதல் 6 வரை எண்ணை அனுப்புங்கள்.\n' +
-      '⏳ இந்த Audio session 5 நிமிடத்தில் முடிவடையும்.\n' +
-      'குறிப்பு: இவை stylized voice effects; உண்மையான விலங்கு குரல்கள் அல்ல.'
+    const answer = await skWhatsAppAnalyzeAudio(
+      audio.id, String(audio.caption || '')
     );
+    const recipient = String(msg.from || '');
+    await skWhatsAppSendTextOnly(recipient, answer.text);
+
+    try {
+      const voiceBuffer = await skWhatsAppTextToOggOpus(answer.speechText);
+      await skWhatsAppSendVoiceBuffer(recipient, voiceBuffer);
+    } catch (voiceError) {
+      console.warn('[WA voice output]', voiceError.message);
+    }
   } catch (err) {
-    console.error('[WA Voice Changer receive]', err.message);
+    console.error('[WA audio analysis]', err.message);
     await skWhatsAppSendTextOnly(
-      recipient,
-      'மன்னிக்கவும். Audio-வைப் பெற முடியவில்லை. 10 MB-க்குள் உள்ள Audio-வை மீண்டும் அனுப்புங்கள்.'
+      String(msg.from || ''),
+      'மன்னிக்கவும். இந்த Audio-வை இப்போது புரிந்துகொள்ள முடியவில்லை. மீண்டும் அனுப்புங்கள்.'
     );
   }
-
   return;
 }
 
@@ -5126,58 +4964,6 @@ const waButtonTitle = String(
 ).trim();
 const trimmed=String(msg.text?.body || msg.image?.caption || waButtonTitle || '').trim();
     const lower=trimmed.toLowerCase();
-
-// SK_WHATSAPP_VOICE_CHANGER_V1 — pending sender selection
-const voiceSessionKey = String(from || '');
-const pendingVoiceSession = SK_WA_VOICE_CHANGE_SESSIONS.get(voiceSessionKey);
-
-if (pendingVoiceSession) {
-  if (pendingVoiceSession.expiresAt <= Date.now()) {
-    SK_WA_VOICE_CHANGE_SESSIONS.delete(voiceSessionKey);
-
-    if (/^[1-6]$/.test(trimmed)) {
-      await skWhatsAppSendTextOnly(
-        voiceSessionKey,
-        '⌛ Voice session காலாவதியாகிவிட்டது. புதிய Audio அனுப்புங்கள்.'
-      );
-      return;
-    }
-  } else if (/^[1-6]$/.test(trimmed)) {
-    const selectedEffect = Number(trimmed);
-    SK_WA_VOICE_CHANGE_SESSIONS.delete(voiceSessionKey);
-
-    const effectNames = [
-      'Deep Male',
-      'Female Style',
-      'Robot',
-      'Dog Style',
-      'Cat Style',
-      'Lion Style'
-    ];
-
-    try {
-      const changedAudio = await skWhatsAppApplyVoiceEffect(
-        pendingVoiceSession.buffer,
-        selectedEffect
-      );
-
-      await skWhatsAppSendVoiceBuffer(voiceSessionKey, changedAudio);
-      await skWhatsAppSendTextOnly(
-        voiceSessionKey,
-        '✅ Voice மாற்றம் முடிந்தது: ' + effectNames[selectedEffect - 1]
-      );
-    } catch (err) {
-      console.error('[WA Voice Changer process]', err.message);
-      await skWhatsAppSendTextOnly(
-        voiceSessionKey,
-        'மன்னிக்கவும். Voice மாற்ற முடியவில்லை. வேறு Audio அனுப்பி மீண்டும் முயற்சிக்கவும்.'
-      );
-    }
-
-    return;
-  }
-}
-
 
 const isWelcome = !trimmed || trimmed === '0' ||
   ['menu', 'manu', 'start', 'மெனு'].includes(lower);
