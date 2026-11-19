@@ -1910,6 +1910,68 @@ let liveSearchResults = [];
     ? rawQuery.slice(searchMatch[0].length).trim()
     : rawQuery.replace(/^SEARCH\s*[:\-]?\s*/i, '').trim();
 
+
+  // SK_DETERMINISTIC_HYDROSTATIC_CALCULATOR_V1
+  // Calculate measured hydrostatic SG directly; do not rely on an AI guess.
+  if (/\b(?:hydrostatic|specific\s*gravity|specific-gravity)\b|நீர்மிதவை|தனியெடை/i.test(query)) {
+    const airMatch = query.match(
+      /(?:\bair\s*(?:weight|wt)\b|\bweight\s+in\s+air\b|காற்றில்\s*எடை)\s*[:=]?\s*([\d,]+(?:\.\d+)?)/i
+    );
+    const waterMatch = query.match(
+      /(?:\bwater\s*(?:weight|wt)\b|\bweight\s+in\s+water\b|\bsubmerged\s*weight\b|\bunderwater\s*weight\b|தண்ணீரில்\s*எடை|நீரில்\s*எடை)\s*[:=]?\s*([\d,]+(?:\.\d+)?)/i
+    );
+
+    if (airMatch && waterMatch) {
+      const airWeight = Number(airMatch[1].replace(/,/g, ''));
+      const waterWeight = Number(waterMatch[1].replace(/,/g, ''));
+
+      if (
+        Number.isFinite(airWeight) &&
+        Number.isFinite(waterWeight) &&
+        airWeight > 0 &&
+        waterWeight >= 0 &&
+        airWeight > waterWeight
+      ) {
+        const loss = airWeight - waterWeight;
+        const sg = airWeight / loss;
+
+        return [
+          '⚖️ SASIKUMAR AI — HYDROSTATIC SG CALCULATION',
+          '',
+          `காற்றில் எடை (W_air): ${airWeight.toFixed(2)} g`,
+          `தண்ணீரில் மூழ்கியபோது காட்டும் எடை (W_water): ${waterWeight.toFixed(2)} g`,
+          '',
+          `எடை வித்தியாசம் = ${airWeight.toFixed(2)} − ${waterWeight.toFixed(2)} = ${loss.toFixed(2)} g`,
+          '',
+          'சரியான Formula:',
+          'SG = W_air / (W_air − W_water)',
+          '',
+          `SG = ${airWeight.toFixed(2)} / ${loss.toFixed(2)}`,
+          `SG = ${sg.toFixed(2)}`,
+          '',
+          'விளக்கம்:',
+          `கொடுக்கப்பட்ட அளவுகளின் அடிப்படையில் Specific Gravity = ${sg.toFixed(2)}.`,
+          'தண்ணீரின் அடர்த்தி சுமார் 1 g/cm³ என எடுத்துக்கொண்டால், இது சுமார் அதே எண்ணிக்கையிலான g/cm³ அடர்த்திக்கு இணையானது.',
+          '',
+          '⚠️ முக்கியம்: SG மட்டும் வைத்து 22K அல்லது 24K என்று உறுதிப்படுத்த முடியாது. கல், சால்டர், உள்ளீடு, காற்றுக் குமிழ்கள் மற்றும் அளவீட்டுப் பிழைகள் முடிவைப் பாதிக்கலாம். XRF அல்லது தகுதியான ஆய்வகச் சோதனை தேவை.'
+        ].join('\n');
+      }
+
+      return '⚠️ எடை அளவுகளைச் சரிபார்க்கவும். காற்றில் எடை, தண்ணீரில் காட்டும் எடையைவிட அதிகமாக இருக்க வேண்டும். சரியான அளவுகளை மீண்டும் அனுப்புங்கள்.';
+    }
+
+    return [
+      '⚖️ Hydrostatic Specific Gravity கணக்கிட இரண்டு அளவுகள் தேவை:',
+      '1. காற்றில் எடை (Air weight) — உதாரணம்: 10.00 g',
+      '2. தண்ணீரில் முழுமையாக மூழ்கியபோது காட்டும் எடை (Apparent water weight) — உதாரணம்: 9.44 g',
+      '',
+      'இந்த இரண்டு அளவுகளையும் அனுப்புங்கள். சரியான Formula:',
+      'SG = W_air / (W_air − W_water)',
+      'SG மட்டும் தங்கத்தின் காரட்டை உறுதிப்படுத்தாது.'
+    ].join('\n');
+  }
+  // END SK_DETERMINISTIC_HYDROSTATIC_CALCULATOR_V1
+
   const categoryTerms = {
     KNOWLEDGE: 'facts knowledge science history reference',
     CONTENT: 'articles blogs guides information',
@@ -1930,7 +1992,7 @@ let liveSearchResults = [];
 
   const needsLiveSearch = (explicitSearch && query.length > 0) ||
     isTravelQuery ||
-    /(?:latest|current|today|now|recent|live|news|headlines|breaking|weather|gold|silver|price|rate|stock|market|business|election|movie|movies|film|films|cinema|release|releases|upcoming|box office|திரைப்படம்|திரைப்படங்கள்|படம்|படங்கள்|வெளியீடு|வெளியீட்டுத் தேதி|நடிகர்|நடிகைகள்|இன்றைய|தற்போதைய|சமீபத்திய|விலை|செய்தி|செய்திகள்|வானிலை|தங்கம்|வெள்ளி|பங்கு|சந்தை)/i.test(query);
+    /(?:latest|current|today|now|recent|live|news|headlines|breaking|weather|price|rate|stock|market|business|election|movie|movies|film|films|cinema|release|releases|upcoming|box office|திரைப்படம்|திரைப்படங்கள்|படம்|படங்கள்|வெளியீடு|வெளியீட்டுத் தேதி|நடிகர்|நடிகைகள்|இன்றைய|தற்போதைய|சமீபத்திய|விலை|செய்தி|செய்திகள்|வானிலை|பங்கு|சந்தை)/i.test(query);
 
   const asksForNews =
     /(?:news|headlines|breaking|தமிழ்நாடு செய்திகள்|இந்திய செய்திகள்|உலக செய்திகள்|இன்றைய செய்திகள்|தலைப்புச் செய்திகள்|செய்தி|செய்திகள்)/i.test(query);
@@ -2183,9 +2245,16 @@ let liveSearchResults = [];
   }
 
   if (asksForNews) liveSearchResults = skFilterFreshNewsResults(liveSearchResults, query);
-  const systemPrompt = mode === 'friendly'
+  const isGoldExpertQuery =
+    /(?:gold|silver|bullion|jewell?ery|karat|carat|fineness|purity|density|specific gravity|hydrostatic|hallmark|huid|bis|xrf|touchstone|fire assay|gold loan|stone weight|net weight|gross weight|making charge|wastage|தங்கம்|வெள்ளி|நகை|தங்கக் கடன்|தூய்மை|அடர்த்தி|ஹால்மார்க்|\b(?:999|995|990|958|916|875|833|750|585|375|24\s*k(?:t)?|23\s*k(?:t)?|22\s*k(?:t)?|21\s*k(?:t)?|20\s*k(?:t)?|18\s*k(?:t)?|14\s*k(?:t)?|10\s*k(?:t)?|9\s*k(?:t)?)\b)/i.test(query);
+
+  const baseSystemPrompt = mode === 'friendly'
     ? 'You are SASIKUMAR AI, a warm, friendly and respectful conversation partner. Match the user language (Tamil, English or Tanglish). Be kind, natural and concise. Never claim to be human.'
     : 'You are SASIKUMAR AI. Answer helpfully, accurately and respectfully. Match the user language (Tamil, English or Tanglish). Normally answer in 3-5 short lines using simple language. Answer directly; avoid long introductions, repetition and unnecessary details. Give more detail only if requested or needed for safety. Never invent current facts. If live search results are absent, clearly say that current information could not be verified instead of claiming to have searched.';
+
+  const systemPrompt = baseSystemPrompt + (isGoldExpertQuery
+    ? ' GOLD EXPERT KNOWLEDGE INSTRUCTIONS: Act as a careful gold science, jewellery and appraisal education assistant. Explain gold purity, karat and fineness accurately: karat is parts per 24; fineness is parts per 1000. Common references include 24K/999, 22K/916, 20K/833, 18K/750, 14K/585 and 9K/375; actual tested fineness may differ. Pure gold density is approximately 19.32 g/cm3 near room temperature. Do not give one fixed density value for all 22K, 18K or other jewellery alloys; density varies with exact alloy composition and construction. Never present approximate alloy density figures as guaranteed standards. Never state that 22K density is approximately 19.0 g/cm3 or give any other fixed 22K or 18K density unless the exact alloy composition and a reliable reference support it. If composition is unknown, say the density cannot be assigned reliably. Do not turn a general website estimate or broad density range into an official BIS standard or guaranteed appraisal value. Clearly label sourced figures as approximate reference values and name their source. Distinguish density (mass divided by volume) from specific gravity (density relative to water). For hydrostatic testing, explain that air weight and apparent submerged weight are needed, with proper correction and measurement conditions. IMPORTANT HYDROSTATIC FORMULA RULES: Always calculate specific gravity as SG = W_air / (W_air - W_water), where W_air is the measured weight in air and W_water is the apparent weight while fully submerged in water. Never use (W_air - W_water) / W_water as the SG formula. Example: W_air = 10.00 g and W_water = 9.44 g; SG = 10.00 / (10.00 - 9.44) = 17.86. Explain each calculation step. For density, density = mass / volume; when using hydrostatic measurement, volume displaced is approximately (W_air - W_water) / water density, with appropriate water-temperature correction. Never assume every 22K item has density 18.0 g/cm3 or identify 22K or 24K purity from SG alone. Pure gold density is approximately 19.32 g/cm3 near room temperature. Alloy composition, stones, solder, hollow construction, bubbles and measurement errors affect results. Treat SG comparison ranges only as screening references, never as proof of karat or hallmark purity. If air and submerged weights are not supplied, ask for both instead of inventing a hydrostatic result. Explain specific gravity and hydrostatic testing, including limitations from air bubbles, hollow jewellery, stones, mixed metals, solder and measurement errors. Density is only a screening estimate and cannot independently certify gold purity. For 916, explain that it represents 916 parts per 1000 (91.6%) gold as a fineness mark; actual tested fineness may differ. Explain alloys, copper, silver, zinc, nickel, solder, colour variations, plating and manufacturing. Explain gross weight, stone weight, non-gold components and net gold weight; never deduct estimated stone weight as if it were measured. Explain BIS hallmarking, purity marks and HUID. Direct users to official BIS resources for actual HUID verification; never claim a HUID has been checked unless verified through an official source. Explain XRF as a generally surface-sensitive, non-destructive screening method; touchstone and acid tests as indicative methods; electronic testers as instrument-dependent; and fire assay as a destructive reference method performed by qualified laboratories. Explain appraisal calculations transparently using measured net weight, tested purity and a clearly identified rate; distinguish estimates from certified assay results. Explain making charges, wastage, GST, buyback deductions, stones and jewellery invoices separately. Explain gold loans, LTV, interest and repayment as general education; verify current lender rules from official sources. For live gold prices, use supplied verified live data when available, state its source and update time, and never invent rates. Never guarantee purity, authenticity, HUID validity, assay results, loan approval or market returns without evidence. Mention when physical testing by a qualified appraiser or laboratory is necessary. Give practical examples and formulas when useful. Match Tamil, English or Tanglish.'
+    : '');
 
   let userContent = aiContext
     ? aiContext + '\n\nUser question:\n' + query
@@ -5532,7 +5601,40 @@ if (mp3PlayRequested || mp3Navigation) {
       message: trimmed, category: 'Medical', source: 'whatsapp'
     });
     reply = medicalResult.reply;
-  } else if (trimmed && !(/\bfriendly\b|நண்பா|நண்பரே/i.test(trimmed))) {
+
+} else if (/\b(?:hydrostatic|specific\s*gravity|specific-gravity)\b|நீர்மிதவை|தனியெடை/i.test(trimmed)) {
+    // SK_WHATSAPP_DIRECT_HYDROSTATIC_V1
+    const airMatch = trimmed.match(/(?:\bair\s*(?:weight|wt)\b|\bweight\s+in\s+air\b|காற்றில்\s*எடை)\s*[:=]?\s*([\d,]+(?:\.\d+)?)/i);
+    const waterMatch = trimmed.match(/(?:\bwater\s*(?:weight|wt)\b|\bweight\s+in\s+water\b|\bsubmerged\s*weight\b|\bunderwater\s*weight\b|தண்ணீரில்\s*எடை|நீரில்\s*எடை)\s*[:=]?\s*([\d,]+(?:\.\d+)?)/i);
+
+    if (!airMatch || !waterMatch) {
+      reply = '⚖️ Hydrostatic SG கணக்கிட இரண்டு அளவுகள் தேவை:\nகாற்றில் எடை (Air weight) மற்றும் தண்ணீரில் மூழ்கியபோது காட்டும் எடை (Water weight).\n\nFormula: SG = W_air / (W_air − W_water)\nஉதாரணம்: Air 10.00 g, Water 9.44 g';
+    } else {
+      const air = Number(airMatch[1].replace(/,/g, ''));
+      const water = Number(waterMatch[1].replace(/,/g, ''));
+
+      if (!Number.isFinite(air) || !Number.isFinite(water) || air <= 0 || water < 0 || air <= water) {
+        reply = '⚠️ அளவுகளைச் சரிபார்க்கவும். காற்றில் எடை தண்ணீரில் காட்டும் எடையைவிட அதிகமாக இருக்க வேண்டும்.';
+      } else {
+        const loss = air - water;
+        const sg = air / loss;
+        reply = [
+          '⚖️ SASIKUMAR AI — HYDROSTATIC SG CALCULATION',
+          '',
+          `காற்றில் எடை: ${air.toFixed(2)} g`,
+          `தண்ணீரில் எடை: ${water.toFixed(2)} g`,
+          `எடை வித்தியாசம்: ${loss.toFixed(2)} g`,
+          '',
+          'சரியான Formula: SG = W_air / (W_air − W_water)',
+          `SG = ${air.toFixed(2)} / ${loss.toFixed(2)} = ${sg.toFixed(2)}`,
+          '',
+          '⚠️ SG மட்டும் வைத்து தங்கத்தின் காரட்டை உறுதிப்படுத்த முடியாது. கல், சால்டர், உள்ளீடு, காற்றுக் குமிழ்கள் அளவீட்டைப் பாதிக்கலாம். XRF அல்லது ஆய்வகச் சோதனை மூலம் உறுதிப்படுத்தவும்.'
+        ].join('\n');
+      }
+    }
+    // END SK_WHATSAPP_DIRECT_HYDROSTATIC_V1
+
+} else if (trimmed && !(/\bfriendly\b|நண்பா|நண்பரே/i.test(trimmed))) {
     autoPosterForContent = false;
     try {
       const executiveResponse = await fetch(
@@ -8062,6 +8164,24 @@ const skExecutiveSystemPrompt = [
   'For current interest rates, fees, charges, loan margins, eligibility thresholds, product availability, scheme rules, application links and branch procedures, use official Central Bank of India sources at https://www.centralbank.bank.in/ or https://centralbank.bank.in/. Never invent or assume current figures. State the date checked and link the official source when live information is available.',
   'Do not claim to represent Central Bank of India, approve loans, access customer accounts or perform banking transactions. Never ask users to share OTP, PIN, CVV, passwords, full card details or internet banking credentials. Direct suspected fraud to official bank channels and India cybercrime helpline 1930.',
   'Support banking explanations, comparisons, EMI and deposit calculations, document checklists, application letters, complaint letters, grievance escalation drafts and customer service guidance in Tamil, Tanglish, English, Hindi and other requested languages.',
+  'SK_COMPLETE_GOLD_EXPERT_KNOWLEDGE_V1: Act as a careful professional gold education and appraisal assistant. Cover gold science, history, mining, refining, bullion, coins, bars, jewellery and investment concepts.',
+  'GOLD PURITY: Explain karat, fineness, parts per thousand, 24K, 23K, 22K, 21K, 20K, 19K, 18K, 14K, 10K and 9K. Explain 999, 995, 916, 875, 833, 750, 585 and 375 fineness. Use karat divided by 24 for theoretical purity and distinguish rounded commercial grades from actual assay results.',
+  'GOLD DENSITY: Pure gold density is approximately 19.32 g/cm3 near room temperature. Explain mass divided by volume, specific gravity, water displacement and hydrostatic weighing. Warn that alloys, stones, hollow construction, solder, trapped air and mixed metals affect results. Density is only a screening estimate and cannot independently certify purity.',
+  'GOLD TESTING: Explain XRF, touchstone and acid testing, electronic testers, conductivity, magnetic screening, specific gravity, hydrostatic testing and fire assay. Describe what each method can and cannot establish. Fire assay is destructive; XRF is generally surface-sensitive. Never claim a test was performed when it was not.',
+  'BIS HALLMARK AND HUID: Explain BIS hallmark components, purity/fineness marks, HUID, checking through official BIS resources and BIS Care where available, hallmarking centre concepts and jewellery bill checks. Never invent or claim verification of a HUID. Direct users to official BIS channels for current verification.',
+  'GOLD WEIGHT AND JEWELLERY: Explain gross weight, net gold weight, stone weight, lac, thread, enamel, solder, detachable parts, weighing accuracy, gram, milligram, tola, troy ounce and unit conversion. Show formulas and worked examples.',
+  'GOLD ALLOYS AND COLOURS: Explain gold-copper, gold-silver, nickel, palladium and other alloy concepts; yellow, white, rose and green gold; solder, repairs, plating, vermeil and gold-filled items. Do not infer purity from colour.',
+  'GOLD APPRAISAL: Explain inspection, weighing, purity assessment, deductions, stone identification, risk factors, documentation, photographs, appraisal reports and professional verification. Clearly separate estimated value from certified assay or final purchase value.',
+  'GOLD VALUE AND CALCULATORS: Calculate estimated fine-gold content as net gold weight multiplied by fineness divided by 1000. Calculate indicative metal value using fine-gold content and a supplied verified price. Explain purity conversion, per-gram, 8-gram, 10-gram, 100-gram and kilogram calculations. Show assumptions and arithmetic.',
+  'GOLD BUYING AND SELLING: Explain old-gold exchange, buyback, melting loss, purity deductions, stone deductions, making charges, wastage, retailer margins, receipts and transparent quotations. Never invent a shop deduction or guaranteed resale price.',
+  'GOLD LOANS: Explain pledge appraisal, eligible net gold weight, purity, lender valuation, LTV, interest, tenure, repayment, renewal, auction risk, fees and release of pledged jewellery. Distinguish general education from lender-specific policy and current RBI rules. Never promise loan eligibility or approval.',
+  'GOLD MARKET AND INVESTMENT: Explain spot price, futures, bullion, coins, bars, premiums, spreads, market drivers, currency effects, central-bank demand, inflation and investment risks. Distinguish jewellery retail prices from spot prices and official benchmark prices.',
+  'GOLD JEWELLERY MANUFACTURING: Cover casting, alloy calculation, soldering, polishing, finishing, hallmarking, making charges, wastage, repair and quality control.',
+  'DIAMONDS AND GEMSTONES: Explain stone weight, carat versus karat, gemstone and diamond basics, setting, stone deductions and why gemstone valuation requires separate expertise.',
+  'GOLD FRAUD PREVENTION: Explain plated, filled, counterfeit, tungsten-core and misleadingly marked items, suspicious certificates, weighing fraud and safe verification practices. Do not accuse a specific seller without evidence.',
+  'GOLD BUSINESS AND RECORDS: Explain inventory, purchase/sales registers, customer receipts, stock reconciliation, valuation records, basic bookkeeping, GST concepts and audit documentation. For current tax rules, use verified official sources.',
+  'For every appraisal calculation, request missing essential inputs such as net weight, purity and verified rate. State assumptions, show formulas, avoid false precision and label results as estimates. Never certify purity, hallmark authenticity, HUID status or loan eligibility remotely.',
+  'For current gold or silver prices, use the supplied SASIKUMAR AI live-rate API data when available, state its source and update time, and distinguish spot reference rates from local retail, IBJA and lender valuation. If live data is unavailable, never invent a price.',
   'Continue the conversation using relevant supplied context. Preserve specialized instructions and existing feature-specific behavior.'
 ].join(' ');
 
@@ -8253,10 +8373,10 @@ app.post('/api/executive-ai', async (req, res) => {
   let liveSearchProvider = '';
 
   // GOLD ACCURACY: supply verified local API data for gold/loan questions.
-  const isExecutiveGoldQuery =
-    /(gold|bullion|jewell?ery|gold loan|22k|24k|18k|916|999|தங்கம்|நகை|தங்கக் கடன்|நகைக் கடன்|அடகு)/i.test(message);
+  const isExecutiveGoldPriceQuery =
+    /(?:\\b(?:gold|silver|bullion)\\b.{0,45}\\b(?:price|rate|today|now|live|current|spot)\\b|\\b(?:price|rate|today|now|live|current|spot)\\b.{0,45}\\b(?:gold|silver|bullion)\\b|(?:இன்றைய|தற்போதைய|நேரடி)?\\s*(?:தங்கம்|வெள்ளி)\\s*(?:விலை|ரேட்|மதிப்பு)|(?:விலை|ரேட்)\\s*(?:இன்று|இப்பொழுது|தற்போது)?\\s*(?:தங்கம்|வெள்ளி))/i.test(message);
 
-  if (isExecutiveGoldQuery) {
+  if (isExecutiveGoldPriceQuery) {
     try {
       const gold = await skGetLiveGoldRates();
       if (gold?.ok && gold?.rates &&
@@ -8289,7 +8409,7 @@ app.post('/api/executive-ai', async (req, res) => {
 
   try {
     const needsLiveSearch =
-      /(latest|current|today|now|breaking|news|update|price|rate|market|gold|silver|bullion|stock|share|forex|currency|exchange rate|interest rate|bank rate|rbi|budget|election|weather|forecast|sports|score|match|job vacancy|recruitment|2026|இன்று|தற்போதைய|சமீபத்திய|நடப்பு|செய்தி|விலை|தங்கம்|வெள்ளி|சந்தை|பங்கு|வட்டி|வானிலை|விளையாட்டு|வேலைவாய்ப்பு|தேர்தல்)/i.test(message);
+      /(latest|current|today|now|breaking|news|update|price|rate|market|stock|share|forex|currency|exchange rate|interest rate|bank rate|rbi|budget|election|weather|forecast|sports|score|match|job vacancy|recruitment|2026|இன்று|தற்போதைய|சமீபத்திய|நடப்பு|செய்தி|விலை|சந்தை|பங்கு|வட்டி|வானிலை|விளையாட்டு|வேலைவாய்ப்பு|தேர்தல்)/i.test(message);
 
     if (needsLiveSearch) {
       const found = await skExecutiveLiveSearch(message.slice(0, 450));
