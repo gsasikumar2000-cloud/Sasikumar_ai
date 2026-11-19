@@ -6513,19 +6513,24 @@ if (mp3SearchRequested) {
 
         // SK_AI_IMAGE_STYLE_ROUTING_V1
         const wantsAiGeneratedImage =
-          /\b(meme|memes|animation|animated|ai)\b/i.test(trimmed) ||
+          /\b(meme|memes|animation|animated)\b/i.test(trimmed) ||
           /\b(create|generate|make|draw)\b.{0,80}\b(image|picture|photo|drawing|sketch|cartoon|artwork|animation)\b/i.test(trimmed) ||
           /\b(drawing|drawings|sketch|sketches|illustration|illustrations|artwork|painting|paintings|cartoon|cartoons)\b/i.test(trimmed) ||
           /ஓவியம்|சித்திரம்|வரைந்து|உருவாக்கு|மீம்|மீம்ஸ்/i.test(trimmed);
 
+        const wantsTextOnly =
+          /\b(text only|only text|no images?|without images?|no photos?|without photos?|don't send images?|do not send images?)\b/i.test(trimmed) ||
+          /படம் வேண்டாம்|படங்கள் வேண்டாம்|புகைப்படம் வேண்டாம்|படம் அனுப்பாதே|புகைப்படம் அனுப்பாதே/i.test(trimmed);
+
         const wantsImage =
+          !wantsTextOnly && (
           wantsPoster ||
           wantsAiGeneratedImage ||
           (wantsCatalogImage && /(?:image|images|picture|pictures|photo|photos|drawing|drawings|sketch|sketches|illustration|illustrations|artwork|painting|paintings|cartoon|logo|logos|icon|icons|sticker|stickers|clipart|diagram|diagrams|chart|charts|infographic|infographics|map|maps|wallpaper|wallpapers|background|portrait|blueprint|படம்|புகைப்படம்|ஓவியம்|வரைபடம்|சின்னம்)/i.test(trimmed)) ||
           /\b(generate|create|make|draw|design|send|show)\b.{0,100}\b(image|picture|photo|poster|wallpaper|god|deity|krishna|murugan|ganesha|vinayagar|jesus|allah)\b/i.test(trimmed) ||
           /\b(image|picture|photo|poster|wallpaper)\b.{0,100}\b(generate|create|make|draw|design|send|show)\b/i.test(trimmed) ||
           /\b(god|deity|krishna|murugan|ganesha|vinayagar|jesus)\s+(image|picture|photo|poster|wallpaper)\b/i.test(trimmed) ||
-          /படம்\s*(உருவாக்கு|செய்|வேண்டும்|தயார்|அனுப்பு)|போஸ்டர்\s*(உருவாக்கு|செய்|வேண்டும்|தயார்|அனுப்பு)|படம் உருவாக்கி|கடவுள் படம்|சாமி படம்|முருகன் படம்|விநாயகர் படம்/i.test(trimmed);
+          /படம்\s*(உருவாக்கு|செய்|வேண்டும்|தயார்|அனுப்பு)|போஸ்டர்\s*(உருவாக்கு|செய்|வேண்டும்|தயார்|அனுப்பு)|படம் உருவாக்கி|கடவுள் படம்|சாமி படம்|முருகன் படம்|விநாயகர் படம்/i.test(trimmed));
 
         if (wantsImage) {
           try {
