@@ -2231,131 +2231,121 @@ let liveSearchResults = [];
   }
 
 
-  // SK_WHATSAPP_OPENAI_PRIMARY_GROQ_CLOUDFLARE_FALLBACK_V1
+  // SK_WHATSAPP_FREE_FIRST_GROQ_CLOUDFLARE_OPTIONAL_OPENAI_V1
 
-  // 1. OpenAI primary provider
-  const openaiKey = process.env.OPENAI_API_KEY;
-
-  if (openaiKey) {
-    try {
-      const response = await fetch(
-        'https://api.openai.com/v1/responses',
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': 'Bearer ' + openaiKey.trim(),
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            model: 'gpt-6-luna',
-            instructions: systemPrompt,
-            input: userContent.slice(0, 9000),
-            max_output_tokens: 1200
-          }),
-          signal: AbortSignal.timeout(20000)
-        }
-      );
-
-      const data = await response.json().catch(() => ({}));
-
-      if (response.ok) {
-        const answer = String(
-          data?.output_text ||
-          (Array.isArray(data?.output)
-            ? data.output
-                .flatMap(item => Array.isArray(item.content) ? item.content : [])
-                .filter(item => item.type === 'output_text')
-                .map(item => item.text || '')
-                .join('\n')
-            : '')
-        ).trim();
-
-        if (answer) {
-          console.info('[WhatsApp AI] OPENAI_GPT6_LUNA_SUCCESS');
-          return answer;
-        }
-
-        console.warn('[WhatsApp AI] OpenAI returned an empty answer.');
-      } else {
-        console.warn(
-          '[WhatsApp AI] OpenAI HTTP:',
-          response.status,
-          data?.error?.message || 'Request failed'
-        );
-      }
-    } catch (error) {
-      console.warn('[WhatsApp AI] OpenAI error:', error.message || error);
-    }
-  } else {
-    console.warn('[WhatsApp AI] OPENAI_API_KEY missing; trying Groq.');
-  }
-
-  // 2. Groq fallback provider
-  if (apiKey) {
-    try {
-      const response = await fetch(
-        'https://api.groq.com/openai/v1/chat/completions',
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': 'Bearer ' + apiKey,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            model: 'openai/gpt-oss-20b',
-            messages: [
-              { role: 'system', content: systemPrompt },
-              { role: 'user', content: userContent.slice(0, 9000) }
-            ],
-            temperature: 0.5,
-            max_completion_tokens: 1200
-          }),
-          signal: AbortSignal.timeout(20000)
-        }
-      );
-
-      const data = await response.json().catch(() => ({}));
-
-      if (response.ok) {
-        const answer = data?.choices?.[0]?.message?.content?.trim();
-
-        if (answer) {
-          console.info('[WhatsApp AI] GROQ_FALLBACK_SUCCESS');
-          return answer;
-        }
-
-        console.warn('[WhatsApp AI] Groq returned an empty answer.');
-      } else {
-        console.warn(
-          '[WhatsApp AI] Groq HTTP:',
-          response.status,
-          data?.error?.message || 'Request failed'
-        );
-      }
-    } catch (error) {
-      console.warn('[WhatsApp AI] Groq error:', error.message || error);
-    }
-  } else {
-    console.warn('[WhatsApp AI] GROQ_API_KEY missing.');
-  }
-
-  // 3. Existing Cloudflare / secondary provider fallback
+// 1. Groq primary
+if (apiKey) {
   try {
-    const fallbackReply = await getSasikumarTextFallbackReply(
-      userContent,
-      'WhatsApp AI',
-      systemPrompt
+    const response = await fetch(
+      'https://api.groq.com/openai/v1/chat/completions',
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + apiKey.trim(),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'openai/gpt-oss-20b',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userContent.slice(0, 9000) }
+          ],
+          temperature: 0.5,
+          max_completion_tokens: 1200
+        }),
+        signal: AbortSignal.timeout(20000)
+      }
     );
 
-    if (fallbackReply) {
-      console.info('[WhatsApp AI] CLOUDFLARE_FALLBACK_SUCCESS');
-      return fallbackReply;
+    const data = await response.json().catch(() => ({}));
+    if (response.ok) {
+      const answer = data?.choices?.[0]?.message?.content?.trim();
+      if (answer) {
+        console.info('[WhatsApp AI] GROQ_PRIMARY_SUCCESS');
+        return answer;
+      }
+      console.warn('[WhatsApp AI] Groq returned an empty answer.');
+    } else {
+      console.warn('[WhatsApp AI] Groq HTTP:', response.status,
+        data?.error?.message || 'Request failed');
     }
   } catch (error) {
-    console.error('[WhatsApp AI] Cloudflare fallback error:', error.message || error);
+    console.warn('[WhatsApp AI] Groq error:', error.message || error);
   }
+} else {
+  console.warn('[WhatsApp AI] GROQ_API_KEY missing.');
+}
 
-  console.error('[WhatsApp AI] ALL_TEXT_PROVIDERS_FAILED');
+// 2. Cloudflare fallback
+try {
+  const fallbackReply = await getSasikumarTextFallbackReply(
+    userContent,
+    'WhatsApp AI',
+    systemPrompt
+  );
+  if (fallbackReply) {
+    console.info('[WhatsApp AI] CLOUDFLARE_FALLBACK_SUCCESS');
+    return fallbackReply;
+  }
+} catch (error) {
+  console.error('[WhatsApp AI] Cloudflare fallback error:', error.message || error);
+}
+
+// 3. OpenAI only when explicitly enabled
+const openaiEnabled = process.env.WHATSAPP_OPENAI_ENABLED === 'true';
+const openaiKey = process.env.OPENAI_API_KEY;
+const openaiModel = String(process.env.OPENAI_MODEL || '').trim();
+
+if (openaiEnabled && openaiKey && openaiModel) {
+  try {
+    const response = await fetch(
+      'https://api.openai.com/v1/responses',
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + openaiKey.trim(),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: openaiModel,
+          instructions: systemPrompt,
+          input: userContent.slice(0, 9000),
+          max_output_tokens: 1200
+        }),
+        signal: AbortSignal.timeout(20000)
+      }
+    );
+
+    const data = await response.json().catch(() => ({}));
+    if (response.ok) {
+      const answer = String(
+        data?.output_text ||
+        (Array.isArray(data?.output)
+          ? data.output
+              .flatMap(item => Array.isArray(item.content) ? item.content : [])
+              .filter(item => item.type === 'output_text')
+              .map(item => item.text || '')
+              .join('\\n  ')
+          : '')
+      ).trim();
+
+      if (answer) {
+        console.info('[WhatsApp AI] OPTIONAL_OPENAI_SUCCESS');
+        return answer;
+      }
+      console.warn('[WhatsApp AI] OpenAI returned an empty answer.');
+    } else {
+      console.warn('[WhatsApp AI] OpenAI HTTP:', response.status,
+        data?.error?.message || 'Request failed');
+    }
+  } catch (error) {
+    console.warn('[WhatsApp AI] OpenAI error:', error.message || error);
+  }
+} else if (openaiEnabled) {
+  console.warn('[WhatsApp AI] OpenAI enabled but key or OPENAI_MODEL missing.');
+}
+
+console.error('[WhatsApp AI] ALL_TEXT_PROVIDERS_FAILED');
   return 'மன்னிக்கவும் நண்பா 😊 AI சேவை இப்போது கிடைக்கவில்லை. சிறிது நேரம் கழித்து முயற்சிக்கவும்.';
 
 }
