@@ -2230,100 +2230,134 @@ let liveSearchResults = [];
       '\n\nAnswer the original question using relevant results. Match the user language. Clearly distinguish publication dates from today. Do not invent facts. Include useful source URLs in the reply.';
   }
 
-  if (!apiKey) {
-    console.warn('[WhatsApp AI] Groq key missing; trying secondary providers.');
+
+  // SK_WHATSAPP_OPENAI_PRIMARY_GROQ_CLOUDFLARE_FALLBACK_V1
+
+  // 1. OpenAI primary provider
+  const openaiKey = process.env.OPENAI_API_KEY;
+
+  if (openaiKey) {
+    try {
+      const response = await fetch(
+        'https://api.openai.com/v1/responses',
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + openaiKey.trim(),
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: 'gpt-6-luna',
+            instructions: systemPrompt,
+            input: userContent.slice(0, 9000),
+            max_output_tokens: 1200
+          }),
+          signal: AbortSignal.timeout(20000)
+        }
+      );
+
+      const data = await response.json().catch(() => ({}));
+
+      if (response.ok) {
+        const answer = String(
+          data?.output_text ||
+          (Array.isArray(data?.output)
+            ? data.output
+                .flatMap(item => Array.isArray(item.content) ? item.content : [])
+                .filter(item => item.type === 'output_text')
+                .map(item => item.text || '')
+                .join('\n')
+            : '')
+        ).trim();
+
+        if (answer) {
+          console.info('[WhatsApp AI] OPENAI_GPT6_LUNA_SUCCESS');
+          return answer;
+        }
+
+        console.warn('[WhatsApp AI] OpenAI returned an empty answer.');
+      } else {
+        console.warn(
+          '[WhatsApp AI] OpenAI HTTP:',
+          response.status,
+          data?.error?.message || 'Request failed'
+        );
+      }
+    } catch (error) {
+      console.warn('[WhatsApp AI] OpenAI error:', error.message || error);
+    }
+  } else {
+    console.warn('[WhatsApp AI] OPENAI_API_KEY missing; trying Groq.');
+  }
+
+  // 2. Groq fallback provider
+  if (apiKey) {
+    try {
+      const response = await fetch(
+        'https://api.groq.com/openai/v1/chat/completions',
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + apiKey,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: 'openai/gpt-oss-20b',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userContent.slice(0, 9000) }
+            ],
+            temperature: 0.5,
+            max_completion_tokens: 1200
+          }),
+          signal: AbortSignal.timeout(20000)
+        }
+      );
+
+      const data = await response.json().catch(() => ({}));
+
+      if (response.ok) {
+        const answer = data?.choices?.[0]?.message?.content?.trim();
+
+        if (answer) {
+          console.info('[WhatsApp AI] GROQ_FALLBACK_SUCCESS');
+          return answer;
+        }
+
+        console.warn('[WhatsApp AI] Groq returned an empty answer.');
+      } else {
+        console.warn(
+          '[WhatsApp AI] Groq HTTP:',
+          response.status,
+          data?.error?.message || 'Request failed'
+        );
+      }
+    } catch (error) {
+      console.warn('[WhatsApp AI] Groq error:', error.message || error);
+    }
+  } else {
+    console.warn('[WhatsApp AI] GROQ_API_KEY missing.');
+  }
+
+  // 3. Existing Cloudflare / secondary provider fallback
+  try {
     const fallbackReply = await getSasikumarTextFallbackReply(
       userContent,
       'WhatsApp AI',
       systemPrompt
     );
-    if (fallbackReply) return fallbackReply;
 
-    console.error('[WhatsApp AI] All text providers unavailable.');
-    return 'மன்னிக்கவும் நண்பா 😊 AI சேவை இப்போது கிடைக்கவில்லை. சிறிது நேரம் கழித்து முயற்சிக்கவும்.';
-  }
-
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 20000);
-
-  try {
-    const response = await fetch(
-      'https://api.groq.com/openai/v1/chat/completions',
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + apiKey,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          model: 'openai/gpt-oss-20b',
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: userContent.slice(0, 9000) }
-          ],
-          temperature: 0.5,
-          max_completion_tokens: 1200
-        }),
-        signal: controller.signal
-      }
-    );
-
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-      console.error(
-        '[WhatsApp AI]',
-        response.status,
-        data?.error?.message || 'AI request failed'
-      );
-      const fallbackReply = await getSasikumarTextFallbackReply(userContent, 'WhatsApp AI', systemPrompt);
-      if (fallbackReply) {
-        console.info('[WhatsApp AI] CLOUDFLARE_FALLBACK_SUCCESS (Groq HTTP error)');
-        return fallbackReply;
-      }
-      console.error('[WhatsApp AI] AI_REPLY_FAILED (Groq HTTP error; Cloudflare unavailable)');
-
-      return 'மன்னிக்கவும் நண்பா 😊 இப்போது AI பதில் கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.';
-    }
-
-    console.info('[WhatsApp AI] Groq response metadata', {
-      finishReason: data?.choices?.[0]?.finish_reason || null,
-      promptTokens: data?.usage?.prompt_tokens ?? null,
-      completionTokens: data?.usage?.completion_tokens ?? null,
-      contentLength: typeof data?.choices?.[0]?.message?.content === 'string'
-        ? data.choices[0].message.content.length
-        : 0
-    });
-
-    const answer = data?.choices?.[0]?.message?.content?.trim();
-
-    if (!answer) {
-      const fallbackReply = await getSasikumarTextFallbackReply(userContent, 'WhatsApp AI', systemPrompt);
-      if (fallbackReply) {
-        console.info('[WhatsApp AI] CLOUDFLARE_FALLBACK_SUCCESS (Groq empty answer)');
-        return fallbackReply;
-      }
-      console.error('[WhatsApp AI] AI_REPLY_FAILED (Groq empty answer; Cloudflare unavailable)');
-
-      return 'மன்னிக்கவும் நண்பா 😊 பதில் கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.';
-    }
-
-    console.info('[WhatsApp AI] GROQ_SUCCESS');
-    return answer;
-  } catch (error) {
-    console.error('[WhatsApp AI] Groq request error:', error.message || error);
-
-    const fallbackReply = await getSasikumarTextFallbackReply(userContent, 'WhatsApp AI', systemPrompt);
     if (fallbackReply) {
-      console.info('[WhatsApp AI] CLOUDFLARE_FALLBACK_SUCCESS (Groq exception)');
+      console.info('[WhatsApp AI] CLOUDFLARE_FALLBACK_SUCCESS');
       return fallbackReply;
     }
-    console.error('[WhatsApp AI] AI_REPLY_FAILED (Groq exception; Cloudflare unavailable)');
-
-    return 'மன்னிக்கவும் நண்பா 😊 AI இணைப்பில் தற்காலிகப் பிழை. மீண்டும் முயற்சிக்கவும்.';
-  } finally {
-    clearTimeout(timer);
+  } catch (error) {
+    console.error('[WhatsApp AI] Cloudflare fallback error:', error.message || error);
   }
+
+  console.error('[WhatsApp AI] ALL_TEXT_PROVIDERS_FAILED');
+  return 'மன்னிக்கவும் நண்பா 😊 AI சேவை இப்போது கிடைக்கவில்லை. சிறிது நேரம் கழித்து முயற்சிக்கவும்.';
+
 }
 
 app.get('/api/whatsapp/webhook',(req,res)=>{const mode=req.query['hub.mode'];const token=req.query['hub.verify_token'];const challenge=req.query['hub.challenge'];if(mode==='subscribe' && token===WA_VERIFY_TOKEN) res.status(200).send(challenge); else res.sendStatus(403);});
