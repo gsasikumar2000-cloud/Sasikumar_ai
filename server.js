@@ -1013,6 +1013,11 @@ https://sasikumar-ai-9wdq.onrender.com/spiritual-astrology.html
 🧾 7. Gold Appraiser Report
 📷 8. Photo Quality Check
 
+💎 STONE CHART — முழு கல் விவரங்கள்
+💍 DIAMOND / RUBY / EMERALD
+🌈 TOURMALINE / PULI STONE / PEARL
+🧮 STONE CALCULATOR — CT to Gram
+
 📌 பயன்படுத்தும் முறை:
 உங்கள் தங்க நகையின் தெளிவான புகைப்படத்தை
 HALLMARK என்ற caption உடன் அனுப்புங்கள்.
@@ -1023,6 +1028,117 @@ HUID-ஐ BIS Care அல்லது அங்கீகரிக்கப்ப�
 
 🔙 Type 0 for Main Menu`,
 };
+
+// SK_WHATSAPP_STONE_CHART_V1
+function skGetStoneChartReply(command) {
+  const key = String(command || '').trim().toUpperCase();
+
+  const common = `💎 SASIKUMAR AI — GEMSTONE REFERENCE
+
+1 CT = 0.200 GRAM
+Gram = CT × 0.200
+CT = Gram × 5
+
+SIZE CLASSIFICATION:
+0.010–0.500 CT : SMALL
+0.500–1.000 CT : MEDIUM
+1.000–5.000 CT : BIG
+
+Stone size in mm depends on shape, cut and density.
+Actual weight must be measured using a suitable weighing scale.
+
+⚠️ இது reference guide மட்டுமே. கல்லின் உண்மையான தன்மை மற்றும் தரத்தை laboratory test மூலம் உறுதிப்படுத்த வேண்டும்.`;
+
+  const details = {
+    'DIAMOND': `💎 DIAMOND — வைரம்
+
+• 4Cs: Cut, Colour, Clarity, Carat
+• Natural / Lab-grown / Imitation
+• Shape, measurements and inclusions
+• Treatment and grading report
+• 1 CT = 0.200 gram
+
+Visual photo alone cannot confirm natural or lab-grown status.
+
+${common}`,
+    'RUBY': `❤️ RUBY — மாணிக்கம்
+
+• Colour, clarity, cut and carat
+• Natural / Synthetic / Imitation
+• Heat treatment / Glass filling
+• Shape and measurements
+• Origin requires laboratory examination
+
+${common}`,
+    'EMERALD': `💚 EMERALD — மரகதம்
+
+• Colour, clarity, cut and carat
+• Natural / Synthetic identification
+• Jardin / inclusions
+• Oil or resin treatment
+• Dimensions and grading report
+
+${common}`,
+    'TOURMALINE': `🌈 TOURMALINE — டூர்மலின்
+
+• Colour varieties
+• Natural / Synthetic identification
+• Cut, clarity and carat
+• Treatment and dimensions
+
+${common}`,
+    'PULI STONE': `🐅 PULI STONE — Tiger Eye
+
+• Colour and band pattern
+• Cabochon / Bead / Cut shape
+• Length × Width × Height (mm)
+• Actual weight in CT or grams
+
+${common}`,
+    'PEARL': `⚪ PEARL — முத்து
+
+• Natural / Cultured / Imitation
+• Roundness, lustre and surface
+• Diameter in millimetres
+• Weight in CT or grams
+• Treatment and quality
+
+${common}`,
+    'STONE CALCULATOR': `🧮 STONE WEIGHT CONVERSION
+
+1 CT = 0.200 gram
+1 gram = 5 CT
+
+Formula:
+CT × 0.200 = Gram
+Gram × 5 = CT
+
+GOLD ARTICLE PRESET:
+கடுக்கு கல்: 0.010 g × Count
+வதியம் கல்: 0.030 g × Count
+
+These are preset estimates, not verified individual stone weights.`
+  };
+
+  if (key === 'STONE CHART') {
+    return `💎 SASIKUMAR AI — FULL STONE CHART
+
+1. DIAMOND — வைரம்
+2. RUBY — மாணிக்கம்
+3. EMERALD — மரகதம்
+4. TOURMALINE — டூர்மலின்
+5. PULI STONE — Tiger Eye
+6. PEARL — முத்து
+
+${common}
+
+தனிப்பட்ட விவரங்களுக்கு DIAMOND / RUBY / EMERALD / TOURMALINE / PULI STONE / PEARL என அனுப்புங்கள்.`;
+  }
+
+  return details[key] || common;
+}
+// END SK_WHATSAPP_STONE_CHART_V1
+
 async function getLiveGoldSilverWhatsAppReply() {
   const goldUrl = 'https://sasikumar-ai-9wdq.onrender.com/api/gold-rate?state=Tamil%20Nadu&district=Thanjavur';
   const silverUrl = 'https://sasikumar-ai-9wdq.onrender.com/api/silver-rate?state=Tamil%20Nadu&district=Thanjavur';
@@ -5325,6 +5441,8 @@ if (mp3PlayRequested || mp3Navigation) {
   reply = skShareReply('wa:' + from);
  } else if (/^(?:central govt|central government|மத்திய அரசு|tn govt|tamil nadu govt|tamilnadu govt|state govt|தமிழ்நாடு அரசு|govt schemes|government schemes|schemes|அரசு திட்டங்கள்|நலத்திட்டங்கள்|latest notifications|latest notification|govt notifications|government notifications|அரசு அறிவிப்புகள்|அறிவிப்புகள்|tnpsc)$/i.test(trimmed)) {
   reply = await getGovernmentReply(trimmed) || WELCOME_MENU;
+} else if (/^(?:STONE CHART|DIAMOND|RUBY|EMERALD|TOURMALINE|PULI STONE|PEARL|STONE CALCULATOR)$/i.test(trimmed)) {
+  reply = skGetStoneChartReply(trimmed);
 } else if (!isWelcome) {
   const num = trimmed.match(/^\s*(3[0-6]|[12][0-9]|[0-9])\s*$/);
 
