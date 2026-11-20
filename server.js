@@ -169,7 +169,7 @@ const WELCOME_MENU = `🤖 SASIKUMAR AI — MAIN MENU
 🔊 Voice Output — Coming Soon
 💬 Type your question directly in WhatsApp.
 
-📋 ALL 35 SERVICES
+📋 ALL 36 SERVICES
 
 1. 🤖 AI Assistant
 2. 🪙 Live Gold & Silver Rate
@@ -206,6 +206,7 @@ const WELCOME_MENU = `🤖 SASIKUMAR AI — MAIN MENU
 33. 🌾 Agriculture — விவசாய உதவியாளர்
 34. 😂 Meme Head — Trending Meme Hub
 35. 🔮 Tamil Astrology & Horoscope
+36. 💎 Gold Hallmark Intelligence
 
 0. 🏠 Main Menu
 
@@ -998,8 +999,29 @@ https://sasikumar-ai-9wdq.onrender.com/spiritual-astrology.html
 
 உங்கள் ராசி அல்லது ஜோதிடக் கேள்வியை அனுப்புங்கள்.
 
-🔙 Type 0 for Main Menu`
+🔙 Type 0 for Main Menu`,
 
+
+  '36': () => `💎 SASIKUMAR AI — GOLD HALLMARK INTELLIGENCE
+
+📸 1. Hallmark Photo Analyzer
+🔍 2. BIS Logo Reading
+💎 3. 916 / 750 / 585 Purity Mark Reading
+🔢 4. HUID Reading
+✅ 5. HUID Format Check
+📋 6. Customer Report — Tamil
+🧾 7. Gold Appraiser Report
+📷 8. Photo Quality Check
+
+📌 பயன்படுத்தும் முறை:
+உங்கள் தங்க நகையின் தெளிவான புகைப்படத்தை
+HALLMARK என்ற caption உடன் அனுப்புங்கள்.
+
+⚠️ இது புகைப்பட அடிப்படையிலான ஆரம்ப ஆய்வு மட்டுமே.
+உண்மையான BIS / HUID verification அல்ல.
+HUID-ஐ BIS Care அல்லது அங்கீகரிக்கப்பட்ட API மூலம் சரிபார்க்கவும்.
+
+🔙 Type 0 for Main Menu`,
 };
 async function getLiveGoldSilverWhatsAppReply() {
   const goldUrl = 'https://sasikumar-ai-9wdq.onrender.com/api/gold-rate?state=Tamil%20Nadu&district=Thanjavur';
@@ -1118,7 +1140,7 @@ function getWhatsAppEMIReply(message) {
 🔙 Type 0 for Main Menu`;
 }
 function detectLang(q){try{if(/[\u0B80-\u0BFF]/.test(q))return 'ta';return 'en';}catch(e){return 'en';}}
-function getGeneralReply(q,lang){const time=new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'});if(q.toLowerCase().includes('gold'))return `💰 GOLD RATE\nVerified current rate-ai /api/gold-la check pannunga.\nhttps://sasikumar-ai-9wdq.onrender.com/api/gold\nType 0 for Menu`;return `🌍 General AI - ${time}\nYou: "${q}"\nType 0 for Menu or 1-35`; }
+function getGeneralReply(q,lang){const time=new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'});if(q.toLowerCase().includes('gold'))return `💰 GOLD RATE\nVerified current rate-ai /api/gold-la check pannunga.\nhttps://sasikumar-ai-9wdq.onrender.com/api/gold\nType 0 for Menu`;return `🌍 General AI - ${time}\nYou: "${q}"\nType 0 for Menu or 1-36`; }
 
 app.get('/api/pincode', async (req, res) => {
   try {
@@ -1161,12 +1183,12 @@ app.post('/api/pagespeed', async (req, res) => {
   }
 });
 
-app.get('/api/status',(req,res)=>{res.json({status:'WHATSAPP MENU 35 OPTIONS LIVE OK',version:'7.4 Menu',options:35,time:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})});});
+app.get('/api/status',(req,res)=>{res.json({status:'WHATSAPP MENU 36 OPTIONS LIVE OK',version:'7.4 Menu',options:36,time:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})});});
 app.get('/api/whatsapp/menu',(req,res)=>{
   res.set('Cache-Control','no-store');
   res.json({
     welcome: '🤖 SASIKUMAR AI — 35 Services',
-    total: 35,
+    total: 36,
     menuImage: 'https://sasikumar-ai-9wdq.onrender.com/assets/whatsapp-menu.png'
   });
 });
@@ -1805,7 +1827,7 @@ app.post('/api/ai-reply', async (req,res)=>{
       return res.json({answer:WELCOME_MENU,api:'Welcome Menu'});
     }
 
-    const direct = q.match(/^\s*(3[0-5]|[12][0-9]|[1-9])\s*$/);
+    const direct = q.match(/^\s*(3[0-6]|[12][0-9]|[1-9])\s*$/);
     if (direct) {
       const num = direct[1];
       const reply = getMenuReply(num);
@@ -3226,6 +3248,54 @@ async function skAnalyzeImageBuffer(buffer, mime, caption = '') {
   return String(answer).slice(0, 4000);
 }
 
+
+
+// SK_WHATSAPP_HALLMARK_PHOTO_ANALYZER_V1
+async function skBuildHallmarkPhotoReport(buffer, mime) {
+  const prompt = `
+SASIKUMAR AI - GOLD HALLMARK PHOTO ANALYZER.
+
+இந்த நகைப் புகைப்படத்தை Hallmark ஆய்வுக்காக மட்டும் கவனமாகப் பரிசோதிக்கவும்.
+பதிலை எளிய தமிழில் கொடுக்கவும்.
+
+கீழே உள்ள பிரிவுகளைத் தனித்தனியாகக் குறிப்பிடவும்:
+
+1. BIS Logo:
+புகைப்படத்தில் BIS hallmark logo தெளிவாகத் தெரிகிறதா?
+Visible / Not visible / Not clear என்று மட்டும் ஆதாரத்தின் அடிப்படையில் கூறவும்.
+
+2. Purity Mark:
+916, 750, 585, 375 போன்ற purity குறியீடு இருந்தால்,
+படத்தில் உண்மையாக வாசிக்க முடிந்ததை மட்டும் குறிப்பிடவும்.
+தெரியாவிட்டால் NOT CLEAR என்று கூறவும்.
+
+3. HUID:
+HUID எழுத்துகள் மற்றும் எண்கள் தெளிவாக வாசிக்க முடிந்தால்
+படத்தில் உள்ள அதே ஆறு characters-ஐ மட்டும் எழுதவும்.
+ஒவ்வொரு character-யும் தெளிவாகத் தெரியாவிட்டால்
+HUID: NOT CLEAR என்று கூறவும்.
+ஊகித்து எந்த HUID-யும் உருவாக்க வேண்டாம்.
+
+4. Photo Quality:
+படம் தெளிவானதா, மங்கலானதா, வெளிச்சம் போதுமா?
+மீண்டும் புகைப்படம் எடுக்க வேண்டுமா?
+
+5. Customer Report:
+வாடிக்கையாளருக்குப் புரியும் வகையில் சுருக்கமான தமிழ் அறிக்கை கொடுக்கவும்.
+
+முக்கிய பாதுகாப்பு விதிகள்:
+- புகைப்படத்தை மட்டும் வைத்து தங்கத்தின் உண்மையான purity-ஐ உறுதிப்படுத்த வேண்டாம்.
+- BIS logo அல்லது hallmark இருப்பதாக மட்டும் வைத்து authenticity உறுதி செய்ய வேண்டாம்.
+- HUID வாசித்தது என்பது BIS database verification அல்ல.
+- BIS Verified என்று ஒருபோதும் கூற வேண்டாம்.
+- புகைப்படத்தில் இல்லாத குறியீடுகளைச் சேர்க்க வேண்டாம்.
+- எழுத்துகள் தெளிவில்லையெனில் அருகில் எடுக்கப்பட்ட close-up photo கேட்கவும்.
+- தெரியும் ஆதாரத்தையும் உறுதிப்படுத்த முடியாத தகவலையும் தெளிவாகப் பிரிக்கவும்.
+`;
+
+  return await skAnalyzeImageBuffer(buffer, mime, prompt);
+}
+// END SK_WHATSAPP_HALLMARK_PHOTO_ANALYZER_V1
 
 // SK_AUTO_IMAGE_DETAILS_REPORT_V1
 async function skBuildImageDetailsReport(buffer, mime, caption = '', ocrText = '') {
@@ -4887,6 +4957,20 @@ if (msg.type === 'image' && msg.image?.id) {
   try {
     const original = await skWhatsAppDownloadImageBuffer(msg.image.id);
 
+    const hallmarkPhotoRequested =
+      /\b(hallmark|huid|bis|916|750|585|375)\b/i.test(imageCaption) ||
+      /ஹால்மார்க்|பிஐஎஸ்|ஹியூஐடி|தங்க முத்திரை/i.test(imageCaption);
+
+    if (hallmarkPhotoRequested) {
+      const report = await skBuildHallmarkPhotoReport(
+        original.buffer,
+        original.mime
+      );
+      await skWhatsAppSendTextOnly(mediaSender, report);
+      return;
+    }
+
+
     if (skIsKavithaiRequest(imageCaption)) {
       const details = await skBuildImageDetailsReport(
         original.buffer,
@@ -5242,7 +5326,7 @@ if (mp3PlayRequested || mp3Navigation) {
  } else if (/^(?:central govt|central government|மத்திய அரசு|tn govt|tamil nadu govt|tamilnadu govt|state govt|தமிழ்நாடு அரசு|govt schemes|government schemes|schemes|அரசு திட்டங்கள்|நலத்திட்டங்கள்|latest notifications|latest notification|govt notifications|government notifications|அரசு அறிவிப்புகள்|அறிவிப்புகள்|tnpsc)$/i.test(trimmed)) {
   reply = await getGovernmentReply(trimmed) || WELCOME_MENU;
 } else if (!isWelcome) {
-  const num = trimmed.match(/^\s*(3[0-5]|[12][0-9]|[0-9])\s*$/);
+  const num = trimmed.match(/^\s*(3[0-6]|[12][0-9]|[0-9])\s*$/);
 
   if (num) {
     reply = num[1] === '10'
@@ -13147,4 +13231,4 @@ app.post('/api/brain/ask', auth.optionalAuth, async (req, res) => {
 });
 // END SK_CENTRAL_BRAIN_V2_1
 
-app.listen(PORT,()=>console.log(`🤖 35 OPTIONS WHATSAPP MENU http://localhost:${PORT} - OK`));
+app.listen(PORT,()=>console.log(`🤖 36 OPTIONS WHATSAPP MENU http://localhost:${PORT} - OK`));
