@@ -13466,6 +13466,120 @@ app.post('/api/brain/ask', auth.optionalAuth, async (req, res) => {
 
   return res.status(result.status || 502).json(result);
 });
+
+// SK_GOVERNMENT_MSME_API_V1
+const skMsmeSourceDate = '2022-02-11';
+
+app.get('/api/government/msme', async (req, res) => {
+  res.set('Cache-Control', 'no-store');
+
+  if (!jobDbPool) {
+    return res.status(503).json({ ok: false, error: 'Database unavailable' });
+  }
+
+  try {
+    const state = String(req.query.state || '').trim().slice(0, 100);
+    const district = String(req.query.district || '').trim().slice(0, 100);
+
+    if (!state && !district) {
+      return res.status(400).json({
+        ok: false,
+        error: 'Provide state or district query'
+      });
+    }
+
+    const result = await jobDbPool.query(
+      `SELECT state_name, district_name,
+              total_applications, micro, small, medium,
+              source_created_at
+       FROM public.sk_government_msme
+       WHERE ($1 = '' OR state_name ILIKE '%' || $1 || '%')
+         AND ($2 = '' OR district_name ILIKE '%' || $2 || '%')
+       ORDER BY state_name, district_name
+       LIMIT 100`,
+      [state, district]
+    );
+
+    return res.json({
+      ok: true,
+      source: 'data.gov.in',
+      dataDate: skMsmeSourceDate,
+      historical: true,
+      warning: 'இது 2022 தரவு; தற்போதைய MSME எண்ணிக்கை அல்ல.',
+      count: result.rows.length,
+      results: result.rows
+    });
+  } catch (error) {
+    console.error('[MSME SEARCH]', error.message);
+    return res.status(500).json({ ok: false, error: 'MSME search failed' });
+  }
+});
+
+app.get('/api/government/msme/states', async (req, res) => {
+  res.set('Cache-Control', 'no-store');
+
+  if (!jobDbPool) {
+    return res.status(503).json({ ok: false, error: 'Database unavailable' });
+  }
+
+  try {
+    const result = await jobDbPool.query(`
+      SELECT state_name, COUNT(*)::int AS districts,
+             SUM(total_applications)::bigint AS total_applications,
+             SUM(micro)::bigint AS micro,
+             SUM(small)::bigint AS small,
+             SUM(medium)::bigint AS medium
+      FROM public.sk_government_msme
+      GROUP BY state_name
+      ORDER BY state_name
+    `);
+
+    return res.json({
+      ok: true,
+      dataDate: skMsmeSourceDate,
+      historical: true,
+      warning: '2022 வரலாற்றுத் தரவு; தற்போதைய எண்ணிக்கை அல்ல.',
+      count: result.rows.length,
+      results: result.rows
+    });
+  } catch (error) {
+    console.error('[MSME STATES]', error.message);
+    return res.status(500).json({ ok: false, error: 'MSME states failed' });
+  }
+});
+
+app.get('/api/government/msme/summary', async (req, res) => {
+  res.set('Cache-Control', 'no-store');
+
+  if (!jobDbPool) {
+    return res.status(503).json({ ok: false, error: 'Database unavailable' });
+  }
+
+  try {
+    const result = await jobDbPool.query(`
+      SELECT COUNT(*)::int AS districts,
+             COUNT(DISTINCT state_name)::int AS states,
+             SUM(total_applications)::bigint AS total_applications,
+             SUM(micro)::bigint AS micro,
+             SUM(small)::bigint AS small,
+             SUM(medium)::bigint AS medium
+      FROM public.sk_government_msme
+    `);
+
+    return res.json({
+      ok: true,
+      dataDate: skMsmeSourceDate,
+      historical: true,
+      warning: '2022 வரலாற்றுத் தரவு; தற்போதைய எண்ணிக்கை அல்ல.',
+      summary: result.rows[0]
+    });
+  } catch (error) {
+    console.error('[MSME SUMMARY]', error.message);
+    return res.status(500).json({ ok: false, error: 'MSME summary failed' });
+  }
+});
+// END SK_GOVERNMENT_MSME_API_V1
+
 // END SK_CENTRAL_BRAIN_V2_1
 
 app.listen(PORT,()=>console.log(`🤖 36 OPTIONS WHATSAPP MENU http://localhost:${PORT} - OK`));
