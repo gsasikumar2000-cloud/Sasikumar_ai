@@ -2745,6 +2745,7 @@ const SK_LAST_BOT_REPLIES = new Map();
 const SK_WA_PROCESSED_MESSAGES = new Map();
 const SK_WA_YOUTUBE_SESSIONS = new Map();
 const SK_WA_MP3_SESSIONS = new Map();
+const SK_WA_MSME_SESSIONS = new Map();
 
 
 function skRememberLastReply(key, message) {
@@ -5410,7 +5411,107 @@ const mapsMatch = trimmed.match(/^(?:maps?|வரைபடம்|மேப்)\s
 const pinMatch = trimmed.match(/^(?:pin(?:\s*code)?|pincode|பின்கோடு|அஞ்சல்\s*குறியீடு|area|ஊர்)\s*[:\-]?\s*(.+)$/i);
 
 
-if (mp3PlayRequested || mp3Navigation) {
+
+const msmeStart = /^(?:msme|msme\s+search|msme\s+data|எம்எஸ்எம்இ)$/i.test(trimmed);
+
+if (isWelcome) {
+  SK_WA_MSME_SESSIONS.delete(String(from));
+}
+
+const msmeExistingSession = SK_WA_MSME_SESSIONS.get(String(from));
+
+if (
+  msmeExistingSession &&
+  Date.now() - Number(msmeExistingSession.updatedAt || 0) > 10 * 60 * 1000
+) {
+  SK_WA_MSME_SESSIONS.delete(String(from));
+}
+
+const msmeAwaitingDistrict =
+  SK_WA_MSME_SESSIONS.has(String(from)) && !isWelcome;
+
+if (msmeStart) {
+  SK_WA_MSME_SESSIONS.set(String(from), {
+    step: 'district',
+    updatedAt: Date.now()
+  });
+
+  while (SK_WA_MSME_SESSIONS.size > 500) {
+    SK_WA_MSME_SESSIONS.delete(
+      SK_WA_MSME_SESSIONS.keys().next().value
+    );
+  }
+
+  reply =
+    '🏭 SASIKUMAR AI — MSME DISTRICT SEARCH\n\n' +
+    'எந்த மாவட்டத்தின் MSME விவரம் வேண்டும்?\n' +
+    'மாவட்டப் பெயரை ஆங்கிலம் அல்லது தமிழில் அனுப்புங்கள்.\n\n' +
+    'உதாரணம்: COIMBATORE\n\n' +
+    '⏳ 10 நிமிடங்களுக்குள் மாவட்டப் பெயரை அனுப்புங்கள்.';
+} else if (msmeAwaitingDistrict) {
+  const district = trimmed
+    .replace(/(?:\s+district|\s+மாவட்டம்)$/i, '')
+    .trim();
+
+  if (!/^[\p{L}\s.'-]{2,80}$/u.test(district)) {
+    reply = '⚠️ சரியான மாவட்டப் பெயரை அனுப்புங்கள். உதாரணம்: COIMBATORE';
+  } else {
+    SK_WA_MSME_SESSIONS.delete(String(from));
+    if (!jobDbPool) {
+    reply = '⚠️ MSME தரவுத்தள இணைப்பு தற்போது கிடைக்கவில்லை. பின்னர் முயற்சிக்கவும்.';
+  } else {
+    try {
+      const msmeResult = await jobDbPool.query(
+        `SELECT state_name, district_name,
+                total_applications, micro, small, medium
+         FROM public.sk_government_msme
+         WHERE district_name ILIKE '%' || $1 || '%'
+         ORDER BY
+           CASE WHEN LOWER(district_name) = LOWER($1)
+                THEN 0 ELSE 1 END,
+           state_name
+         LIMIT 10`,
+        [district]
+      );
+
+      if (!msmeResult.rows.length) {
+        reply =
+          '🔎 "' + district + '" மாவட்டத்திற்கான MSME பதிவு கிடைக்கவில்லை.\n\n' +
+          'மாவட்டப் பெயரை மீண்டும் சரிபார்த்து அனுப்புங்கள்.\n' +
+          'புதிய தேடலுக்கு MSME என்று அனுப்புங்கள்.';
+      } else {
+        const fmt = value =>
+          Number(value || 0).toLocaleString('en-IN');
+
+        const records = msmeResult.rows.map((row, index) => [
+          (msmeResult.rows.length > 1 ? (index + 1) + '. ' : '') +
+            '📍 ' + row.district_name + ', ' + row.state_name,
+          '📊 மொத்த விண்ணப்பங்கள்: ' + fmt(row.total_applications),
+          '🔹 Micro: ' + fmt(row.micro),
+          '🔸 Small: ' + fmt(row.small),
+          '🔶 Medium: ' + fmt(row.medium)
+        ].join('\n'));
+
+        reply = [
+          '🏭 SASIKUMAR AI — MSME DISTRICT REPORT',
+          '',
+          ...records,
+          '',
+          '📅 தரவு நாள்: 11-02-2022',
+          '⚠️ இது 2022 வரலாற்றுத் தரவு; தற்போதைய 2026 MSME எண்ணிக்கை அல்ல.',
+          '🌐 Source: data.gov.in',
+          '',
+          '🔍 மற்றொரு மாவட்டம்: MSME என்று அனுப்புங்கள்.'
+        ].join('\n');
+      }
+    } catch (msmeError) {
+      console.error('[WA MSME SEARCH]', msmeError.message);
+      reply = '⚠️ MSME மாவட்டத் தேடலில் தற்காலிகப் பிழை. பின்னர் முயற்சிக்கவும்.';
+    }
+    }
+  }
+} else if (mp3PlayRequested || mp3Navigation) {
+
   mp3SearchRequested = true;
 
   const session = SK_WA_MP3_SESSIONS.get(String(from));
