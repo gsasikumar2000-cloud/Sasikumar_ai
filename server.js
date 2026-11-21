@@ -27,6 +27,7 @@ import { Unzip, UnzipInflate, UnzipPassThrough } from 'fflate';
 import ExcelJS from 'exceljs';
 import { registerKnowledgeRoutes } from './lib/knowledge-routes.js';
 import { searchKnowledge } from './lib/knowledge-base.js';
+import { searchDataGov } from './lib/datagov.js';
 const execFileAsync = promisify(execFile);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -81,6 +82,23 @@ function skMemoryUserKey(channel, rawId) {
 
   if (channel === 'website') return value.slice(0, 150);
   return null;
+}
+
+function skExtractExactKuralNumber(message) {
+  const text = String(message || '');
+  if (!/(?:திருக்குறள்|குறள்|thirukkural|kural)/i.test(text)) return null;
+
+  const match = text.match(/[0-9௦-௯]{1,4}/);
+  if (!match) return null;
+
+  const digits = match[0].replace(/[௦-௯]/g, ch =>
+    '0123456789'[ch.charCodeAt(0) - '௦'.charCodeAt(0)]
+  );
+
+  const number = Number(digits);
+  return Number.isInteger(number) && number >= 1 && number <= 1330
+    ? number
+    : null;
 }
 
 async function skLoadConversationMemory(channel, userKey) {
@@ -169,7 +187,7 @@ const WELCOME_MENU = `🤖 SASIKUMAR AI — MAIN MENU
 🔊 Voice Output — Coming Soon
 💬 Type your question directly in WhatsApp.
 
-📋 ALL 36 SERVICES
+📋 ALL 37 SERVICES
 
 1. 🤖 AI Assistant
 2. 🪙 Live Gold & Silver Rate
@@ -207,6 +225,7 @@ const WELCOME_MENU = `🤖 SASIKUMAR AI — MAIN MENU
 34. 😂 Meme Head — Trending Meme Hub
 35. 🔮 Tamil Astrology & Horoscope
 36. 💎 Gold Hallmark Intelligence
+37. 🔐 BIS HUID Verification — Meon API
 
 0. 🏠 Main Menu
 
@@ -1027,6 +1046,21 @@ HALLMARK என்ற caption உடன் அனுப்புங்கள்.
 HUID-ஐ BIS Care அல்லது அங்கீகரிக்கப்பட்ட API மூலம் சரிபார்க்கவும்.
 
 🔙 Type 0 for Main Menu`,
+
+  '37': () => `🔐 SASIKUMAR AI — BIS HUID VERIFICATION
+
+💎 Meon HUID API Integration
+
+1. HUID API Key: Configured
+2. HMAC Secret: Pending
+3. API Signature: Pending
+
+⚠️ Live verification இன்னும் இயக்கப்படவில்லை.
+Meon வழங்கும் HMAC Secret மற்றும் signature
+விதிமுறை கிடைத்த பிறகு இணைக்கப்படும்.
+
+🔙 Type 0 for Main Menu`,
+
 };
 
 // SK_WHATSAPP_STONE_CHART_V1
@@ -1299,7 +1333,38 @@ app.post('/api/pagespeed', async (req, res) => {
   }
 });
 
-app.get('/api/status',(req,res)=>{res.json({status:'WHATSAPP MENU 36 OPTIONS LIVE OK',version:'7.4 Menu',options:36,time:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})});});
+// SK_DATAGOV_SEARCH_API_V1
+app.get('/api/search/datagov', async (req, res) => {
+  try {
+    const query = String(req.query.q || '').trim();
+    const perPage = Math.min(Math.max(Number(req.query.per_page) || 10, 1), 100);
+    const after = String(req.query.after || '');
+
+    if (!query || query.length > 300) {
+      return res.status(400).json({
+        success: false,
+        error: 'சரியான Data.gov தேடல் வார்த்தையை அனுப்புங்கள்.'
+      });
+    }
+
+    const result = await searchDataGov({
+      query,
+      perPage,
+      after
+    });
+
+    res.set('Cache-Control', 'no-store');
+    return res.json(result);
+  } catch (error) {
+    console.error('[Data.gov Search]', error.message);
+    return res.status(502).json({
+      success: false,
+      error: 'Data.gov தேடல் தற்காலிகமாக கிடைக்கவில்லை.'
+    });
+  }
+});
+
+app.get('/api/status',(req,res)=>{res.json({status:'WHATSAPP MENU 37 OPTIONS LOCAL OK',version:'7.4 Menu',options:37,time:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})});});
 app.get('/api/whatsapp/menu',(req,res)=>{
   res.set('Cache-Control','no-store');
   res.json({
@@ -1943,7 +2008,7 @@ app.post('/api/ai-reply', async (req,res)=>{
       return res.json({answer:WELCOME_MENU,api:'Welcome Menu'});
     }
 
-    const direct = q.match(/^\s*(3[0-6]|[12][0-9]|[1-9])\s*$/);
+    const direct = q.match(/^\s*(3[0-7]|[12][0-9]|[1-9])\s*$/);
     if (direct) {
       const num = direct[1];
       const reply = getMenuReply(num);
@@ -8594,6 +8659,60 @@ app.post('/api/executive-ai', async (req, res) => {
   if (message.length > 6000) {
     return res.status(413).json({ ok: false, reply: 'Please shorten your question to 6000 characters.' });
   }
+
+  // SK_EXECUTIVE_EXACT_THIRUKKURAL_DATASET_V1
+  const exactKuralNumber = skExtractExactKuralNumber(message);
+
+  if (exactKuralNumber !== null) {
+    if (!jobDbPool) {
+      return res.status(503).json({
+        ok: false,
+        reply: 'Thirukkural Dataset database is unavailable.',
+        answer: 'Thirukkural Dataset database is unavailable.'
+      });
+    }
+
+    try {
+      const title = 'thirukkural-' + String(exactKuralNumber).padStart(5, '0');
+      const result = await jobDbPool.query(
+        `SELECT content
+         FROM public.sk_knowledge_chunks
+         WHERE source = $1 AND title = $2
+         ORDER BY chunk_index ASC
+         LIMIT 1`,
+        ['Kaggle Tamil Thirukkural', title]
+      );
+
+      const exactContent = result.rows[0]?.content;
+
+      if (typeof exactContent !== 'string' || !exactContent) {
+        const unavailable = `குறள் எண் ${exactKuralNumber} Dataset-ல் கிடைக்கவில்லை.`;
+        return res.status(404).json({
+          ok: false,
+          reply: unavailable,
+          answer: unavailable,
+          engine: 'Thirukkural Dataset'
+        });
+      }
+
+      return res.json({
+        ok: true,
+        reply: exactContent,
+        answer: exactContent,
+        mode: 'dataset',
+        language: 'Tamil',
+        engine: 'Kaggle Tamil Thirukkural'
+      });
+    } catch (error) {
+      console.error('[Exact Thirukkural Dataset]', error.message);
+      return res.status(503).json({
+        ok: false,
+        reply: 'Thirukkural Dataset தேடல் தற்காலிகமாக கிடைக்கவில்லை.',
+        answer: 'Thirukkural Dataset தேடல் தற்காலிகமாக கிடைக்கவில்லை.'
+      });
+    }
+  }
+  // END SK_EXECUTIVE_EXACT_THIRUKKURAL_DATASET_V1
 
   // SK_EXECUTIVE_WHATSAPP_MEMORY_V1
   const executiveSource = String(req.body?.source || '');
