@@ -5826,7 +5826,7 @@ if (mp3PlayRequested || mp3Navigation) {
     reply = getMenuReply('19');
   } else if (/\b(thathuvam|philosophy)\b|தத்துவம்|வாழ்க்கைத் தத்துவம்/i.test(trimmed)) {
     reply = getMenuReply('20');
-  } else if (/\b(thirukkural|kural)\b|திருக்குறள்/i.test(trimmed)) {
+  } else if (/^(?:thirukkural|kural|திருக்குறள்)$/i.test(trimmed)) {
     reply = getMenuReply('17');
   } else if (/\b(motivation|motivational)\b|ஊக்கம்|தன்னம்பிக்கை/i.test(trimmed)) {
     reply = getMenuReply('21');
