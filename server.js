@@ -5454,11 +5454,6 @@ if (msmeCertStart) {
     '',
     '🔙 Main Menu: 0'
   ].join('\n');
-  console.log('[MSME CERT DEBUG]', JSON.stringify({
-    hasRealNewline: reply.includes('\n'),
-    hasLiteralBackslashN: reply.includes('\\n'),
-    preview: reply.slice(0, 180)
-  }));
 } else if (msmeStart) {
   SK_WA_MSME_SESSIONS.set(String(from), {
     step: 'district',
