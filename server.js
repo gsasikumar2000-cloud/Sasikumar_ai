@@ -11599,7 +11599,7 @@ app.get('/api/admin/data-gov-test', auth.requireAdmin, async (req, res) => {
 
   try {
     const url = new URL(
-      `https://api.data.gov.in/resource/${resourceId}`
+      `https://www.data.gov.in/backend/dataapi/v1/resource/${resourceId}`
     );
 
     url.searchParams.set('api-key', apiKey);
