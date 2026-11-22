@@ -11996,17 +11996,18 @@ async function skFetchMsmeDistrictReport(input = 'ALL') {
   const stateTotal = await fetchTotal();
   const districts = [];
 
-  for (let i = 0; i < selected.length; i += 4) {
-    const batch = selected.slice(i, i + 4);
-    const results = await Promise.all(
-      batch.map(async ([english, apiName, tamil]) => ({
-        name: english,
-        tamil,
-        apiName,
-        total: await fetchTotal(apiName)
-      }))
-    );
-    districts.push(...results);
+  for (const [english, apiName, tamil] of selected) {
+    const total = await fetchTotal(apiName);
+    districts.push({
+      name: english,
+      tamil,
+      apiName,
+      total
+    });
+
+    if (districts.length < selected.length) {
+      await new Promise(resolve => setTimeout(resolve, 3000));
+    }
   }
 
   const districtSum = districts.reduce((sum, item) => sum + item.total, 0);
