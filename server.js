@@ -5596,57 +5596,263 @@ const msmeAwaitingDistrict =
 let msmePdfBuffer = null;
 let msmePdfFilename = 'SASIKUMAR_AI_Tamil_Nadu_MSME_Report.pdf';
 
+
 if (msmeVerifyStart || msmeVerifyAwaiting) {
   if (msmeVerifyStart) {
     SK_WA_MSME_VERIFY_SESSIONS.set(String(from), { updatedAt: Date.now() });
     reply = [
-      '🏭 SASIKUMAR AI — MSME VERIFY',
+      '🏢 SASIKUMAR AI — ALL IN ONE VERIFY CENTER',
       '',
-      'விவரங்களைத் தேர்வு செய்யுங்கள்:',
-      '1. Aadhaar — பாதுகாப்பான வழிகாட்டுதல்',
-      '2. Udyam Number — பதிவு சரிபார்ப்பு',
-      '3. நபர் பெயர் — பொதுத் தகவல்',
-      '4. GSTIN — GST பதிவு சரிபார்ப்பு',
+      '📋 தேர்வு செய்யுங்கள் — 1 முதல் 20 வரை:',
+      '1. Aadhaar Verification',
+      '2. Udyam Number Verification',
+      '3. Person Name Search',
+      '4. Bank Account Verification',
+      '5. GSTIN Verification',
+      '6. PAN Verification',
+      '7. Vehicle RC Verification',
+      '8. EPF / UAN Verification',
+      '9. Trade License Verification',
+      '10. FSSAI License Verification',
+      '11. Company CIN Verification',
+      '12. IEC Code Verification',
+      '13. TAN Verification',
+      '14. Trademark Search',
+      '15. Digital Signature Certificate',
+      '16. Bank IFSC Verification',
+      '17. Driving Licence Verification',
+      '18. Insurance Policy Verification',
+      '19. Professional Tax Verification',
+      '20. Startup India Recognition',
+      '21. Insurance All in One',
       '',
-      '1, 2, 3 அல்லது 4 என்று அனுப்புங்கள்.'
+      '1 முதல் 21 வரை எண்ணை அனுப்புங்கள்.',
+      '🔐 பாதுகாப்பு: OTP / Password / முழு வங்கி கணக்கு எண்ணை அனுப்ப வேண்டாம்.',
+      '🔙 Main Menu: 0'
     ].join('\n');
   } else {
     const choice = trimmed.trim();
+
     const replies = {
       '1': [
-        '🔐 Aadhaar பாதுகாப்பு',
-        'ஆதார் எண் அல்லது OTP-ஐ WhatsApp-ல் அனுப்ப வேண்டாம்.',
-        'அதிகாரப்பூர்வ UIDAI தளம்:',
-        'https://myaadhaar.uidai.gov.in/'
+        '🔐 AADHAAR VERIFICATION',
+        'ஆதார் எண் மற்றும் OTP-ஐ WhatsApp-ல் அனுப்ப வேண்டாம்.',
+        'UIDAI அதிகாரப்பூர்வ தளம்:',
+        'https://myaadhaar.uidai.gov.in/',
+        'இது பாதுகாப்பான வழிகாட்டுதல் மட்டுமே.'
       ],
       '2': [
         '📄 UDYAM REGISTRATION VERIFICATION',
-        'Udyam Registration Number வடிவம்: UDYAM-TN-00-0000000',
-        'உங்கள் உண்மையான Udyam Number-ஐ அதிகாரப்பூர்வ தளத்தில் சரிபார்க்கவும்:',
+        'Udyam Number வடிவம்: UDYAM-TN-00-0000000',
+        'அதிகாரப்பூர்வ தளம்:',
         'https://udyamregistration.gov.in/',
-        'Search MSME Units: https://udyamregistration.gov.in/searchregistration.aspx',
-        'SASIKUMAR AI நேரடி Udyam API verification செய்யவில்லை.',
-        'OTP அல்லது தனிப்பட்ட தகவல்களை WhatsApp-ல் பகிர வேண்டாம்.'
+        'MSME Search:',
+        'https://udyamregistration.gov.in/searchregistration.aspx',
+        'நேரடி Udyam API இணைக்கப்படவில்லை.'
       ],
       '3': [
-        '🔎 நபர் பெயர் மூலம் தேடல்',
-        'பெயர் மட்டும் வைத்து தனிப்பட்ட விவரங்களைப் பெற முடியாது.',
-        'பொதுவில் வெளியிடப்பட்ட நிறுவனத் தகவல்கள் மட்டுமே பார்க்க முடியும்.',
-        'நிறுவனத்தின் Udyam Number அல்லது GSTIN உதவும்.'
+        '🔎 PERSON NAME SEARCH',
+        'பெயர் மட்டும் வைத்து தனிப்பட்ட தகவல்களைப் பெற முடியாது.',
+        'பொதுவில் வெளியிடப்பட்ட நிறுவனத் தகவல்கள் மட்டுமே பார்க்கலாம்.',
+        'Udyam Number / GSTIN இருந்தால் உதவும்.'
       ],
       '4': [
+        '🏦 BANK ACCOUNT VERIFICATION',
+        'வங்கிக் கணக்கு உரிமையை WhatsApp வழியாக உறுதிப்படுத்த முடியாது.',
+        'உங்கள் வங்கியின் அதிகாரப்பூர்வ கிளை அல்லது இணையதளத்தை அணுகவும்.',
+        'https://www.rbi.org.in/',
+        'முழு Account Number, OTP, PIN, Password பகிர வேண்டாம்.',
+        'Live Bank Account API இணைக்கப்படவில்லை.'
+      ],
+      '5': [
         '🏢 GSTIN VERIFICATION',
         'அதிகாரப்பூர்வ GST Portal:',
         'https://services.gst.gov.in/services/searchtp',
-        'GST API தற்போது இணைக்கப்படவில்லை. இது portal வழிகாட்டுதல் மட்டுமே.'
+        'GST API இணைக்கப்படவில்லை. Portal வழிகாட்டுதல் மட்டுமே.'
+      ],
+      '6': [
+        '🪪 PAN VERIFICATION',
+        'PAN எண்ணை WhatsApp-ல் பகிர வேண்டாம்.',
+        'Income Tax அதிகாரப்பூர்வ தளம்:',
+        'https://www.incometax.gov.in/iec/foportal/',
+        'அங்குள்ள Verify PAN சேவையைப் பயன்படுத்தவும்.',
+        'நேரடி PAN API இணைக்கப்படவில்லை.'
+      ],
+      '7': [
+        '🚗 VEHICLE RC VERIFICATION',
+        'வாகனப் பதிவு விவரங்களை அதிகாரப்பூர்வ Parivahan தளத்தில் பார்க்கவும்:',
+        'https://parivahan.gov.in/parivahan/',
+        'பிறரின் தனிப்பட்ட வாகனத் தகவல்களை அனுமதியின்றி பெற வேண்டாம்.',
+        'நேரடி Vehicle API இணைக்கப்படவில்லை.'
+      ],
+      '8': [
+        '👷 EPF / UAN VERIFICATION',
+        'EPFO அதிகாரப்பூர்வ தளம்:',
+        'https://www.epfindia.gov.in/',
+        'Member Portal:',
+        'https://unifiedportal-mem.epfindia.gov.in/memberinterface/',
+        'UAN Password அல்லது OTP-ஐ பகிர வேண்டாம்.',
+        'நேரடி EPFO API இணைக்கப்படவில்லை.'
+      ],
+      '9': [
+        '📜 TRADE LICENSE VERIFICATION',
+        'Trade License உங்கள் உள்ளாட்சி அமைப்பின் மூலம் சரிபார்க்கப்படும்.',
+        'Corporation / Municipality / Panchayat அதிகாரப்பூர்வ தளத்தை அணுகவும்.',
+        'தமிழ்நாடு அரசு:',
+        'https://www.tn.gov.in/',
+        'நேரடி Trade License API இணைக்கப்படவில்லை.'
+      ],
+      '10': [
+        '🍽️ FSSAI LICENSE VERIFICATION',
+        'FSSAI அதிகாரப்பூர்வ FoSCoS Portal:',
+        'https://foscos.fssai.gov.in/',
+        'License Number மூலம் அங்கு சரிபார்க்கவும்.',
+        'நேரடி FSSAI API இணைக்கப்படவில்லை.'
+      ],
+      '11': [
+        '🏭 COMPANY CIN VERIFICATION',
+        'MCA அதிகாரப்பூர்வ இணையதளம்:',
+        'https://www.mca.gov.in/',
+        'Company / LLP Master Data சேவையைப் பயன்படுத்தவும்.',
+        'நேரடி MCA API இணைக்கப்படவில்லை.'
+      ],
+      '12': [
+        '🌍 IEC CODE VERIFICATION',
+        'Import Export Code (IEC) சரிபார்ப்புக்கு DGFT தளம்:',
+        'https://www.dgft.gov.in/',
+        'உங்கள் IEC விவரங்களை அதிகாரப்பூர்வமாகச் சரிபார்க்கவும்.',
+        'நேரடி DGFT API இணைக்கப்படவில்லை.'
+      ],
+      '13': [
+        '🧾 TAN VERIFICATION',
+        'Income Tax அதிகாரப்பூர்வ தளம்:',
+        'https://www.incometax.gov.in/iec/foportal/',
+        'TAN தொடர்பான அதிகாரப்பூர்வ சேவைகளைப் பயன்படுத்தவும்.',
+        'நேரடி TAN API இணைக்கப்படவில்லை.'
+      ],
+      '14': [
+        '™️ TRADEMARK SEARCH',
+        'IP India அதிகாரப்பூர்வ தளம்:',
+        'https://ipindia.gov.in/',
+        'Public Trademark Search சேவையைப் பயன்படுத்தவும்.',
+        'இது ஆரம்ப நிலை தேடல் மட்டுமே; சட்டப்பூர்வ உறுதிப்படுத்தல் அல்ல.'
+      ],
+      '15': [
+        '📋 DIGITAL SIGNATURE CERTIFICATE',
+        'Controller of Certifying Authorities (CCA):',
+        'https://cca.gov.in/',
+        'அங்கீகரிக்கப்பட்ட Certifying Authority மூலம் DSC விவரங்களைச் சரிபார்க்கவும்.',
+        'Private Key / Password பகிர வேண்டாம்.'
+      ],
+      '16': [
+        '🏦 BANK IFSC VERIFICATION',
+        'IFSC மற்றும் வங்கிக் கிளை விவரங்களை அதிகாரப்பூர்வ RBI / வங்கி தளங்களில் உறுதிப்படுத்தவும்.',
+        'RBI:',
+        'https://www.rbi.org.in/',
+        'வங்கி பெயர் மற்றும் கிளை விவரங்களை ஒப்பிட்டுப் பார்க்கவும்.',
+        'நேரடி IFSC API இணைக்கப்படவில்லை.'
+      ],
+      '17': [
+        '🚘 DRIVING LICENCE VERIFICATION',
+        'Parivahan அதிகாரப்பூர்வ தளம்:',
+        'https://parivahan.gov.in/parivahan/',
+        'Driving Licence தொடர்பான சேவையைத் தேர்வு செய்து சரிபார்க்கவும்.',
+        'OTP அல்லது Password பகிர வேண்டாம்.'
+      ],
+      '18': [
+        '🛡️ INSURANCE POLICY VERIFICATION',
+        'Insurance நிறுவனத்தின் அதிகாரப்பூர்வ தளத்தில் Policy விவரங்களைச் சரிபார்க்கவும்.',
+        'IRDAI:',
+        'https://irdai.gov.in/',
+        'Policy Number / தனிப்பட்ட விவரங்களை பொதுவில் பகிர வேண்டாம்.',
+        'நேரடி Insurance API இணைக்கப்படவில்லை.'
+      ],
+      '19': [
+        '📑 PROFESSIONAL TAX VERIFICATION',
+        'Professional Tax மாநிலம் மற்றும் உள்ளாட்சி விதிகளுக்கு உட்பட்டது.',
+        'தமிழ்நாடு அரசு தளம்:',
+        'https://www.tn.gov.in/',
+        'உங்கள் உள்ளாட்சி அல்லது சம்பந்தப்பட்ட வரித்துறை அலுவலகத்தில் உறுதிப்படுத்தவும்.',
+        'நேரடி Professional Tax API இணைக்கப்படவில்லை.'
+      ],
+      '20': [
+        '🚀 STARTUP INDIA RECOGNITION',
+        'Startup India அதிகாரப்பூர்வ தளம்:',
+        'https://www.startupindia.gov.in/',
+        'DPIIT Recognition தொடர்பான அதிகாரப்பூர்வ விவரங்களைப் பார்க்கவும்.',
+        'நேரடி Startup India API இணைக்கப்படவில்லை.'
       ]
     };
 
-    if (replies[choice]) {
+    if (msmeVerifySession.mode === 'insurance') {
+      const insuranceTypes = {
+        '1': 'Life Insurance',
+        '2': 'Health Insurance',
+        '3': 'Vehicle Insurance',
+        '4': 'Term Insurance',
+        '5': 'Travel Insurance',
+        '6': 'Personal Accident Insurance',
+        '7': 'Home Insurance',
+        '8': 'Business Insurance',
+        '9': 'Fire Insurance',
+        '10': 'Marine Insurance',
+        '11': 'Policy Status',
+        '12': 'Premium Check / Due Date',
+        '13': 'Claim Status',
+        '14': 'Policy Renewal',
+        '15': 'Insurance Company Verification'
+      };
+
+      if (insuranceTypes[choice]) {
+        reply = [
+          '🛡️ SASIKUMAR AI — INSURANCE GUIDANCE',
+          '',
+          'தேர்வு: ' + insuranceTypes[choice],
+          '',
+          'Policy விவரங்களை சம்பந்தப்பட்ட காப்பீட்டு நிறுவனத்தின் அதிகாரப்பூர்வ இணையதளம் அல்லது Customer Care மூலம் சரிபார்க்கவும்.',
+          '',
+          'IRDAI அதிகாரப்பூர்வ தளம்:',
+          'https://irdai.gov.in/',
+          '',
+          'குறிப்பு: நேரடி Insurance API இணைக்கப்படவில்லை. இது வழிகாட்டுதல் மட்டுமே.',
+          'OTP / Password / வங்கி ரகசிய விவரங்களை அனுப்ப வேண்டாம்.'
+        ].join('\n');
+        SK_WA_MSME_VERIFY_SESSIONS.delete(String(from));
+      } else {
+        reply = '⚠️ Insurance தேர்வுக்கு 1 முதல் 15 வரை எண்ணை அனுப்புங்கள்.';
+        msmeVerifySession.updatedAt = Date.now();
+      }
+    } else if (choice === '21') {
+      msmeVerifySession.mode = 'insurance';
+      msmeVerifySession.updatedAt = Date.now();
+      reply = [
+        '🛡️ SASIKUMAR AI — INSURANCE ALL IN ONE',
+        '',
+        '1. Life Insurance',
+        '2. Health Insurance',
+        '3. Vehicle Insurance',
+        '4. Term Insurance',
+        '5. Travel Insurance',
+        '6. Personal Accident',
+        '7. Home Insurance',
+        '8. Business Insurance',
+        '9. Fire Insurance',
+        '10. Marine Insurance',
+        '11. Policy Status',
+        '12. Premium Check / Due Date',
+        '13. Claim Status',
+        '14. Policy Renewal',
+        '15. Insurance Company Verification',
+        '',
+        'Insurance சேவைக்கு 1 முதல் 15 வரை எண்ணை அனுப்புங்கள்.',
+        '🔐 OTP / Password அனுப்ப வேண்டாம்.',
+        '🔙 Main Menu: 0'
+      ].join('\n');
+    } else if (replies[choice]) {
       reply = replies[choice].join('\n');
       SK_WA_MSME_VERIFY_SESSIONS.delete(String(from));
     } else {
-      reply = '⚠️ 1, 2, 3 அல்லது 4 என்ற எண்ணை அனுப்புங்கள்.';
+      reply = '⚠️ 1 முதல் 21 வரை சரியான எண்ணை அனுப்புங்கள்.';
       msmeVerifySession.updatedAt = Date.now();
     }
   }
