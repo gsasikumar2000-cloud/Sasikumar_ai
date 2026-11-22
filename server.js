@@ -1556,7 +1556,7 @@ function skMedicalInstructions() {
     'For chest pain, severe breathing difficulty, stroke signs, unconsciousness, severe bleeding or poisoning, advise immediate emergency care. In India call 112 or ambulance 108.',
     'Ask relevant follow-up questions when age, symptom duration or severity is important. Never delay emergency care to ask questions.',
     'Do not replace professional diagnosis or emergency care.'
-  ].join('\\n');
+  ].join('\n');
 }
 // END SK_MEDICAL_CORE_V1
 
@@ -5412,6 +5412,8 @@ const pinMatch = trimmed.match(/^(?:pin(?:\s*code)?|pincode|பின்கோ�
 
 
 
+const msmeCertStart = /^(?:msme\s+certificate|udyam\s+certificate|certificate\s+download|எம்எஸ்எம்இ\s+சான்றிதழ்)$/i.test(trimmed);
+
 const msmeStart = /^(?:msme|msme\s+search|msme\s+data|எம்எஸ்எம்இ)$/i.test(trimmed);
 
 if (isWelcome) {
@@ -5430,7 +5432,29 @@ if (
 const msmeAwaitingDistrict =
   SK_WA_MSME_SESSIONS.has(String(from)) && !isWelcome;
 
-if (msmeStart) {
+if (msmeCertStart) {
+  reply = [
+    '📄 SASIKUMAR AI — MSME CERTIFICATE DOWNLOAD',
+    '',
+    'உங்கள் Udyam Registration Certificate பதிவிறக்கம் செய்ய:',
+    '',
+    '1. கீழே உள்ள அரசு இணையதளத்தைத் திறக்கவும்.',
+    '2. உங்கள் Udyam Registration Number உள்ளிடவும்.',
+    '3. பதிவு செய்த Mobile அல்லது Email OTP தேர்வு செய்யவும்.',
+    '4. OTP-ஐ அரசு இணையதளத்தில் மட்டும் உள்ளிடவும்.',
+    '5. Login செய்து Certificate-ஐ Print / Download செய்யவும்.',
+    '',
+    '🌐 Official Government Portal:',
+    'https://udyamregistration.gov.in/Udyam_Login.aspx',
+    '',
+    '⚠️ OTP, Aadhaar, PAN விவரங்களை WhatsApp-ல் அனுப்ப வேண்டாம்.',
+    '💰 அரசு Udyam Registration இலவசம். யாருக்கும் கட்டணம் செலுத்த வேண்டாம்.',
+    '',
+    '📎 PDF கிடைத்ததும் இங்கே அனுப்பினால் அதன் விவரங்களைப் புரிந்துகொள்ள உதவுகிறோம்.',
+    '',
+    '🔙 Main Menu: 0'
+  ].join('\\n');
+} else if (msmeStart) {
   SK_WA_MSME_SESSIONS.set(String(from), {
     step: 'district',
     updatedAt: Date.now()
