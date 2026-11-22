@@ -5453,7 +5453,7 @@ if (msmeCertStart) {
     '📎 PDF கிடைத்ததும் இங்கே அனுப்பினால் அதன் விவரங்களைப் புரிந்துகொள்ள உதவுகிறோம்.',
     '',
     '🔙 Main Menu: 0'
-  ].join('\\n');
+  ].join('\n');
 } else if (msmeStart) {
   SK_WA_MSME_SESSIONS.set(String(from), {
     step: 'district',
