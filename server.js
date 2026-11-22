@@ -11630,7 +11630,12 @@ app.get('/api/admin/data-gov-test', auth.requireAdmin, async (req, res) => {
       checkedAt: new Date().toISOString()
     });
   } catch (error) {
-    console.error('[Data.gov Admin Test]', error.message);
+    console.error('[Data.gov Admin Test]', {
+      name: error.name,
+      message: error.message,
+      causeCode: error.cause?.code,
+      causeMessage: error.cause?.message
+    });
     return res.status(502).json({
       ok: false,
       error: 'Data.gov.in connection failed'
