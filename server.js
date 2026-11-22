@@ -5620,10 +5620,13 @@ if (msmeVerifyStart || msmeVerifyAwaiting) {
         'https://myaadhaar.uidai.gov.in/'
       ],
       '2': [
-        '📄 UDYAM REGISTRATION',
-        'Udyam பதிவு விவரங்களை அதிகாரப்பூர்வ தளத்தில் சரிபார்க்கவும்:',
-        'https://udyamregistration.gov.in/Udyam_Login.aspx',
-        'OTP-ஐ WhatsApp-ல் பகிர வேண்டாம்.'
+        '📄 UDYAM REGISTRATION VERIFICATION',
+        'Udyam Registration Number வடிவம்: UDYAM-TN-00-0000000',
+        'உங்கள் உண்மையான Udyam Number-ஐ அதிகாரப்பூர்வ தளத்தில் சரிபார்க்கவும்:',
+        'https://udyamregistration.gov.in/',
+        'Search MSME Units: https://udyamregistration.gov.in/searchregistration.aspx',
+        'SASIKUMAR AI நேரடி Udyam API verification செய்யவில்லை.',
+        'OTP அல்லது தனிப்பட்ட தகவல்களை WhatsApp-ல் பகிர வேண்டாம்.'
       ],
       '3': [
         '🔎 நபர் பெயர் மூலம் தேடல்',
