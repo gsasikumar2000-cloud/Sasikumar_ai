@@ -3718,6 +3718,86 @@ async function skWhatsAppSendImageBuffer(to, buffer, mime, caption = '') {
 }
 
 
+
+// SK_WHATSAPP_PDF_DOCUMENT_SENDER_V1
+async function skWhatsAppSendDocumentBuffer(to, buffer, filename, caption = '') {
+  if (!WA_TOKEN || !WA_PHONE_ID) {
+    throw new Error('WhatsApp credentials unavailable.');
+  }
+
+  if (!Buffer.isBuffer(buffer) || !buffer.length) {
+    throw new Error('PDF buffer is empty.');
+  }
+
+  const maxBytes = 16 * 1024 * 1024;
+  if (buffer.length > maxBytes) {
+    throw new Error('PDF exceeds 16 MB limit.');
+  }
+
+  const safeFilename = String(filename || 'MSME-District-Report.pdf')
+    .replace(/[^a-zA-Z0-9._-]/g, '-')
+    .slice(0, 100);
+
+  const form = new FormData();
+  form.append('messaging_product', 'whatsapp');
+  form.append(
+    'file',
+    new Blob([buffer], { type: 'application/pdf' }),
+    safeFilename
+  );
+  form.append('type', 'application/pdf');
+
+  const uploadResponse = await fetch(
+    `https://graph.facebook.com/v20.0/${WA_PHONE_ID}/media`,
+    {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${WA_TOKEN}` },
+      body: form,
+      signal: AbortSignal.timeout(60000)
+    }
+  );
+
+  const uploadData = await uploadResponse.json().catch(() => ({}));
+
+  if (!uploadResponse.ok || !uploadData.id) {
+    console.error('[WA PDF upload]', uploadResponse.status);
+    throw new Error('PDF upload failed.');
+  }
+
+  const sendResponse = await fetch(
+    `https://graph.facebook.com/v20.0/${WA_PHONE_ID}/messages`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${WA_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        recipient_type: 'individual',
+        to: String(to),
+        type: 'document',
+        document: {
+          id: uploadData.id,
+          filename: safeFilename,
+          caption: String(caption || 'SASIKUMAR AI - MSME Report').slice(0, 1000)
+        }
+      }),
+      signal: AbortSignal.timeout(30000)
+    }
+  );
+
+  const sendData = await sendResponse.json().catch(() => ({}));
+
+  if (!sendResponse.ok) {
+    console.error('[WA PDF send]', sendResponse.status);
+    throw new Error('PDF document could not be sent.');
+  }
+
+  console.log('[WA PDF DOCUMENT] Sent successfully');
+  return true;
+}
+
 // SK_WHATSAPP_DIRECT_VIDEO_PLAYER_V1
 async function skWhatsAppSendVideoUrl(to, videoUrl, caption = '') {
   if (!WA_TOKEN || !WA_PHONE_ID) {
@@ -5412,7 +5492,11 @@ const pinMatch = trimmed.match(/^(?:pin(?:\s*code)?|pincode|பின்கோ�
 
 
 
+
 const msmeCertStart = /^(?:msme\s+certificate|udyam\s+certificate|certificate\s+download|எம்எஸ்எம்இ\s+சான்றிதழ்)$/i.test(trimmed);
+
+const msmeAllStart = /^(?:msme\s+(?:all|full)|எம்எஸ்எம்இ\s+(?:all|முழுவதும்|தமிழ்நாடு))$/i.test(trimmed);
+const msmePdfStart = /^(?:msme\s+pdf|pdf\s+msme|எம்எஸ்எம்இ\s+pdf)$/i.test(trimmed);
 
 const msmeStart = /^(?:msme|msme\s+search|msme\s+data|எம்எஸ்எம்இ)$/i.test(trimmed);
 
@@ -5430,15 +5514,66 @@ if (
 }
 
 const msmeAwaitingDistrict =
-  SK_WA_MSME_SESSIONS.has(String(from)) && !isWelcome;
+  SK_WA_MSME_SESSIONS.has(String(from)) &&
+  !isWelcome &&
+  !msmeAllStart;
 
-if (msmeCertStart) {
+let msmePdfBuffer = null;
+let msmePdfFilename = 'SASIKUMAR_AI_Tamil_Nadu_MSME_Report.pdf';
+
+if (msmePdfStart) {
+  SK_WA_MSME_SESSIONS.delete(String(from));
+
+  let tempDir = null;
+  try {
+    const report = await skFetchMsmeDistrictReport('ALL');
+
+    tempDir = fs.mkdtempSync(
+      path.join(process.env.TMPDIR || '/tmp', 'sk-msme-')
+    );
+
+    const jsonPath = path.join(tempDir, 'report.json');
+    const pdfPath = path.join(tempDir, msmePdfFilename);
+    const scriptPath = path.join(
+      process.cwd(), 'scripts', 'generate-msme-pdf.py'
+    );
+
+    fs.writeFileSync(jsonPath, JSON.stringify(report), 'utf8');
+
+    await execFileAsync(
+      'python3',
+      [scriptPath, jsonPath, pdfPath],
+      {
+        cwd: process.cwd(),
+        timeout: 60000,
+        maxBuffer: 1024 * 1024
+      }
+    );
+
+    msmePdfBuffer = fs.readFileSync(pdfPath);
+
+    if (!msmePdfBuffer.length || msmePdfBuffer.length > 16 * 1024 * 1024) {
+      throw new Error('Generated PDF is empty or exceeds WhatsApp size limit.');
+    }
+
+    reply = '📄 தமிழ்நாடு MSME PDF அறிக்கை தயாராகிவிட்டது. WhatsApp document ஆக அனுப்பப்படுகிறது.';
+
+  } catch (pdfError) {
+    console.error('[WA MSME PDF]', pdfError.message);
+    reply = '⚠️ MSME PDF உருவாக்க முடியவில்லை. பின்னர் மீண்டும் முயற்சிக்கவும்.';
+  } finally {
+    if (tempDir) {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    }
+  }
+
+} else if (msmeCertStart) {
   reply = [
     '📄 SASIKUMAR AI — MSME CERTIFICATE DOWNLOAD',
     '',
     'உங்கள் Udyam Registration Certificate பதிவிறக்கம் செய்ய:',
     '',
-    '1. கீழே உள்ள அரசு இணையதளத்தைத் திறக்கவும்.',
+    '1. அரசு இணையதளத்தைத் திறக்கவும்.',
     '2. உங்கள் Udyam Registration Number உள்ளிடவும்.',
     '3. பதிவு செய்த Mobile அல்லது Email OTP தேர்வு செய்யவும்.',
     '4. OTP-ஐ அரசு இணையதளத்தில் மட்டும் உள்ளிடவும்.',
@@ -5448,12 +5583,43 @@ if (msmeCertStart) {
     'https://udyamregistration.gov.in/Udyam_Login.aspx',
     '',
     '⚠️ OTP, Aadhaar, PAN விவரங்களை WhatsApp-ல் அனுப்ப வேண்டாம்.',
-    '💰 அரசு Udyam Registration இலவசம். யாருக்கும் கட்டணம் செலுத்த வேண்டாம்.',
-    '',
-    '📎 PDF கிடைத்ததும் இங்கே அனுப்பினால் அதன் விவரங்களைப் புரிந்துகொள்ள உதவுகிறோம்.',
+    '💰 அரசு Udyam Registration இலவசம்.',
     '',
     '🔙 Main Menu: 0'
   ].join('\n');
+
+} else if (msmeAllStart) {
+  SK_WA_MSME_SESSIONS.delete(String(from));
+
+  try {
+    const report = await skFetchMsmeDistrictReport('ALL');
+    const fmt = value => Number(value || 0).toLocaleString('en-IN');
+
+    const records = report.districts.map((item, index) =>
+      `${index + 1}. ${item.name} (${item.tamil}) — ${fmt(item.total)}`
+    );
+
+    reply = [
+      '🏭 SASIKUMAR AI — TAMIL NADU MSME REPORT',
+      'தமிழ்நாடு மாவட்ட வாரியான UDYAM பதிவுகள்',
+      '',
+      ...records,
+      '',
+      '📊 மாநில மொத்தம் / State Total: ' + fmt(report.stateTotal),
+      '📍 மாவட்டங்கள் / Districts: ' + report.districts.length,
+      '📅 Checked: ' + new Date(report.checkedAt).toLocaleString('en-IN'),
+      '🌐 Source: Data.gov.in',
+      '',
+      'ℹ️ இவை UDYAM பதிவு எண்ணிக்கைகள்; தற்போது செயல்படும் நிறுவனங்களின் எண்ணிக்கை என்று பொருள் அல்ல.',
+      '',
+      '📄 PDF அறிக்கைக்கு: MSME PDF (அடுத்த கட்டத்தில் செயல்படுத்தப்படும்)'
+    ].join('\n');
+
+  } catch (msmeError) {
+    console.error('[WA MSME ALL]', msmeError.message);
+    reply = '⚠️ 38 மாவட்ட MSME தரவைப் பெற முடியவில்லை. சிறிது நேரம் கழித்து முயற்சிக்கவும்.';
+  }
+
 } else if (msmeStart) {
   SK_WA_MSME_SESSIONS.set(String(from), {
     step: 'district',
@@ -5467,11 +5633,13 @@ if (msmeCertStart) {
   }
 
   reply =
-    '🏭 SASIKUMAR AI — MSME DISTRICT SEARCH\n\n' +
+    '🏭 SASIKUMAR AI — LIVE MSME DISTRICT SEARCH\n\n' +
     'எந்த மாவட்டத்தின் MSME விவரம் வேண்டும்?\n' +
     'மாவட்டப் பெயரை ஆங்கிலம் அல்லது தமிழில் அனுப்புங்கள்.\n\n' +
-    'உதாரணம்: COIMBATORE\n\n' +
+    'உதாரணம்: COIMBATORE\n' +
+    'அனைத்து மாவட்டங்களுக்கும்: MSME ALL\n\n' +
     '⏳ 10 நிமிடங்களுக்குள் மாவட்டப் பெயரை அனுப்புங்கள்.';
+
 } else if (msmeAwaitingDistrict) {
   const district = trimmed
     .replace(/(?:\s+district|\s+மாவட்டம்)$/i, '')
@@ -5481,57 +5649,34 @@ if (msmeCertStart) {
     reply = '⚠️ சரியான மாவட்டப் பெயரை அனுப்புங்கள். உதாரணம்: COIMBATORE';
   } else {
     SK_WA_MSME_SESSIONS.delete(String(from));
-    if (!jobDbPool) {
-    reply = '⚠️ MSME தரவுத்தள இணைப்பு தற்போது கிடைக்கவில்லை. பின்னர் முயற்சிக்கவும்.';
-  } else {
+
     try {
-      const msmeResult = await jobDbPool.query(
-        `SELECT state_name, district_name,
-                total_applications, micro, small, medium
-         FROM public.sk_government_msme
-         WHERE district_name ILIKE '%' || $1 || '%'
-         ORDER BY
-           CASE WHEN LOWER(district_name) = LOWER($1)
-                THEN 0 ELSE 1 END,
-           state_name
-         LIMIT 10`,
-        [district]
-      );
+      const report = await skFetchMsmeDistrictReport(district);
+      const item = report.districts[0];
+      const fmt = value => Number(value || 0).toLocaleString('en-IN');
 
-      if (!msmeResult.rows.length) {
-        reply =
-          '🔎 "' + district + '" மாவட்டத்திற்கான MSME பதிவு கிடைக்கவில்லை.\n\n' +
-          'மாவட்டப் பெயரை மீண்டும் சரிபார்த்து அனுப்புங்கள்.\n' +
-          'புதிய தேடலுக்கு MSME என்று அனுப்புங்கள்.';
-      } else {
-        const fmt = value =>
-          Number(value || 0).toLocaleString('en-IN');
+      reply = [
+        '🏭 SASIKUMAR AI — LIVE MSME DISTRICT REPORT',
+        '',
+        '📍 மாவட்டம் / District: ' + item.name,
+        '📍 தமிழ் பெயர்: ' + item.tamil,
+        '📊 UDYAM பதிவுகள் / Registrations: ' + fmt(item.total),
+        '',
+        '📅 Checked: ' + new Date(report.checkedAt).toLocaleString('en-IN'),
+        '🌐 Source: Data.gov.in',
+        '',
+        'ℹ️ இந்த எண்ணிக்கை UDYAM பதிவுகளைக் குறிக்கிறது; தற்போது செயல்படும் நிறுவனங்களின் எண்ணிக்கை என்று பொருள் அல்ல.',
+        '',
+        '🔍 மற்றொரு மாவட்டம்: MSME',
+        '📊 அனைத்து மாவட்டங்களும்: MSME ALL'
+      ].join('\n');
 
-        const records = msmeResult.rows.map((row, index) => [
-          (msmeResult.rows.length > 1 ? (index + 1) + '. ' : '') +
-            '📍 ' + row.district_name + ', ' + row.state_name,
-          '📊 மொத்த விண்ணப்பங்கள்: ' + fmt(row.total_applications),
-          '🔹 Micro: ' + fmt(row.micro),
-          '🔸 Small: ' + fmt(row.small),
-          '🔶 Medium: ' + fmt(row.medium)
-        ].join('\n'));
-
-        reply = [
-          '🏭 SASIKUMAR AI — MSME DISTRICT REPORT',
-          '',
-          ...records,
-          '',
-          '📅 தரவு நாள்: 11-02-2022',
-          '⚠️ இது 2022 வரலாற்றுத் தரவு; தற்போதைய 2026 MSME எண்ணிக்கை அல்ல.',
-          '🌐 Source: data.gov.in',
-          '',
-          '🔍 மற்றொரு மாவட்டம்: MSME என்று அனுப்புங்கள்.'
-        ].join('\n');
-      }
     } catch (msmeError) {
       console.error('[WA MSME SEARCH]', msmeError.message);
-      reply = '⚠️ MSME மாவட்டத் தேடலில் தற்காலிகப் பிழை. பின்னர் முயற்சிக்கவும்.';
-    }
+
+      reply = msmeError.message === 'MSME district not found.'
+        ? '🔎 அந்த மாவட்டப் பெயர் கிடைக்கவில்லை. ஆங்கிலம் அல்லது தமிழில் சரியான பெயரை அனுப்புங்கள்.'
+        : '⚠️ Data.gov.in MSME தேடலில் தற்காலிகப் பிழை. பின்னர் முயற்சிக்கவும்.';
     }
   }
 } else if (mp3PlayRequested || mp3Navigation) {
@@ -6528,7 +6673,32 @@ if (mp3SearchRequested) {
 }
 
 
-      if (mp3SearchRequested) {
+      if (msmePdfStart) {
+        if (msmePdfBuffer) {
+          try {
+            await skWhatsAppSendDocumentBuffer(
+              from,
+              msmePdfBuffer,
+              msmePdfFilename,
+              answerText
+            );
+            console.log('[WA MSME PDF] Document sent successfully.');
+          } catch (pdfSendError) {
+            console.error('[WA MSME PDF SEND]', pdfSendError.message);
+            await sendWA({
+              type: 'text',
+              text: {
+                body: '⚠️ PDF உருவானது; ஆனால் WhatsApp-ல் அனுப்ப முடியவில்லை. மீண்டும் முயற்சிக்கவும்.'
+              }
+            });
+          }
+        } else {
+          await sendWA({
+            type: 'text',
+            text: { body: answerText }
+          });
+        }
+      } else if (mp3SearchRequested) {
         // MP3 list/audio was already sent by the media output branch.
       } else if (waFmSearchRequested) {
         if (waFmStation) {
@@ -11579,6 +11749,179 @@ app.get('/api/admin/maintenance', auth.requireAdmin, (req, res) => {
   });
 });
 
+
+
+// SK_WHATSAPP_LIVE_MSME_DATA_V1
+const SK_MSME_DISTRICTS = [
+  ['Ariyalur', 'ARIYALUR', 'அரியலூர்'],
+  ['Chengalpattu', 'Chengalpattu', 'செங்கல்பட்டு'],
+  ['Chennai', 'CHENNAI', 'சென்னை'],
+  ['Coimbatore', 'COIMBATORE', 'கோயம்புத்தூர்'],
+  ['Cuddalore', 'CUDDALORE', 'கடலூர்'],
+  ['Dharmapuri', 'DHARMAPURI', 'தர்மபுரி'],
+  ['Dindigul', 'DINDIGUL', 'திண்டுக்கல்'],
+  ['Erode', 'ERODE', 'ஈரோடு'],
+  ['Kallakurichi', 'Kallakurichi', 'கள்ளக்குறிச்சி'],
+  ['Kancheepuram', 'KANCHIPURAM', 'காஞ்சிபுரம்'],
+  ['Kanniyakumari', 'KANNIYAKUMARI', 'கன்னியாகுமரி'],
+  ['Karur', 'KARUR', 'கரூர்'],
+  ['Krishnagiri', 'KRISHNAGIRI', 'கிருஷ்ணகிரி'],
+  ['Madurai', 'MADURAI', 'மதுரை'],
+  ['Mayiladuthurai', 'Mayiladuthurai', 'மயிலாடுதுறை'],
+  ['Nagapattinam', 'NAGAPATTINAM', 'நாகப்பட்டினம்'],
+  ['Namakkal', 'NAMAKKAL', 'நாமக்கல்'],
+  ['Nilgiris', 'THE NILGIRISH', 'நீலகிரி'],
+  ['Perambalur', 'PERAMBALUR', 'பெரம்பலூர்'],
+  ['Pudukkottai', 'PUDUKKOTTAI', 'புதுக்கோட்டை'],
+  ['Ramanathapuram', 'RAMANATHAPURAM', 'இராமநாதபுரம்'],
+  ['Ranipet', 'Ranipet', 'இராணிப்பேட்டை'],
+  ['Salem', 'SALEM', 'சேலம்'],
+  ['Sivaganga', 'SIVAGANGA', 'சிவகங்கை'],
+  ['Tenkasi', 'Tenkasi', 'தென்காசி'],
+  ['Thanjavur', 'THANJAVUR', 'தஞ்சாவூர்'],
+  ['Theni', 'THENI', 'தேனி'],
+  ['Thoothukudi', 'TUTICORIN', 'தூத்துக்குடி'],
+  ['Tiruchirappalli', 'TIRUCHIRAPPALLI', 'திருச்சிராப்பள்ளி'],
+  ['Tirunelveli', 'TIRUNELVELI', 'திருநெல்வேலி'],
+  ['Tirupathur', 'Tirupathur', 'திருப்பத்தூர்'],
+  ['Tiruppur', 'TIRUPPUR', 'திருப்பூர்'],
+  ['Tiruvallur', 'THIRUVALLUR', 'திருவள்ளூர்'],
+  ['Tiruvannamalai', 'TIRUVANNAMALAI', 'திருவண்ணாமலை'],
+  ['Tiruvarur', 'THIRUVARUR', 'திருவாரூர்'],
+  ['Vellore', 'VELLORE', 'வேலூர்'],
+  ['Viluppuram', 'VILLUPURAM', 'விழுப்புரம்'],
+  ['Virudhunagar', 'VIRUDHUNAGAR', 'விருதுநகர்']
+];
+
+let skMsmeApiCache = {
+  expiresAt: 0,
+  data: null
+};
+
+async function skFetchMsmeDistrictReport(input = 'ALL') {
+  const apiKey = process.env.DATA_GOV_API_KEY;
+  const resourceId = process.env.DATA_GOV_MSME_RESOURCE_ID;
+
+  if (!apiKey || !resourceId) {
+    throw new Error('Data.gov.in MSME configuration missing.');
+  }
+
+  const normalized = String(input || 'ALL').trim().toLocaleLowerCase('en-IN');
+  const isAll = ['all', 'full', 'தமிழ்நாடு', 'தமிழ்நாடு முழுவதும்'].includes(normalized);
+
+  const selected = isAll
+    ? SK_MSME_DISTRICTS
+    : SK_MSME_DISTRICTS.filter(([english, apiName, tamil]) =>
+        [english, apiName, tamil].some(
+          name => name.toLocaleLowerCase('en-IN') === normalized
+        )
+      );
+
+  if (!selected.length) {
+    throw new Error('MSME district not found.');
+  }
+
+  if (
+    isAll &&
+    skMsmeApiCache.data &&
+    Date.now() < skMsmeApiCache.expiresAt
+  ) {
+    return skMsmeApiCache.data;
+  }
+
+  const fetchTotal = async (districtName = '') => {
+    const url = new URL(
+      `https://www.data.gov.in/backend/dataapi/v1/resource/${resourceId}`
+    );
+
+    url.searchParams.set('api-key', apiKey);
+    url.searchParams.set('format', 'json');
+    url.searchParams.set('limit', '1');
+    url.searchParams.set('filters[State]', 'TAMIL NADU');
+
+    if (districtName) {
+      url.searchParams.set('filters[District]', districtName);
+    }
+
+    const response = await fetch(url, {
+      signal: AbortSignal.timeout(20000),
+      headers: { Accept: 'application/json' }
+    });
+
+    const raw = await response.text();
+    let data;
+
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      throw new Error('Data.gov.in returned an invalid response.');
+    }
+
+    if (!response.ok || !data || data.total == null) {
+      throw new Error(
+        `Data.gov.in request failed (HTTP ${response.status}).`
+      );
+    }
+
+    const total = Number(data.total);
+    if (!Number.isFinite(total) || total < 0) {
+      throw new Error('Invalid MSME total received from Data.gov.in.');
+    }
+
+    return total;
+  };
+
+  if (!isAll) {
+    const [english, apiName, tamil] = selected[0];
+    return {
+      state: 'TAMIL NADU',
+      stateTotal: await fetchTotal(),
+      districts: [{
+        name: english,
+        tamil,
+        apiName,
+        total: await fetchTotal(apiName)
+      }],
+      checkedAt: new Date().toISOString()
+    };
+  }
+
+  const stateTotal = await fetchTotal();
+  const districts = [];
+
+  for (let i = 0; i < selected.length; i += 4) {
+    const batch = selected.slice(i, i + 4);
+    const results = await Promise.all(
+      batch.map(async ([english, apiName, tamil]) => ({
+        name: english,
+        tamil,
+        apiName,
+        total: await fetchTotal(apiName)
+      }))
+    );
+    districts.push(...results);
+  }
+
+  const districtSum = districts.reduce((sum, item) => sum + item.total, 0);
+
+  if (districts.length !== 38 || districtSum !== stateTotal) {
+    throw new Error('MSME district total validation failed.');
+  }
+
+  const result = {
+    state: 'TAMIL NADU',
+    stateTotal,
+    districts,
+    checkedAt: new Date().toISOString()
+  };
+
+  skMsmeApiCache = {
+    expiresAt: Date.now() + 10 * 60 * 1000,
+    data: result
+  };
+
+  return result;
+}
 
 app.get('/api/admin/data-gov-test', auth.requireAdmin, async (req, res) => {
   res.set('Cache-Control', 'no-store');
