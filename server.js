@@ -1259,6 +1259,53 @@ async function getLiveGoldSilverWhatsAppReply() {
   }
 }
 
+
+async function skVerifyMeonHuid(huid) {
+  const cleanHuid = String(huid || '').trim().toUpperCase();
+
+  if (!/^[A-Z0-9]{6,12}$/.test(cleanHuid)) {
+    throw new Error('INVALID_HUID_FORMAT');
+  }
+
+  const apiKey = process.env.MEON_API_KEY;
+  const signature = process.env.MEON_SIGNATURE;
+  const baseUrl = (
+    process.env.MEON_BASE_URL || 'https://api.meon.co.in'
+  ).replace(/\/+$/, '');
+
+  if (!apiKey || !signature) {
+    throw new Error('MEON_CREDENTIALS_MISSING');
+  }
+
+  const response = await fetch(
+    `${baseUrl}/api/v1/public/huid-verify/v1/huid-verify/`,
+    {
+      method: 'POST',
+      headers: {
+        'X-API-Key': apiKey,
+        'X-Signature': signature,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ huid: cleanHuid }),
+      signal: AbortSignal.timeout(20000)
+    }
+  );
+
+  const result = await response.json();
+
+  if (!response.ok || result.status !== 'success') {
+    throw new Error('MEON_API_FAILED');
+  }
+
+  const rawStatus = result?.data?.result?.raw?.data?.[0]?.Status;
+
+  return {
+    huid: cleanHuid,
+    valid: String(rawStatus).toLowerCase() === 'true',
+    message: result?.data?.result?.message || result.message || ''
+  };
+}
+
 function getMenuReply(num){const fn=MENU_REPLIES[num];return fn?fn():null;}
 
 function getWhatsAppEMIReply(message) {
@@ -5460,6 +5507,7 @@ const waButtonTitle = String(
   msg.button?.text || ''
 ).trim();
 const trimmed=String(msg.text?.body || msg.image?.caption || waButtonTitle || '').trim();
+console.log('[WA INPUT DEBUG]', { text: trimmed, buttonId: waButtonId, from: String(from).slice(-4) });
     const lower=trimmed.toLowerCase();
 
 const isWelcome = !trimmed || trimmed === '0' ||
@@ -5497,6 +5545,17 @@ const pinMatch = trimmed.match(/^(?:pin(?:\s*code)?|pincode|பின்கோ�
 
 
 
+
+const huidMenuStart =
+  /^(?:37|huid|huid verify|huid verification|ஹூயிட்)$/i.test(trimmed);
+
+const huidValue = huidMenuStart
+  ? ''
+  : trimmed.replace(/^(?:huid|verify)\s*[:\-]?\s*/i, '').trim();
+
+const huidVerifyRequested =
+  huidMenuStart || /^[A-Z0-9]{6}$/i.test(huidValue);
+
 const msmeCertStart = /^(?:msme\s+certificate|udyam\s+certificate|certificate\s+download|எம்எஸ்எம்இ\s+சான்றிதழ்)$/i.test(trimmed);
 
 const msmeAllStart = /^(?:msme\s+(?:all|full)|எம்எஸ்எம்இ\s+(?:all|முழுவதும்|தமிழ்நாடு))$/i.test(trimmed);
@@ -5525,7 +5584,51 @@ const msmeAwaitingDistrict =
 let msmePdfBuffer = null;
 let msmePdfFilename = 'SASIKUMAR_AI_Tamil_Nadu_MSME_Report.pdf';
 
-if (msmePdfStart) {
+if (huidVerifyRequested) {
+  if (huidMenuStart) {
+    reply = [
+      '🔐 SASIKUMAR AI — BIS HUID VERIFICATION',
+      '',
+      'உங்கள் 6-character HUID எண்ணை அனுப்புங்கள்.',
+      'உதாரணம்: HUID ABC123',
+      '',
+      '🔙 Main Menu: 0'
+    ].join('\n');
+  } else {
+    try {
+      const verification = await skVerifyMeonHuid(huidValue);
+
+      reply = verification.valid
+        ? [
+            '✅ BIS HUID STATUS: VALID',
+            '',
+            '💎 HUID: ' + verification.huid,
+            '🏛️ Source: BIS via Meon API',
+            '📋 ' + verification.message,
+            '',
+            '🤖 SASIKUMAR AI'
+          ].join('\n')
+        : [
+            '⚠️ BIS HUID STATUS: NOT VERIFIED',
+            '',
+            '💎 HUID: ' + verification.huid,
+            '📋 BIS record Status is false or not confirmed.',
+            'BIS அதிகாரப்பூர்வ மையத்தில் மீண்டும் உறுதி செய்யுங்கள்.',
+            '',
+            '🤖 SASIKUMAR AI'
+          ].join('\n');
+    } catch (error) {
+      console.error('[WA HUID VERIFY]', error.message);
+
+      reply = error.message === 'MEON_CREDENTIALS_MISSING'
+        ? '⚠️ Meon API credentials அமைக்கப்படவில்லை.'
+        : error.message === 'INVALID_HUID_FORMAT'
+          ? '⚠️ சரியான 6-character HUID எண்ணை அனுப்புங்கள்.'
+          : '⚠️ HUID சரிபார்ப்பு தற்போது தோல்வியடைந்தது. பின்னர் முயற்சிக்கவும்.';
+    }
+  }
+
+} else if (msmePdfStart) {
   SK_WA_MSME_SESSIONS.delete(String(from));
 
   let tempDir = null;
