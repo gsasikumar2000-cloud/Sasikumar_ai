@@ -2797,6 +2797,7 @@ const SK_WA_PROCESSED_MESSAGES = new Map();
 const SK_WA_YOUTUBE_SESSIONS = new Map();
 const SK_WA_MP3_SESSIONS = new Map();
 const SK_WA_MSME_SESSIONS = new Map();
+const SK_WA_MSME_VERIFY_SESSIONS = new Map();
 
 
 function skRememberLastReply(key, message) {
@@ -5562,10 +5563,21 @@ const msmeAllStart = /^(?:msme\s+(?:all|full)|எம்எஸ்எம்இ\s+(
 const msmePdfStart = /^(?:msme\s+pdf|pdf\s+msme|எம்எஸ்எம்இ\s+pdf)$/i.test(trimmed);
 
 const msmeStart = /^(?:msme|msme\s+search|msme\s+data|எம்எஸ்எம்இ)$/i.test(trimmed);
+const msmeVerifyStart = /^(?:msme\s+verify|msme\s+verification|msme\s+check|எம்எஸ்எம்இ\s+சரிபார்ப்பு)$/i.test(trimmed);
+
 
 if (isWelcome) {
   SK_WA_MSME_SESSIONS.delete(String(from));
 }
+if (isWelcome) SK_WA_MSME_VERIFY_SESSIONS.delete(String(from));
+
+let msmeVerifySession = SK_WA_MSME_VERIFY_SESSIONS.get(String(from));
+if (msmeVerifySession && Date.now() - msmeVerifySession.updatedAt > 10 * 60 * 1000) {
+  SK_WA_MSME_VERIFY_SESSIONS.delete(String(from));
+  msmeVerifySession = null;
+}
+const msmeVerifyAwaiting = Boolean(msmeVerifySession) && !isWelcome;
+
 
 const msmeExistingSession = SK_WA_MSME_SESSIONS.get(String(from));
 
@@ -5584,7 +5596,58 @@ const msmeAwaitingDistrict =
 let msmePdfBuffer = null;
 let msmePdfFilename = 'SASIKUMAR_AI_Tamil_Nadu_MSME_Report.pdf';
 
-if (huidVerifyRequested) {
+if (msmeVerifyStart || msmeVerifyAwaiting) {
+  if (msmeVerifyStart) {
+    SK_WA_MSME_VERIFY_SESSIONS.set(String(from), { updatedAt: Date.now() });
+    reply = [
+      '🏭 SASIKUMAR AI — MSME VERIFY',
+      '',
+      'விவரங்களைத் தேர்வு செய்யுங்கள்:',
+      '1. Aadhaar — பாதுகாப்பான வழிகாட்டுதல்',
+      '2. Udyam Number — பதிவு சரிபார்ப்பு',
+      '3. நபர் பெயர் — பொதுத் தகவல்',
+      '4. GSTIN — GST பதிவு சரிபார்ப்பு',
+      '',
+      '1, 2, 3 அல்லது 4 என்று அனுப்புங்கள்.'
+    ].join('\n');
+  } else {
+    const choice = trimmed.trim();
+    const replies = {
+      '1': [
+        '🔐 Aadhaar பாதுகாப்பு',
+        'ஆதார் எண் அல்லது OTP-ஐ WhatsApp-ல் அனுப்ப வேண்டாம்.',
+        'அதிகாரப்பூர்வ UIDAI தளம்:',
+        'https://myaadhaar.uidai.gov.in/'
+      ],
+      '2': [
+        '📄 UDYAM REGISTRATION',
+        'Udyam பதிவு விவரங்களை அதிகாரப்பூர்வ தளத்தில் சரிபார்க்கவும்:',
+        'https://udyamregistration.gov.in/Udyam_Login.aspx',
+        'OTP-ஐ WhatsApp-ல் பகிர வேண்டாம்.'
+      ],
+      '3': [
+        '🔎 நபர் பெயர் மூலம் தேடல்',
+        'பெயர் மட்டும் வைத்து தனிப்பட்ட விவரங்களைப் பெற முடியாது.',
+        'பொதுவில் வெளியிடப்பட்ட நிறுவனத் தகவல்கள் மட்டுமே பார்க்க முடியும்.',
+        'நிறுவனத்தின் Udyam Number அல்லது GSTIN உதவும்.'
+      ],
+      '4': [
+        '🏢 GSTIN VERIFICATION',
+        'அதிகாரப்பூர்வ GST Portal:',
+        'https://services.gst.gov.in/services/searchtp',
+        'GST API தற்போது இணைக்கப்படவில்லை. இது portal வழிகாட்டுதல் மட்டுமே.'
+      ]
+    };
+
+    if (replies[choice]) {
+      reply = replies[choice].join('\n');
+      SK_WA_MSME_VERIFY_SESSIONS.delete(String(from));
+    } else {
+      reply = '⚠️ 1, 2, 3 அல்லது 4 என்ற எண்ணை அனுப்புங்கள்.';
+      msmeVerifySession.updatedAt = Date.now();
+    }
+  }
+} else if (huidVerifyRequested) {
   if (huidMenuStart) {
     reply = [
       '🔐 SASIKUMAR AI — BIS HUID VERIFICATION',
