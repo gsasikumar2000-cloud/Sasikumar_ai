@@ -11579,6 +11579,65 @@ app.get('/api/admin/maintenance', auth.requireAdmin, (req, res) => {
   });
 });
 
+
+app.get('/api/admin/data-gov-test', auth.requireAdmin, async (req, res) => {
+  res.set('Cache-Control', 'no-store');
+
+  const apiKey = process.env.DATA_GOV_API_KEY;
+  const resourceId = process.env.DATA_GOV_MSME_RESOURCE_ID;
+
+  if (!apiKey || !resourceId) {
+    return res.status(503).json({
+      ok: false,
+      error: 'Data.gov.in environment configuration missing',
+      missing: [
+        ...(!apiKey ? ['DATA_GOV_API_KEY'] : []),
+        ...(!resourceId ? ['DATA_GOV_MSME_RESOURCE_ID'] : [])
+      ]
+    });
+  }
+
+  try {
+    const url = new URL(
+      `https://api.data.gov.in/resource/${resourceId}`
+    );
+
+    url.searchParams.set('api-key', apiKey);
+    url.searchParams.set('format', 'json');
+    url.searchParams.set('limit', '1');
+    url.searchParams.set('filters[State]', 'TAMIL NADU');
+
+    const response = await fetch(url, {
+      signal: AbortSignal.timeout(15000)
+    });
+
+    const data = await response.json().catch(() => null);
+
+    if (!response.ok || !data || data.total == null) {
+      return res.status(502).json({
+        ok: false,
+        error: 'Data.gov.in API request failed',
+        upstreamHttpStatus: response.status
+      });
+    }
+
+    return res.json({
+      ok: true,
+      provider: 'Data.gov.in',
+      upstreamHttpStatus: response.status,
+      state: 'TAMIL NADU',
+      total: Number(data.total),
+      checkedAt: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('[Data.gov Admin Test]', error.message);
+    return res.status(502).json({
+      ok: false,
+      error: 'Data.gov.in connection failed'
+    });
+  }
+});
+
 /* END SKAI_AUTH_API_V1 */
 
 
