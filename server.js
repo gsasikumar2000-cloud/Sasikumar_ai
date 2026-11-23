@@ -101,7 +101,30 @@ function skExtractExactKuralNumber(message) {
     : null;
 }
 
-async function skLoadConversationMemory(channel, userKey) {
+
+function skConversationTopicKey(message) {
+  const q = String(message || '').toLowerCase();
+
+  const topics = [
+    ['GOLD', /gold|silver|jewell?ery|ornament|karat|carat|purity|fineness|huid|bis hallmark|bullion|தங்கம்|வெள்ளி|நகை|நகைகள்|தங்கத்தின்|ஹால்மார்க்|916|999|22k|24k/],
+    ['MSME', /msme|udyam|micro enterprise|small enterprise|medium enterprise|முத்ரா|முத்ரா கடன்|சிறு தொழில்|குறு தொழில்|msme கடன்|உத்யம்/],
+    ['AGRI', /agri|agriculture|farmer|farming|crop|fertilizer|pesticide|விவசாயம்|விவசாயி|பயிர்|உரம்|பூச்சி மருந்து/],
+    ['WEATHER', /weather|forecast|rain|temperature|வானிலை|மழை|வெப்பநிலை/],
+    ['JOB', /job|career|vacancy|recruitment|வேலைவாய்ப்பு|வேலை|பணி நியமனம்/],
+    ['EXCEL', /excel|spreadsheet|formula|pivot table|எக்செல்/],
+    ['KURAL', /thirukkural|thirukural|kural|திருக்குறள்|திருக்குறள்|குறள்/],
+    ['EDUCATION', /education|school|college|university|exam|study|கல்வி|பள்ளி|கல்லூரி|தேர்வு/],
+    ['TRAVEL', /travel|tourism|hotel|flight|train ticket|பயணம்|சுற்றுலா|விடுதி/],
+    ['ASTROLOGY', /astrology|horoscope|zodiac|rasi|ஜோதிடம்|ராசி|நட்சத்திரம்/]
+  ];
+
+  for (const [topic, pattern] of topics) {
+    if (pattern.test(q)) return topic;
+  }
+  return '';
+}
+
+async function skLoadConversationMemory(channel, userKey, currentMessage = '') {
   try {
     if (!userKey || !(await skEnsureMemoryTable())) return '';
     const result = await jobDbPool.query(
@@ -111,7 +134,18 @@ async function skLoadConversationMemory(channel, userKey) {
        ORDER BY id DESC LIMIT 10`,
       [channel, userKey]
     );
-    return result.rows.reverse().map((row, index) =>
+    let rows = result.rows;
+
+    // WhatsApp: include only same-topic history.
+    // If the current question has no clear topic, do not mix old topics.
+    if (channel === 'whatsapp') {
+      const currentTopic = skConversationTopicKey(currentMessage);
+      rows = currentTopic
+        ? rows.filter(row => skConversationTopicKey(row.user_message) === currentTopic)
+        : [];
+    }
+
+    return rows.reverse().map((row, index) =>
       `Previous turn ${index + 1}:\nUser: ${row.user_message}\nAssistant: ${row.assistant_message}`
     ).join('\n\n');
   } catch (error) {
@@ -14260,7 +14294,7 @@ async function skCentralBrainReply(options = {}) {
     : options.memoryUserId;
   const memoryUserKey = skMemoryUserKey(memoryChannel, memoryRawId);
   const conversationMemory = (!medicalMode && memoryUserKey)
-    ? await skLoadConversationMemory(memoryChannel, memoryUserKey)
+    ? await skLoadConversationMemory(memoryChannel, memoryUserKey, message)
     : '';
   const aiRequestMessage = conversationMemory
     ? `${conversationMemory}\n\nCurrent user question:\n${requestMessage}`
