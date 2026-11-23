@@ -6087,7 +6087,7 @@ if (msmeVerifyStart || msmeVerifyAwaiting) {
             '📲 BIS CARE App மூலம் Verify HUID செய்து மீண்டும் சரிபார்க்கவும்.',
             'Android App: https://play.google.com/store/apps/details?id=com.bis.bisapp',
             '🌐 BIS Official: https://www.bis.gov.in/bis-apps/'
-          ].join('\\n');
+          ].join('\n');
     }
   }
 
