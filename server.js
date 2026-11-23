@@ -2866,6 +2866,46 @@ const SK_WA_MSME_SESSIONS = new Map();
 const SK_WA_MSME_VERIFY_SESSIONS = new Map();
 const SK_WA_LAW_SESSIONS = new Map();
 
+
+// SK_APISATHI_UDYAM_MOBILE_LOOKUP_V1
+async function skLookupUdyamByMobile(mobile) {
+  const apiKey = String(process.env.API_SATHI_KEY || '').trim();
+  const cleanMobile = String(mobile || '').trim();
+
+  if (!apiKey) throw new Error('API_SATHI_KEY_MISSING');
+  if (!/^\d{10}$/.test(cleanMobile)) throw new Error('INVALID_MOBILE');
+
+  const response = await fetch(
+    'https://apisathi.in/gw/v1/mobile-to-udyam-v1/',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-Key': apiKey,
+        'Idempotency-Key': randomUUID()
+      },
+      body: JSON.stringify({ mobile: cleanMobile }),
+      signal: AbortSignal.timeout(45000)
+    }
+  );
+
+  const raw = await response.text();
+  let data = {};
+  try {
+    data = raw ? JSON.parse(raw) : {};
+  } catch {
+    data = {};
+  }
+
+  if (!response.ok) {
+    const error = new Error('API_SATHI_HTTP_' + response.status);
+    error.status = response.status;
+    throw error;
+  }
+
+  return data;
+}
+
 // SK_INDIAN_KANOON_SEARCH_V1
 async function skIndianKanoonSearch(query) {
   const token = String(process.env.INDIANKANOON_API_TOKEN || '').trim();
@@ -5810,12 +5850,65 @@ if (msmeVerifyStart || msmeVerifyAwaiting) {
       '19. Professional Tax Verification',
       '20. Startup India Recognition',
       '21. Insurance All in One',
+      '22. Udyam Mobile Lookup (API Sathi TEST)',
       '',
-      '1 முதல் 21 வரை எண்ணை அனுப்புங்கள்.',
+      '1 முதல் 22 வரை எண்ணை அனுப்புங்கள்.',
       '🔐 பாதுகாப்பு: OTP / Password / முழு வங்கி கணக்கு எண்ணை அனுப்ப வேண்டாம்.',
       '🔙 Main Menu: 0'
     ].join('\n');
   } else {
+    if (msmeVerifySession?.mode === 'udyam_mobile') {
+      const mobile = trimmed.replace(/\D/g, '');
+
+      if (!/^\d{10}$/.test(mobile)) {
+        reply = '⚠️ சரியான 10 இலக்க Mobile Number அனுப்புங்கள். உதாரணம்: 9876543210';
+        msmeVerifySession.updatedAt = Date.now();
+      } else {
+        try {
+          const result = await skLookupUdyamByMobile(mobile);
+          const records = Array.isArray(result.udyams) ? result.udyams : [];
+
+          reply = [
+            '🧪 API SATHI — UDYAM MOBILE LOOKUP (TEST)',
+            '',
+            '⚠️ இது simulated TEST data மட்டுமே.',
+            'உண்மையான அரசு Udyam verification அல்ல.',
+            '',
+            '📋 Returned records: ' + records.length,
+            '🧪 API verified flag (simulated): ' + String(Boolean(result.verified)),
+            '',
+            '🌐 Official portal:',
+            'https://udyamregistration.gov.in/',
+            '',
+            '🔐 OTP / Aadhaar / PAN பகிர வேண்டாம்.',
+            '🤖 SASIKUMAR AI'
+          ].join('\n');
+
+          SK_WA_MSME_VERIFY_SESSIONS.delete(String(from));
+        } catch (error) {
+          const status = Number(error.status || 0);
+          console.error('[WA API SATHI UDYAM]', error.message);
+
+          reply = error.message === 'API_SATHI_KEY_MISSING'
+            ? '⚠️ API Sathi TEST key server-ல் அமைக்கப்படவில்லை.'
+            : status === 401
+              ? '⚠️ API Sathi TEST key செல்லுபடியாகவில்லை.'
+              : status === 422
+                ? '⚠️ Mobile Number ஏற்கப்படவில்லை. 10 இலக்க எண்ணைச் சரிபார்க்கவும்.'
+                : status === 429
+                  ? '⚠️ API Sathi rate limit. சிறிது நேரம் கழித்து முயற்சிக்கவும்.'
+                  : status >= 500 || error.name === 'TimeoutError'
+                    ? '⚠️ API Sathi சேவை தற்காலிகமாக கிடைக்கவில்லை. பின்னர் முயற்சிக்கவும்.'
+                    : '⚠️ Udyam TEST lookup தோல்வியடைந்தது. பின்னர் முயற்சிக்கவும்.';
+
+          if (status === 401 || status === 422) {
+            SK_WA_MSME_VERIFY_SESSIONS.delete(String(from));
+          } else {
+            msmeVerifySession.updatedAt = Date.now();
+          }
+        }
+      }
+    } else {
     const choice = trimmed.trim();
 
     const replies = {
@@ -6033,12 +6126,26 @@ if (msmeVerifyStart || msmeVerifyAwaiting) {
         '🔐 OTP / Password அனுப்ப வேண்டாம்.',
         '🔙 Main Menu: 0'
       ].join('\n');
+    } else if (choice === '22') {
+      msmeVerifySession.mode = 'udyam_mobile';
+      msmeVerifySession.updatedAt = Date.now();
+      reply = [
+        '📱 UDYAM MOBILE LOOKUP — TEST MODE',
+        '',
+        '10 இலக்க Mobile Number அனுப்புங்கள்.',
+        'உதாரணம்: 9876543210',
+        '',
+        '🧪 TEST data மட்டுமே; உண்மையான அரசு verification அல்ல.',
+        'OTP / Aadhaar / PAN அனுப்ப வேண்டாம்.',
+        '🔙 Main Menu: 0'
+      ].join('\n');
     } else if (replies[choice]) {
       reply = replies[choice].join('\n');
       SK_WA_MSME_VERIFY_SESSIONS.delete(String(from));
     } else {
-      reply = '⚠️ 1 முதல் 21 வரை சரியான எண்ணை அனுப்புங்கள்.';
+      reply = '⚠️ 1 முதல் 22 வரை சரியான எண்ணை அனுப்புங்கள்.';
       msmeVerifySession.updatedAt = Date.now();
+    }
     }
   }
 } else if (huidVerifyRequested) {
