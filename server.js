@@ -6081,7 +6081,13 @@ if (msmeVerifyStart || msmeVerifyAwaiting) {
         ? '⚠️ Meon API credentials அமைக்கப்படவில்லை.'
         : error.message === 'INVALID_HUID_FORMAT'
           ? '⚠️ சரியான 6-character HUID எண்ணை அனுப்புங்கள்.'
-          : '⚠️ HUID சரிபார்ப்பு தற்போது தோல்வியடைந்தது. பின்னர் முயற்சிக்கவும்.';
+          : [
+            '⚠️ HUID சரிபார்ப்பு தற்போது தோல்வியடைந்தது.',
+            '',
+            '📲 BIS CARE App மூலம் Verify HUID செய்து மீண்டும் சரிபார்க்கவும்.',
+            'Android App: https://play.google.com/store/apps/details?id=com.bis.bisapp',
+            '🌐 BIS Official: https://www.bis.gov.in/bis-apps/'
+          ].join('\\n');
     }
   }
 
