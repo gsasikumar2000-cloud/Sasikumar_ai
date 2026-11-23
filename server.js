@@ -221,7 +221,7 @@ const WELCOME_MENU = `🤖 SASIKUMAR AI — MAIN MENU
 🔊 Voice Output — Coming Soon
 💬 Type your question directly in WhatsApp.
 
-📋 ALL 37 SERVICES
+📋 ALL 38 SERVICES
 
 1. 🤖 AI Assistant
 2. 🪙 Live Gold & Silver Rate
@@ -1095,6 +1095,38 @@ Meon வழங்கும் HMAC Secret மற்றும் signature
 
 🔙 Type 0 for Main Menu`,
 
+
+  '38': () => `⚖️ SASIKUMAR AI — INDIAN LAW EXPERT
+
+🇮🇳 இந்திய சட்ட உதவியாளர்
+தமிழ் • Tanglish • English
+
+📚 முக்கிய சட்டப் பிரிவுகள்:
+1. இந்திய அரசியலமைப்பு
+2. BNS — Bharatiya Nyaya Sanhita
+3. BNSS — Bharatiya Nagarik Suraksha Sanhita
+4. BSA — Bharatiya Sakshya Adhiniyam
+5. FIR, Police Complaint & Bail
+6. Property & Inheritance Rights
+7. Business, MSME & Contract Laws
+8. Consumer Protection & Complaints
+9. Cyber Crime & Online Fraud
+10. Gold, Jewellery, BIS Hallmark & HUID Laws
+11. RTI, Legal Notice & Complaint Letter Drafting
+
+💬 உங்கள் சட்டக் கேள்வியை தமிழில் அல்லது ஆங்கிலத்தில் அனுப்புங்கள்.
+
+🌐 அதிகாரப்பூர்வ தகவல்:
+India Code: https://www.indiacode.nic.in
+eCourts: https://ecourts.gov.in
+NALSA: https://nalsa.gov.in
+Cyber Crime: https://cybercrime.gov.in
+BIS: https://www.bis.gov.in
+
+⚠️ இது பொதுவான சட்டத் தகவல் மட்டுமே; வழக்கறிஞரின் தனிப்பட்ட சட்ட ஆலோசனைக்கு மாற்றாகாது. சட்டங்கள் மற்றும் நடைமுறைகள் மாறக்கூடும்.
+
+🔙 Type 0 for Main Menu`,
+
 };
 
 // SK_WHATSAPP_STONE_CHART_V1
@@ -1445,12 +1477,12 @@ app.get('/api/search/datagov', async (req, res) => {
   }
 });
 
-app.get('/api/status',(req,res)=>{res.json({status:'WHATSAPP MENU 37 OPTIONS LOCAL OK',version:'7.4 Menu',options:37,time:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})});});
+app.get('/api/status',(req,res)=>{res.json({status:'WHATSAPP MENU 38 OPTIONS LOCAL OK',version:'7.4 Menu',options:38,time:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})});});
 app.get('/api/whatsapp/menu',(req,res)=>{
   res.set('Cache-Control','no-store');
   res.json({
-    welcome: '🤖 SASIKUMAR AI — 35 Services',
-    total: 36,
+    welcome: '🤖 SASIKUMAR AI — 38 Services',
+    total: 38,
     menuImage: 'https://sasikumar-ai-9wdq.onrender.com/assets/whatsapp-menu.png'
   });
 });
@@ -2090,7 +2122,7 @@ app.post('/api/ai-reply', async (req,res)=>{
       return res.json({answer:WELCOME_MENU,api:'Welcome Menu'});
     }
 
-    const direct = q.match(/^\s*(3[0-7]|[12][0-9]|[1-9])\s*$/);
+    const direct = q.match(/^\s*(3[0-8]|[12][0-9]|[1-9])\s*$/);
     if (direct) {
       const num = direct[1];
       const reply = getMenuReply(num);
@@ -6192,7 +6224,7 @@ if (msmeVerifyStart || msmeVerifyAwaiting) {
 } else if (/^(?:STONE CHART|DIAMOND|RUBY|EMERALD|TOURMALINE|PULI STONE|PEARL|STONE CALCULATOR)$/i.test(trimmed)) {
   reply = skGetStoneChartReply(trimmed);
 } else if (!isWelcome) {
-  const num = trimmed.match(/^\s*(3[0-6]|[12][0-9]|[0-9])\s*$/);
+  const num = trimmed.match(/^\s*(3[0-8]|[12][0-9]|[0-9])\s*$/);
 
   if (num) {
     reply = num[1] === '10'
@@ -7176,7 +7208,7 @@ if (mp3SearchRequested) {
   '🔊 Voice Output — Coming Soon',
   '⌨️ Type your question directly in WhatsApp.',
   '',
-  '📋 All 35 Services menu in the next message.',
+  '📋 All 38 Services menu in the next message.',
   '',
   '🌐 Website: https://sasikumar-ai-9wdq.onrender.com',
   '📅 தேதி: ' + date,
@@ -7197,7 +7229,7 @@ if (mp3SearchRequested) {
 
         const menuCaption = [
   '🤖 SASIKUMAR AI — COMPLETE MENU',
-  '📋 All 35 Services',
+  '📋 All 38 Services',
   "1. AI Assistant",
   "2. Live Gold & Silver Rate",
   "3. Gold Loan / EMI Calculator",
@@ -7834,7 +7866,7 @@ if (mp3SearchRequested) {
             isWelcome ||
             waVoiceText.startsWith('📍 GOOGLE MAPS') ||
             waVoiceText.startsWith('📤 SASIKUMAR AI — SHARE') ||
-            /COMPLETE MENU|All 35 Services|processing\.\.\.|please wait/i.test(waVoiceText);
+            /COMPLETE MENU|All 38 Services|processing\.\.\.|please wait/i.test(waVoiceText);
 
           if (!skipWaVoice && waVoiceText.length > 2) {
             try {
