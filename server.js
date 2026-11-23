@@ -5794,6 +5794,15 @@ if (lawSession && Date.now() - Number(lawSession.updatedAt || 0) > 10 * 60 * 100
   SK_WA_LAW_SESSIONS.delete(String(from));
   lawSession = null;
 }
+// SK_WHATSAPP_MOVIE_REVIEW_EXIT_LAW_SESSION_V1
+const isMovieReviewQuery =
+  /\b(?:movie|movies|film|films|cinema|review|reviews|rating|ratings|box office|cast|plot)\b|திரைப்பட|பட\s*விமர்சனம்|விமர்சனம்|மதிப்பீடு|நடிகர்கள்/i.test(trimmed);
+
+if (isMovieReviewQuery && lawSession) {
+  SK_WA_LAW_SESSIONS.delete(String(from));
+  lawSession = null;
+}
+
 const lawAwaitingQuestion = Boolean(lawSession) && !isWelcome;
 
 let msmeVerifySession = SK_WA_MSME_VERIFY_SESSIONS.get(String(from));
