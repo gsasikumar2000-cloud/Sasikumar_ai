@@ -8318,31 +8318,30 @@ async function skGlobalWebSearch(query) {
       });
   };
 
-  const combined = [];
-  const providers = [];
+  const tasks = [];
 
-  // Providers stay OFF unless the user explicitly enables free-quota-only mode.
   if (process.env.TAVILY_FREE_QUOTA_ONLY === 'true' && process.env.TAVILY_API_KEY) {
-    try {
+    tasks.push(async () => {
       const r = await fetch('https://api.tavily.com/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          api_key: process.env.TAVILY_API_KEY, query,
-          search_depth: 'basic', max_results: 10, include_answer: false
+          api_key: process.env.TAVILY_API_KEY,
+          query,
+          search_depth: 'basic',
+          max_results: 10,
+          include_answer: false
         }),
         signal: AbortSignal.timeout(12000)
       });
       const d = await r.json().catch(() => ({}));
-      if (r.ok && Array.isArray(d.results) && d.results.length) {
-        combined.push(...normalize(d.results));
-        providers.push('tavily');
-      } else console.error('[Global Search] Tavily unavailable:', r.status);
-    } catch (e) { console.error('[Global Search] Tavily failed:', e.message); }
+      if (!r.ok) throw new Error('Tavily HTTP ' + r.status);
+      return { provider: 'tavily', items: d.results || [] };
+    });
   }
 
   if (process.env.EXA_FREE_QUOTA_ONLY === 'true' && process.env.EXA_API_KEY) {
-    try {
+    tasks.push(async () => {
       const r = await fetch('https://api.exa.ai/search', {
         method: 'POST',
         headers: {
@@ -8350,44 +8349,80 @@ async function skGlobalWebSearch(query) {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          query, type: 'auto', numResults: 10,
+          query,
+          type: 'auto',
+          numResults: 10,
           contents: { text: { maxCharacters: 1200 } }
         }),
         signal: AbortSignal.timeout(12000)
       });
       const d = await r.json().catch(() => ({}));
-      if (r.ok && Array.isArray(d.results) && d.results.length) {
-        combined.push(...normalize(d.results));
-        providers.push('exa');
-      } else console.error('[Global Search] Exa unavailable:', r.status);
-    } catch (e) { console.error('[Global Search] Exa failed:', e.message); }
+      if (!r.ok) throw new Error('Exa HTTP ' + r.status);
+      return { provider: 'exa', items: d.results || [] };
+    });
   }
 
-  if (false && process.env.SERPAPI_FREE_QUOTA_ONLY === 'true' && process.env.SERPAPI_API_KEY) {
-    try {
+  const combined = [];
+  const providers = [];
+
+
+  // SK_EXECUTIVE_SERPAPI_PARALLEL_V1
+  if (process.env.SERPAPI_FREE_QUOTA_ONLY === 'true' && process.env.SERPAPI_API_KEY) {
+    tasks.push(async () => {
+      const newsMode = /latest|today|current|recent|breaking|news|இன்று|இன்றைய|சமீபத்திய|செய்தி/i.test(query);
       const params = new URLSearchParams({
-        engine: 'google', q: query,
-        api_key: process.env.SERPAPI_API_KEY, num: '10'
+        engine: newsMode ? 'google_news' : 'google',
+        q: query,
+        api_key: process.env.SERPAPI_API_KEY.trim(),
+        num: '6'
       });
+
       const r = await fetch('https://serpapi.com/search.json?' + params.toString(), {
-        signal: AbortSignal.timeout(12000)
+        signal: AbortSignal.timeout(8000)
       });
       const d = await r.json().catch(() => ({}));
-      if (r.ok && Array.isArray(d.organic_results) && d.organic_results.length) {
-        combined.push(...normalize(d.organic_results));
-        providers.push('serpapi');
-      } else console.error('[Global Search] SerpAPI unavailable:', r.status);
-    } catch (e) { console.error('[Global Search] SerpAPI failed:', e.message); }
+      if (!r.ok || d.error) throw new Error('SerpAPI HTTP ' + r.status);
+
+      const items = newsMode
+        ? (d.news_results || d.organic_results || [])
+        : (d.organic_results || []);
+
+      return {
+        provider: 'serpapi',
+        items: items.map(x => ({
+          ...x,
+          url: x.link || x.url,
+          published_date: x.iso_date || x.published_date || x.date || x.published_at || ''
+        }))
+      };
+    });
   }
 
+  const settled = await Promise.allSettled(tasks.map(task => task()));
 
+  for (const result of settled) {
+    if (result.status !== 'fulfilled') {
+      console.warn('[Global Search] Provider failed:', result.reason?.message || 'Unknown error');
+      continue;
+    }
+
+    const found = result.value;
+    const normalized = normalize(found.items);
+
+    if (normalized.length) {
+      combined.push(...normalized);
+      providers.push(found.provider);
+    }
+  }
+
+  // Keep SerpAPI disabled unless separately approved.
   // SK_FREE_GOOGLE_HTML_FALLBACK_V1
   if (!combined.length) {
     try {
       const r = await fetch(googleUrl, {
         headers: {
-          "User-Agent": "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 Chrome/120.0 Mobile Safari/537.36",
-          "Accept-Language": "en-IN,en;q=0.9,ta;q=0.8"
+          'User-Agent': 'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 Chrome/120.0 Mobile Safari/537.36',
+          'Accept-Language': 'en-IN,en;q=0.9,ta;q=0.8'
         },
         signal: AbortSignal.timeout(10000)
       });
@@ -8398,24 +8433,24 @@ async function skGlobalWebSearch(query) {
         let match;
 
         while ((match = anchors.exec(html)) !== null && combined.length < 8) {
-          let href = match[2].replace(/&amp;/g, "&");
+          let href = match[2].replace(/&amp;/g, '&');
           const heading = match[3].match(/<h3\b[^>]*>([\s\S]*?)<\/h3>/i);
           if (!heading) continue;
 
           const title = heading[1]
-            .replace(/<[^>]*>/g, " ")
-            .replace(/&amp;/g, "&")
+            .replace(/<[^>]*>/g, ' ')
+            .replace(/&amp;/g, '&')
             .replace(/&quot;/g, '"')
             .replace(/&#39;/g, "'")
-            .replace(/&lt;/g, "<")
-            .replace(/&gt;/g, ">")
-            .replace(/\s+/g, " ")
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/\s+/g, ' ')
             .trim();
 
           try {
             const parsed = new URL(href, googleUrl);
-            if (parsed.hostname.includes("google.") && parsed.pathname === "/url") {
-              href = parsed.searchParams.get("q") || parsed.searchParams.get("url") || "";
+            if (parsed.hostname.includes('google.') && parsed.pathname === '/url') {
+              href = parsed.searchParams.get('q') || parsed.searchParams.get('url') || '';
             } else {
               href = parsed.href;
             }
@@ -8429,19 +8464,18 @@ async function skGlobalWebSearch(query) {
           combined.push({
             title: title.slice(0, 200),
             url: href,
-            content: ""
+            content: '',
+            _relevanceScore: 0
           });
         }
       }
     } catch (e) {
-      console.warn("[Global Search] Google HTML fallback:", e.message);
+      console.warn('[Global Search] Google HTML fallback:', e.message);
     }
 
     if (!combined.length) return googleFallback();
-
-    providers.push("google-html");
+    providers.push('google-html');
   }
-
 
   const freshnessRequested = /latest|today|current|recent|breaking|news|இன்று|இன்றைய|சமீபத்திய|நடப்பு|தற்போதைய|செய்தி/i.test(query);
   const now = Date.now();
@@ -9560,28 +9594,38 @@ async function skExecutiveLiveSearch(query) {
       published <= now + (24 * 60 * 60 * 1000);
   };
 
-  const providers = [];
+  const tasks = [];
 
   if (process.env.TAVILY_FREE_QUOTA_ONLY === 'true' && process.env.TAVILY_API_KEY) {
-    providers.push(async () => {
+    tasks.push(async () => {
+      const newsMode = /latest|today|recent|breaking|news|இன்று|இன்றைய|சமீபத்திய|செய்தி/i.test(query);
+
+      const tavilyPayload = {
+        api_key: process.env.TAVILY_API_KEY,
+        query,
+        search_depth: newsMode ? 'advanced' : 'basic',
+        max_results: 6
+      };
+
+      if (newsMode) {
+        tavilyPayload.topic = 'news';
+        tavilyPayload.time_range = 'week';
+      }
+
       const r = await fetch('https://api.tavily.com/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          api_key: process.env.TAVILY_API_KEY,
-          query,
-          search_depth: 'basic',
-          max_results: 6
-        }),
-        signal: AbortSignal.timeout(5000)
+        body: JSON.stringify(tavilyPayload),
+        signal: AbortSignal.timeout(8000)
       });
       const d = await r.json().catch(() => ({}));
-      return { provider: 'tavily', items: r.ok ? d.results : [] };
+      if (!r.ok) throw new Error('Tavily HTTP ' + r.status);
+      return { provider: 'tavily', items: d.results || [] };
     });
   }
 
   if (process.env.EXA_FREE_QUOTA_ONLY === 'true' && process.env.EXA_API_KEY) {
-    providers.push(async () => {
+    tasks.push(async () => {
       const r = await fetch('https://api.exa.ai/search', {
         method: 'POST',
         headers: {
@@ -9589,48 +9633,54 @@ async function skExecutiveLiveSearch(query) {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          query, type: 'auto', numResults: 6,
+          query,
+          type: 'auto',
+          numResults: 6,
           contents: { text: { maxCharacters: 900 } }
         }),
         signal: AbortSignal.timeout(5000)
       });
       const d = await r.json().catch(() => ({}));
-      return { provider: 'exa', items: r.ok ? d.results : [] };
+      if (!r.ok) throw new Error('Exa HTTP ' + r.status);
+      return { provider: 'exa', items: d.results || [] };
     });
   }
 
-  if (false && process.env.SERPAPI_API_KEY) {
-    providers.push(async () => {
-      const params = new URLSearchParams({
-        engine: 'google', q: query,
-        api_key: process.env.SERPAPI_API_KEY, num: '6'
-      });
-      const r = await fetch(
-        'https://serpapi.com/search.json?' + params,
-        { signal: AbortSignal.timeout(5000) }
-      );
-      const d = await r.json().catch(() => ({}));
-      return { provider: 'serpapi', items: r.ok ? d.organic_results : [] };
-    });
-  }
+  const settled = await Promise.allSettled(tasks.map(task => task()));
+  const combined = [];
+  const providers = [];
 
-  for (const run of providers) {
-    try {
-      const found = await run();
-      const results = (Array.isArray(found.items) ? found.items : [])
-        .map(x => ({
-          title: String(x.title || x.name || 'Search result'),
-          url: String(x.url || x.link || ''),
-          content: String(x.content || x.snippet || x.text || x.description || ''),
-          publishedAt: String(x.published_date || x.publishedDate || x.published_at || x.date || x.published || x.created_at || '')
-        }))
-        .filter(x => /^https?:\/\//i.test(x.url) && isFresh(x))
-        .slice(0, 6);
-
-      if (results.length) return { provider: found.provider, results };
-    } catch (e) {
-      console.warn('[Executive AI Search]', e.message);
+  for (const result of settled) {
+    if (result.status !== 'fulfilled') {
+      console.warn('[Executive AI Search] Provider failed:', result.reason?.message || 'Unknown error');
+      continue;
     }
+
+    const found = result.value;
+    const items = (Array.isArray(found.items) ? found.items : [])
+      .map(x => ({
+        title: String(x.title || x.name || 'Search result'),
+        url: String(x.url || x.link || ''),
+        content: String(x.content || x.snippet || x.text || x.description || ''),
+        publishedAt: String(x.published_date || x.publishedDate || x.published_at || x.date || x.published || x.created_at || '')
+      }))
+      .filter(x => /^https?:\/\//i.test(x.url) && isFresh(x));
+
+    if (items.length) {
+      combined.push(...items);
+      providers.push(found.provider);
+    }
+  }
+
+  const unique = new Map();
+  for (const item of combined) {
+    const key = item.url.replace(/\/$/, '').toLowerCase();
+    if (!unique.has(key)) unique.set(key, item);
+  }
+
+  const results = [...unique.values()].slice(0, 6);
+  if (results.length) {
+    return { provider: providers.join('+'), results };
   }
 
   try {
@@ -9644,6 +9694,7 @@ async function skExecutiveLiveSearch(query) {
   } catch (e) {
     console.warn('[Executive AI Common Search]', e.message);
   }
+
   return null;
 }
 
