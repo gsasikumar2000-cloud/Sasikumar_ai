@@ -1477,6 +1477,68 @@ app.get('/api/search/datagov', async (req, res) => {
   }
 });
 
+
+// SK_KLIPY_MEME_API_V1
+app.get('/api/klipy/memes', async (req, res) => {
+  try {
+    const key = process.env.KLIPY_API_KEY;
+    if (!key) {
+      return res.status(503).json({ ok: false, error: 'KLIPY API key is not configured.' });
+    }
+
+    const mode = String(req.query.mode || 'trending');
+    const page = Math.max(1, Math.min(1000, parseInt(req.query.page, 10) || 1));
+    const perPage = Math.max(1, Math.min(24, parseInt(req.query.per_page, 10) || 12));
+    const locale = 'in';
+    const customerId = String(req.query.customer_id || 'sasikumar-ai-web')
+      .replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 80) || 'sasikumar-ai-web';
+
+    const base = `https://api.klipy.com/api/v1/${encodeURIComponent(key)}/static-memes`;
+
+    let url;
+    if (mode === 'categories') {
+      url = `${base}/categories?locale=${locale}`;
+    } else if (mode === 'search') {
+      const q = String(req.query.q || '').trim().slice(0, 100);
+      if (!q) return res.status(400).json({ ok: false, error: 'Search query is required.' });
+      const params = new URLSearchParams({
+        page: String(page),
+        per_page: String(perPage),
+        q,
+        customer_id: customerId
+      });
+      url = `${base}/search?${params}`;
+    } else if (mode === 'trending') {
+      const params = new URLSearchParams({
+        page: String(page),
+        per_page: String(perPage),
+        customer_id: customerId
+      });
+      url = `${base}/trending?${params}`;
+    } else {
+      return res.status(400).json({ ok: false, error: 'Invalid KLIPY mode.' });
+    }
+
+    const upstream = await fetch(url, {
+      headers: { Accept: 'application/json' },
+      signal: AbortSignal.timeout(15000)
+    });
+    const data = await upstream.json();
+
+    if (!upstream.ok || data.result === false) {
+      console.error('[KLIPY] API error:', upstream.status);
+      return res.status(502).json({ ok: false, error: 'KLIPY service temporarily unavailable.' });
+    }
+
+    res.set('Cache-Control', 'no-store');
+    return res.json({ ok: true, mode, ...data });
+  } catch (error) {
+    console.error('[KLIPY] Request failed:', error.message);
+    return res.status(502).json({ ok: false, error: 'Unable to load KLIPY memes.' });
+  }
+});
+// END SK_KLIPY_MEME_API_V1
+
 app.get('/api/status',(req,res)=>{res.json({status:'WHATSAPP MENU 38 OPTIONS LOCAL OK',version:'7.4 Menu',options:38,time:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})});});
 app.get('/api/whatsapp/menu',(req,res)=>{
   res.set('Cache-Control','no-store');
@@ -14486,7 +14548,21 @@ app.post('/api/memes/comedy', async (req, res) => {
   }
 
   try {
-    const reply = await skGenerateTamilComedy(topic, 'website');
+    let reply = await skGenerateTamilComedy(topic, 'website');
+    reply = String(reply || '').trim();
+
+    if (!reply || reply.length < 10) {
+      reply = [
+        '😂 தமிழ் காமெடி',
+        'நண்பன்: ஏன் அலாரம் வைக்கிற?',
+        'நான்: காலையில் எழுந்திருக்க!',
+        'நண்பன்: அப்போ அலாரத்தை ஏன் அணைக்கிற?',
+        '',
+        'அம்மா: போனை கீழே வை!',
+        'மகன்: சரிம்மா, மேசை மேல வைக்கிறேன்!'
+      ].join('\n');
+    }
+
     return res.json({
       ok: true,
       engine: 'SK MEME ENGINE V1',
