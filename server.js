@@ -2551,7 +2551,7 @@ let liveSearchResults = [];
   if (asksForNews) liveSearchResults = skFilterFreshNewsResults(liveSearchResults, query);
 // SK_WHATSAPP_SERPAPI_FALLBACK_V1
   // Try SerpAPI only when earlier live-search providers return no results.
-  if (false && needsLiveSearch && liveSearchResults.length === 0 && process.env.SERPAPI_API_KEY) {
+  if (needsLiveSearch && liveSearchResults.length === 0 && process.env.SERPAPI_API_KEY) {
     try {
       const params = new URLSearchParams({
         engine: searchCategory === 'IMAGE' ? 'google_images' : 'google',
@@ -2598,6 +2598,22 @@ let liveSearchResults = [];
   }
 
   if (asksForNews) liveSearchResults = skFilterFreshNewsResults(liveSearchResults, query);
+
+  // India Today priority for WhatsApp news; retain all other sources.
+  if (asksForNews && searchCategory !== 'IMAGE') {
+    const isIndiaToday = item => {
+      try {
+        const host = new URL(item.url).hostname.toLowerCase();
+        return host === 'indiatoday.in' || host.endsWith('.indiatoday.in');
+      } catch {
+        return false;
+      }
+    };
+    liveSearchResults.sort(
+      (a, b) => Number(isIndiaToday(b)) - Number(isIndiaToday(a))
+    );
+  }
+
   const isGoldExpertQuery =
     /(?:gold|silver|bullion|jewell?ery|karat|carat|fineness|purity|density|specific gravity|hydrostatic|hallmark|huid|bis|xrf|touchstone|fire assay|gold loan|stone weight|net weight|gross weight|making charge|wastage|தங்கம்|வெள்ளி|நகை|தங்கக் கடன்|தூய்மை|அடர்த்தி|ஹால்மார்க்|\b(?:999|995|990|958|916|875|833|750|585|375|24\s*k(?:t)?|23\s*k(?:t)?|22\s*k(?:t)?|21\s*k(?:t)?|20\s*k(?:t)?|18\s*k(?:t)?|14\s*k(?:t)?|10\s*k(?:t)?|9\s*k(?:t)?)\b)/i.test(query);
 
@@ -8314,6 +8330,17 @@ async function skGlobalWebSearch(query) {
         if (isGoldQuery && /gold|silver|bullion|gold-rate|precious-metal/i.test(text)) score += 5;
         if (isTamilNewsQuery && /tamil.?nadu|tamilnadu|chennai|dtnext|maalaimalar/i.test(text)) score += 5;
         if (isNewsQuery && /news|latest|breaking|published|updated/i.test(text)) score += 2;
+
+        // India Today priority for news; retain every other source.
+        if (isNewsQuery) {
+          try {
+            const host = new URL(item.url).hostname.toLowerCase();
+            if (host === 'indiatoday.in' || host.endsWith('.indiatoday.in')) {
+              score += 10;
+            }
+          } catch {}
+        }
+
         return { ...item, _relevanceScore: score };
       });
   };
@@ -8415,7 +8442,7 @@ async function skGlobalWebSearch(query) {
     }
   }
 
-  // Keep SerpAPI disabled unless separately approved.
+  // SerpAPI is enabled when its API key and provider flag are configured.
   // SK_FREE_GOOGLE_HTML_FALLBACK_V1
   if (!combined.length) {
     try {
@@ -9678,7 +9705,24 @@ async function skExecutiveLiveSearch(query) {
     if (!unique.has(key)) unique.set(key, item);
   }
 
-  const results = [...unique.values()].slice(0, 6);
+  const newsQuery = /news|latest|today|current|recent|breaking|செய்தி|இன்று|இன்றைய/i.test(query);
+
+  const rankedResults = [...unique.values()];
+  if (newsQuery) {
+    rankedResults.sort((a, b) => {
+      const isIndiaToday = item => {
+        try {
+          const host = new URL(item.url).hostname.toLowerCase();
+          return host === 'indiatoday.in' || host.endsWith('.indiatoday.in');
+        } catch {
+          return false;
+        }
+      };
+      return Number(isIndiaToday(b)) - Number(isIndiaToday(a));
+    });
+  }
+
+  const results = rankedResults.slice(0, 6);
   if (results.length) {
     return { provider: providers.join('+'), results };
   }
@@ -10922,7 +10966,7 @@ async function skSearchRealImage(query) {
   // Runs after Wikimedia and stock providers; keeps strict subject validation.
   const serpApiKey = process.env.SERPAPI_API_KEY;
 
-  if (false && process.env.SERPAPI_FREE_QUOTA_ONLY === 'true' && serpApiKey && galleryResults.length < MAX_GALLERY_IMAGES && !isMotherMarySearch) {
+  if (process.env.SERPAPI_FREE_QUOTA_ONLY === 'true' && serpApiKey && galleryResults.length < MAX_GALLERY_IMAGES && !isMotherMarySearch) {
     try {
       const serpUrl = new URL('https://serpapi.com/search.json');
       serpUrl.searchParams.set('engine', 'google_images');
