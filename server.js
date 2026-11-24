@@ -14480,7 +14480,10 @@ async function skGenerateTamilComedy(topic = 'புதிய தமிழ் �
 
     let reply = String(result?.reply || '').trim();
 
-    if (/[\\u0B80-\\u0BFF]/.test(reply)) return reply;
+    if (
+      /[\u0B80-\u0BFF]/.test(reply) &&
+      !/(AI-யிடமிருந்து பதில் கிடைக்கவில்லை|AI பதில் கிடைக்கவில்லை|மீண்டும் முயற்சிக்கவும்)/i.test(reply)
+    ) return reply;
 
     console.warn('[Tamil Comedy] Non-Tamil response. Retrying.');
 
@@ -14493,7 +14496,10 @@ async function skGenerateTamilComedy(topic = 'புதிய தமிழ் �
 
     reply = String(result?.reply || '').trim();
 
-    if (/[\\u0B80-\\u0BFF]/.test(reply)) return reply;
+    if (
+      /[\u0B80-\u0BFF]/.test(reply) &&
+      !/(AI-யிடமிருந்து பதில் கிடைக்கவில்லை|AI பதில் கிடைக்கவில்லை|மீண்டும் முயற்சிக்கவும்)/i.test(reply)
+    ) return reply;
 
   } catch (error) {
     console.error('[Tamil Comedy]', error.message);
