@@ -633,6 +633,177 @@ Refresh Library
 })();
 </script>
 
+
+<!-- SK_COVERR_WEBSITE_UI_V1 -->
+<section id="skCoverrMedia" style="width:min(100%,900px);margin:24px auto;padding:20px;border-radius:18px;background:#123f65;color:#fff;font-family:Arial,sans-serif">
+  <h2>🎬 SASIKUMAR AI — Coverr Media</h2>
+  <p>Free stock video and music search</p>
+
+  <div style="background:#fff;color:#111;padding:15px;border-radius:14px;margin-bottom:16px">
+    <h3>🎥 Video Search</h3>
+    <input id="skCoverrVideoQuery" placeholder="Search videos: nature, business, technology..."
+      style="width:100%;padding:13px;border:1px solid #ccc;border-radius:10px;font-size:16px">
+    <button id="skCoverrVideoBtn" type="button"
+      style="margin-top:10px;background:#087f5b;color:white;padding:12px 18px;font-weight:bold">
+      Search Videos
+    </button>
+    <div id="skCoverrVideoStatus" style="margin-top:10px"></div>
+    <div id="skCoverrVideoResults"></div>
+  </div>
+
+  <div style="background:#fff;color:#111;padding:15px;border-radius:14px">
+    <h3>🎵 Music Search</h3>
+    <input id="skCoverrMusicQuery" placeholder="Search music: relaxing, piano, cinematic..."
+      style="width:100%;padding:13px;border:1px solid #ccc;border-radius:10px;font-size:16px">
+    <button id="skCoverrMusicBtn" type="button"
+      style="margin-top:10px;background:#087f5b;color:white;padding:12px 18px;font-weight:bold">
+      Search Music
+    </button>
+    <div id="skCoverrMusicStatus" style="margin-top:10px"></div>
+    <div id="skCoverrMusicResults"></div>
+  </div>
+
+  <p style="font-size:12px;text-align:center;margin-top:14px">
+    Media provided by <a href="https://coverr.co/" target="_blank" rel="noopener" style="color:#fff;font-weight:bold">Coverr</a>
+  </p>
+</section>
+
+<script id="skCoverrMediaScript">
+(function(){
+  if (window.skCoverrMediaReady) return;
+  window.skCoverrMediaReady = true;
+
+  const $ = id => document.getElementById(id);
+
+  function esc(value){
+    return String(value || "").replace(/[&<>"']/g, c => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+    })[c]);
+  }
+
+  function safeUrl(value){
+    try {
+      const u = new URL(String(value || ""));
+      if (u.protocol !== "https:" ||
+          !(u.hostname === "coverr.co" || u.hostname.endsWith(".coverr.co"))) {
+        return "";
+      }
+      return u.href;
+    } catch {
+      return "";
+    }
+  }
+
+  async function search(type){
+    const video = type === "videos";
+    const input = $(video ? "skCoverrVideoQuery" : "skCoverrMusicQuery");
+    const button = $(video ? "skCoverrVideoBtn" : "skCoverrMusicBtn");
+    const status = $(video ? "skCoverrVideoStatus" : "skCoverrMusicStatus");
+    const output = $(video ? "skCoverrVideoResults" : "skCoverrMusicResults");
+
+    const query = input.value.trim();
+    if (!query) {
+      status.textContent = "Please enter a search word.";
+      return;
+    }
+
+    button.disabled = true;
+    status.textContent = "Searching Coverr...";
+    output.innerHTML = "";
+
+    try {
+      const endpoint = video ? "/api/coverr/videos" : "/api/coverr/music";
+      const response = await fetch(
+        endpoint + "?query=" + encodeURIComponent(query) + "&page_size=8",
+        {cache:"no-store"}
+      );
+      const data = await response.json();
+
+      if (!response.ok || !data.ok) {
+        throw new Error(data.error || "Coverr search failed.");
+      }
+
+      const items = Array.isArray(data.results) ? data.results : [];
+      if (!items.length) {
+        status.textContent = "No results found. Try another search.";
+        return;
+      }
+
+      status.textContent = items.length + " results found.";
+
+      if (video) {
+        output.innerHTML = items.map(item => {
+          const urls = item.urls || {};
+          const preview = safeUrl(urls.mp4_preview || urls.mp4);
+          const download = safeUrl(urls.mp4_download || urls.mp4);
+          const poster = safeUrl(item.thumbnail || item.poster);
+          const title = esc(item.title || "Coverr Video");
+          const ai = item.is_ai_generated === true
+            ? '<span style="color:#b45309;font-weight:bold">AI-generated</span>'
+            : '<span style="color:#087f5b">Stock video</span>';
+
+          return `
+            <article style="margin:14px 0;padding:12px;border:1px solid #ddd;border-radius:12px">
+              <strong>${title}</strong>
+              <p style="font-size:13px">${ai} • ${esc(item.duration || "")} sec</p>
+              ${preview ? `
+                <video controls preload="none"
+                  ${poster ? `poster="${esc(poster)}"` : ""}
+                  src="${esc(preview)}"
+                  style="width:100%;max-height:280px;background:#111;border-radius:10px">
+                </video>` : '<p>Preview unavailable</p>'}
+              ${download ? `
+                <p><a href="${esc(download)}" target="_blank" rel="noopener"
+                  style="display:inline-block;padding:10px 14px;background:#087f5b;color:white;border-radius:9px;text-decoration:none">
+                  Download Video
+                </a></p>` : ""}
+            </article>`;
+        }).join("");
+      } else {
+        output.innerHTML = items.map(item => {
+          const urls = item.urls || {};
+          const preview = safeUrl(urls.preview);
+          const download = safeUrl(urls.master_download || urls.preview_download);
+          const title = esc(item.title || item.name || "Coverr Music");
+
+          return `
+            <article style="margin:14px 0;padding:12px;border:1px solid #ddd;border-radius:12px">
+              <strong>${title}</strong>
+              <p style="font-size:13px">
+                ${esc((item.genres || []).join(" • "))}
+              </p>
+              ${preview ? `
+                <audio controls preload="none" src="${esc(preview)}"
+                  style="width:100%"></audio>` : '<p>Preview unavailable</p>'}
+              ${download ? `
+                <p><a href="${esc(download)}" target="_blank" rel="noopener"
+                  style="display:inline-block;padding:10px 14px;background:#087f5b;color:white;border-radius:9px;text-decoration:none">
+                  Download Music
+                </a></p>` : ""}
+            </article>`;
+        }).join("");
+      }
+    } catch(error) {
+      status.textContent = error.message || "Search failed.";
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  $("skCoverrVideoBtn").addEventListener("click", () => search("videos"));
+  $("skCoverrMusicBtn").addEventListener("click", () => search("music"));
+
+  $("skCoverrVideoQuery").addEventListener("keydown", e => {
+    if (e.key === "Enter") search("videos");
+  });
+
+  $("skCoverrMusicQuery").addEventListener("keydown", e => {
+    if (e.key === "Enter") search("music");
+  });
+})();
+</script>
+<!-- END SK_COVERR_WEBSITE_UI_V1 -->
+
 </body>
 </html>
 
