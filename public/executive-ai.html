@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#e8fff8">
+<title>SASIKUMAR Executive AI</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(135deg,#e8fff8,#f5f8ff,#fff8df);color:#172b35;font-family:Arial,sans-serif}
+main{max-width:760px;margin:22px auto;padding:14px}
+header,.panel{background:#fff;border:1px solid #d9eee7;border-radius:20px;padding:18px;margin-bottom:14px;box-shadow:0 5px 20px #174b3510}
+h1{font-size:25px;margin:0 0 7px;color:#087d68}
+.sub{color:#50636b;font-size:14px}
+.badge{display:inline-block;background:#d9fff0;color:#087d55;padding:7px 11px;border-radius:20px;font-size:12px;font-weight:bold;margin-top:8px}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{font-size:13px;font-weight:bold;display:block;margin:7px 0}
+select,textarea,input{width:100%;padding:12px;border:1px solid #c9ddd7;border-radius:12px;background:#fff;color:#172b35;font-size:15px}
+textarea{min-height:110px;resize:vertical}
+button{border:0;border-radius:12px;padding:13px 15px;font-weight:bold;font-size:15px;cursor:pointer}
+.primary{background:#087d68;color:#fff;width:100%;margin-top:10px}
+.secondary{background:#e5f5ff;color:#145a83;width:100%}
+button:disabled{opacity:.55}
+#answer{white-space:pre-wrap;line-height:1.6;overflow-wrap:anywhere}
+.small{font-size:12px;color:#61727a}
+.calcgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.result{font-weight:bold;color:#087d55;font-size:18px;margin-top:12px}
+@media(max-width:480px){main{margin:8px auto;padding:10px}.controls{grid-template-columns:1fr 1fr}h1{font-size:22px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>🚀 SASIKUMAR EXECUTIVE AI</h1>
+<div class="sub">Your multilingual business and A–Z knowledge assistant</div>
+<span class="badge">FAST MODE • SMART MODE • MULTI-LANGUAGE</span>
+</header>
+
+<section class="panel">
+<div class="controls">
+<div>
+<label for="language">🌍 Multi-Language</label>
+<select id="language">
+<option>Auto</option><option>Tamil</option><option>Tanglish</option>
+<option>English</option><option>Hindi</option><option>Telugu</option>
+<option>Malayalam</option><option>Kannada</option>
+</select>
+</div>
+<div>
+<label for="mode">⚡ AI Speed</label>
+<select id="mode">
+<option value="fast">Fast Mode</option>
+<option value="smart">Smart Mode</option>
+</select>
+</div>
+</div>
+<button class="secondary" id="intro">ℹ️ Introduction</button>
+<div id="introText" class="small" hidden style="margin-top:12px">
+I am SASIKUMAR Executive AI. I can help with business plans, profit and loss, income and expenses, reports, marketing, technology, education, agriculture business and general A–Z knowledge in multiple languages.
+</div>
+<label for="question">Ask anything</label>
+<textarea id="question" maxlength="6000" placeholder="உங்கள் கேள்வியை இங்கே எழுதுங்கள்..."></textarea>
+<button class="primary" id="send">Send to Executive AI</button>
+<p class="small" id="status">Fast Mode aims for a quick response. Actual speed depends on network and AI provider.</p>
+</section>
+
+<section class="panel">
+<h3>📊 Quick Profit / Loss Calculator</h3>
+<div class="calcgrid">
+<div><label for="income">Total income (₹)</label><input id="income" type="number" min="0" step="0.01" placeholder="10000"></div>
+<div><label for="expense">Total expense (₹)</label><input id="expense" type="number" min="0" step="0.01" placeholder="7000"></div>
+</div>
+<button class="secondary" id="calculate" style="margin-top:12px">Calculate</button>
+<div class="result" id="calcResult" aria-live="polite"></div>
+</section>
+
+<section class="panel">
+<h3>💡 Executive AI Answer</h3>
+<div id="answer" aria-live="polite">Your answer will appear here.</div>
+</section>
+<p class="small">AI answers can contain errors. Verify important financial, legal and tax decisions with qualified professionals.</p>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+$('intro').addEventListener('click', () => {
+  $('introText').hidden = !$('introText').hidden;
+});
+$('calculate').addEventListener('click', () => {
+  const income = Number($('income').value || 0);
+  const expense = Number($('expense').value || 0);
+  if (income < 0 || expense < 0) {
+    $('calcResult').textContent = 'Please enter positive amounts.';
+    return;
+  }
+  const profit = income - expense;
+  $('calcResult').textContent =
+    (profit >= 0 ? 'Profit: ₹' : 'Loss: ₹') +
+    Math.abs(profit).toLocaleString('en-IN', {maximumFractionDigits:2});
+});
+$('send').addEventListener('click', async () => {
+  const message = $('question').value.trim();
+  if (!message) {
+    $('status').textContent = 'Please enter your question.';
+    return;
+  }
+  $('send').disabled = true;
+  $('status').textContent = 'Executive AI is thinking...';
+  $('answer').textContent = '';
+  try {
+    const response = await fetch('/api/executive-ai', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        message,
+        mode: $('mode').value,
+        language: $('language').value
+      })
+    });
+    const data = await response.json();
+    $('answer').textContent = data.reply || 'No answer received.';
+    $('status').textContent = data.ok
+      ? `${data.engine} • ${data.elapsedMs} ms`
+      : 'AI service could not complete this request.';
+  } catch (error) {
+    $('status').textContent = 'Connection error. Please try again.';
+    $('answer').textContent = error.message;
+  } finally {
+    $('send').disabled = false;
+  }
+});
+</script>
+
+<section id="promptLibrary" style="margin:20px 0;padding:16px;background:#f0fbff;border:1px solid #b8e7f5;border-radius:16px">
+<h2>📚 SASIKUMAR AI — Full Prompt Library</h2>
+<input id="promptSearch" type="search" placeholder="Search 199 prompts..." style="width:100%;padding:12px;border:1px solid #9acbd9;border-radius:10px">
+<div id="promptCount">199 Prompts</div>
+<div id="promptResults"></div>
+</section>
+
+<script src="/prompt-library.js"></script>
+</body>
+</html>
