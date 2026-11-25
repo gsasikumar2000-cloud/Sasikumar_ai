@@ -130,13 +130,152 @@ $('send').addEventListener('click', async () => {
 });
 </script>
 
-<section id="promptLibrary" style="margin:20px 0;padding:16px;background:#f0fbff;border:1px solid #b8e7f5;border-radius:16px">
+
+<section id="promptLibrary" style="margin:20px 0;padding:16px;background:#f0fbff;border:1px solid #b8e7f5;border-radius:16px;color:#183b4a">
 <h2>📚 SASIKUMAR AI — Full Prompt Library</h2>
-<input id="promptSearch" type="search" placeholder="Search 199 prompts..." style="width:100%;padding:12px;border:1px solid #9acbd9;border-radius:10px">
-<div id="promptCount">199 Prompts</div>
+<p>199 Commands + 14 Knowledge Categories</p>
+<input id="promptSearch" type="search" placeholder="🔎 Search prompts..." style="box-sizing:border-box;width:100%;padding:13px;border:1px solid #9acbd9;border-radius:10px;margin-bottom:10px">
+<select id="promptCategory" style="box-sizing:border-box;width:100%;padding:12px;border:1px solid #9acbd9;border-radius:10px;margin-bottom:12px;background:white">
+<option value="All">All Categories</option>
+<option value="Executive Commands">Executive Commands</option>
+<option value="Photo Editing">Photo Editing</option>
+<option value="Knowledge">Knowledge</option>
+</select>
+<div id="promptCount" style="padding:8px;font-weight:bold">Loading prompts...</div>
 <div id="promptResults"></div>
 </section>
 
+
 <script src="/prompt-library.js"></script>
+
+<script id="promptLibraryLogic">
+(function () {
+  'use strict';
+
+  const library = window.SKPROMPTLIBRARY;
+  const search = document.getElementById('promptSearch');
+  const category = document.getElementById('promptCategory');
+  const results = document.getElementById('promptResults');
+  const count = document.getElementById('promptCount');
+
+  if (!library || !search || !category || !results || !count) {
+    console.error('Prompt Library could not initialize.');
+    return;
+  }
+
+  const allItems = [...library.commands, ...library.knowledge];
+
+  function makeButton(label, color, action) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = label;
+    button.style.cssText =
+      'padding:10px 13px;margin:5px 5px 5px 0;border:0;border-radius:9px;background:' +
+      color + ';color:#123;font-weight:bold;cursor:pointer';
+    button.addEventListener('click', action);
+    return button;
+  }
+
+  function copyText(text, button) {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(function () {
+        button.textContent = '✅ Copied!';
+      }).catch(function () {
+        fallbackCopy(text, button);
+      });
+    } else {
+      fallbackCopy(text, button);
+    }
+  }
+
+  function fallbackCopy(text, button) {
+    const area = document.createElement('textarea');
+    area.value = text;
+    area.style.position = 'fixed';
+    area.style.opacity = '0';
+    document.body.appendChild(area);
+    area.select();
+
+    try {
+      const ok = document.execCommand('copy');
+      button.textContent = ok ? '✅ Copied!' : 'Copy failed';
+    } catch (error) {
+      button.textContent = 'Copy failed';
+    }
+
+    area.remove();
+  }
+
+  function render() {
+    const query = search.value.trim();
+    const selected = category.value;
+    const matches = library.search(query).filter(function (item) {
+      return selected === 'All' || item.category === selected;
+    });
+
+    count.textContent = 'Showing ' + matches.length + ' / ' +
+      allItems.length + ' prompts';
+
+    results.replaceChildren();
+
+    if (!matches.length) {
+      const empty = document.createElement('p');
+      empty.textContent = 'No prompts found. Try another search.';
+      results.appendChild(empty);
+      return;
+    }
+
+    matches.forEach(function (item) {
+      const card = document.createElement('article');
+      card.style.cssText =
+        'background:white;border:1px solid #cce7ef;border-radius:13px;' +
+        'padding:13px;margin:10px 0;overflow-wrap:anywhere';
+
+      const heading = document.createElement('h3');
+      heading.textContent = item.name;
+      heading.style.margin = '0 0 7px';
+
+      const meta = document.createElement('p');
+      meta.textContent = item.category + ' • ' + item.shortForm;
+      meta.style.cssText = 'color:#28758b;font-size:13px;margin:5px 0';
+
+      const tamil = document.createElement('p');
+      tamil.textContent = item.tamil;
+
+      const english = document.createElement('p');
+      english.textContent = item.english;
+
+      const example = document.createElement('p');
+      example.textContent = 'Example: ' + item.example;
+      example.style.cssText = 'background:#f1f8fa;padding:9px;border-radius:8px';
+
+      const fullPrompt = item.instruction + '\n\nExample: ' + item.example;
+
+      const copy = makeButton('📋 Copy Full Prompt', '#c8f0e2', function () {
+        copyText(fullPrompt, copy);
+      });
+
+      const use = makeButton('🚀 Use This Prompt', '#cce9ff', function () {
+        const question = document.getElementById('question');
+        if (!question) {
+          alert('AI Chat question box not found.');
+          return;
+        }
+        question.value = item.instruction + '\n\n' + item.example;
+        question.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        question.focus();
+      });
+
+      card.append(heading, meta, tamil, english, example, copy, use);
+      results.appendChild(card);
+    });
+  }
+
+  search.addEventListener('input', render);
+  category.addEventListener('change', render);
+  render();
+})();
+</script>
+
 </body>
 </html>
