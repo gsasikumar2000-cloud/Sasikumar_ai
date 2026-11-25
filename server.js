@@ -7716,7 +7716,7 @@ if (mp3SearchRequested) {
   '🔊 Voice Output — Coming Soon',
   '⌨️ Type your question directly in WhatsApp.',
   '',
-  '📋 All 38 Services menu in the next message.',
+  '📋 All 39 Services menu in the next message.',
   '',
   '🌐 Website: https://sasikumar-ai-9wdq.onrender.com',
   '📅 தேதி: ' + date,
@@ -7737,7 +7737,7 @@ if (mp3SearchRequested) {
 
         const menuCaption = [
   '🤖 SASIKUMAR AI — COMPLETE MENU',
-  '📋 All 38 Services',
+  '📋 All 39 Services',
   "1. AI Assistant",
   "2. Live Gold & Silver Rate",
   "3. Gold Loan / EMI Calculator",
@@ -7773,8 +7773,13 @@ if (mp3SearchRequested) {
   "33. Agriculture — விவசாய உதவியாளர்",
   "34. Meme Head — Trending Meme Hub",
   "35. Tamil Astrology & Horoscope — தமிழ் ஜோதிடம்",
-  '0. Main Menu',
-  'Send an option number to select a service.',
+    "36. 💎 Gold Hallmark Intelligence",
+  "37. 🔐 BIS HUID Verification — Meon API",
+  "38. ⚖️ Indian Law Expert",
+  "39. 🚀 Executive AI Prompt Center",
+
+
+
 ].join('\n');
 
         await sendWA({
