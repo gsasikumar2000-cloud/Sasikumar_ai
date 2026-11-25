@@ -221,7 +221,7 @@ const WELCOME_MENU = `🤖 SASIKUMAR AI — MAIN MENU
 🔊 Voice Output — Coming Soon
 💬 Type your question directly in WhatsApp.
 
-📋 ALL 38 SERVICES
+📋 ALL 39 SERVICES
 
 1. 🤖 AI Assistant
 2. 🪙 Live Gold & Silver Rate
@@ -260,6 +260,8 @@ const WELCOME_MENU = `🤖 SASIKUMAR AI — MAIN MENU
 35. 🔮 Tamil Astrology & Horoscope
 36. 💎 Gold Hallmark Intelligence
 37. 🔐 BIS HUID Verification — Meon API
+38. ⚖️ Indian Law Expert
+39. 🚀 Executive AI Prompt Center
 
 0. 🏠 Main Menu
 
@@ -1124,6 +1126,39 @@ Cyber Crime: https://cybercrime.gov.in
 BIS: https://www.bis.gov.in
 
 ⚠️ இது பொதுவான சட்டத் தகவல் மட்டுமே; வழக்கறிஞரின் தனிப்பட்ட சட்ட ஆலோசனைக்கு மாற்றாகாது. சட்டங்கள் மற்றும் நடைமுறைகள் மாறக்கூடும்.
+
+🔙 Type 0 for Main Menu`,
+
+
+  '39': () => `🚀 SASIKUMAR AI — EXECUTIVE PROMPT CENTER
+
+தமிழ் • Tanglish • English
+
+உங்கள் தேவைக்கேற்ப கீழே உள்ள எண்ணைத் தேர்வு செய்யுங்கள்.
+
+1. CEO Strategic Thinking
+2. Business Growth Strategy
+3. Deep Research & Analysis
+4. New Business Ideas
+5. Competitor Intelligence
+6. Problem Solving
+7. Executive Communication
+8. Financial Analysis
+9. Productivity Planning
+10. Future Planning
+11. Master Prompt
+12. Computer & Programming Help
+13. Website Development Guidance
+
+💬 உதாரணம்:
+39 2 — Business Growth Strategy
+39 12 — Programming Help
+39 13 — Website Development
+
+அல்லது உங்கள் கேள்வியை நேரடியாக அனுப்புங்கள்.
+SASIKUMAR AI Executive AI பதிலளிக்கும்.
+
+⚠️ நிதி முடிவுகளுக்கு உறுதியான லாப உத்தரவாதம் கிடையாது.
 
 🔙 Type 0 for Main Menu`,
 
@@ -6578,9 +6613,63 @@ if (msmeVerifyStart || msmeVerifyAwaiting) {
 } else if (/^(?:STONE CHART|DIAMOND|RUBY|EMERALD|TOURMALINE|PULI STONE|PEARL|STONE CALCULATOR)$/i.test(trimmed)) {
   reply = skGetStoneChartReply(trimmed);
 } else if (!isWelcome) {
-  const num = trimmed.match(/^\s*(3[0-8]|[12][0-9]|[0-9])\s*$/);
+  const executivePromptMatch = trimmed.match(/^39\s+(\d{1,2})$/);
+  const num = trimmed.match(/^\s*(3[0-9]|[12][0-9]|[0-9])\s*$/);
 
-  if (num) {
+  if (executivePromptMatch) {
+    const executivePrompts = {
+      1: 'Act as a CEO strategic thinking advisor. Analyze strengths, weaknesses, opportunities and risks. Create a practical 90-day business growth plan with measurable targets. Answer in Tamil.',
+      2: 'Create a practical business growth strategy to increase customers and revenue. Include marketing, customer retention and a 30-day action plan. Answer in Tamil.',
+      3: 'Perform deep research. Separate verified facts from assumptions. Explain root causes, trends, opportunities, risks and future possibilities. Answer in Tamil.',
+      4: 'Suggest 10 practical business ideas with target customers, investment categories, revenue models, risks and first steps to find 100 customers. Do not guarantee profit. Answer in Tamil.',
+      5: 'Analyze competitor services, pricing, marketing and customer experience. Identify market gaps and ethical ways to differentiate. Answer in Tamil.',
+      6: 'Solve my problem systematically. Identify root causes, compare solutions, explain pros and cons, recommend an option and give step-by-step actions. Answer in Tamil.',
+      7: 'Act as an executive communication editor. Create a professional, clear, respectful and persuasive Tamil business message while preserving the original meaning.',
+      8: 'Analyze investment, costs, revenue assumptions, cash flow and financial risks. Explain best, base and worst-case scenarios. Never guarantee profit. Answer in Tamil.',
+      9: 'Act as a productivity coach. Prioritize tasks, reduce wasted time and create a realistic daily and weekly schedule. Answer in Tamil.',
+      10: 'Create a five-year future plan covering technology, AI, opportunities, threats and skills to develop. Separate evidence from forecasts. Answer in Tamil.',
+      11: 'Act as a master problem-solving assistant. Challenge assumptions, identify errors, verify important facts where possible and provide practical step-by-step solutions in Tamil.',
+      12: 'Act as a computer and programming support expert. Diagnose the problem, ask for missing error details and provide safe step-by-step instructions. Explain commands before destructive actions.',
+      13: 'Act as a website development guide. Help plan, build, debug and deploy websites using HTML, CSS, JavaScript, Node.js and APIs. Ask for missing technical details when needed.'
+    };
+
+    const selectedPrompt = executivePrompts[Number(executivePromptMatch[1])];
+
+    if (!selectedPrompt) {
+      reply = '⚠️ சரியான எண்ணைத் தேர்வு செய்யுங்கள்: 39 1 முதல் 39 13 வரை.';
+    } else {
+      autoPosterForContent = false;
+      try {
+        const executiveResponse = await fetch(
+          `http://127.0.0.1:${PORT}/api/executive-ai`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              message: selectedPrompt,
+              mode: 'smart',
+              language: 'Tamil',
+              source: 'whatsapp',
+              whatsappUserId: waSenderDigits,
+              whatsappMemoryProof: process.env.CONVERSATION_MEMORY_SECRET
+                ? createHmac('sha256', process.env.CONVERSATION_MEMORY_SECRET)
+                    .update('whatsapp:' + waSenderDigits).digest('hex')
+                : ''
+            }),
+            signal: AbortSignal.timeout(35000)
+          }
+        );
+
+        const executiveData = await executiveResponse.json().catch(() => ({}));
+        reply = executiveResponse.ok && executiveData.ok && executiveData.reply
+          ? executiveData.reply
+          : '⚠️ Executive AI பதில் தற்போது கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.';
+      } catch (error) {
+        console.warn('[WA Executive Prompt Center]', error.message);
+        reply = '⚠️ Executive AI இணைப்பில் தற்காலிகப் பிரச்சினை. மீண்டும் முயற்சிக்கவும்.';
+      }
+    }
+  } else if (num) {
     if (num[1] === '38') {
       SK_WA_LAW_SESSIONS.set(String(from), { updatedAt: Date.now() });
       reply = getMenuReply('38') || WELCOME_MENU;
