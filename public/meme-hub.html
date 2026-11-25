@@ -47,6 +47,22 @@ a{color:#5c32c8}
 .tamil-search-note{font-size:13px;color:#594d70}
 /* END SK_TAMIL_MEME_SEARCH_V1 */
 
+
+/* SK_KLIPY_MEME_HUB_V1 */
+.klipy-box{background:linear-gradient(135deg,#fff1d9,#e9f5ff,#f2eaff);border-radius:20px;padding:18px;margin:16px 0;box-shadow:0 6px 22px #35205b12}
+.klipy-tools{display:flex;flex-wrap:wrap;gap:9px;margin:12px 0}
+.klipy-tools input{flex:1;min-width:180px}
+.klipy-categories{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.klipy-categories button{border:0;border-radius:20px;padding:9px 13px;background:#fff;color:#49318b;font-weight:700;cursor:pointer}
+.klipy-gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:12px;margin-top:15px}
+.klipy-item{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 4px 14px #35205b16}
+.klipy-item img{width:100%;height:175px;object-fit:contain;background:#f7f3ff;display:block}
+.klipy-item-info{padding:9px;font-size:13px;overflow-wrap:anywhere}
+.klipy-item-info button{width:100%;margin-top:7px}
+.klipy-note{font-size:12px;color:#594d70}
+#klipyStatus{font-weight:700;margin:10px 0;color:#168a79}
+/* END SK_KLIPY_MEME_HUB_V1 */
+
 </style>
 </head>
 <body>
@@ -147,6 +163,33 @@ a{color:#5c32c8}
 <div id="mondayMemeStatus" class="monday-meme-status" aria-live="polite">Meme உருவாக்கத் தயாராக உள்ளது.</div>
 <img id="mondayMemePreview" class="monday-meme-preview" alt="Monday Morning sleepy cat coffee meme">
 </section>
+
+
+<!-- SK_KLIPY_MEME_HUB_V1 -->
+<section class="klipy-box" id="klipyMemeHub">
+  <h2>🌟 KLIPY Trending Memes</h2>
+  <p>உலகம் முழுவதும் பிரபலமான மீம்ஸ்களைத் தேடிப் பாருங்கள், நண்பர்களுடன் பகிருங்கள்!</p>
+
+  <div class="klipy-tools">
+    <input id="klipySearchInput" type="search" placeholder="Search KLIPY memes...">
+    <button class="action" type="button" id="klipySearchButton">🔎 Search</button>
+    <button class="action secondary" type="button" id="klipyTrendingButton">🔥 Trending</button>
+  </div>
+
+  <div class="klipy-categories" id="klipyCategories">
+    <button type="button" data-klipy-query="Funny">😂 Funny</button>
+    <button type="button" data-klipy-query="Tamil">தமிழ்</button>
+    <button type="button" data-klipy-query="Love">❤️ Love</button>
+    <button type="button" data-klipy-query="Animals">🐶 Animals</button>
+    <button type="button" data-klipy-query="Reaction">🤣 Reaction</button>
+  </div>
+
+  <div id="klipyStatus" aria-live="polite">KLIPY memes ஏற்றத் தயாராக உள்ளது.</div>
+  <div class="klipy-gallery" id="klipyGallery"></div>
+  <button class="action secondary" type="button" id="klipyMoreButton" style="display:none">மேலும் மீம்ஸ்</button>
+  <p class="klipy-note">Media provided by KLIPY · Powered by KLIPY</p>
+</section>
+<!-- END SK_KLIPY_MEME_HUB_V1 -->
 
 <!-- SK_MEME_HUB_PHASE2 -->
 <section class="intro">
@@ -380,6 +423,200 @@ document.getElementById('shareMondayMeme').addEventListener('click', async () =>
     });
 })();
 // END SK_TAMIL_MEME_SEARCH_V1
+
+
+// SK_KLIPY_MEME_HUB_V1
+(() => {
+  const gallery = document.getElementById('klipyGallery');
+  const status = document.getElementById('klipyStatus');
+  const input = document.getElementById('klipySearchInput');
+  const moreButton = document.getElementById('klipyMoreButton');
+  const searchButton = document.getElementById('klipySearchButton');
+  const trendingButton = document.getElementById('klipyTrendingButton');
+  const categoriesBox = document.getElementById('klipyCategories');
+
+  if (!gallery || !status || !input || !moreButton) return;
+
+  let currentMode = 'trending';
+  let currentQuery = '';
+  let currentPage = 1;
+  let loading = false;
+
+  function safeImage(item) {
+    const file = item && item.file ? item.file : {};
+    return file.hd?.webp?.url || file.md?.webp?.url ||
+      file.hd?.png?.url || file.md?.png?.url ||
+      file.sm?.webp?.url || file.sm?.png?.url || '';
+  }
+
+  function validImageUrl(value) {
+    try {
+      const u = new URL(value);
+      return u.protocol === 'https:' && u.hostname === 'static.klipy.com';
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function addMeme(item) {
+    const imageUrl = safeImage(item);
+    if (!validImageUrl(imageUrl)) return;
+
+    const card = document.createElement('article');
+    card.className = 'klipy-item';
+
+    const img = document.createElement('img');
+    img.src = imageUrl;
+    img.alt = item.title || 'KLIPY meme';
+    img.loading = 'lazy';
+    img.onerror = () => {
+      const png = item.file?.hd?.png?.url || item.file?.md?.png?.url || '';
+      if (validImageUrl(png) && img.src !== png) img.src = png;
+      else img.style.display = 'none';
+    };
+
+    const info = document.createElement('div');
+    info.className = 'klipy-item-info';
+
+    const title = document.createElement('div');
+    title.textContent = item.title || 'KLIPY Meme';
+    info.appendChild(title);
+
+    if (item.type === 'ad') {
+      const ad = document.createElement('small');
+      ad.textContent = 'Advertisement';
+      ad.style.display = 'block';
+      ad.style.color = '#8a5b00';
+      info.appendChild(ad);
+    }
+
+    const share = document.createElement('button');
+    share.type = 'button';
+    share.className = 'action secondary';
+    share.textContent = '📲 Share';
+    share.addEventListener('click', async () => {
+      const text = (item.title || 'Funny Meme') + '\n' + imageUrl + '\nPowered by KLIPY · SASIKUMAR AI';
+      const wa = 'https://wa.me/?text=' + encodeURIComponent(text);
+      window.open(wa, '_blank', 'noopener');
+    });
+    info.appendChild(share);
+
+    card.appendChild(img);
+    card.appendChild(info);
+    gallery.appendChild(card);
+  }
+
+  async function loadMemes(reset = true) {
+    if (loading) return;
+    loading = true;
+
+    if (reset) {
+      currentPage = 1;
+      gallery.replaceChildren();
+    }
+
+    status.textContent = '⏳ KLIPY memes ஏற்றப்படுகிறது...';
+    moreButton.disabled = true;
+
+    try {
+      const params = new URLSearchParams({
+        mode: currentMode,
+        page: String(currentPage),
+        per_page: '12'
+      });
+
+      if (currentMode === 'search') params.set('q', currentQuery);
+
+      const response = await fetch('/api/klipy/memes?' + params.toString());
+      const result = await response.json();
+
+      if (!response.ok || !result.ok || result.result === false) {
+        throw new Error(result.error || 'KLIPY API response failed');
+      }
+
+      const payload = result.data;
+      const items = Array.isArray(payload?.data)
+        ? payload.data
+        : Array.isArray(payload) ? payload : [];
+
+      items.forEach(addMeme);
+
+      const count = gallery.children.length;
+      status.textContent = count
+        ? '✅ ' + count + ' KLIPY memes காட்டப்படுகின்றன.'
+        : 'இந்த தேடலில் மீம்ஸ் கிடைக்கவில்லை.';
+
+      const hasNext = Boolean(payload?.has_next);
+      moreButton.style.display = hasNext ? 'inline-block' : 'none';
+      currentPage++;
+    } catch (error) {
+      status.textContent = '⚠️ ' + error.message;
+      moreButton.style.display = 'none';
+    } finally {
+      loading = false;
+      moreButton.disabled = false;
+    }
+  }
+
+  function search(query) {
+    const q = String(query || '').trim();
+    if (!q) {
+      status.textContent = '⚠️ Search செய்ய ஒரு வார்த்தையை உள்ளிடுங்கள்.';
+      input.focus();
+      return;
+    }
+    currentMode = 'search';
+    currentQuery = q;
+    loadMemes(true);
+  }
+
+  searchButton.addEventListener('click', () => search(input.value));
+  input.addEventListener('keydown', event => {
+    if (event.key === 'Enter') search(input.value);
+  });
+
+  trendingButton.addEventListener('click', () => {
+    currentMode = 'trending';
+    currentQuery = '';
+    loadMemes(true);
+  });
+
+  categoriesBox.addEventListener('click', event => {
+    const button = event.target.closest('[data-klipy-query]');
+    if (button) {
+      input.value = button.dataset.klipyQuery;
+      search(input.value);
+    }
+  });
+
+  moreButton.addEventListener('click', () => loadMemes(false));
+
+  loadMemes(true);
+  fetch('/api/klipy/memes?mode=categories')
+    .then(r => r.json())
+    .then(data => {
+      if (!data.ok) return;
+      const raw = data.data;
+      const list = Array.isArray(raw?.data) ? raw.data :
+        Array.isArray(raw) ? raw : [];
+      if (!list.length) return;
+
+      list.slice(0, 12).forEach(category => {
+        const name = typeof category === 'string'
+          ? category
+          : category.name || category.title || category.slug || '';
+        if (!name) return;
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.dataset.klipyQuery = name;
+        button.textContent = name;
+        categoriesBox.appendChild(button);
+      });
+    })
+    .catch(() => {});
+})();
+// END SK_KLIPY_MEME_HUB_V1
 
 </script>
 </body>

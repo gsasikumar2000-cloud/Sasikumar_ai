@@ -1584,6 +1584,80 @@ app.get('/api/whatsapp/menu',(req,res)=>{
   });
 });
 app.get('/api/gold', async (req,res)=>{try{const d=await skGetLiveGoldRates();res.set('Cache-Control','no-store');res.json({'24k_per_g':d.rates['24K'],'22k_per_g':d.rates['22K'],rates:d.rates,source:d.source,fallbackUsed:d.fallbackUsed,updatedAt:d.updatedAt,note:d.note});}catch(e){console.error('[Gold API] Request failed:',e.message);res.status(503).json({ok:false,error:'Live Gold Rate temporarily unavailable.'});}});
+
+// SASIKUMAR AI - Open-Meteo Weather API
+app.get('/api/weather', async (req, res) => {
+  try {
+    const lat = req.query.lat === undefined ? 13.08 : Number(req.query.lat);
+    const lon = req.query.lon === undefined ? 80.27 : Number(req.query.lon);
+
+    if (!Number.isFinite(lat) || !Number.isFinite(lon) ||
+        lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+      return res.status(400).json({
+        ok: false,
+        error: 'Invalid latitude or longitude.'
+      });
+    }
+
+    const url = new URL('https://api.open-meteo.com/v1/forecast');
+    url.search = new URLSearchParams({
+      latitude: String(lat),
+      longitude: String(lon),
+      current: 'temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m',
+      daily: 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_speed_10m_max',
+      forecast_days: '7',
+      timezone: 'Asia/Kolkata'
+    }).toString();
+
+    const upstream = await fetch(url, {
+      headers: { Accept: 'application/json' },
+      signal: AbortSignal.timeout(15000)
+    });
+
+    const data = await upstream.json();
+
+    if (!upstream.ok || !data.current || !data.daily) {
+      console.error('[Weather API] Upstream error:', upstream.status);
+      return res.status(502).json({
+        ok: false,
+        error: 'Weather service temporarily unavailable.'
+      });
+    }
+
+    const rainProbability = data.daily.precipitation_probability_max?.[0] ?? null;
+    const rainAmount = data.daily.precipitation_sum?.[0] ?? 0;
+
+    res.set('Cache-Control', 'public, max-age=600');
+    return res.json({
+      ok: true,
+      source: 'Open-Meteo',
+      location: {
+        latitude: data.latitude,
+        longitude: data.longitude,
+        timezone: data.timezone
+      },
+      current: data.current,
+      forecast: data.daily,
+      rainAlert: {
+        probability: rainProbability,
+        expectedRainMm: rainAmount,
+        alert: rainProbability !== null && rainProbability >= 60
+          ? 'HIGH'
+          : rainProbability !== null && rainProbability >= 30
+            ? 'MODERATE'
+            : 'LOW'
+      }
+    });
+  } catch (error) {
+    console.error('[Weather API] Request failed:', error.message);
+    return res.status(502).json({
+      ok: false,
+      error: 'Unable to load weather data.'
+    });
+  }
+});
+// END SASIKUMAR AI WEATHER API
+
 app.get('/api/services',(req,res)=>{res.json({services:[{id:1,name:'Gold Rate',ta:'தங்க விலை',icon:'💰'},{id:2,name:'Gold Loan',ta:'தங்க கடன்',icon:'🏦'},{id:3,name:'Banking',ta:'வங்கி',icon:'🏧'},{id:4,name:'Gold Expert',ta:'தங்க நிபுணர்',icon:'👨‍🏫'},{id:5,name:'Appraisal',ta:'மதிப்பீடு',icon:'🔍'},{id:6,name:'Education',ta:'கல்வி',icon:'📚'},{id:7,name:'Jobs',ta:'வேலை',icon:'💼'},{id:8,name:'Business Tech News',ta:'வணிக செய்தி',icon:'💼'},{id:9,name:'General AI',ta:'பொது AI',icon:'🧠'},{id:10,name:'Breaking News',ta:'முக்கிய செய்தி',icon:'🚨'},{id:11,name:'Business News',ta:'வணிக செய்தி',icon:'💼'},{id:12,name:'Sports',ta:'விளையாட்டு',icon:'🏏'},{id:13,name:'Web Search',ta:'இணைய தேடல்',icon:'🔎'},{id:14,name:'Poster Creative',ta:'போஸ்டர்',icon:'🎨'},{id:15,name:'Image AI',ta:'பட AI',icon:'📸'},{id:16,name:'Video Maker',ta:'வீடியோ',icon:'🎬'},{id:17,name:'Contact',ta:'தொடர்பு',icon:'📞'},{id:18,name:'Feedback',ta:'கருத்து',icon:'⭐'},{id:19,name:'About',ta:'பற்றி',icon:'ℹ️'},{id:20,name:'Tamil News Videos',ta:'தமிழ் செய்தி',icon:'📰'}]});});
 
 
@@ -3288,8 +3362,64 @@ async function skLookupPincode(query) {
 }
 
 async function skPincodeReply(query) {
+  const q = String(query || '').trim();
+
+  if (/^\d{6}$/.test(q)) {
+    try {
+      const apiKey = process.env.OGD_API_KEY || process.env.DATA_GOV_API_KEY;
+      if (!apiKey) throw new Error('OGD API key missing');
+
+      const resourceId = '5c2f62fe-5afa-4119-a499-fec9d604d5bd';
+      const url = new URL('https://api.data.gov.in/resource/' + resourceId);
+      url.searchParams.set('api-key', apiKey);
+      url.searchParams.set('format', 'json');
+      url.searchParams.set('filters[pincode]', q);
+      url.searchParams.set('limit', '10');
+
+      const response = await fetch(url, {
+        headers: { Accept: 'application/json' },
+        signal: AbortSignal.timeout(15000)
+      });
+      if (!response.ok) throw new Error('OGD HTTP ' + response.status);
+
+      const data = await response.json();
+      const offices = Array.isArray(data.records) ? data.records : [];
+
+      if (!offices.length) {
+        return '📍 PIN CODE: ' + q +
+          '\nஇந்த PIN Code-க்கு Post Office விவரம் கிடைக்கவில்லை.';
+      }
+
+      const first = offices[0];
+      const lines = offices.map((o, i) =>
+        (i + 1) + '. 🏣 ' + (o.officename || 'Post Office') +
+        '\n   வகை: ' + (o.officetype || '-') +
+        '\n   Delivery: ' + (o.delivery || '-') +
+        '\n   மாவட்டம்: ' + (o.district || '-') +
+        '\n   மாநிலம்: ' + (o.statename || '-')
+      );
+
+      const mapQuery = q + ', ' + (first.district || '') +
+        ', ' + (first.statename || 'India') + ', India';
+      const mapUrl = 'https://www.google.com/maps/search/?api=1&query=' +
+        encodeURIComponent(mapQuery);
+
+      return '📍 SASIKUMAR AI — GOVERNMENT PIN CODE SEARCH\n\n' +
+        '🔎 PIN Code: ' + q +
+        '\n🏙️ மாவட்டம்: ' + (first.district || '-') +
+        '\n🗺️ மாநிலம்: ' + (first.statename || '-') +
+        '\n📮 கிடைத்த Post Offices: ' + offices.length +
+        '\n\n' + lines.join('\n\n') +
+        '\n\n🗺️ Google Maps:\n' + mapUrl +
+        '\n\n📚 Source: data.gov.in';
+    } catch (error) {
+      console.error('[PINCODE OGD] Lookup failed:', error.message || error);
+      return '⚠️ Government PIN Code சேவையை இப்போது அணுக முடியவில்லை. மீண்டும் முயற்சிக்கவும்.';
+    }
+  }
+
   try {
-    const result = await skLookupPincode(query);
+    const result = await skLookupPincode(q);
     if (!result.offices.length) {
       return '📍 PIN CODE / LOCATION SEARCH\n\nஇந்தத் தேடலுக்கு Post Office விவரம் கிடைக்கவில்லை. வேறு PIN Code அல்லது ஊர் பெயரை முயற்சிக்கவும்.';
     }
@@ -3322,7 +3452,6 @@ async function skPincodeReply(query) {
     return '⚠️ PIN Code தகவலைப் பெற முடியவில்லை. சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.';
   }
 }
-
 
 function skShareReply(key) {
   const message = SK_LAST_BOT_REPLIES.get(key) ||
@@ -14925,6 +15054,79 @@ app.post('/api/medical/ask', async (req, res) => {
 
 // SK_GOVERNMENT_MSME_API_V1
 const skMsmeSourceDate = '2022-02-11';
+
+
+// SASIKUMAR AI - OGD India PIN Code Search
+app.get('/api/government/pincode', async (req, res) => {
+  try {
+    const pincode = String(req.query.pincode || '').trim();
+
+    if (!/^\d{6}$/.test(pincode)) {
+      return res.status(400).json({
+        ok: false,
+        error: 'Enter a valid 6-digit Indian PIN code.'
+      });
+    }
+
+    const apiKey = process.env.OGD_API_KEY || process.env.DATA_GOV_API_KEY;
+    if (!apiKey) {
+      return res.status(503).json({
+        ok: false,
+        error: 'Government API key is not configured.'
+      });
+    }
+
+    const resourceId = '5c2f62fe-5afa-4119-a499-fec9d604d5bd';
+    const url = new URL(`https://api.data.gov.in/resource/${resourceId}`);
+
+    url.searchParams.set('api-key', apiKey);
+    url.searchParams.set('format', 'json');
+    url.searchParams.set('filters[pincode]', pincode);
+    url.searchParams.set('limit', '10');
+
+    const upstream = await fetch(url, {
+      headers: { Accept: 'application/json' },
+      signal: AbortSignal.timeout(15000)
+    });
+
+    const data = await upstream.json();
+
+    if (!upstream.ok) {
+      console.error('[PIN Code API] HTTP error:', upstream.status);
+      return res.status(502).json({
+        ok: false,
+        error: 'Government PIN Code service temporarily unavailable.'
+      });
+    }
+
+    const records = Array.isArray(data.records) ? data.records : [];
+
+    res.set('Cache-Control', 'public, max-age=3600');
+    return res.json({
+      ok: true,
+      source: 'data.gov.in',
+      pincode,
+      total: Number(data.total || records.length),
+      records: records.map(item => ({
+        pincode: item.pincode,
+        postOffice: item.officename,
+        district: item.district,
+        state: item.statename,
+        officeType: item.officetype,
+        delivery: item.delivery,
+        region: item.regionname,
+        division: item.divisionname
+      }))
+    });
+  } catch (error) {
+    console.error('[PIN Code API] Request failed:', error.message);
+    return res.status(502).json({
+      ok: false,
+      error: 'Unable to fetch PIN Code details.'
+    });
+  }
+});
+// END SASIKUMAR AI PIN CODE API
 
 app.get('/api/government/msme', async (req, res) => {
   res.set('Cache-Control', 'no-store');
