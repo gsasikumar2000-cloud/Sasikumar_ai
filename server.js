@@ -1578,8 +1578,8 @@ app.get('/api/status',(req,res)=>{res.json({status:'WHATSAPP MENU 39 OPTIONS LOC
 app.get('/api/whatsapp/menu',(req,res)=>{
   res.set('Cache-Control','no-store');
   res.json({
-    welcome: '🤖 SASIKUMAR AI — 38 Services',
-    total: 38,
+    welcome: '🤖 SASIKUMAR AI — 39 Services',
+    total: 39,
     menuImage: 'https://sasikumar-ai-9wdq.onrender.com/assets/whatsapp-menu.png'
   });
 });
