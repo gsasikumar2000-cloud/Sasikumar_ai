@@ -5876,6 +5876,99 @@ const trimmed=String(msg.text?.body || msg.image?.caption || waButtonTitle || ''
 console.log('[WA INPUT DEBUG]', { text: trimmed, buttonId: waButtonId, from: String(from).slice(-4) });
     const lower=trimmed.toLowerCase();
 
+const gifMatch = trimmed.match(/^gif(?:\s+(.+))?$/i);
+
+if (gifMatch) {
+  const gifQuery = String(gifMatch[1] || '').trim();
+
+  if (!gifQuery) {
+    await skWhatsAppSendTextOnly(
+      from,
+      '🎞️ SASIKUMAR AI GIF Search\n\nஉதாரணம்:\ngif happy\ngif birthday\ngif vijay\ngif good morning'
+    );
+    return;
+  }
+
+  try {
+    const gifApiKey = process.env.GIPHY_API_KEY;
+
+    if (!gifApiKey) {
+      throw new Error('GIPHY_API_KEY is missing.');
+    }
+
+    const gifSearchUrl = new URL('https://api.giphy.com/v1/gifs/search');
+    gifSearchUrl.search = new URLSearchParams({
+      api_key: gifApiKey,
+      q: gifQuery.slice(0, 100),
+      limit: '1',
+      rating: 'g',
+      lang: 'en'
+    });
+
+    const gifApiResponse = await fetch(gifSearchUrl, {
+      signal: AbortSignal.timeout(20000)
+    });
+
+    const gifApiData = await gifApiResponse.json().catch(() => ({}));
+
+    if (!gifApiResponse.ok) {
+      throw new Error('GIPHY search request failed.');
+    }
+
+    const gifItem = gifApiData.data?.[0];
+
+    if (!gifItem) {
+      await skWhatsAppSendTextOnly(
+        from,
+        `🔎 "${gifQuery}" GIF கிடைக்கவில்லை. வேறு வார்த்தையில் தேடுங்கள்.`
+      );
+      return;
+    }
+
+    const gifMp4 = String(
+      gifItem.images?.original?.mp4 ||
+      gifItem.images?.downsized_large?.mp4 ||
+      ''
+    );
+
+    if (!gifMp4) {
+      throw new Error('GIPHY MP4 version unavailable.');
+    }
+
+    const gifParsed = new URL(gifMp4);
+
+    if (
+      gifParsed.protocol !== 'https:' ||
+      !(gifParsed.hostname === 'giphy.com' ||
+        gifParsed.hostname.endsWith('.giphy.com')) ||
+      !/\.mp4$/i.test(gifParsed.pathname)
+    ) {
+      throw new Error('Invalid GIPHY video URL.');
+    }
+
+    const gifTitle = String(gifItem.title || gifQuery)
+      .replace(/\s+/g, ' ')
+      .slice(0, 150);
+
+    await skWhatsAppSendVideoUrl(
+      from,
+      gifParsed.href,
+      `🎞️ ${gifTitle}\nPowered by GIPHY`
+    );
+
+    console.log('[WA GIPHY] One animation sent:', gifQuery);
+  } catch (gifError) {
+    console.error('[WA GIPHY ERROR]', gifError.message);
+    await skWhatsAppSendTextOnly(
+      from,
+      'மன்னிக்கவும். GIF அனுப்ப முடியவில்லை. சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.'
+    );
+  }
+
+  return;
+}
+
+
 const isWelcome = !trimmed || trimmed === '0' ||
   ['menu', 'manu', 'start', 'மெனு'].includes(lower);
 
