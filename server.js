@@ -1574,7 +1574,7 @@ app.get('/api/klipy/memes', async (req, res) => {
 });
 // END SK_KLIPY_MEME_API_V1
 
-app.get('/api/status',(req,res)=>{res.json({status:'WHATSAPP MENU 38 OPTIONS LOCAL OK',version:'7.4 Menu',options:38,time:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})});});
+app.get('/api/status',(req,res)=>{res.json({status:'WHATSAPP MENU 39 OPTIONS LOCAL OK',version:'7.4 Menu',options:39,time:new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})});});
 app.get('/api/whatsapp/menu',(req,res)=>{
   res.set('Cache-Control','no-store');
   res.json({
@@ -15280,4 +15280,4 @@ app.post('/api/brain/ask', auth.optionalAuth, async (req, res) => {
 
 // END SK_CENTRAL_BRAIN_V2_1
 
-app.listen(PORT,()=>console.log(`🤖 36 OPTIONS WHATSAPP MENU http://localhost:${PORT} - OK`));
+app.listen(PORT,()=>console.log(`🤖 39 OPTIONS WHATSAPP MENU http://localhost:${PORT} - OK`));
