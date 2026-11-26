@@ -1754,7 +1754,8 @@ async function getCloudflareAIReply(message, category = 'General AI') {
 async function getSasikumarTextFallbackReply(
   message,
   category = 'General AI',
-  customSystemPrompt = ''
+  customSystemPrompt = '',
+  returnMetadata = false
 ) {
   const key = process.env.OPENROUTER_API_KEY;
   const medical = String(category).toLowerCase().includes('medical') ||
@@ -1768,6 +1769,58 @@ async function getSasikumarTextFallbackReply(
     'For agriculture, avoid unsupported diagnoses, pesticide names, doses ' +
     'or chemical mixtures. Recommend official agricultural guidance when needed.'
   ) + (medical ? '\n\n' + skMedicalInstructions() : '');
+
+  // SK_NVIDIA_NEMOTRON_TEXT_FALLBACK_V1
+  const nvidiaKey = process.env.NVIDIA_API_KEY;
+  if (nvidiaKey) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 25000);
+
+    try {
+      const response = await fetch(
+        'https://integrate.api.nvidia.com/v1/chat/completions',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer ' + nvidiaKey,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: 'nvidia/nemotron-3.5-super-vl-120b-a12b',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: String(message || '').slice(0, 12000) }
+            ],
+            reasoning_effort: 'none',
+            temperature: 0.5,
+            max_tokens: 700,
+            stream: false
+          }),
+          signal: controller.signal
+        }
+      );
+
+      const data = await response.json().catch(() => ({}));
+      const answer = data?.choices?.[0]?.message?.content;
+
+      if (response.ok && typeof answer === 'string' && answer.trim()) {
+        console.info('[NVIDIA Nemotron] TEXT_FALLBACK_SUCCESS');
+        const cleanAnswer = answer.trim();
+        return returnMetadata
+          ? { reply: cleanAnswer, provider: 'NVIDIA Nemotron' }
+          : cleanAnswer;
+      }
+
+      console.warn('[NVIDIA Nemotron] Fallback unavailable:', response.status);
+    } catch (error) {
+      console.warn('[NVIDIA Nemotron] Request failed:', error.name || 'Error');
+    } finally {
+      clearTimeout(timer);
+    }
+  } else {
+    console.warn('[NVIDIA Nemotron] NVIDIA_API_KEY missing.');
+  }
+  // END SK_NVIDIA_NEMOTRON_TEXT_FALLBACK_V1
 
   if (key) {
     const controller = new AbortController();
@@ -1804,7 +1857,11 @@ async function getSasikumarTextFallbackReply(
         console.info('[OpenRouter AI] TEXT_FALLBACK_SUCCESS', {
           model: process.env.OPENROUTER_MODEL || 'openai/gpt-oss-20b'
         });
-        return answer.replace(/<think>[\s\S]*?<\/think>/gi, '').trim() || null;
+        const cleanAnswer = answer.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+        if (!cleanAnswer) return null;
+        return returnMetadata
+          ? { reply: cleanAnswer, provider: 'OpenRouter' }
+          : cleanAnswer;
       }
 
       console.warn('[OpenRouter AI] Fallback unavailable:', response.status);
@@ -1818,7 +1875,11 @@ async function getSasikumarTextFallbackReply(
   }
 
   console.info('[AI Fallback] Trying Cloudflare after OpenRouter.');
-  return await getCloudflareAIReply(message, category);
+  const cloudflareReply = await getCloudflareAIReply(message, category);
+  if (returnMetadata && cloudflareReply) {
+    return { reply: cloudflareReply, provider: 'Cloudflare Workers AI' };
+  }
+  return cloudflareReply;
 }
 // END SK_OPENROUTER_TEXT_FALLBACK_V1
 
@@ -2150,13 +2211,13 @@ app.post('/api/chat', async (req, res) => {
         return res.status(503).json({ reply: errorMessage, answer: errorMessage });
       }
 
-      const fallbackReply = await getSasikumarTextFallbackReply(userMessage, category);
-      if (fallbackReply) {
-        const finalReply = safeChatReply(fallbackReply);
+      const fallbackResult = await getSasikumarTextFallbackReply(userMessage, category, '', true);
+      if (fallbackResult?.reply) {
+        const finalReply = safeChatReply(fallbackResult.reply);
         return res.json({
           reply: finalReply,
           answer: finalReply,
-          api: 'OpenRouter / Cloudflare fallback'
+          api: fallbackResult.provider
         });
       }
 
@@ -2226,12 +2287,13 @@ app.post('/api/chat', async (req, res) => {
       );
     } catch (fetchError) {
       if (!imageData) {
-        const fallbackReply = await getSasikumarTextFallbackReply(userMessage, category);
-        if (fallbackReply) {
+        const fallbackResult = await getSasikumarTextFallbackReply(userMessage, category, '', true);
+        if (fallbackResult?.reply) {
+          const finalReply = safeChatReply(fallbackResult.reply);
           return res.json({
-            reply: safeChatReply(fallbackReply),
-            answer: safeChatReply(fallbackReply),
-            api: 'Cloudflare Workers AI (fallback)'
+            reply: finalReply,
+            answer: finalReply,
+            api: fallbackResult.provider
           });
         }
       }
@@ -2244,12 +2306,13 @@ app.post('/api/chat', async (req, res) => {
 
     if (!upstream.ok) {
       if (!imageData) {
-        const fallbackReply = await getSasikumarTextFallbackReply(userMessage, category);
-        if (fallbackReply) {
+        const fallbackResult = await getSasikumarTextFallbackReply(userMessage, category, '', true);
+        if (fallbackResult?.reply) {
+          const finalReply = safeChatReply(fallbackResult.reply);
           return res.json({
-            reply: safeChatReply(fallbackReply),
-            answer: safeChatReply(fallbackReply),
-            api: 'Cloudflare Workers AI (fallback)'
+            reply: finalReply,
+            answer: finalReply,
+            api: fallbackResult.provider
           });
         }
       }
@@ -2277,12 +2340,13 @@ app.post('/api/chat', async (req, res) => {
 
     if (!reply) {
       if (!imageData) {
-        const fallbackReply = await getSasikumarTextFallbackReply(userMessage, category);
-        if (fallbackReply) {
+        const fallbackResult = await getSasikumarTextFallbackReply(userMessage, category, '', true);
+        if (fallbackResult?.reply) {
+          const finalReply = safeChatReply(fallbackResult.reply);
           return res.json({
-            reply: safeChatReply(fallbackReply),
-            answer: safeChatReply(fallbackReply),
-            api: 'Cloudflare Workers AI (fallback)'
+            reply: finalReply,
+            answer: finalReply,
+            api: fallbackResult.provider
           });
         }
       }
