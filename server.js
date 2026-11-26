@@ -1820,7 +1820,56 @@ async function getSasikumarTextFallbackReply(
   } else {
     console.warn('[NVIDIA Nemotron] NVIDIA_API_KEY missing.');
   }
-  // END SK_NVIDIA_NEMOTRON_TEXT_FALLBACK_V1
+  // SK_COHERE_TEXT_FALLBACK_V1
+  const cohereKey = process.env.COHERE_API_KEY;
+
+  if (cohereKey) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 25000);
+
+    try {
+      const response = await fetch('https://api.cohere.com/v2/chat', {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer ' + cohereKey,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: process.env.COHERE_MODEL || 'command-a-03-2025',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: String(message || '').slice(0, 12000) }
+          ],
+          max_tokens: 700,
+          temperature: 0.5
+        }),
+        signal: controller.signal
+      });
+
+      const data = await response.json().catch(() => ({}));
+      const answer = data?.message?.content
+        ?.filter(item => item.type === 'text')
+        ?.map(item => item.text)
+        ?.join('\n');
+
+      if (response.ok && typeof answer === 'string' && answer.trim()) {
+        console.info('[Cohere AI] TEXT_FALLBACK_SUCCESS');
+        const cleanAnswer = answer.trim();
+        return returnMetadata
+          ? { reply: cleanAnswer, provider: 'Cohere' }
+          : cleanAnswer;
+      }
+
+      console.warn('[Cohere AI] Fallback unavailable:', response.status);
+    } catch (error) {
+      console.warn('[Cohere AI] Request failed:', error.name || 'Error');
+    } finally {
+      clearTimeout(timer);
+    }
+  } else {
+    console.warn('[Cohere AI] COHERE_API_KEY missing.');
+  }
+  // END SK_COHERE_TEXT_FALLBACK_V1
 
   if (key) {
     const controller = new AbortController();
