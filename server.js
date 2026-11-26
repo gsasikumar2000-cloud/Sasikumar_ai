@@ -3134,7 +3134,7 @@ async function getTamilBreakingNews(category = 'tamil-nadu', topic = '') {
   try {
     const response = await fetch(
       'https://sasikumar-ai-9wdq.onrender.com/api/breaking-news?' + params.toString(),
-      { signal: AbortSignal.timeout(25000) }
+      { signal: AbortSignal.timeout(90000) }
     );
     const data = await response.json().catch(() => ({}));
 
@@ -8946,6 +8946,49 @@ async function skGlobalWebSearch(query) {
           ...x,
           url: x.link || x.url,
           published_date: x.iso_date || x.published_date || x.date || x.published_at || ''
+        }))
+      };
+    });
+  }
+
+
+  // SK_APIFY_GOOGLE_SEARCH_PROVIDER_V1
+  // Opt-in Apify Google Search; maximum run charge is capped at $0.50.
+  if (process.env.APIFY_SEARCH_ENABLED === 'true' && process.env.APIFY_TOKEN) {
+    tasks.push(async () => {
+      const endpoint = 'https://api.apify.com/v2/acts/apify~google-search-scraper/run-sync-get-dataset-items?maxTotalChargeUsd=0.50&limit=5';
+
+      const r = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer ' + process.env.APIFY_TOKEN,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          queries: query,
+          maxPagesPerQuery: 1,
+          countryCode: 'in',
+          languageCode: 'en'
+        }),
+        signal: AbortSignal.timeout(90000)
+      });
+
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) {
+        throw new Error('Apify Google Search HTTP ' + r.status);
+      }
+
+      const items = (Array.isArray(d) ? d : []).flatMap(page =>
+        Array.isArray(page.organicResults) ? page.organicResults : []
+      );
+
+      return {
+        provider: 'apify-google',
+        items: items.map(item => ({
+          title: item.title || 'Search result',
+          url: item.url || item.link || '',
+          content: item.description || item.snippet || '',
+          published_date: item.date || item.publishedDate || ''
         }))
       };
     });
