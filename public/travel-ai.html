@@ -27,6 +27,12 @@ button{border:0;border-radius:11px;padding:13px 15px;font-size:15px;font-weight:
 .result a{color:#0369a1;font-weight:700;overflow-wrap:anywhere}
 h3{color:#075985;margin:8px 0}
 @media(max-width:420px){body{padding:9px}.grid{gap:7px}.panel{padding:12px}}
+
+.flight-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.flight-action{width:100%;margin-top:12px;background:linear-gradient(90deg,#2563eb,#0d9488);color:white}
+.flight-output{white-space:pre-wrap;overflow-wrap:anywhere;background:#eff6ff;border-radius:10px;padding:12px;margin-top:10px;font-size:13px;line-height:1.6}
+button:disabled{opacity:.6;cursor:wait}
+@media(max-width:420px){.flight-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -60,6 +66,31 @@ h3{color:#075985;margin:8px 0}
   <textarea id="extra" rows="2" placeholder="Family trip, temples, food, beaches..."></textarea>
   <button class="primary" id="plan">✈️ CREATE MY TRAVEL PLAN</button>
   <div id="status" role="status"></div>
+ </div>
+
+
+ <div class="panel" id="flightTools">
+  <h3>✈️ Flight Ticket Search</h3>
+  <p class="small">Search available flight options using FlightAPI.</p>
+  <div class="flight-grid">
+   <div><label for="flightFrom">From Airport</label><input id="flightFrom" maxlength="3" placeholder="MAA" value="MAA"></div>
+   <div><label for="flightTo">To Airport</label><input id="flightTo" maxlength="3" placeholder="DEL" value="DEL"></div>
+   <div><label for="flightDate">Journey Date</label><input id="flightDate" type="date"></div>
+   <div><label for="flightAdults">Adults</label><input id="flightAdults" type="number" min="1" max="9" value="1"></div>
+  </div>
+  <button class="flight-action" id="flightSearch">🔎 SEARCH FLIGHTS</button>
+  <div class="flight-output" id="flightResults" role="status">Enter airport codes and journey date to search.</div>
+  <p class="small">Search requests may use your FlightAPI account credits. No request is made until you press Search.</p>
+ </div>
+
+ <div class="panel" id="flightStatusPanel">
+  <h3>🛫 Flight Status Tracker</h3>
+  <label for="statusFlight">Flight Number</label>
+  <input id="statusFlight" maxlength="7" placeholder="Example: AI101">
+  <label for="statusDate">Flight Date (optional)</label>
+  <input id="statusDate" type="date">
+  <button class="flight-action" id="checkFlightStatus">📡 CHECK FLIGHT STATUS</button>
+  <div class="flight-output" id="flightStatusResult" role="status">Enter a flight number such as AI101.</div>
  </div>
 
  <div class="panel" id="output" hidden>
@@ -194,6 +225,62 @@ Answer in ${lang}.`;
    }finally{
      button.disabled = false;
      button.textContent = "✈️ CREATE MY TRAVEL PLAN";
+   }
+ });
+
+
+ $("flightSearch").addEventListener("click", async function(){
+   const from = $("flightFrom").value.trim().toUpperCase();
+   const to = $("flightTo").value.trim().toUpperCase();
+   const date = $("flightDate").value;
+   const adults = Math.max(1,Math.min(9,Number($("flightAdults").value)||1));
+   const out = $("flightResults");
+   if(!/^[A-Z]{3}$/.test(from) || !/^[A-Z]{3}$/.test(to) || from===to || !date){
+     out.textContent = "Enter valid 3-letter airport codes, different From/To airports, and a journey date.";
+     return;
+   }
+   const btn = this;
+   btn.disabled = true;
+   btn.textContent = "⏳ SEARCHING...";
+   out.textContent = "Contacting FlightAPI...";
+   try{
+     const qs = new URLSearchParams({from,to,date,adults:String(adults),children:"0",infants:"0",cabin:"Economy",currency:"INR"});
+     const r = await fetch("/api/travel/flights?"+qs.toString());
+     const data = await r.json();
+     if(!r.ok || !data.ok) throw new Error(data.error || "Flight search failed");
+     out.textContent = "Provider: "+(data.provider||"FlightAPI")+"\nRoute: "+from+" → "+to+"\nDate: "+date+"\nResults: "+(data.count||0)+"\n\n"+JSON.stringify(data.results||[],null,2);
+   }catch(err){
+     out.textContent = "⚠️ "+err.message+"\nPlease check airport codes, date, API key and provider availability.";
+   }finally{
+     btn.disabled = false;
+     btn.textContent = "🔎 SEARCH FLIGHTS";
+   }
+ });
+
+ $("checkFlightStatus").addEventListener("click", async function(){
+   const flight = $("statusFlight").value.trim().toUpperCase();
+   const date = $("statusDate").value;
+   const out = $("flightStatusResult");
+   if(!/^[A-Z0-9]{2,3}[0-9]{1,4}$/.test(flight)){
+     out.textContent = "Enter a valid flight number, for example AI101.";
+     return;
+   }
+   const btn = this;
+   btn.disabled = true;
+   btn.textContent = "⏳ CHECKING...";
+   out.textContent = "Checking live flight status...";
+   try{
+     const qs = new URLSearchParams({flight});
+     if(date) qs.set("date",date);
+     const r = await fetch("/api/travel/flight-status?"+qs.toString());
+     const data = await r.json();
+     if(!r.ok || !data.ok) throw new Error(data.error || "Flight status unavailable");
+     out.textContent = "Provider: "+data.provider+"\nFlight: "+flight+"\nMatching records: "+data.count+"\n\n"+JSON.stringify(data.results||[],null,2);
+   }catch(err){
+     out.textContent = "⚠️ "+err.message;
+   }finally{
+     btn.disabled = false;
+     btn.textContent = "📡 CHECK FLIGHT STATUS";
    }
  });
 
