@@ -15394,6 +15394,153 @@ app.get('/api/government/msme/summary', async (req, res) => {
 });
 // END SK_GOVERNMENT_MSME_API_V1
 
+
+// SK_TRAVEL_FLIGHT_SEARCH_V1
+app.get('/api/travel/flights', async (req, res) => {
+  try {
+    const apiKey = process.env.FLIGHTAPI_KEY;
+    if (!apiKey) {
+      return res.status(503).json({ok:false,error:'FlightAPI key is not configured.'});
+    }
+
+    const from = String(req.query.from || '').trim().toUpperCase();
+    const to = String(req.query.to || '').trim().toUpperCase();
+    const date = String(req.query.date || '').trim();
+    const adults = Number(req.query.adults || 1);
+    const children = Number(req.query.children || 0);
+    const infants = Number(req.query.infants || 0);
+    const cabin = String(req.query.cabin || 'Economy');
+    const currency = String(req.query.currency || 'INR').toUpperCase();
+
+    if (!/^[A-Z]{3}$/.test(from) || !/^[A-Z]{3}$/.test(to) || from === to) {
+      return res.status(400).json({ok:false,error:'Enter valid 3-letter departure and destination airport codes.'});
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(Date.parse(date + 'T00:00:00Z'))) {
+      return res.status(400).json({ok:false,error:'Date must use YYYY-MM-DD format.'});
+    }
+    if (!Number.isInteger(adults) || adults < 1 || adults > 9 ||
+        !Number.isInteger(children) || children < 0 || children > 8 ||
+        !Number.isInteger(infants) || infants < 0 || infants > adults) {
+      return res.status(400).json({ok:false,error:'Invalid passenger count.'});
+    }
+    if (!['Economy','Premium_Economy','Business','First'].includes(cabin)) {
+      return res.status(400).json({ok:false,error:'Invalid cabin class.'});
+    }
+    if (!/^[A-Z]{3}$/.test(currency)) {
+      return res.status(400).json({ok:false,error:'Currency must be a 3-letter code.'});
+    }
+
+    const apiUrl = 'https://api.flightapi.io/onewaytrip/' +
+      encodeURIComponent(apiKey) + '/' +
+      [from,to,date,adults,children,infants,cabin,currency].map(encodeURIComponent).join('/') +
+      '?region=IN';
+
+    const response = await fetch(apiUrl, {
+      method:'GET',
+      headers:{'Accept':'application/json'},
+      signal:AbortSignal.timeout(25000)
+    });
+
+    const body = await response.text();
+    let data;
+    try { data = JSON.parse(body); }
+    catch { data = {raw:body.slice(0,1000)}; }
+
+    if (!response.ok) {
+      console.error('[FlightAPI]', response.status, body.slice(0,500));
+      return res.status(502).json({
+        ok:false,
+        provider:'FlightAPI',
+        error:'Flight search provider returned an error.',
+        providerStatus:response.status
+      });
+    }
+
+    const itineraries = Array.isArray(data.itineraries) ? data.itineraries.slice(0,20) : [];
+
+    return res.json({
+      ok:true,
+      provider:'FlightAPI',
+      from,to,date,adults,children,infants,cabin,currency,
+      count:itineraries.length,
+      results:itineraries,
+      data
+    });
+  } catch (error) {
+    console.error('[FlightAPI] Search failed:', error.message);
+    return res.status(502).json({
+      ok:false,
+      provider:'FlightAPI',
+      error:'Flight search temporarily unavailable.'
+    });
+  }
+});
+
+
+// SK_TRAVEL_AVIATIONSTACK_V1
+app.get('/api/travel/flight-status', async (req, res) => {
+  try {
+    const apiKey = process.env.AVIATIONSTACK_API_KEY;
+    if (!apiKey) {
+      return res.status(503).json({
+        ok:false, error:'Aviationstack API key is not configured.'
+      });
+    }
+
+    const flight = String(req.query.flight || '').trim().toUpperCase();
+    const date = String(req.query.date || '').trim();
+
+    if (!/^[A-Z0-9]{2,3}\d{1,4}$/.test(flight)) {
+      return res.status(400).json({
+        ok:false, error:'Enter a valid flight number, e.g. AI101.'
+      });
+    }
+
+    if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return res.status(400).json({
+        ok:false, error:'Date must be YYYY-MM-DD.'
+      });
+    }
+
+    const params = new URLSearchParams({
+      access_key:apiKey,
+      flight_iata:flight,
+      limit:'10'
+    });
+    if (date) params.set('flight_date', date);
+
+    const response = await fetch(
+      'https://api.aviationstack.com/v1/flights?' + params.toString(),
+      {headers:{Accept:'application/json'}, signal:AbortSignal.timeout(20000)}
+    );
+
+    const body = await response.text();
+    let data;
+    try { data = JSON.parse(body); }
+    catch { data = {raw:body.slice(0,500)}; }
+
+    if (!response.ok || data.error) {
+      console.error('[Aviationstack]', response.status, JSON.stringify(data.error || {}).slice(0,300));
+      return res.status(502).json({
+        ok:false, provider:'Aviationstack',
+        error:'Flight status provider returned an error.'
+      });
+    }
+
+    const flights = Array.isArray(data.data) ? data.data : [];
+    return res.json({
+      ok:true, provider:'Aviationstack',
+      flight, count:flights.length, results:flights
+    });
+  } catch (error) {
+    console.error('[Aviationstack] Search failed:', error.message);
+    return res.status(502).json({
+      ok:false, provider:'Aviationstack',
+      error:'Flight status temporarily unavailable.'
+    });
+  }
+});
+
 app.get('*',(req,res)=>{const fp=path.join(publicPath,'index.html');if(fs.existsSync(fp))res.sendFile(fp);else res.status(404).send('Not Found');});
 
 
