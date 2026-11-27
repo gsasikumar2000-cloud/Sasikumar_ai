@@ -3241,6 +3241,99 @@ async function skLookupUdyamByMobile(mobile) {
   return data;
 }
 
+// SK_STAMPMITRA_UDYAM_SANDBOX_V1
+async function skStampMitraVerifyUdyam(udyamNumber) {
+  const apiKey = String(process.env.STAMPMITRA_API_KEY || '').trim();
+  const cleanNumber = String(udyamNumber || '').trim().toUpperCase();
+
+  if (!apiKey) throw new Error('STAMPMITRA_KEY_MISSING');
+  if (!apiKey.startsWith('sk_test_')) {
+    throw new Error('STAMPMITRA_SANDBOX_KEY_REQUIRED');
+  }
+  if (!/^UDYAM-[A-Z]{2}-\d{2}-\d{7}$/.test(cleanNumber)) {
+    throw new Error('INVALID_UDYAM_NUMBER');
+  }
+
+  const response = await fetch(
+    'https://api-b2b.stampmitra.in/v1/verify/udyam',
+    {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + apiKey,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ udyamNumber: cleanNumber }),
+      signal: AbortSignal.timeout(45000)
+    }
+  );
+
+  const raw = await response.text();
+  let payload;
+  try {
+    payload = raw ? JSON.parse(raw) : {};
+  } catch {
+    throw new Error('STAMPMITRA_INVALID_RESPONSE');
+  }
+
+  if (!response.ok) {
+    const error = new Error('STAMPMITRA_HTTP_' + response.status);
+    error.status = response.status;
+    throw error;
+  }
+
+  const data = payload.data && typeof payload.data === 'object'
+    ? payload.data : payload;
+
+  if (!data.found) return { data, pdfBuffer: null, pending: false };
+
+  let pdfResponse;
+
+  if (data.certificateUrl) {
+    const u = new URL(data.certificateUrl);
+    if (u.protocol !== 'https:' || u.hostname !== 'api-b2b.stampmitra.in') {
+      throw new Error('STAMPMITRA_INVALID_CERTIFICATE_URL');
+    }
+    pdfResponse = await fetch(u.toString(), {
+      redirect: 'error',
+      signal: AbortSignal.timeout(60000)
+    });
+  } else if (data.certificateId) {
+    pdfResponse = await fetch(
+      'https://api-b2b.stampmitra.in/v1/verify/udyam/certificates/' +
+        encodeURIComponent(data.certificateId),
+      {
+        headers: { Authorization: 'Bearer ' + apiKey },
+        signal: AbortSignal.timeout(60000)
+      }
+    );
+  } else {
+    return { data, pdfBuffer: null, pending: true };
+  }
+
+  if (pdfResponse.status === 202) {
+    return { data, pdfBuffer: null, pending: true };
+  }
+  if (!pdfResponse.ok) {
+    throw new Error('STAMPMITRA_CERTIFICATE_HTTP_' + pdfResponse.status);
+  }
+
+  const type = String(pdfResponse.headers.get('content-type') || '').toLowerCase();
+  if (!type.includes('application/pdf')) {
+    throw new Error('STAMPMITRA_CERTIFICATE_NOT_PDF');
+  }
+
+  const pdfBuffer = Buffer.from(await pdfResponse.arrayBuffer());
+  if (
+    !pdfBuffer.length ||
+    pdfBuffer.length > 16 * 1024 * 1024 ||
+    pdfBuffer.subarray(0, 5).toString() !== '%PDF-'
+  ) {
+    throw new Error('STAMPMITRA_INVALID_PDF');
+  }
+
+  return { data, pdfBuffer, pending: false };
+}
+
 // SK_INDIAN_KANOON_SEARCH_V1
 async function skIndianKanoonSearch(query) {
   const token = String(process.env.INDIANKANOON_API_TOKEN || '').trim();
@@ -6312,6 +6405,8 @@ const msmeAwaitingDistrict =
 
 let msmePdfBuffer = null;
 let msmePdfFilename = 'SASIKUMAR_AI_Tamil_Nadu_MSME_Report.pdf';
+let udyamCertificateBuffer = null;
+let udyamCertificateFilename = 'SASIKUMAR_AI_Udyam_Certificate.pdf';
 
 
 if (msmeVerifyStart || msmeVerifyAwaiting) {
@@ -6398,6 +6493,79 @@ if (msmeVerifyStart || msmeVerifyAwaiting) {
           } else {
             msmeVerifySession.updatedAt = Date.now();
           }
+        }
+      }
+    } else if (msmeVerifySession?.mode === 'udyam_number') {
+      const udyamNumber = trimmed.trim().toUpperCase();
+
+      if (!/^UDYAM-[A-Z]{2}-\d{2}-\d{7}$/.test(udyamNumber)) {
+        reply = [
+          '⚠️ சரியான Udyam Number அனுப்புங்கள்.',
+          'உதாரணம்: UDYAM-TN-00-0000000',
+          '🔙 Main Menu: 0'
+        ].join('\n');
+        msmeVerifySession.updatedAt = Date.now();
+      } else {
+        try {
+          const result = await skStampMitraVerifyUdyam(udyamNumber);
+          const data = result.data || {};
+
+          if (!data.found) {
+            reply = [
+              '❌ UDYAM பதிவு கிடைக்கவில்லை.',
+              '',
+              'கொடுத்த எண்ணைச் சரிபார்த்து அதிகாரப்பூர்வ தளத்திலும் உறுதிப்படுத்தவும்.',
+              'https://udyamregistration.gov.in/'
+            ].join('\n');
+            SK_WA_MSME_VERIFY_SESSIONS.delete(String(from));
+          } else {
+            const enterpriseName =
+              data.enterpriseName || data.enterprise_name || data.name || 'கிடைக்கவில்லை';
+
+            reply = [
+              '🧪 SASIKUMAR AI — STAMP MITRA UDYAM SANDBOX',
+              '',
+              '✅ பதிவு கிடைத்தது.',
+              '🏢 Enterprise: ' + enterpriseName,
+              '📄 Udyam Number: ' + udyamNumber,
+              '🔖 Reference ID: ' + (data.referenceId || 'N/A'),
+              '📑 Certificate ID: ' + (data.certificateId || 'N/A'),
+              '📅 Certificate expiry: ' + (data.certificateExpiresAt || 'N/A'),
+              '',
+              result.pending
+                ? '⏳ Certificate PDF இன்னும் தயாராகவில்லை.'
+                : result.pdfBuffer
+                  ? '📎 Certificate PDF இணைக்கப்பட்டுள்ளது.'
+                  : '⚠️ Certificate PDF தற்போது கிடைக்கவில்லை.',
+              '',
+              '⚠️ இது Stamp Mitra SANDBOX TEST. அரசு சார்ந்த சட்டப்பூர்வ சான்றிதழ் சரிபார்ப்பு அல்ல.',
+              'அதிகாரப்பூர்வ தளம்: https://udyamregistration.gov.in/',
+              '🤖 SASIKUMAR AI'
+            ].join('\n');
+
+            if (result.pdfBuffer) {
+              udyamCertificateBuffer = result.pdfBuffer;
+              udyamCertificateFilename = 'SASIKUMAR_AI_Udyam_Certificate.pdf';
+            }
+
+            SK_WA_MSME_VERIFY_SESSIONS.delete(String(from));
+          }
+        } catch (error) {
+          console.error('[WA STAMPMITRA UDYAM]', error.message);
+
+          reply = error.message === 'STAMPMITRA_KEY_MISSING'
+            ? '⚠️ Stamp Mitra Sandbox API key server-ல் அமைக்கப்படவில்லை.'
+            : error.message === 'STAMPMITRA_SANDBOX_KEY_REQUIRED'
+              ? '⚠️ பாதுகாப்புக்காக Sandbox key மட்டுமே அனுமதிக்கப்படுகிறது.'
+              : error.status === 401
+                ? '⚠️ Stamp Mitra Sandbox key செல்லுபடியாகவில்லை.'
+                : error.status === 429
+                  ? '⚠️ API வரம்பு எட்டப்பட்டுள்ளது. சிறிது நேரம் கழித்து முயற்சிக்கவும்.'
+                  : error.name === 'TimeoutError' || error.status >= 500
+                    ? '⚠️ Stamp Mitra சேவை தற்காலிகமாக கிடைக்கவில்லை. மீண்டும் முயற்சிக்கவும்.'
+                    : '⚠️ Udyam Sandbox verification தோல்வியடைந்தது. எண்ணைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.';
+
+          msmeVerifySession.updatedAt = Date.now();
         }
       }
     } else {
@@ -6592,6 +6760,20 @@ if (msmeVerifyStart || msmeVerifyAwaiting) {
         reply = '⚠️ Insurance தேர்வுக்கு 1 முதல் 15 வரை எண்ணை அனுப்புங்கள்.';
         msmeVerifySession.updatedAt = Date.now();
       }
+    } else if (choice === '2') {
+      msmeVerifySession.mode = 'udyam_number';
+      msmeVerifySession.updatedAt = Date.now();
+      reply = [
+        '📄 SASIKUMAR AI — UDYAM NUMBER VERIFICATION',
+        '',
+        'உங்கள் Udyam Number அனுப்புங்கள்.',
+        'உதாரணம்: UDYAM-TN-00-0000000',
+        '',
+        '🧪 Stamp Mitra Sandbox TEST பயன்படுத்தப்படும்.',
+        'இது உண்மையான அரசு verification அல்ல.',
+        'OTP / Password / Aadhaar விவரங்களை அனுப்ப வேண்டாம்.',
+        '🔙 Main Menu: 0'
+      ].join('\n');
     } else if (choice === '21') {
       msmeVerifySession.mode = 'insurance';
       msmeVerifySession.updatedAt = Date.now();
@@ -7961,7 +8143,25 @@ if (mp3SearchRequested) {
 }
 
 
-      if (msmePdfStart) {
+      if (udyamCertificateBuffer) {
+        try {
+          await skWhatsAppSendDocumentBuffer(
+            from,
+            udyamCertificateBuffer,
+            udyamCertificateFilename,
+            answerText
+          );
+          console.log('[WA STAMPMITRA UDYAM] Certificate PDF sent.');
+        } catch (pdfSendError) {
+          console.error('[WA STAMPMITRA PDF SEND]', pdfSendError.message);
+          await sendWA({
+            type: 'text',
+            text: {
+              body: '⚠️ Udyam verification முடிந்தது; Certificate PDF அனுப்ப முடியவில்லை.'
+            }
+          });
+        }
+      } else if (msmePdfStart) {
         if (msmePdfBuffer) {
           try {
             await skWhatsAppSendDocumentBuffer(
