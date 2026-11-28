@@ -5015,6 +5015,45 @@ async function skWhatsAppAnalyzeAudio(mediaId, caption = '') {
     return String(data.text || '').trim();
   }
 
+  async function transcribeDeepgramVoice() {
+    const deepgramKey = process.env.DEEPGRAM_API_KEY;
+    if (!deepgramKey) throw new Error('Deepgram API key unavailable.');
+
+    const url = new URL('https://api.deepgram.com/v1/listen');
+    url.searchParams.set('model', 'nova-3');
+    url.searchParams.set('language', 'multi');
+    url.searchParams.append('language_hint', 'ta');
+    url.searchParams.append('language_hint', 'en');
+    url.searchParams.append('language_hint', 'hi');
+    url.searchParams.set('smart_format', 'true');
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        Authorization: `Token ${deepgramKey}`,
+        'Content-Type': mime
+      },
+      body: buffer,
+      signal: AbortSignal.timeout(90000)
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(
+        data?.err_msg || data?.message ||
+        'Deepgram STT failed: HTTP ' + response.status
+      );
+    }
+
+    const text = String(
+      data?.results?.channels?.[0]?.alternatives?.[0]?.transcript || ''
+    ).trim();
+
+    if (!text) throw new Error('Deepgram returned an empty transcript.');
+    console.log('[WA Deepgram STT] Transcription successful.');
+    return text;
+  }
+
   let transcript = '';
   let sarvamLanguageCode = 'unknown';
   let sarvamLanguageProbability = null;
@@ -5042,7 +5081,18 @@ async function skWhatsAppAnalyzeAudio(mediaId, caption = '') {
       sarvamError.message
     );
     usedGroqFallback = true;
-    transcript = await transcribeVoice();
+
+    try {
+      transcript = await transcribeVoice();
+      if (!transcript) throw new Error('Groq returned an empty transcript.');
+    } catch (groqError) {
+      console.warn(
+        '[WA Groq STT] Fallback to Deepgram:',
+        groqError.message
+      );
+      transcript = await transcribeDeepgramVoice();
+      usedGroqFallback = false;
+    }
   }
 
   // Retry only Groq fallback output when suspicious Icelandic characters appear.
