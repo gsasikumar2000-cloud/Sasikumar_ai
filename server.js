@@ -221,7 +221,7 @@ const WELCOME_MENU = `🤖 SASIKUMAR AI — MAIN MENU
 🔊 Voice Output — Coming Soon
 💬 Type your question directly in WhatsApp.
 
-📋 ALL 39 SERVICES
+📋 ALL 40 SERVICES
 
 1. 🤖 AI Assistant
 2. 🪙 Live Gold & Silver Rate
@@ -262,6 +262,7 @@ const WELCOME_MENU = `🤖 SASIKUMAR AI — MAIN MENU
 37. 🔐 BIS HUID Verification — Meon API
 38. ⚖️ Indian Law Expert
 39. 🚀 Executive AI Prompt Center
+40. 📚 Book Search — Google Books
 
 0. 🏠 Main Menu
 
@@ -1162,6 +1163,23 @@ SASIKUMAR AI Executive AI பதிலளிக்கும்.
 
 🔙 Type 0 for Main Menu`,
 
+  '40': () => `📚 SASIKUMAR AI — GOOGLE BOOK SEARCH
+
+தமிழ் • Tanglish • English • हिंदी
+
+புத்தகத்தைத் தேட இந்த மாதிரி அனுப்புங்கள்:
+
+BOOKS திருக்குறள்
+BOOKS Thirukkural
+BOOKS Tamil history
+BOOKS science
+
+📖 Google Books மூலம் புத்தக விவரங்கள்
+🔎 புத்தகத்தின் பெயர் மற்றும் ஆசிரியர்
+🌐 கிடைத்தால் Preview / Read link
+
+🔙 Type 0 for Main Menu`,
+
 };
 
 // SK_WHATSAPP_STONE_CHART_V1
@@ -1406,6 +1424,73 @@ async function skVerifyMeonHuid(huid) {
     message: result?.data?.result?.message || result.message || ''
   };
 }
+
+
+// SK_WHATSAPP_GOOGLE_BOOKS_V1
+async function getWhatsAppBooksReply(query) {
+  const q = String(query || '').trim().slice(0, 200);
+
+  if (!q) {
+    return `📚 BOOK SEARCH
+
+உதாரணம்:
+BOOKS திருக்குறள்
+BOOKS Thirukkural
+BOOKS Tamil history`;
+  }
+
+  try {
+    const params = new URLSearchParams({ q, limit: '5' });
+    if (/[தமிழ்-௿]/u.test(q)) params.set('lang', 'ta');
+
+    const response = await fetch(
+      `http://127.0.0.1:${PORT}/api/books/search?${params.toString()}`,
+      { signal: AbortSignal.timeout(18000) }
+    );
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok || !data.ok) {
+      throw new Error(data.error || 'Books API request failed');
+    }
+
+    if (!data.books?.length) {
+      return `📚 "${q}" — புத்தகங்கள் கிடைக்கவில்லை.
+
+வேறு keyword பயன்படுத்தி மீண்டும் தேடுங்கள்.`;
+    }
+
+    const lines = data.books.slice(0, 5).map((book, index) => {
+      const authors = (book.authors || []).join(', ') || 'Author not listed';
+      const details = [
+        book.publisher,
+        book.publishedDate
+      ].filter(Boolean).join(' • ');
+      const link = book.previewLink || book.webReaderLink || '';
+
+      return [
+        `${index + 1}. 📖 ${book.title || 'Untitled'}`,
+        `✍️ ${authors}`,
+        details ? `🏢 ${details}` : '',
+        link ? `🔗 ${link}` : ''
+      ].filter(Boolean).join('\n');
+    });
+
+    return `📚 GOOGLE BOOKS RESULTS
+🔎 Search: ${q}
+
+${lines.join('\n\n')}
+
+🌐 More: https://books.google.com/
+🔙 Type 0 for Main Menu`;
+  } catch (error) {
+    console.warn('[WhatsApp Google Books]', error.message);
+    return `📚 Book Search தற்போது கிடைக்கவில்லை.
+சிறிது நேரம் கழித்து மீண்டும் முயற்சிக்கவும்.
+
+🌐 https://sasikumar-ai-9wdq.onrender.com/books.html`;
+  }
+}
+// END SK_WHATSAPP_GOOGLE_BOOKS_V1
 
 function getMenuReply(num){const fn=MENU_REPLIES[num];return fn?fn():null;}
 
@@ -7216,9 +7301,13 @@ if (msmeVerifyStart || msmeVerifyAwaiting) {
   reply = await getGovernmentReply(trimmed) || WELCOME_MENU;
 } else if (/^(?:STONE CHART|DIAMOND|RUBY|EMERALD|TOURMALINE|PULI STONE|PEARL|STONE CALCULATOR)$/i.test(trimmed)) {
   reply = skGetStoneChartReply(trimmed);
+ } else if (/^books?(?:\s+|:\s*)(.*)$/i.test(trimmed)) {
+  const booksMatch = trimmed.match(/^books?(?:\s+|:\s*)(.*)$/i);
+  autoPosterForContent = false;
+  reply = await getWhatsAppBooksReply(booksMatch?.[1] || '');
 } else if (!isWelcome) {
   const executivePromptMatch = trimmed.match(/^39\s+(\d{1,2})$/);
-  const num = trimmed.match(/^\s*(3[0-9]|[12][0-9]|[0-9])\s*$/);
+  const num = trimmed.match(/^\s*(40|3[0-9]|[12][0-9]|[0-9])\s*$/);
 
   if (executivePromptMatch) {
     const executivePrompts = {
@@ -9742,6 +9831,88 @@ async function skFetchTamilNewsRSS() {
 
   return results;
 }
+
+
+// SK_GOOGLE_BOOKS_SEARCH_API_V1
+app.get('/api/books/search', async (req, res) => {
+  try {
+    const q = String(req.query.q || '').trim().slice(0, 200);
+
+    if (!q) {
+      return res.status(400).json({
+        ok: false,
+        error: 'Please provide a book search query'
+      });
+    }
+
+    const limit = Math.min(20, Math.max(1,
+      Number(req.query.limit) || 10
+    ));
+
+    const params = new URLSearchParams({
+      q,
+      maxResults: String(limit),
+      printType: 'books'
+    });
+
+    const lang = String(req.query.lang || '').toLowerCase();
+    if (['ta', 'en'].includes(lang)) {
+      params.set('langRestrict', lang);
+    }
+
+    const apiKey = process.env.GOOGLE_BOOKS_API_KEY?.trim();
+    if (apiKey) params.set('key', apiKey);
+
+    const response = await fetch(
+      'https://www.googleapis.com/books/v1/volumes?' +
+      params.toString(),
+      { signal: AbortSignal.timeout(15000) }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error('[Google Books]', data.error?.message);
+      return res.status(response.status).json({
+        ok: false,
+        error: 'Google Books API request failed'
+      });
+    }
+
+    const books = (data.items || []).map(item => {
+      const info = item.volumeInfo || {};
+      return {
+        id: item.id,
+        title: info.title || '',
+        authors: info.authors || [],
+        description: info.description || '',
+        publisher: info.publisher || '',
+        publishedDate: info.publishedDate || '',
+        pageCount: info.pageCount || null,
+        language: info.language || '',
+        isbn: info.industryIdentifiers || [],
+        thumbnail: info.imageLinks?.thumbnail || '',
+        previewLink: info.previewLink || '',
+        webReaderLink: item.accessInfo?.webReaderLink || ''
+      };
+    });
+
+    res.json({
+      ok: true,
+      provider: 'Google Books API',
+      query: q,
+      totalItems: data.totalItems || 0,
+      books
+    });
+
+  } catch (error) {
+    console.error('[Google Books]', error.message);
+    res.status(500).json({
+      ok: false,
+      error: 'Book search temporarily unavailable'
+    });
+  }
+});
 
 // SK_LIVE_TAMIL_NEWS_JSON_API_V1
 const SK_NEWS_CACHE_MS = 5 * 60 * 1000;

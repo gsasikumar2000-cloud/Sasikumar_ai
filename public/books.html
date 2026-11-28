@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SASIKUMAR AI — Book Search</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:14px;background:#f0f9ff;color:#1e293b;font-family:system-ui,sans-serif}
+header{text-align:center;padding:16px 8px}
+header img{width:64px;height:64px;object-fit:contain}
+h1{font-size:24px;color:#1d4ed8;margin:8px 0}
+.sub{font-size:13px;color:#475569}
+main{max-width:680px;margin:0 auto}
+.searchbox{background:white;padding:16px;border:1px solid #bfdbfe;border-radius:18px;box-shadow:0 5px 18px #1e40af12}
+input,select,button{width:100%;padding:13px;margin-top:9px;border:1px solid #cbd5e1;border-radius:11px;font-size:16px}
+button{border:0;background:linear-gradient(135deg,#2563eb,#0891b2);color:white;font-weight:800;cursor:pointer}
+#status{font-size:13px;margin:14px 3px;white-space:pre-wrap}
+.book{display:flex;gap:13px;background:white;border:1px solid #dbeafe;border-radius:14px;padding:13px;margin:10px 0;overflow-wrap:anywhere}
+.cover{width:86px;min-width:86px;height:120px;object-fit:contain;background:#eff6ff;border-radius:7px}
+.book h2{font-size:16px;color:#1d4ed8;margin:0 0 7px}
+.meta{font-size:12px;color:#475569;line-height:1.6}
+.desc{font-size:13px;line-height:1.5;margin-top:7px}
+.links{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.links a{font-size:12px;font-weight:800;color:#fff;background:#2563eb;padding:8px 10px;border-radius:8px;text-decoration:none}
+.links a.read{background:#15803d}
+footer{text-align:center;font-size:12px;margin:22px}
+</style>
+</head>
+<body>
+<header>
+<img src="/assets/sasikumar-ai-logo-60.png" alt="SASIKUMAR AI Logo">
+<h1>📚 SASIKUMAR AI BOOK SEARCH</h1>
+<div class="sub">தமிழ் • Tanglish • English • हिंदी</div>
+</header>
+<main>
+<section class="searchbox">
+  <form id="bookForm">
+    <input id="bookQuery" type="search" maxlength="200" required
+      placeholder="புத்தகத்தின் பெயர் / Book title / Author">
+    <select id="bookLang" aria-label="Book language">
+      <option value="">All available languages</option>
+      <option value="ta">தமிழ் (Tamil)</option>
+      <option value="en">English</option>
+    </select>
+    <button id="bookSubmit" type="submit">🔎 SEARCH BOOKS</button>
+  </form>
+</section>
+<div id="status" role="status" aria-live="polite">புத்தகத்தின் பெயரை உள்ளிட்டு தேடுங்கள்.</div>
+<section id="bookResults"></section>
+</main>
+<footer>
+<a href="/" style="color:#1d4ed8;font-weight:800">← SASIKUMAR AI Home</a>
+<br><br>Book information provided by Google Books
+</footer>
+<script>
+const form=document.getElementById('bookForm');
+const queryInput=document.getElementById('bookQuery');
+const language=document.getElementById('bookLang');
+const statusBox=document.getElementById('status');
+const results=document.getElementById('bookResults');
+const submit=document.getElementById('bookSubmit');
+
+function safeText(value){
+  return String(value||'').replace(/[&<>"']/g,ch=>({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[ch]));
+}
+
+form.addEventListener('submit',async event=>{
+  event.preventDefault();
+  const q=queryInput.value.trim();
+  if(!q)return;
+
+  submit.disabled=true;
+  statusBox.textContent='🔎 புத்தகங்கள் தேடப்படுகின்றன...';
+  results.replaceChildren();
+
+  try{
+    const params=new URLSearchParams({q,limit:'10'});
+    if(language.value)params.set('lang',language.value);
+
+    const response=await fetch('/api/books/search?'+params.toString(),{
+      headers:{'Accept':'application/json'}
+    });
+    const data=await response.json();
+    if(!response.ok||!data.ok)throw new Error(data.error||'Search failed');
+
+    if(!data.books?.length){
+      statusBox.textContent='இந்தத் தேடலுக்கு புத்தகங்கள் கிடைக்கவில்லை. வேறு பெயரை முயற்சிக்கவும்.';
+      return;
+    }
+
+    statusBox.textContent=`📚 ${data.books.length} புத்தகங்கள் கிடைத்துள்ளன. மொத்த முடிவுகள்: ${data.totalItems||data.books.length}`;
+
+    results.innerHTML=data.books.map(book=>{
+      const authors=(book.authors||[]).join(', ')||'Author not listed';
+      const isbn=(book.isbn||[]).map(x=>x.identifier).filter(Boolean).join(', ');
+      const description=String(book.description||'').replace(/<[^>]*>/g,' ').slice(0,380);
+      const cover=book.thumbnail
+        ? `<img class="cover" src="${safeText(book.thumbnail)}" alt="Book cover" loading="lazy">`
+        : `<div class="cover" aria-label="No cover available"></div>`;
+      const links=[
+        book.previewLink?`<a target="_blank" rel="noopener noreferrer" href="${safeText(book.previewLink)}">Preview Book</a>`:'',
+        book.webReaderLink?`<a class="read" target="_blank" rel="noopener noreferrer" href="${safeText(book.webReaderLink)}">Read Online</a>`:''
+      ].join('');
+
+      return `<article class="book">
+        ${cover}
+        <div>
+          <h2>${safeText(book.title||'Untitled')}</h2>
+          <div class="meta">✍️ ${safeText(authors)}</div>
+          <div class="meta">${safeText(book.publisher)} ${safeText(book.publishedDate)}</div>
+          ${book.pageCount?`<div class="meta">${safeText(book.pageCount)} pages</div>`:''}
+          ${isbn?`<div class="meta">ISBN: ${safeText(isbn)}</div>`:''}
+          ${description?`<div class="desc">${safeText(description)}${description.length>=380?'…':''}</div>`:''}
+          <div class="links">${links}</div>
+        </div>
+      </article>`;
+    }).join('');
+  }catch(error){
+    statusBox.textContent='⚠️ Search error: '+error.message;
+  }finally{
+    submit.disabled=false;
+  }
+});
+</script>
+</body>
+</html>
