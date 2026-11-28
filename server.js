@@ -15741,6 +15741,67 @@ app.get('/api/travel/flight-status', async (req, res) => {
   }
 });
 
+
+/* API_LEAGUE_RIDDLE_ROUTE_V1 */
+let skApiLeagueRiddleCache = null;
+let skApiLeagueRiddleCacheTime = 0;
+let skApiLeagueRiddlePending = null;
+
+app.get('/api/puzzle/riddle', async (req, res) => {
+  const now = Date.now();
+
+  if (skApiLeagueRiddleCache && now - skApiLeagueRiddleCacheTime < 15 * 60 * 1000) {
+    return res.json({ ok: true, ...skApiLeagueRiddleCache, cached: true });
+  }
+
+  if (skApiLeagueRiddlePending) {
+    try {
+      const result = await skApiLeagueRiddlePending;
+      return res.json({ ok: true, ...result, cached: true });
+    } catch (error) {
+      return res.status(502).json({ ok: false, error: 'Riddle service temporarily unavailable.' });
+    }
+  }
+
+  if (!process.env.APILEAGUE_API_KEY) {
+    return res.status(503).json({ ok: false, error: 'APILEAGUE_API_KEY is missing.' });
+  }
+
+  skApiLeagueRiddlePending = (async () => {
+    const response = await fetch('https://api.apileague.com/retrieve-random-riddle', {
+      headers: { 'x-api-key': process.env.APILEAGUE_API_KEY }
+    });
+
+    if (!response.ok) {
+      throw new Error('API League HTTP ' + response.status);
+    }
+
+    const data = await response.json();
+    const result = {
+      riddle: data.riddle || data.question || '',
+      answer: data.answer || ''
+    };
+
+    if (!result.riddle || !result.answer) {
+      throw new Error('Unexpected API League response format');
+    }
+
+    skApiLeagueRiddleCache = result;
+    skApiLeagueRiddleCacheTime = Date.now();
+    return result;
+  })();
+
+  try {
+    const result = await skApiLeagueRiddlePending;
+    return res.json({ ok: true, ...result, cached: false });
+  } catch (error) {
+    console.error('[API League Riddle]', error.message);
+    return res.status(502).json({ ok: false, error: 'Riddle service temporarily unavailable.' });
+  } finally {
+    skApiLeagueRiddlePending = null;
+  }
+});
+
 app.get('*',(req,res)=>{const fp=path.join(publicPath,'index.html');if(fs.existsSync(fp))res.sendFile(fp);else res.status(404).send('Not Found');});
 
 

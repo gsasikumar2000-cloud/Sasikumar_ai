@@ -102,9 +102,71 @@ let currentGame = 0;
 let score = 0;
 let answered = false;
 
+
+/* SK_APILEAGUE_RIDDLE_UI_V1 */
+let skApiRiddleAnswer = '';
+
+async function loadApiLeagueRiddle() {
+ const question = document.getElementById('apiRiddleQuestion');
+ const status = document.getElementById('apiRiddleStatus');
+ const answer = document.getElementById('apiRiddleAnswer');
+
+ if (!question) return;
+
+ question.textContent = 'விடுகதை ஏற்றப்படுகிறது...';
+ if (status) status.textContent = '';
+ if (answer) answer.textContent = '';
+ skApiRiddleAnswer = '';
+
+ try {
+   const response = await fetch('/api/puzzle/riddle');
+   const data = await response.json();
+
+   if (!response.ok || !data.ok) {
+     throw new Error(data.error || 'Riddle service unavailable');
+   }
+
+   skApiRiddleAnswer = data.answer;
+   question.textContent = data.riddle;
+   if (status) {
+     status.textContent = data.cached
+       ? 'ℹ️ சேமிக்கப்பட்ட விடுகதை'
+       : '✅ புதிய விடுகதை';
+   }
+ } catch (error) {
+   question.textContent = 'விடுகதையை இப்போது பெற முடியவில்லை.';
+   if (status) status.textContent = error.message;
+ }
+}
+
+function showApiLeagueRiddleAnswer() {
+ const answer = document.getElementById('apiRiddleAnswer');
+ if (answer) {
+   answer.textContent = skApiRiddleAnswer
+     ? '✅ சரியான பதில்: ' + skApiRiddleAnswer
+     : 'முதலில் விடுகதையை ஏற்றவும்.';
+ }
+}
+
 function selectPuzzle(i) {
  currentGame = i;
  answered = false;
+
+ if (i === 12) {
+   document.getElementById('playArea').innerHTML =
+    `<h2>🎮 ${puzzleNames[i]}</h2>
+    <p>🔮 API League – புதிய விடுகதைகள்</p>
+    <h3 id="apiRiddleQuestion">விடுகதை ஏற்றப்படுகிறது...</h3>
+    <p id="apiRiddleStatus"></p>
+    <h3 id="apiRiddleAnswer"></h3>
+    <button class="back" onclick="showApiLeagueRiddleAnswer()">💡 பதிலைப் பார்க்க</button>
+    <button class="back" onclick="loadApiLeagueRiddle()">➡️ அடுத்த விடுகதை</button>
+    <p>⭐ மதிப்பெண்: <b>${score}</b></p>
+    <button class="back" onclick="nextPuzzle()">➡️ அடுத்த விளையாட்டு</button>`;
+   loadApiLeagueRiddle();
+   return;
+ }
+
  const g = games[i];
  document.getElementById('playArea').innerHTML =
  `<h2>🎮 ${puzzleNames[i]}</h2>
