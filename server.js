@@ -3284,7 +3284,27 @@ async function skStampMitraVerifyUdyam(udyamNumber) {
   const data = payload.data && typeof payload.data === 'object'
     ? payload.data : payload;
 
-  if (!data.found) return { data, pdfBuffer: null, pending: false };
+  if (!data.found) {
+    return { data, pdfBuffer: null, pending: false, sandbox: true };
+  }
+
+  const returnedNumber = String(
+    data.udyamNumber || data.udyam_number ||
+    data.udyamNo || data.udyam_no ||
+    data.registrationNumber || ''
+  ).trim().toUpperCase();
+
+  if (!returnedNumber || returnedNumber !== cleanNumber) {
+    return {
+      data,
+      pdfBuffer: null,
+      pending: false,
+      mismatch: true,
+      sandbox: true,
+      requestedNumber: cleanNumber,
+      returnedNumber
+    };
+  }
 
   let pdfResponse;
 
@@ -6456,7 +6476,7 @@ const msmeAwaitingDistrict =
 let msmePdfBuffer = null;
 let msmePdfFilename = 'SASIKUMAR_AI_Tamil_Nadu_MSME_Report.pdf';
 let udyamCertificateBuffer = null;
-let udyamCertificateFilename = 'SASIKUMAR_AI_Udyam_Certificate.pdf';
+let udyamCertificateFilename = 'SASIKUMAR_AI_SANDBOX_SAMPLE_Udyam.pdf';
 
 
 if (msmeVerifyStart || msmeVerifyAwaiting) {
@@ -6546,6 +6566,8 @@ if (msmeVerifyStart || msmeVerifyAwaiting) {
         }
       }
     } else if (msmeVerifySession?.mode === 'udyam_number') {
+      udyamCertificateBuffer = null;
+      udyamCertificateFilename = '';
       const udyamNumber = trimmed.trim().toUpperCase();
 
       if (!/^UDYAM-[A-Z]{2}-\d{2}-\d{7}$/.test(udyamNumber)) {
@@ -6560,7 +6582,22 @@ if (msmeVerifyStart || msmeVerifyAwaiting) {
           const result = await skStampMitraVerifyUdyam(udyamNumber);
           const data = result.data || {};
 
-          if (!data.found) {
+          if (result.mismatch) {
+            reply = [
+              '⛔ VERIFICATION NOT CONFIRMED',
+              '',
+              '⚠️ API திருப்பிய Udyam Number பொருந்தவில்லை அல்லது கிடைக்கவில்லை.',
+              '📄 நீங்கள் கொடுத்த எண்: ' + udyamNumber,
+              '📄 API எண்: ' + (result.returnedNumber || 'கிடைக்கவில்லை'),
+              '',
+              '❌ இந்த முடிவை உண்மையான சரிபார்ப்பாக ஏற்க வேண்டாம்.',
+              '🧪 Stamp Mitra Sandbox sample response.',
+              'அதிகாரப்பூர்வ தளம்: https://udyamregistration.gov.in/'
+            ].join('\n');
+            udyamCertificateBuffer = null;
+            udyamCertificateFilename = '';
+            SK_WA_MSME_VERIFY_SESSIONS.delete(String(from));
+          } else if (!data.found) {
             reply = [
               '❌ UDYAM பதிவு கிடைக்கவில்லை.',
               '',
@@ -6595,7 +6632,7 @@ if (msmeVerifyStart || msmeVerifyAwaiting) {
 
             if (result.pdfBuffer) {
               udyamCertificateBuffer = result.pdfBuffer;
-              udyamCertificateFilename = 'SASIKUMAR_AI_Udyam_Certificate.pdf';
+              udyamCertificateFilename = 'SASIKUMAR_AI_SANDBOX_SAMPLE_Udyam.pdf';
             }
 
             SK_WA_MSME_VERIFY_SESSIONS.delete(String(from));
@@ -9755,6 +9792,18 @@ app.get('/api/breaking-news', async (req, res) => {
       country: 'in',
       language: 'en'
     },
+    gold: {
+      label: 'Gold Market',
+      q: 'gold price OR gold rate OR bullion',
+      country: 'in',
+      language: 'en'
+    },
+    agriculture: {
+      label: 'Agriculture',
+      q: 'agriculture OR farming OR crops',
+      country: 'in',
+      language: 'en'
+    },
     topic: {
       label: topic || 'Topic',
       q: topic,
@@ -9801,6 +9850,53 @@ app.get('/api/breaking-news', async (req, res) => {
     }));
 
   const providers = [];
+
+  // SK_WORLDNEWS_API_PRIMARY_PROVIDER_V1
+  if (process.env.WORLDNEWS_API_KEY?.trim()) {
+    providers.push({
+      name: 'World News API',
+      url: (language) => {
+        const queries = {
+          'tamil-nadu': language === 'en'
+            ? 'Tamil Nadu OR Chennai OR Madurai'
+            : 'தமிழ்நாடு OR சென்னை OR மதுரை',
+          india: 'India',
+          world: 'world',
+          business: 'business OR economy OR markets',
+          technology: 'technology OR artificial intelligence',
+          sports: 'sports OR cricket',
+          gold: 'gold price OR gold rate OR bullion',
+          agriculture: 'agriculture OR farming OR crops',
+          topic: topic
+        };
+
+        const params = new URLSearchParams({
+          text: queries[requested] || config.q,
+          language: language || config.language || 'en',
+          number: '10',
+          sort: 'publish-time',
+          'sort-direction': 'DESC',
+          'earliest-publish-date': new Date(Date.now() - 24 * 60 * 60 * 1000)
+            .toISOString().slice(0, 19).replace('T', ' ')
+        });
+
+        if (config.country) {
+          params.set('source-country', config.country);
+        }
+
+        return 'https://api.worldnewsapi.com/search-news?' + params.toString();
+      },
+      headers: {
+        'x-api-key': process.env.WORLDNEWS_API_KEY.trim()
+      },
+      extract: data => (Array.isArray(data.news) ? data.news : []).map(item => ({
+        title: item.title,
+        url: item.url,
+        description: item.summary || item.text || '',
+        publishedAt: item.publish_date
+      }))
+    });
+  }
 
   // SK_NEWSDATA_PRIMARY_PROVIDER_V1
   if (process.env.NEWSDATA_API_KEY?.trim()) {
@@ -9892,6 +9988,7 @@ app.get('/api/breaking-news', async (req, res) => {
   for (const provider of providers) {
     try {
       const response = await fetch(provider.url(), {
+        headers: provider.headers || {},
         signal: AbortSignal.timeout(12000)
       });
 
@@ -10031,6 +10128,26 @@ app.get('/api/breaking-news', async (req, res) => {
           return hasAny(text, worldTerms) &&
             !hasAny(text, worldNoiseTerms);
         });
+      } else if (requested === 'gold') {
+        const goldSubject = /\b(gold|bullion|22k|24k|18k|gold jewellery|gold jewelry)\b/i;
+        const goldMarket = /\b(price|prices|rate|rates|market|trading|trades|futures|rally|rises|falls|surges|drops|ounce|gram|demand|imports?|exports?|jewellery|jewelry|central bank)\b/i;
+
+        articles = articles.filter(item => {
+          const text = newsText(item);
+          return goldSubject.test(text) && goldMarket.test(text);
+        });
+
+      } else if (requested === 'agriculture') {
+        const agricultureTerms = [
+          'agriculture', 'agricultural', 'farming', 'farmer',
+          'farmers', 'crops', 'crop', 'harvest', 'cultivation',
+          'irrigation', 'fertilizer', 'fertiliser', 'pesticide',
+          'monsoon', ' ಕೃಷಿ'
+        ];
+
+        articles = articles.filter(item =>
+          hasAny(newsText(item), agricultureTerms)
+        );
       }
 
       if (requested === 'topic') {
