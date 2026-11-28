@@ -9898,6 +9898,51 @@ app.get('/api/breaking-news', async (req, res) => {
     });
   }
 
+
+  // SK_CURRENTS_FALLBACK_PROVIDER_V1
+  if (process.env.CURRENTS_API_KEY?.trim()) {
+    providers.push({
+      name: 'Currents News API',
+      url: (language) => {
+        const queries = {
+          'tamil-nadu': '("Tamil Nadu" OR Chennai OR Madurai)',
+          india: 'India OR Indian',
+          world: 'world news',
+          business: 'business OR economy OR markets',
+          technology: 'technology OR artificial intelligence',
+          sports: 'sports OR cricket',
+          gold: '("gold price" OR "gold rate" OR bullion OR "gold market")',
+          agriculture: '(agriculture OR farming OR crops OR farmers OR harvest OR fertilizer OR mandi OR MSP)',
+          topic: topic || config.q
+        };
+
+        const params = new URLSearchParams({
+          query: queries[requested] || config.q,
+          language: 'en',
+          page_number: '1',
+          page_size: '20',
+          start_date: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+          end_date: new Date().toISOString()
+        });
+
+        if (config.country) {
+          params.set('country', config.country.toUpperCase());
+        }
+
+        return 'https://api.currentsapi.services/v1/search?' + params.toString();
+      },
+      headers: {
+        Authorization: 'Bearer ' + process.env.CURRENTS_API_KEY.trim()
+      },
+      extract: data => (Array.isArray(data.news) ? data.news : []).map(item => ({
+        title: item.title,
+        url: item.url,
+        description: item.description || '',
+        publishedAt: item.published
+      }))
+    });
+  }
+
   // SK_NEWSDATA_PRIMARY_PROVIDER_V1
   if (process.env.NEWSDATA_API_KEY?.trim()) {
     providers.push({
