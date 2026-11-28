@@ -11207,6 +11207,179 @@ app.post('/api/executive-ai', async (req, res) => {
 });
 // END SK_EXECUTIVE_AI_V1
 
+
+// SASIKUMAR AI MAPS API V1
+function skMapNumber(value, min, max) {
+  const n = Number(value);
+  return Number.isFinite(n) && n >= min && n <= max ? n : null;
+}
+
+app.get('/api/maps/config', (req, res) => {
+  res.set('Cache-Control', 'no-store');
+  const key = process.env.MAPTILER_API_KEY;
+  if (!key) {
+    return res.status(503).json({ ok: false, error: 'Map service is not configured.' });
+  }
+  return res.json({ ok: true, mapTilerKey: key });
+});
+
+app.get('/api/maps/search', async (req, res) => {
+  try {
+    const q = String(req.query.q || '').trim().slice(0, 180);
+    if (q.length < 2) {
+      return res.status(400).json({ ok: false, error: 'Enter a place to search.' });
+    }
+    const key = process.env.GEOAPIFY_API_KEY;
+    if (!key) {
+      return res.status(503).json({ ok: false, error: 'Place search is not configured.' });
+    }
+
+    const url = new URL('https://api.geoapify.com/v1/geocode/search');
+    url.searchParams.set('text', q);
+    url.searchParams.set('format', 'geojson');
+    url.searchParams.set('limit', '8');
+    url.searchParams.set('apiKey', key);
+
+    const upstream = await fetch(url, {
+      headers: { Accept: 'application/json' },
+      signal: AbortSignal.timeout(15000)
+    });
+    const data = await upstream.json().catch(() => ({}));
+
+    if (!upstream.ok) {
+      console.error('[Maps Search] Geoapify HTTP:', upstream.status);
+      return res.status(502).json({ ok: false, error: 'Place search temporarily unavailable.' });
+    }
+
+    return res.json({
+      ok: true,
+      provider: 'Geoapify',
+      features: Array.isArray(data.features) ? data.features : []
+    });
+  } catch (error) {
+    console.error('[Maps Search]', error.message);
+    return res.status(502).json({ ok: false, error: 'Unable to search for this place.' });
+  }
+});
+
+app.get('/api/maps/nearby', async (req, res) => {
+  try {
+    const lat = skMapNumber(req.query.lat, -90, 90);
+    const lon = skMapNumber(req.query.lon, -180, 180);
+    const radius = skMapNumber(req.query.radius || 3000, 100, 10000);
+
+    if (lat === null || lon === null || radius === null) {
+      return res.status(400).json({ ok: false, error: 'Valid latitude, longitude and radius are required.' });
+    }
+
+    const categories = {
+      hospital: ['healthcare.hospital', 'healthcare.clinic_or_praxis'],
+      pharmacy: ['healthcare.pharmacy'],
+      bank: ['service.financial.bank', 'service.financial.atm'],
+      atm: ['service.financial.atm'],
+      fuel: ['service.vehicle.fuel'],
+      school: ['education.school'],
+      restaurant: ['catering.restaurant'],
+      hotel: ['accommodation.hotel'],
+      shop: ['commercial'],
+      service: ['service']
+    };
+
+    const type = String(req.query.type || 'hospital').toLowerCase();
+    const selected = categories[type];
+
+    if (!selected) {
+      return res.status(400).json({ ok: false, error: 'Unsupported nearby category.' });
+    }
+
+    const key = process.env.GEOAPIFY_API_KEY;
+    if (!key) {
+      return res.status(503).json({ ok: false, error: 'Nearby places service is not configured.' });
+    }
+
+    const url = new URL('https://api.geoapify.com/v2/places');
+    url.searchParams.set('categories', selected.join(','));
+    url.searchParams.set('filter', `circle:${lon},${lat},${radius}`);
+    url.searchParams.set('bias', `proximity:${lon},${lat}`);
+    url.searchParams.set('limit', '30');
+    url.searchParams.set('lang', 'en');
+    url.searchParams.set('apiKey', key);
+
+    const upstream = await fetch(url, {
+      headers: {
+        Accept: 'application/json',
+        'User-Agent': 'SASIKUMAR-AI/1.0'
+      },
+      signal: AbortSignal.timeout(20000)
+    });
+
+    const data = await upstream.json().catch(() => ({}));
+
+    if (!upstream.ok) {
+      console.error('[Maps Nearby] Geoapify HTTP:', upstream.status);
+      return res.status(502).json({ ok: false, error: 'Nearby places temporarily unavailable.' });
+    }
+
+    return res.json({
+      ok: true,
+      provider: 'Geoapify Places',
+      type,
+      features: Array.isArray(data.features) ? data.features : []
+    });
+  } catch (error) {
+    console.error('[Maps Nearby]', error.message);
+    return res.status(502).json({ ok: false, error: 'Unable to find nearby places.' });
+  }
+});
+
+app.get('/api/maps/directions', async (req, res) => {
+  try {
+    const startLat = skMapNumber(req.query.startLat, -90, 90);
+    const startLon = skMapNumber(req.query.startLon, -180, 180);
+    const endLat = skMapNumber(req.query.endLat, -90, 90);
+    const endLon = skMapNumber(req.query.endLon, -180, 180);
+
+    if ([startLat, startLon, endLat, endLon].some(v => v === null)) {
+      return res.status(400).json({ ok: false, error: 'Valid start and destination coordinates are required.' });
+    }
+
+    const key = process.env.OPENROUTESERVICE_API_KEY;
+    if (!key) {
+      return res.status(503).json({ ok: false, error: 'Route service is not configured.' });
+    }
+
+    const allowedProfiles = ['driving-car', 'cycling-regular', 'foot-walking'];
+    const requestedProfile = String(req.query.profile || 'driving-car');
+    const profile = allowedProfiles.includes(requestedProfile) ? requestedProfile : 'driving-car';
+
+    const url = new URL(`https://api.heigit.org/openrouteservice/v2/directions/${profile}`);
+    url.searchParams.set('start', `${startLon},${startLat}`);
+    url.searchParams.set('end', `${endLon},${endLat}`);
+
+    const upstream = await fetch(url, {
+      headers: {
+        Authorization: key,
+        Accept: 'application/geo+json;charset=UTF-8',
+        'User-Agent': 'SASIKUMAR-AI/1.0'
+      },
+      signal: AbortSignal.timeout(20000)
+    });
+    const data = await upstream.json().catch(() => ({}));
+
+    if (!upstream.ok) {
+      console.error('[Maps Directions] ORS HTTP:', upstream.status);
+      return res.status(502).json({ ok: false, error: 'Directions temporarily unavailable.' });
+    }
+
+    return res.json({ ok: true, provider: 'OpenRouteService', profile, route: data });
+  } catch (error) {
+    console.error('[Maps Directions]', error.message);
+    return res.status(502).json({ ok: false, error: 'Unable to calculate this route.' });
+  }
+});
+// END SASIKUMAR AI MAPS API V1
+
+
 app.use(express.static(publicPath));
 
 // SK_JOB_REGISTRATION_API_V1

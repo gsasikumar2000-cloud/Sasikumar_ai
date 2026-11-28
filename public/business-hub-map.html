@@ -117,15 +117,81 @@ function openGoogleMaps(){
   window.open("https://www.google.com/maps/dir/?api=1&origin="+lat+","+lon,"_blank");
  }
 
- function nearby(type){
+ async function nearby(type){
   if(lat===null || lon===null){getLocation();return;}
-  const places={
-   shop:"shops",hospital:"hospitals",bank:"banks",
-   hotel:"hotels",service:"services"
-  };
-  const q=places[type] || "places";
-  window.open("https://www.google.com/maps/search/?api=1&query="+
-   encodeURIComponent(q+" near "+lat+","+lon),"_blank");
+
+  const status=document.getElementById("status");
+  status.textContent="🔎 Searching nearby places...";
+  try {
+   const params=new URLSearchParams({
+    lat:String(lat), lon:String(lon), type:type, radius:"3000"
+   });
+   const response=await fetch("/api/maps/nearby?"+params.toString());
+   const data=await response.json();
+
+   if(!response.ok || !data.ok){
+    throw new Error(data.error || "Nearby search failed.");
+   }
+
+   const features=Array.isArray(data.features)?data.features:[];
+   status.replaceChildren();
+
+   const heading=document.createElement("strong");
+   heading.textContent="📍 Nearby "+type+" ("+features.length+" found)";
+   status.appendChild(heading);
+
+   if(!features.length){
+    const empty=document.createElement("p");
+    empty.textContent="No places found within 3 km. Try another category or refresh location.";
+    status.appendChild(empty);
+    return;
+   }
+
+   const list=document.createElement("div");
+   list.style.marginTop="10px";
+
+   features.forEach(function(feature,index){
+    const props=feature.properties||{};
+    const coords=feature.geometry&&feature.geometry.coordinates;
+    const name=props.name||props.address_line1||"Unnamed place";
+    const address=props.formatted||props.address_line2||"Address not available";
+
+    const item=document.createElement("div");
+    item.style.cssText="padding:10px 0;border-bottom:1px solid rgba(255,255,255,.25)";
+
+    const title=document.createElement("strong");
+    title.textContent=(index+1)+". "+name;
+    item.appendChild(title);
+
+    const detail=document.createElement("div");
+    detail.textContent=address;
+    detail.style.cssText="font-size:13px;margin:5px 0";
+    item.appendChild(detail);
+
+    if(Array.isArray(coords)&&coords.length>=2){
+     const link=document.createElement("a");
+     link.href="https://www.google.com/maps/search/?api=1&query="+
+       encodeURIComponent(coords[1]+","+coords[0]);
+     link.target="_blank";
+     link.rel="noopener";
+     link.textContent="🗺️ Open in Google Maps";
+     item.appendChild(link);
+    }
+
+    list.appendChild(item);
+   });
+
+   status.appendChild(list);
+
+   const first=features[0];
+   const firstCoords=first.geometry&&first.geometry.coordinates;
+   if(Array.isArray(firstCoords)&&firstCoords.length>=2){
+    document.getElementById("mapFrame").src=
+     "https://maps.google.com/maps?q="+firstCoords[1]+","+firstCoords[0]+"&z=16&output=embed";
+   }
+  } catch(error) {
+   status.textContent="❌ "+error.message;
+  }
  }
 
  function shareLocation(){
@@ -134,11 +200,6 @@ function openGoogleMaps(){
   const message="My Live Location: "+url;
   window.open("https://wa.me/?text="+encodeURIComponent(message),"_blank");
  }
- const q=type==="shop"?"shops":type==="service"?"services":"offers";
- const url="https://www.openstreetmap.org/search?query="+
-   encodeURIComponent(q+" near "+lat+","+lon);
- window.open(url,"_blank");
-}
 </script>
 
 <script id="skGlobalExitButtonScript">
